@@ -31,10 +31,11 @@ yarn install
 createdb speech_practice
 
 # Setup environment variables
-cp .env.example .env
-# Edit .env with your keys:
+cp .env.example .env.local
+# Edit .env.local with your actual keys:
 # - ELEVENLABS_API_KEY
 # - OPENAI_API_KEY (for Whisper STT)
+# - ACCESS_PASSWORD (for app login)
 
 # Initialize database
 yarn db:init

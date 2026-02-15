@@ -13,6 +13,10 @@ yarn build
 rm -rf ../docs
 cp -r dist ../docs
 
+# Ensure no .env files are in docs
+echo "Cleaning up sensitive files..."
+rm -f ../docs/.env*
+
 echo "Build complete!"
 echo ""
 echo "To deploy:"
