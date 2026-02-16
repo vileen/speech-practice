@@ -1,0 +1,391 @@
+{
+  "id": "2025-11-12",
+  "date": "2025-11-12",
+  "title": "Lekcja 2025-11-12 — Partykuły, krótka forma, czytanki",
+  "order": 20251112,
+  "topics": [],
+  "vocabulary": [
+    {
+      "jp": "Grupa",
+      "reading": "Wzór",
+      "en": "Przykład",
+      "tags": []
+    },
+    {
+      "jp": "-------",
+      "reading": "------",
+      "en": "----------",
+      "tags": []
+    },
+    {
+      "jp": "1 (-iru/-eru)",
+      "reading": "Ucinamy -masu, dodajemy -ru",
+      "en": "Tabemasu → Taberu",
+      "tags": []
+    },
+    {
+      "jp": "2 (-u)",
+      "reading": "Zmieniamy ostatnią sylabę na u",
+      "en": "Nomimasu → Nomu",
+      "tags": []
+    },
+    {
+      "jp": "3 (niereg.)",
+      "reading": "Shimasu → Suru, Kimasu → Kuru",
+      "en": "Shimasu → Suru",
+      "tags": []
+    },
+    {
+      "jp": "Japoński",
+      "reading": "Znaczenie",
+      "en": "Użycie",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "-----------",
+      "en": "--------",
+      "tags": []
+    },
+    {
+      "jp": "Ogenki desu ka?",
+      "reading": "Jak się masz?",
+      "en": "Pytanie o samopoczucie",
+      "tags": []
+    },
+    {
+      "jp": "Genki desu",
+      "reading": "Czuję się dobrze",
+      "en": "Odpowiedź",
+      "tags": []
+    },
+    {
+      "jp": "Ki wo tsukete kudasai",
+      "reading": "Uważaj na siebie",
+      "en": "Żegnanie",
+      "tags": []
+    },
+    {
+      "jp": "Daijoubu desu ka?",
+      "reading": "Czy wszystko w porządku?",
+      "en": "Troska",
+      "tags": []
+    },
+    {
+      "jp": "Daijoubu desu",
+      "reading": "Wszystko w porządku",
+      "en": "Odpowiedź",
+      "tags": []
+    },
+    {
+      "jp": "Zannen desu",
+      "reading": "Szkoda",
+      "en": "Wyrażanie współczucia",
+      "tags": []
+    },
+    {
+      "jp": "Hontou desu ka?",
+      "reading": "Naprawdę?",
+      "en": "Zdziwienie",
+      "tags": []
+    },
+    {
+      "jp": "Japoński",
+      "reading": "Romaji",
+      "en": "Znaczenie",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-----------",
+      "tags": []
+    },
+    {
+      "jp": "でも",
+      "reading": "demo",
+      "en": "ale",
+      "tags": []
+    },
+    {
+      "jp": "あと",
+      "reading": "ato",
+      "en": "po, po tym",
+      "tags": []
+    },
+    {
+      "jp": "いっしょに",
+      "reading": "issho ni",
+      "en": "razem",
+      "tags": []
+    },
+    {
+      "jp": "もっていく",
+      "reading": "motte iku",
+      "en": "zabrać ze sobą",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "わかりました",
+      "reading": "wakarimashita",
+      "en": "rozumiem",
+      "tags": []
+    },
+    {
+      "jp": "つかれる",
+      "reading": "tsukareru",
+      "en": "być zmęczonym",
+      "type": "ru-verb",
+      "tags": []
+    },
+    {
+      "jp": "きをつける",
+      "reading": "ki wo tsukeru",
+      "en": "uważać na siebie",
+      "type": "ru-verb",
+      "tags": []
+    },
+    {
+      "jp": "かえる",
+      "reading": "kaeru",
+      "en": "wracać",
+      "type": "ru-verb",
+      "tags": []
+    },
+    {
+      "jp": "うち",
+      "reading": "uchi",
+      "en": "dom (nasz), my (nasza firma/rodzina)",
+      "tags": []
+    },
+    {
+      "jp": "いえ",
+      "reading": "ie",
+      "en": "dom (budynek)",
+      "tags": []
+    },
+    {
+      "jp": "ざんねん",
+      "reading": "zannen",
+      "en": "szkoda, przykro",
+      "tags": []
+    },
+    {
+      "jp": "Japoński",
+      "reading": "Romaji",
+      "en": "Znaczenie",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-----------",
+      "tags": []
+    },
+    {
+      "jp": "あう",
+      "reading": "au",
+      "en": "spotykać się",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "でる",
+      "reading": "deru",
+      "en": "wychodzić",
+      "type": "ru-verb",
+      "tags": []
+    },
+    {
+      "jp": "あそぶ",
+      "reading": "asobu",
+      "en": "bawić się",
+      "tags": []
+    },
+    {
+      "jp": "まなぶ",
+      "reading": "manabu",
+      "en": "uczyć się",
+      "tags": []
+    },
+    {
+      "jp": "Partykuła",
+      "reading": "Znaczenie",
+      "en": "Przykład",
+      "tags": []
+    },
+    {
+      "jp": "-----------",
+      "reading": "-----------",
+      "en": "----------",
+      "tags": []
+    },
+    {
+      "jp": "wa (は)",
+      "reading": "temat",
+      "en": "Watashi wa gakusei desu",
+      "tags": []
+    },
+    {
+      "jp": "ga (が)",
+      "reading": "podmiot",
+      "en": "Nihongo ga suki desu",
+      "tags": []
+    },
+    {
+      "jp": "no (の)",
+      "reading": "przynależność",
+      "en": "Watashi no hon",
+      "tags": []
+    },
+    {
+      "jp": "o (を)",
+      "reading": "dopełnienie",
+      "en": "Sushi o tabemasu",
+      "tags": []
+    },
+    {
+      "jp": "ni (に)",
+      "reading": "czas/miejsce/cel",
+      "en": "Ni-ji ni / Gakkou ni / Tomodachi ni",
+      "tags": []
+    },
+    {
+      "jp": "e (へ)",
+      "reading": "kierunek",
+      "en": "Uchi e kaerimasu",
+      "tags": []
+    },
+    {
+      "jp": "de (で)",
+      "reading": "miejsce działania",
+      "en": "Kissaten de nomimasu",
+      "tags": []
+    },
+    {
+      "jp": "to (と)",
+      "reading": "razem z, i",
+      "en": "Tomodachi to / Sushi to tenpura",
+      "tags": []
+    },
+    {
+      "jp": "kara (から)",
+      "reading": "od, skąd, ponieważ",
+      "en": "Toukyou kara / Ame ga furu kara",
+      "tags": []
+    },
+    {
+      "jp": "made (まで)",
+      "reading": "do",
+      "en": "Gakkou made",
+      "tags": []
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Czytanki w hiraganie",
+      "explanation": "Dialog 1:\n\nOhayou gozaimasu. Tanaka sensei.\nOhayou. Maaya-chan. Ogenki desu ka?\nHai, genki desu.\nKyou wa ii tenki desu ne.\nHai. Demo gogo yoji ni ame ga furimasu.\nHontou desu ka? Zannen desu.",
+      "examples": [
+        {
+          "jp": "Dialog 1:",
+          "en": ""
+        },
+        {
+          "jp": "chan. Ogenki desu ka?",
+          "en": ""
+        },
+        {
+          "jp": "Tłumaczenie:",
+          "en": "Dzień dobry panie Tanaka."
+        },
+        {
+          "jp": "Dzień dobry Maaya. Jak się masz?",
+          "en": "Dobrze się czuję."
+        },
+        {
+          "jp": "Dzisiaj jest dobra pogoda, prawda?",
+          "en": "Tak. Ale o 16:00 będzie padał deszcz."
+        }
+      ]
+    },
+    {
+      "pattern": "Partykuła ni (に)",
+      "explanation": "Zastosowania:",
+      "examples": [
+        {
+          "jp": "Zastosowania:",
+          "en": ""
+        }
+      ]
+    },
+    {
+      "pattern": "Partykuła e (へ)",
+      "explanation": "Tylko kierunek (dokąd):\n- Uchi e kaerimasu - Wracam do domu\n- Nihon e ikimasu - Jadę do Japonii\n\nUwaga: Czytane jak \"e\" ale zapisane znakiem へ (he)!",
+      "examples": [
+        {
+          "jp": "Tylko kierunek (dokąd):",
+          "en": "Uchi e kaerimasu - Wracam do domu"
+        },
+        {
+          "jp": "Nihon e ikimasu",
+          "en": "Jadę do Japonii"
+        }
+      ]
+    },
+    {
+      "pattern": "Partykuła de (で)",
+      "explanation": "Miejsce działania:\n- Kissaten de kohi o nomimasu - Piję kawę w kawiarni\n- Gakkou de benkyou shimasu - Uczę się w szkole\n- Uchi de terebi o mimasu - Oglądam TV w domu",
+      "examples": [
+        {
+          "jp": "Miejsce działania:",
+          "en": "Kissaten de kohi o nomimasu - Piję kawę w kawiarni"
+        },
+        {
+          "jp": "Gakkou de benkyou shimasu",
+          "en": "Uczę się w szkole"
+        },
+        {
+          "jp": "Uchi de terebi o mimasu",
+          "en": "Oglądam TV w domu"
+        }
+      ]
+    },
+    {
+      "pattern": "Partykuła to (と)",
+      "explanation": "Razem z:\n- Tomodachi to eiga ni ikimasu - Idę z przyjacielem do kina\n- Kazoku to tabemasu - Jem z rodziną\n\nŁączenie rzeczowników:\n- Sushi to tenpura - Sushi i tempura\n- Kore to sore - To i ta",
+      "examples": [
+        {
+          "jp": "Razem z:",
+          "en": "Tomodachi to eiga ni ikimasu - Idę z przyjacielem do kina"
+        },
+        {
+          "jp": "Kazoku to tabemasu",
+          "en": "Jem z rodziną"
+        },
+        {
+          "jp": "Łączenie rzeczowników:",
+          "en": "Sushi to tenpura - Sushi i tempura"
+        },
+        {
+          "jp": "Kore to sore",
+          "en": "To i tamto"
+        }
+      ]
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [
+    "Ohayou gozaimasu. Tanaka sensei.",
+    "Ohayou. Maaya-chan. Ogenki desu ka?",
+    "Hai, genki desu.",
+    "Kyou wa ii tenki desu ne.",
+    "Hai. Demo gogo yoji ni ame ga furimasu.",
+    "Hontou desu ka? Zannen desu.",
+    "Kyou gakkou no ato tomodachi to isshoni kissaten ni ikimasu.",
+    "Sore wa ii desu ne.",
+    "Demo ame ga furu kara, kasa to atatakai uwagi o motte itte kudasai.",
+    "Wakarimashita. Ki wo tsukete."
+  ],
+  "summary": "## 📅 Informacje ogólne\n- Data: 2025-11-12\n- Tydzień: #Tydzień-6\n- Status: ✓ Ukończona\n- Czas trwania: ~60 min"
+}

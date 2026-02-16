@@ -1,0 +1,536 @@
+{
+  "id": "2025-12-10",
+  "date": "2025-12-10",
+  "title": "Lesson: Location Words and Positional Phrases",
+  "order": 20251210,
+  "topics": [],
+  "vocabulary": [
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "---------",
+      "tags": []
+    },
+    {
+      "jp": "図書館はどこですか？",
+      "reading": "Toshokan wa doko desu ka?",
+      "en": "Where is the library?",
+      "tags": []
+    },
+    {
+      "jp": "郵便局はどこですか？",
+      "reading": "Yuubinkyoku wa doko desu ka?",
+      "en": "Where is the post office?",
+      "tags": []
+    },
+    {
+      "jp": "スーさんの辞書はどこですか？",
+      "reading": "Suu-san no jisho wa doko desu ka?",
+      "en": "Where is Ms. Su's dictionary?",
+      "tags": []
+    },
+    {
+      "jp": "リュウさんの傘はどこですか？",
+      "reading": "Ryuu-san no kasa wa doko desu ka?",
+      "en": "Where is Ms. Ryu's umbrella?",
+      "tags": []
+    },
+    {
+      "jp": "駅はどこですか？",
+      "reading": "Eki wa doko desu ka?",
+      "en": "Where is the station?",
+      "tags": []
+    },
+    {
+      "jp": "銀行はどこですか？",
+      "reading": "Ginkou wa doko desu ka?",
+      "en": "Where is the bank?",
+      "tags": []
+    },
+    {
+      "jp": "---------",
+      "reading": "",
+      "en": "上",
+      "tags": []
+    },
+    {
+      "jp": "shita",
+      "reading": "under, below",
+      "en": "椅子の下 (isu no shita) - under the chair",
+      "tags": []
+    },
+    {
+      "jp": "中",
+      "reading": "naka",
+      "en": "inside, in",
+      "tags": []
+    },
+    {
+      "jp": "学校の前 (gakkou no mae) - in front of school",
+      "reading": "",
+      "en": "後ろ",
+      "tags": []
+    },
+    {
+      "jp": "tonari",
+      "reading": "next to, neighboring",
+      "en": "銀行の隣 (ginkou no tonari) - next to the bank",
+      "tags": []
+    },
+    {
+      "jp": "近く",
+      "reading": "chikaku",
+      "en": "near, close to",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "AとBの間 (A to B no aida) - between A and B",
+      "reading": "",
+      "en": "向こう",
+      "tags": []
+    },
+    {
+      "jp": "soba",
+      "reading": "beside, near",
+      "en": "駅の側 (eki no soba) - beside the station",
+      "tags": []
+    },
+    {
+      "jp": "横",
+      "reading": "yoko",
+      "en": "beside, to the side",
+      "tags": []
+    },
+    {
+      "jp": "建物の外 (tatemono no soto) - outside the building",
+      "reading": "",
+      "en": "裏",
+      "tags": []
+    },
+    {
+      "jp": "mawari",
+      "reading": "around",
+      "en": "公園の周り (kouen no mawari) - around the park",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "---------",
+      "tags": []
+    },
+    {
+      "jp": "鞄の中です",
+      "reading": "Kaban no naka desu",
+      "en": "It's inside the bag",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "机の上です",
+      "reading": "Tsukue no ue desu",
+      "en": "It's on the desk",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "椅子の下です",
+      "reading": "Isu no shita desu",
+      "en": "It's under the chair",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "郵便局の後ろです",
+      "reading": "Yuubinkyoku no ushiro desu",
+      "en": "It's behind the post office",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "銀行の隣です",
+      "reading": "Ginkou no tonari desu",
+      "en": "It's next to the bank",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "駅の近くです",
+      "reading": "Eki no chikaku desu",
+      "en": "It's near the station",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "学校と駅の間です",
+      "reading": "Gakkou to eki no aida desu",
+      "en": "It's between the school and station",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "ホテルの向こうです",
+      "reading": "Hoteru no mukou desu",
+      "en": "It's across from the hotel",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "---------",
+      "tags": []
+    },
+    {
+      "jp": "スーさんの辞書は鞄の中です",
+      "reading": "Suu-san no jisho wa kaban no naka desu",
+      "en": "Ms. Su's dictionary is in the bag",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "リュウさんの傘は机の上です",
+      "reading": "Ryuu-san no kasa wa tsukue no ue desu",
+      "en": "Ms. Ryu's umbrella is on the desk",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "---------",
+      "tags": []
+    },
+    {
+      "jp": "スーさんの辞書",
+      "reading": "Suu-san no jisho",
+      "en": "Ms. Su's dictionary",
+      "tags": []
+    },
+    {
+      "jp": "リュウさんの傘",
+      "reading": "Ryuu-san no kasa",
+      "en": "Ms. Ryu's umbrella",
+      "tags": []
+    },
+    {
+      "jp": "私の鞄",
+      "reading": "Watashi no kaban",
+      "en": "My bag",
+      "tags": []
+    },
+    {
+      "jp": "田中さんの本",
+      "reading": "Tanaka-san no hon",
+      "en": "Mr./Ms. Tanaka's book",
+      "tags": []
+    },
+    {
+      "jp": "日本の文化",
+      "reading": "Nihon no bunka",
+      "en": "Japanese culture",
+      "tags": []
+    },
+    {
+      "jp": "大学の図書館",
+      "reading": "Daigaku no toshokan",
+      "en": "The university library",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "---------",
+      "tags": []
+    },
+    {
+      "jp": "学校と駅の間",
+      "reading": "Gakkou to eki no aida",
+      "en": "Between the school and the station",
+      "tags": []
+    },
+    {
+      "jp": "銀行と郵便局の間",
+      "reading": "Ginkou to yuubinkyoku no aida",
+      "en": "Between the bank and post office",
+      "tags": []
+    },
+    {
+      "jp": "ホテルとレストランの間",
+      "reading": "Hoteru to resutoran no aida",
+      "en": "Between the hotel and restaurant",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "---------",
+      "en": "---------",
+      "tags": []
+    },
+    {
+      "jp": "一階 / 1階",
+      "reading": "ikkai",
+      "en": "first floor (ground floor)",
+      "tags": []
+    },
+    {
+      "jp": "二階 / 2階",
+      "reading": "nikai",
+      "en": "second floor",
+      "tags": []
+    },
+    {
+      "jp": "三階 / 3階",
+      "reading": "sangai",
+      "en": "third floor",
+      "tags": []
+    },
+    {
+      "jp": "地下一階",
+      "reading": "chika ikkai",
+      "en": "basement first floor (B1)",
+      "tags": []
+    },
+    {
+      "jp": "地下二階",
+      "reading": "chika nikai",
+      "en": "basement second floor (B2)",
+      "tags": []
+    },
+    {
+      "jp": "-------",
+      "reading": "",
+      "en": "図書館",
+      "tags": []
+    },
+    {
+      "jp": "yuubinkyoku",
+      "reading": "post office",
+      "en": "ゆうびんきょく",
+      "tags": []
+    },
+    {
+      "jp": "銀行",
+      "reading": "ginkou",
+      "en": "bank",
+      "tags": []
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Asking About Location: ~はどこですか？",
+      "explanation": "To ask where something or someone is located:\n\nPattern: [Object/Person] + はどこですか？ = Where is...?\n\n| Japanese | Romaji | English |\n|----------|--------|---------|\n| 図書館はどこですか？ | Toshokan wa doko d",
+      "examples": [
+        {
+          "jp": "Pattern: [Object/Person] + はどこですか？ = Where is...?",
+          "en": ""
+        },
+        {
+          "jp": "-",
+          "en": "-------|--------|---------|"
+        },
+        {
+          "jp": "Response Pattern: [Location] + の + [positional word] + です",
+          "en": "--"
+        }
+      ]
+    },
+    {
+      "pattern": "Positional Words (Locational Nouns)",
+      "explanation": "These words describe relative position and are used with の:\n\n| Japanese | Reading | Meaning | Example |\n|----------|---------|---------|---------|\n| 上 | ue | on, above, on top of | 机の上 (tsukue no ue)",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|---------|---------|---------|"
+        },
+        {
+          "jp": "on the desk |",
+          "en": ""
+        },
+        {
+          "jp": "under the chair |",
+          "en": ""
+        },
+        {
+          "jp": "in the bag |",
+          "en": ""
+        },
+        {
+          "jp": "in front of school |",
+          "en": ""
+        }
+      ]
+    },
+    {
+      "pattern": "Describing Location with ~の~",
+      "explanation": "Pattern: [Location] + の + [positional word] + です\n\nThis is the most common way to describe where something is:\n\n| Japanese | Romaji | English |\n|----------|--------|---------|\n| 鞄の中です | Kaban no n",
+      "examples": [
+        {
+          "jp": "Pattern: [Location] + の + [positional word] + です",
+          "en": ""
+        },
+        {
+          "jp": "-",
+          "en": "-------|--------|---------|"
+        },
+        {
+          "jp": "Extended Pattern with Subject:",
+          "en": ""
+        },
+        {
+          "jp": "-",
+          "en": "-------|--------|---------|"
+        },
+        {
+          "jp": "san no kasa wa tsukue no ue desu | Ms. Ryu's umbrella is on the desk |",
+          "en": "--"
+        }
+      ]
+    },
+    {
+      "pattern": "Possessive Particle の",
+      "explanation": "Shows ownership, association, or connection between nouns:\n\nPattern: [Owner] + の + [Object]\n\n| Japanese | Romaji | English |\n|----------|--------|---------|\n| スーさんの辞書 | Suu-san no jisho | Ms. Su'",
+      "examples": [
+        {
+          "jp": "Pattern: [Owner] + の + [Object]",
+          "en": ""
+        },
+        {
+          "jp": "-",
+          "en": "-------|--------|---------|"
+        },
+        {
+          "jp": "san no jisho | Ms. Su's dictionary |",
+          "en": ""
+        },
+        {
+          "jp": "san no kasa | Ms. Ryu's umbrella |",
+          "en": ""
+        },
+        {
+          "jp": "san no hon | Mr./Ms. Tanaka's book |",
+          "en": ""
+        }
+      ]
+    },
+    {
+      "pattern": "Using と for \"Between\"",
+      "explanation": "When describing something between two locations:\n\nPattern: [Location A] + と + [Location B] + の間\n\n| Japanese | Romaji | English |\n|----------|--------|---------|\n| 学校と駅の間 | Gakkou to eki no aida |",
+      "examples": [
+        {
+          "jp": "Pattern: [Location A] + と + [Location B] + の間",
+          "en": ""
+        },
+        {
+          "jp": "-",
+          "en": "-------|--------|---------|"
+        },
+        {
+          "jp": "--",
+          "en": ""
+        }
+      ]
+    }
+  ],
+  "dialogues": [
+    {
+      "title": "Finding Lost Items",
+      "lines": [
+        {
+          "speaker": "A",
+          "jp": "すみません、私の財布はどこですか？",
+          "en": "Sumimasen, watashi no saifu wa doko desu ka?"
+        },
+        {
+          "speaker": "B",
+          "jp": "鞄の中を見ましたか？",
+          "en": "Kaban no naka wo mimashita ka?"
+        },
+        {
+          "speaker": "A",
+          "jp": "はい、見ました。ありません。",
+          "en": "Hai, mimashita. Arimasen."
+        },
+        {
+          "speaker": "B",
+          "jp": "じゃあ、机の上はどうですか？",
+          "en": "Jaa, tsukue no ue wa dou desu ka?"
+        },
+        {
+          "speaker": "A",
+          "jp": "あ、ありました！机の上にありました！",
+          "en": "A, arimashita! Tsukue no ue ni arimashita!"
+        }
+      ]
+    },
+    {
+      "title": "Giving Directions",
+      "lines": [
+        {
+          "speaker": "A",
+          "jp": "すみません、駅はどこですか？",
+          "en": "Sumimasen, eki wa doko desu ka?"
+        },
+        {
+          "speaker": "B",
+          "jp": "あの大きい建物の隣です。",
+          "en": "Ano ookii tatemono no tonari desu."
+        },
+        {
+          "speaker": "A",
+          "jp": "あの白い建物ですか？",
+          "en": "Ano shiroi tatemono desu ka?"
+        },
+        {
+          "speaker": "B",
+          "jp": "いいえ、白い建物の後ろの赤い建物です。",
+          "en": "Iie, shiroi tatemono no ushiro no akai tatemono desu."
+        },
+        {
+          "speaker": "A",
+          "jp": "分かりました。ありがとうございます！",
+          "en": "Wakarimashita. Arigatou gozaimasu!"
+        }
+      ]
+    },
+    {
+      "title": "In a Store",
+      "lines": [
+        {
+          "speaker": "A",
+          "jp": "辞書はどこですか？",
+          "en": "Jisho wa doko desu ka?"
+        },
+        {
+          "speaker": "B",
+          "jp": "本のコーナーの中です。奥の方にあります。",
+          "en": "Hon no koonaa no naka desu. Oku no hou ni arimasu."
+        },
+        {
+          "speaker": "A",
+          "jp": "日本語の辞書もありますか？",
+          "en": "Nihongo no jisho mo arimasu ka?"
+        },
+        {
+          "speaker": "B",
+          "jp": "はい、こちらの棚の上にあります。",
+          "en": "Hai, kochira no tana no ue ni arimasu."
+        }
+      ]
+    }
+  ],
+  "practice_phrases": [
+    "              [上 / ue - above]",
+    "                    ↑",
+    "                    |",
+    "[隣 - left] ← [reference point] → [隣 - right]",
+    "   (tonari)          |              (tonari)",
+    "                    |",
+    "              [下 / shita - below]",
+    "Perspective from above:",
+    "              [後ろ / ushiro]",
+    "                   ↑"
+  ],
+  "summary": "Date: December 10, 2025  \nDuration: 30 minutes  \nFormat: Polish/Japanese instruction  \nTopic: Location vocabulary, positional words (on/in/under/behind), asking about locations, possessive の"
+}

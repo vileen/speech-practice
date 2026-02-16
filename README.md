@@ -1,112 +1,85 @@
 # Speech Practice App
 
-Practice Japanese and Italian speaking with AI voice responses.
+Japanese/Italian language learning app with AI conversation, speech recognition, and lesson-based practice.
 
 ## Features
 
-- 🎙️ **Record your voice** and get transcriptions
-- 🔊 **AI-generated responses** in Japanese/Italian (ElevenLabs TTS)
-- 🌍 **Multiple languages**: Japanese + Italian
-- 🎭 **Voice selection**: Male/Female for each language
-- 📊 **Session history** stored in PostgreSQL
-- 🔒 **Password protection**
+- 🎙️ **Speech-to-Text** (Whisper API)
+- 🔊 **Text-to-Speech** (ElevenLabs)
+- 📚 **Lesson Mode** — practice specific lessons
+- 🎯 **Repeat After Me** — pronunciation training
+- 💬 **AI Conversation** — practice speaking naturally
 
 ## Architecture
 
 ```
-GitHub Pages (Frontend) ←──→ Your Mac (Backend API + PostgreSQL)
-         ↑                           ↑
-    Static React               Tailscale/ngrok
+Frontend (React) → Backend (Node/Express) → APIs (OpenAI, ElevenLabs)
+     ↓                    ↓
+  GitHub Pages      Your Mac Mini (Tailscale)
+                         OR
+                    Cloudflare Tunnel (public)
 ```
 
-## Setup
+## Quick Start (Development)
 
-### 1. Backend Setup
-
+### Backend
 ```bash
 cd backend
-yarn install
-
-# Create database
-createdb speech_practice
-
-# Setup environment variables
 cp .env.example .env.local
-# Edit .env.local with your actual keys:
-# - ELEVENLABS_API_KEY
-# - OPENAI_API_KEY (for Whisper STT)
-# - ACCESS_PASSWORD (for app login)
-
-# Initialize database
-yarn db:init
-
-# Start server
+# Fill in your API keys
+yarn install
 yarn dev
 ```
 
-Backend runs on `http://localhost:3001`
-
-### 2. Frontend Setup
-
+### Frontend
 ```bash
 cd frontend
 yarn install
 yarn dev
 ```
 
-Frontend runs on `http://localhost:5173`
+## Deployment
 
-### 3. Deploy to GitHub Pages
+### Frontend → GitHub Pages
+Automatic via GitHub Actions on every push to `main`.
 
-```bash
-./deploy.sh
-```
+### Backend Options
 
-Then push to GitHub and enable Pages in repository settings.
+#### Option A: Local + Cloudflare Tunnel (Recommended for personal use)
+1. Install cloudflared: `brew install cloudflare/cloudflare/cloudflared`
+2. Login: `cloudflared tunnel login`
+3. Create tunnel: `cloudflared tunnel create speech-practice`
+4. Route traffic: `cloudflared tunnel route dns speech-practice your-domain.example.com`
+5. Run: `cloudflared tunnel run speech-practice`
+
+#### Option B: Render.com (Free)
+1. Push repo to GitHub
+2. Connect Render to repo
+3. Set environment variables in Render dashboard
+4. Deploy
 
 ## Environment Variables
 
-### Backend (.env)
-
+### Backend (.env.local)
 ```
 PORT=3001
-NODE_ENV=development
-ELEVENLABS_API_KEY=sk_...
-OPENAI_API_KEY=sk-...
-DATABASE_URL=postgresql://localhost:5432/speech_practice
+DATABASE_URL=postgresql://...
+ELEVENLABS_API_KEY=your_key
+OPENAI_API_KEY=your_key
 ACCESS_PASSWORD=your_password
-AUDIO_STORAGE_PATH=./audio_recordings
 ```
 
-### Frontend (.env.local for development)
-
+### Frontend (.env)
 ```
-VITE_API_URL=http://localhost:3001
+VITE_API_URL=https://your-backend-url.com
 ```
 
-## API Endpoints
+## Security Notes
 
-- `POST /api/sessions` - Create new practice session
-- `POST /api/tts` - Generate text-to-speech
-- `POST /api/upload` - Upload user recording
-- `GET /api/sessions/:id` - Get session with messages
-
-## ElevenLabs Credits
-
-Estimated usage:
-- 30k credits/month ≈ 100-150 conversation turns
-- For heavy use (30-60 min daily): 50-100k credits/month recommended
-
-## Development
-
-```bash
-# Terminal 1 - Backend
-cd backend && yarn dev
-
-# Terminal 2 - Frontend
-cd frontend && yarn dev
-```
+- Never commit `.env.local` or `.env` files
+- Backend requires `X-Password` header for all requests
+- API keys are server-side only
 
 ## License
 
-Private project
+MIT

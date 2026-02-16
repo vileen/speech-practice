@@ -1,0 +1,393 @@
+{
+  "id": "2026-02-04",
+  "date": "2026-02-04",
+  "title": "🇯🇵 Lesson 2026-02-04 — Days of the Month, Counters & Body Parts",
+  "order": 20260204,
+  "topics": [],
+  "vocabulary": [
+    {
+      "jp": "Day",
+      "reading": "Reading",
+      "en": "Notes",
+      "tags": []
+    },
+    {
+      "jp": "-----",
+      "reading": "---------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "1st",
+      "reading": "tsuitachi (一日)",
+      "en": "Also: ichi-nichi (duration)",
+      "tags": []
+    },
+    {
+      "jp": "2nd",
+      "reading": "futsuka (二日)",
+      "en": "Also: ni-nichi",
+      "tags": []
+    },
+    {
+      "jp": "3rd",
+      "reading": "mikka (三日)",
+      "en": "Also: san-nichi",
+      "tags": []
+    },
+    {
+      "jp": "4th",
+      "reading": "yokka (四日)",
+      "en": "NOT \"yon-nichi\" for dates!",
+      "tags": []
+    },
+    {
+      "jp": "5th",
+      "reading": "itsuka (五日)",
+      "en": "Also: go-nichi",
+      "tags": []
+    },
+    {
+      "jp": "6th",
+      "reading": "muika (六日)",
+      "en": "Also: roku-nichi",
+      "tags": []
+    },
+    {
+      "jp": "7th",
+      "reading": "nanoka (七日)",
+      "en": "Also: nana-nichi",
+      "tags": []
+    },
+    {
+      "jp": "8th",
+      "reading": "youka (八日)",
+      "en": "Also: hachi-nichi",
+      "tags": []
+    },
+    {
+      "jp": "9th",
+      "reading": "kokonoka (九日)",
+      "en": "Also: kyuu-nichi",
+      "tags": []
+    },
+    {
+      "jp": "10th",
+      "reading": "tooka (十日)",
+      "en": "Also: juu-nichi",
+      "tags": []
+    },
+    {
+      "jp": "14th",
+      "reading": "juuyokka (十四日)",
+      "en": "yokka pattern",
+      "tags": []
+    },
+    {
+      "jp": "20th",
+      "reading": "hatsuka (二十日)",
+      "en": "Special reading",
+      "tags": []
+    },
+    {
+      "jp": "24th",
+      "reading": "nijuuyokka (二十四日)",
+      "en": "yokka pattern",
+      "tags": []
+    },
+    {
+      "jp": "---------",
+      "reading": "",
+      "en": "1",
+      "tags": []
+    },
+    {
+      "jp": "yottsu",
+      "reading": "",
+      "en": "5",
+      "tags": []
+    },
+    {
+      "jp": "yattsu",
+      "reading": "",
+      "en": "9",
+      "tags": []
+    },
+    {
+      "jp": "---------",
+      "reading": "",
+      "en": "chappatsu (茶髪)",
+      "tags": []
+    },
+    {
+      "jp": "red hair",
+      "reading": "Note: These describe hair style/type, not just color.\n\nExample:\n- 私は茶髪です。(Watashi wa chappatsu desu.) — \"I have brown hair.\"\n- 彼女は金髪です。(Kanojo wa kinpatsu desu.) — \"She's blonde.\"\n\n#### Body Build\n- 背が高い (se ga takai) — tall\n- 背が低い (se ga hikui) — short\n- 太っている (futotte iru) — overweight/chubby\n- 痩せている (yasete iru) — thin/slim\n\nExample:\n- 彼はちょっと太っています。(Kare wa chotto futotte imasu.) — \"He's a bit chubby.\"\n- 彼女は痩せています。(Kanojo wa yasete imasu.) — \"She's thin.\"\n\n---\n\n## 🏃 Vocabulary\n\n### Time Expressions",
+      "en": "Japanese",
+      "tags": []
+    },
+    {
+      "jp": "Meaning",
+      "reading": "",
+      "en": "----------",
+      "tags": []
+    },
+    {
+      "jp": "---------",
+      "reading": "",
+      "en": "毎日",
+      "tags": []
+    },
+    {
+      "jp": "every day",
+      "reading": "",
+      "en": "毎週",
+      "tags": []
+    },
+    {
+      "jp": "every week",
+      "reading": "",
+      "en": "毎月",
+      "tags": []
+    },
+    {
+      "jp": "every month",
+      "reading": "",
+      "en": "毎年",
+      "tags": []
+    },
+    {
+      "jp": "every year",
+      "reading": "",
+      "en": "毎朝",
+      "tags": []
+    },
+    {
+      "jp": "every morning",
+      "reading": "",
+      "en": "今日",
+      "tags": []
+    },
+    {
+      "jp": "today",
+      "reading": "",
+      "en": "昨日",
+      "tags": []
+    },
+    {
+      "jp": "yesterday",
+      "reading": "",
+      "en": "明日",
+      "tags": []
+    },
+    {
+      "jp": "tomorrow",
+      "reading": "",
+      "en": "本日",
+      "tags": []
+    },
+    {
+      "jp": "today (formal)",
+      "reading": "### Date Vocabulary",
+      "en": "Japanese",
+      "tags": []
+    },
+    {
+      "jp": "Meaning",
+      "reading": "",
+      "en": "----------",
+      "tags": []
+    },
+    {
+      "jp": "---------",
+      "reading": "",
+      "en": "誕生日",
+      "tags": []
+    },
+    {
+      "jp": "birthday",
+      "reading": "",
+      "en": "日付",
+      "tags": []
+    },
+    {
+      "jp": "date",
+      "reading": "",
+      "en": "期間",
+      "tags": []
+    },
+    {
+      "jp": "period/duration",
+      "reading": "",
+      "en": "使用期限",
+      "tags": []
+    },
+    {
+      "jp": "expiration date",
+      "reading": "",
+      "en": "賞味期限",
+      "tags": []
+    },
+    {
+      "jp": "best-before date",
+      "reading": "### Body Parts — Face (顔・kao)",
+      "en": "Japanese",
+      "tags": []
+    },
+    {
+      "jp": "Meaning",
+      "reading": "",
+      "en": "----------",
+      "tags": []
+    },
+    {
+      "jp": "---------",
+      "reading": "",
+      "en": "顔",
+      "tags": []
+    },
+    {
+      "jp": "face",
+      "reading": "",
+      "en": "髪の毛",
+      "tags": []
+    },
+    {
+      "jp": "hair",
+      "reading": "",
+      "en": "額",
+      "tags": []
+    },
+    {
+      "jp": "forehead",
+      "reading": "",
+      "en": "眉",
+      "tags": []
+    },
+    {
+      "jp": "eyebrows",
+      "reading": "",
+      "en": "まつげ",
+      "tags": []
+    },
+    {
+      "jp": "eyelashes",
+      "reading": "",
+      "en": "まぶた",
+      "tags": []
+    },
+    {
+      "jp": "eyelids",
+      "reading": "",
+      "en": "目",
+      "tags": []
+    },
+    {
+      "jp": "eye",
+      "reading": "",
+      "en": "鼻",
+      "tags": []
+    },
+    {
+      "jp": "nose",
+      "reading": "",
+      "en": "ほっぺ",
+      "tags": []
+    },
+    {
+      "jp": "cheeks",
+      "reading": "",
+      "en": "歯",
+      "tags": []
+    },
+    {
+      "jp": "tooth/teeth",
+      "reading": "",
+      "en": "あご",
+      "tags": []
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Days of the Month (Special Readings)",
+      "explanation": "Japanese uses special readings for days of the month (1st-10th, 14th, 20th, 24th):\n\n| Day | Reading | Notes |\n|-----|---------|-------|\n| 1st | tsuitachi (一日) | Also: ichi-nichi (duration) |\n| 2n",
+      "examples": [
+        {
+          "jp": "special readings for days of the month (1st",
+          "en": "10th, 14th, 20th, 24th):"
+        },
+        {
+          "jp": "-",
+          "en": "--|---------|-------|"
+        },
+        {
+          "jp": "nichi (duration) |",
+          "en": ""
+        },
+        {
+          "jp": "nichi |",
+          "en": ""
+        },
+        {
+          "jp": "nichi |",
+          "en": ""
+        }
+      ]
+    },
+    {
+      "pattern": "Telling Time (時)",
+      "explanation": "Kanji: 時 (ji — on'yomi / toki — kun'yomi)\n\nHours: ichi-ji, ni-ji, san-ji, yo-ji (not yon-ji!), go-ji, roku-ji, shichi-ji, hachi-ji, ku-ji, juu-ji...\n\nCommon phrases:\n- 子供の時 (kodomo no tok",
+      "examples": [
+        {
+          "jp": "Kanji: 時 (ji — on'yomi / toki — kun'yomi)",
+          "en": ""
+        },
+        {
+          "jp": "Hours: ichi",
+          "en": "ji, ni-ji, san-ji, yo-ji (not yon-ji!), go-ji, roku-ji, shichi-ji, hachi-ji, ku-ji, juu-ji..."
+        },
+        {
+          "jp": "Common phrases:",
+          "en": "子供の時 (kodomo no toki) — \"when I was a child\""
+        },
+        {
+          "jp": "時々 (tokidoki) — \"sometimes\" (from 時 + 々 repetition marker)",
+          "en": "時計 (tokei) — \"clock/watch\" (time + measure)"
+        }
+      ]
+    },
+    {
+      "pattern": "Counters: つ (Ikutsu)",
+      "explanation": "Generic counter for objects when you don't know the specific counter:\n\n| Number | Reading |\n|--------|---------|\n| 1 | hitotsu |\n| 2 | futatsu |\n| 3 | mitsu |\n| 4 | yottsu |\n| 5 | itsutsu |\n| 6 |",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-----|---------|"
+        },
+        {
+          "jp": "Usage:",
+          "en": "いくつありますか？(Ikutsu arimasu ka?) — \"How many are there?\""
+        },
+        {
+          "jp": "りんごを二つください。(Ringo wo futatsu kudasai.) — \"Two apples, please.\"",
+          "en": "ペンを三つ (pen wo mitsu) — \"three pens\""
+        },
+        {
+          "jp": "Why use つ?",
+          "en": "When you forget the specific counter"
+        },
+        {
+          "jp": "It's universal — works for any object",
+          "en": "Specific counters exist (flat things, long things, machines...) but つ always works"
+        }
+      ]
+    },
+    {
+      "pattern": "Describing Appearance",
+      "explanation": "",
+      "examples": []
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [],
+  "summary": "Days of the month, time counters, body parts vocabulary, and describing appearance."
+}

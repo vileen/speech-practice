@@ -1,5 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './App.css';
+import { LessonMode } from './LessonMode.js';
+import './LessonMode.css';
 
 interface Session {
   id: number;
@@ -8,25 +10,89 @@ interface Session {
   created_at: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+interface PronunciationResult {
+  target_text: string;
+  transcription: string;
+  score: number;
+  feedback: string;
+  text_with_furigana: string;
+}
+
+const API_URL = import.meta.env.VITE_API_URL || ''; // Empty = same origin (local dev)
+
+// Practice phrases for "Repeat After Me" mode
+const PRACTICE_PHRASES: Record<string, string[]> = {
+  japanese: [
+    'おはようございます',
+    'こんにちは',
+    'こんばんは',
+    'ありがとうございます',
+    'すみません',
+    'お名前は何ですか',
+    '私は学生です',
+    '日本語を勉強しています',
+    '今日は寒いです',
+    '明日は火曜日です',
+  ],
+  italian: [
+    'Buongiorno',
+    'Buonasera',
+    'Grazie mille',
+    'Mi scusi',
+    'Come si chiama',
+    'Sono uno studente',
+    'Studio italiano',
+    'Oggi fa freddo',
+    'Domani è martedì',
+  ],
+};
 
 function App() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
-  const [showTranslation, setShowTranslation] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
-  const [messages, setMessages] = useState<Array<{role: string, text: string, audioUrl?: string}>>([]);
+  const [messages, setMessages] = useState<Array<{role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string}>>([]);
   const [inputText, setInputText] = useState('');
+  const [showFurigana, setShowFurigana] = useState(true);
+  
+  // Repeat After Me mode
+  const [isRepeatMode, setIsRepeatMode] = useState(false);
+  const [currentPhrase, setCurrentPhrase] = useState('');
+  const [currentFurigana, setCurrentFurigana] = useState('');
+  const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  
+  // Lesson Mode
+  const [isLessonMode, setIsLessonMode] = useState(false);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load password from localStorage on mount and auto-login if exists
+  useEffect(() => {
+    const savedPassword = localStorage.getItem('speech_practice_password');
+    if (savedPassword) {
+      setPassword(savedPassword);
+      setIsAuthenticated(true);
+    }
+    setIsLoading(false);
+  }, []);
 
   const handleLogin = async () => {
-    // Simple check - backend will validate
+    localStorage.setItem('speech_practice_password', password);
     setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('speech_practice_password');
+    setIsAuthenticated(false);
+    setPassword('');
+    setSession(null);
+    setIsRepeatMode(false);
   };
 
   const startSession = async () => {
@@ -46,8 +112,29 @@ function App() {
         setMessages([]);
       }
     } catch (error) {
-      console.error('Error starting session:', error);
+      console.error('Error creating session:', error);
     }
+  };
+
+  // Get furigana for text
+  const getFurigana = async (text: string): Promise<string> => {
+    try {
+      const response = await fetch(`${API_URL}/api/furigana`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({ text }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.with_furigana;
+      }
+    } catch (error) {
+      console.error('Error getting furigana:', error);
+    }
+    return text;
   };
 
   const generateTTS = async (text: string) => {
@@ -70,10 +157,131 @@ function App() {
       if (response.ok) {
         const blob = await response.blob();
         const audioUrl = URL.createObjectURL(blob);
-        setMessages(prev => [...prev, { role: 'assistant', text, audioUrl }]);
+        
+        // Get furigana for display
+        const withFurigana = language === 'japanese' ? await getFurigana(text) : text;
+        
+        const translations: Record<string, Record<string, string>> = {
+          japanese: {
+            'はい、理解しました。続けてください。': 'Yes, I understand. Please continue.',
+          },
+          italian: {
+            'Sì, ho capito. Continua pure.': 'Yes, I understand. Please continue.',
+          },
+        };
+        const translation = translations[session.language]?.[text];
+        
+        setMessages(prev => [...prev, { 
+          role: 'assistant', 
+          text, 
+          audioUrl,
+          translation,
+          showTranslation: false,
+          withFurigana,
+        }]);
       }
     } catch (error) {
       console.error('Error generating TTS:', error);
+    }
+  };
+
+  // Repeat After Me functions
+  const startRepeatMode = () => {
+    setIsRepeatMode(true);
+    setPronunciationResult(null);
+    nextPhrase();
+  };
+
+  const nextPhrase = async () => {
+    const phrases = PRACTICE_PHRASES[language];
+    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    setCurrentPhrase(randomPhrase);
+    setPronunciationResult(null);
+    
+    // Get furigana
+    const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase) : randomPhrase;
+    setCurrentFurigana(withFurigana);
+    
+    // Auto-play the phrase
+    playPhrase(randomPhrase);
+  };
+
+  const playPhrase = async (text: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({
+          target_text: text,
+          language,
+        }),
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+      }
+    } catch (error) {
+      console.error('Error playing phrase:', error);
+    }
+  };
+
+  const startRecordingRepeat = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+      
+      mediaRecorder.onstop = async () => {
+        const mimeType = mediaRecorder.mimeType || 'audio/webm';
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        
+        // Submit for pronunciation check
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.webm');
+        formData.append('target_text', currentPhrase);
+        formData.append('language', language);
+        
+        try {
+          const response = await fetch(`${API_URL}/api/repeat-after-me`, {
+            method: 'POST',
+            headers: {
+              'X-Password': password,
+            },
+            body: formData,
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            setPronunciationResult(result);
+          }
+        } catch (error) {
+          console.error('Error checking pronunciation:', error);
+        }
+        
+        setIsListening(false);
+      };
+      
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.start();
+      setIsListening(true);
+    } catch (error) {
+      console.error('Error starting recording:', error);
+    }
+  };
+
+  const stopRecordingRepeat = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
     }
   };
 
@@ -88,10 +296,12 @@ function App() {
       };
       
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
-        // Upload to backend
+        const mimeType = mediaRecorder.mimeType || 'audio/webm';
+        const extension = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        
         const formData = new FormData();
-        formData.append('audio', audioBlob, 'recording.mp3');
+        formData.append('audio', audioBlob, `recording.${extension}`);
         formData.append('session_id', session?.id.toString() || '');
         formData.append('target_language', language);
         
@@ -105,8 +315,14 @@ function App() {
           });
           
           if (response.ok) {
-            await response.json();
-            setMessages(prev => [...prev, { role: 'user', text: '[Your recording]', audioUrl: URL.createObjectURL(audioBlob) }]);
+            const data = await response.json();
+            const displayText = data.transcription || '[Your recording]';
+            const audioUrl = URL.createObjectURL(audioBlob);
+            setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
+            
+            if (data.transcription) {
+              await generateAIResponse(data.transcription, language);
+            }
           }
         } catch (error) {
           console.error('Error uploading recording:', error);
@@ -134,6 +350,57 @@ function App() {
     setInputText('');
   };
 
+  const generateAIResponse = async (_userText: string, lang: string) => {
+    const responses: Record<string, string> = {
+      japanese: 'はい、理解しました。続けてください。',
+      italian: 'Sì, ho capito. Continua pure.',
+    };
+    const responseText = responses[lang] || 'OK, understood. Please continue.';
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    await generateTTS(responseText);
+  };
+
+  // Initialize lesson chat with system prompt
+  const initializeLessonChat = async (lessonId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/lessons/${lessonId}/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({ relaxed: true }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Add system message as hidden context
+        console.log('Lesson system prompt loaded:', data.system_prompt);
+        
+        // Generate initial greeting from AI based on lesson
+        const initialGreetings: Record<string, string> = {
+          japanese: `${data.lesson.title}を練習しましょう。何か話しましょう！`,
+          italian: `Pratichiamo ${data.lesson.title}. Parliamo!`,
+        };
+        const greeting = initialGreetings[language] || `Let's practice ${data.lesson.title}. What would you like to talk about?`;
+        
+        await generateTTS(greeting);
+      }
+    } catch (error) {
+      console.error('Error initializing lesson chat:', error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="login-container">
+        <h1>🎤 Speech Practice</h1>
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="login-container">
@@ -144,9 +411,106 @@ function App() {
             placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
           />
           <button onClick={handleLogin}>Enter</button>
         </div>
+      </div>
+    );
+  }
+
+  // Lesson Mode
+  if (isLessonMode) {
+    return (
+      <LessonMode
+        password={password}
+        onBack={() => setIsLessonMode(false)}
+        onStartLessonChat={(lessonId) => {
+          setIsLessonMode(false);
+          // Initialize lesson chat with system prompt
+          initializeLessonChat(lessonId);
+        }}
+      />
+    );
+  }
+
+  // Repeat After Me Mode
+  if (isRepeatMode) {
+    return (
+      <div className="app repeat-mode">
+        <header>
+          <h1>🎯 Repeat After Me</h1>
+          <div className="mode-controls">
+            <button className="mode-btn" onClick={() => setIsRepeatMode(false)}>
+              ← Back to Chat
+            </button>
+            <button className="mode-btn" onClick={handleLogout}>
+              🚪 Logout
+            </button>
+          </div>
+        </header>
+
+        <main className="repeat-main">
+          <div className="phrase-card">
+            <div className="phrase-display">
+              {showFurigana && currentFurigana ? (
+                <div 
+                  className="furigana-text"
+                  dangerouslySetInnerHTML={{ __html: currentFurigana }}
+                />
+              ) : (
+                <div className="plain-text">{currentPhrase}</div>
+              )}
+            </div>
+            
+            {language === 'japanese' && (
+              <button 
+                className="toggle-furigana"
+                onClick={() => setShowFurigana(!showFurigana)}
+              >
+                {showFurigana ? '🙈 Hide Furigana' : '👀 Show Furigana'}
+              </button>
+            )}
+            
+            <div className="phrase-controls">
+              <button className="play-btn large" onClick={() => playPhrase(currentPhrase)}>
+                🔊 Listen Again
+              </button>
+            </div>
+          </div>
+
+          {pronunciationResult && (
+            <div className={`result-card score-${pronunciationResult.score}`}>
+              <div className="score-display">
+                <span className="score-number">{pronunciationResult.score}%</span>
+                <span className="feedback">{pronunciationResult.feedback}</span>
+              </div>
+              <div className="transcription-comparison">
+                <div className="expected">
+                  <label>Expected:</label>
+                  <span>{pronunciationResult.target_text}</span>
+                </div>
+                <div className="heard">
+                  <label>Heard:</label>
+                  <span>{pronunciationResult.transcription || '(nothing)'}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="repeat-controls">
+            <button 
+              className={`record-btn large ${isListening ? 'recording' : ''}`}
+              onClick={isListening ? stopRecordingRepeat : startRecordingRepeat}
+            >
+              {isListening ? '⏹️ Stop' : '🎙️ Speak'}
+            </button>
+            
+            <button className="next-btn" onClick={nextPhrase}>
+              Next Phrase →
+            </button>
+          </div>
+        </main>
       </div>
     );
   }
@@ -187,19 +551,16 @@ function App() {
               </button>
             </div>
             
-            <div className="options">
-              <label>
-                <input 
-                  type="checkbox" 
-                  checked={showTranslation}
-                  onChange={(e) => setShowTranslation(e.target.checked)}
-                />
-                Show English translations
-              </label>
-            </div>
-            
             <button className="start-btn" onClick={startSession}>
               Start Session
+            </button>
+            
+            <button className="repeat-mode-btn" onClick={startRepeatMode}>
+              🎯 Repeat After Me
+            </button>
+            
+            <button className="lesson-mode-btn" onClick={() => setIsLessonMode(true)}>
+              📚 Lesson Mode
             </button>
           </div>
         )}
@@ -210,15 +571,51 @@ function App() {
           <div className="session-info">
             <span>🌍 {language === 'japanese' ? 'Japanese' : 'Italian'}</span>
             <span>🎭 {gender === 'male' ? 'Male' : 'Female'} voice</span>
+            <button className="mode-btn" onClick={startRepeatMode}>
+              🎯 Practice Mode
+            </button>
             <button className="end-btn" onClick={() => setSession(null)}>End Session</button>
+            <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
           </div>
 
           <div className="messages">
             {messages.map((msg, idx) => (
               <div key={idx} className={`message ${msg.role}`}>
-                <div className="text">{msg.text}</div>
+                <div className="message-header">
+                  <span className="role-badge">{msg.role === 'user' ? 'You' : 'AI'}</span>
+                  {msg.translation && (
+                    <button 
+                      className="translate-toggle"
+                      onClick={() => {
+                        setMessages(prev => prev.map((m, i) => 
+                          i === idx ? { ...m, showTranslation: !m.showTranslation } : m
+                        ));
+                      }}
+                    >
+                      {msg.showTranslation ? '🇯🇵 Original' : '🇬🇧 Translate'}
+                    </button>
+                  )}
+                </div>
+                <div className="text">
+                  {msg.showTranslation && msg.translation 
+                    ? msg.translation 
+                    : (showFurigana && msg.withFurigana ? (
+                      <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
+                    ) : msg.text)
+                  }
+                </div>
                 {msg.audioUrl && (
-                  <audio controls src={msg.audioUrl} />
+                  <div className="audio-player">
+                    <button 
+                      className="play-btn"
+                      onClick={() => {
+                        const audio = new Audio(msg.audioUrl);
+                        audio.play();
+                      }}
+                    >
+                      ▶️ Play
+                    </button>
+                  </div>
                 )}
               </div>
             ))}
