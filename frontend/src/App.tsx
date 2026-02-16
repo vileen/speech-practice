@@ -18,7 +18,8 @@ interface PronunciationResult {
   text_with_furigana: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || ''; // Empty = same origin (local dev)
+// API URL - use env var or default to GitHub Pages path
+const API_URL = import.meta.env.VITE_API_URL || 'https://eds-grow-delivered-spending.trycloudflare.com';
 
 // Practice phrases for "Repeat After Me" mode
 const PRACTICE_PHRASES: Record<string, string[]> = {
@@ -555,13 +556,17 @@ function App() {
               Start Session
             </button>
             
-            <button className="repeat-mode-btn" onClick={startRepeatMode}>
-              🎯 Repeat After Me
-            </button>
-            
-            <button className="lesson-mode-btn" onClick={() => setIsLessonMode(true)}>
-              📚 Lesson Mode
-            </button>
+            {language === 'japanese' && (
+              <>
+                <button className="repeat-mode-btn" onClick={startRepeatMode}>
+                  🎯 Repeat After Me
+                </button>
+                
+                <button className="lesson-mode-btn" onClick={() => setIsLessonMode(true)}>
+                  📚 Lesson Mode
+                </button>
+              </>
+            )}
           </div>
         )}
       </header>
