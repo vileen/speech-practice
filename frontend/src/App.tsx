@@ -70,6 +70,7 @@ function App() {
   
   // Lesson Mode
   const [isLessonMode, setIsLessonMode] = useState(false);
+  const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
   
   // Recording mode: 'push-to-talk' | 'voice-activated'
   const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('voice-activated');
@@ -311,28 +312,51 @@ function App() {
   // Initialize lesson chat with system prompt
   const initializeLessonChat = async (lessonId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/lessons/${lessonId}/start`, {
+      // First create a session
+      const sessionResponse = await fetch(`${API_URL}/api/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Password': password,
         },
-        body: JSON.stringify({ relaxed: true }),
+        body: JSON.stringify({ language, voice_gender: gender }),
       });
       
-      if (response.ok) {
-        const data = await response.json();
-        // Add system message as hidden context
-        console.log('Lesson system prompt loaded:', data.system_prompt);
+      if (sessionResponse.ok) {
+        const sessionData = await sessionResponse.json();
+        setSession(sessionData);
         
-        // Generate initial greeting from AI based on lesson
-        const initialGreetings: Record<string, string> = {
-          japanese: `${data.lesson.title}を練習しましょう。何か話しましょう！`,
-          italian: `Pratichiamo ${data.lesson.title}. Parliamo!`,
-        };
-        const greeting = initialGreetings[language] || `Let's practice ${data.lesson.title}. What would you like to talk about?`;
+        // Then load lesson context
+        const response = await fetch(`${API_URL}/api/lessons/${lessonId}/start`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Password': password,
+          },
+          body: JSON.stringify({ relaxed: true }),
+        });
         
-        await generateTTS(greeting);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Lesson system prompt loaded:', data.system_prompt);
+          
+          // Generate initial greeting
+          const initialGreetings: Record<string, string> = {
+            japanese: `${data.lesson.title}を練習しましょう。何か話しましょう！`,
+            italian: `Pratichiamo ${data.lesson.title}. Parliamo!`,
+          };
+          const greeting = initialGreetings[language] || `Let's practice ${data.lesson.title}. What would you like to talk about?`;
+          
+          // Add greeting as first message
+          setMessages([{
+            role: 'assistant',
+            text: greeting,
+            withFurigana: greeting,
+          }]);
+          
+          // Generate TTS for greeting
+          await generateTTS(greeting);
+        }
       }
     } catch (error) {
       console.error('Error initializing lesson chat:', error);
@@ -372,8 +396,9 @@ function App() {
       <LessonMode
         password={password}
         onBack={() => setIsLessonMode(false)}
-        onStartLessonChat={(lessonId) => {
+        onStartLessonChat={(lessonId, lessonTitle) => {
           setIsLessonMode(false);
+          setActiveLesson({ id: lessonId, title: lessonTitle });
           // Initialize lesson chat with system prompt
           initializeLessonChat(lessonId);
         }}
@@ -522,10 +547,16 @@ function App() {
           <div className="session-info">
             <span>🌍 {language === 'japanese' ? 'Japanese' : 'Italian'}</span>
             <span>🎭 {gender === 'male' ? 'Male' : 'Female'} voice</span>
+            {activeLesson && (
+              <span className="active-lesson">📚 {activeLesson.title}</span>
+            )}
             <button className="mode-btn" onClick={startRepeatMode}>
               🎯 Practice Mode
             </button>
-            <button className="end-btn" onClick={() => setSession(null)}>End Session</button>
+            <button className="end-btn" onClick={() => {
+              setSession(null);
+              setActiveLesson(null);
+            }}>End Session</button>
             <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
           </div>
 
