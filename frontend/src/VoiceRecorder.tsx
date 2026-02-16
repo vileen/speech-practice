@@ -19,8 +19,10 @@ export function VoiceRecorder({
   const [audioLevel, setAudioLevel] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [silenceTimer, setSilenceTimer] = useState(0);
+  const [displaySilenceTimer, setDisplaySilenceTimer] = useState(0); // Debounced for UI
   const [isReady, setIsReady] = useState(false);
   const [hasDetectedVoiceState, setHasDetectedVoiceState] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false); // Lock after recording
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -31,6 +33,7 @@ export function VoiceRecorder({
   const silenceStartRef = useRef<number | null>(null);
   const isRunningRef = useRef(false);
   const hasDetectedVoiceRef = useRef(false);
+  const silenceDebounceRef = useRef<number | null>(null);
   
   // Start VAD monitoring
   const startVAD = useCallback(async () => {
@@ -81,6 +84,7 @@ export function VoiceRecorder({
       
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        setIsProcessing(true); // Lock to prevent immediate re-trigger
         onRecordingComplete(audioBlob);
         audioChunksRef.current = [];
       };
@@ -126,6 +130,12 @@ export function VoiceRecorder({
             }
             silenceStartRef.current = null;
             setSilenceTimer(0);
+            // Clear any pending debounce
+            if (silenceDebounceRef.current) {
+              clearTimeout(silenceDebounceRef.current);
+              silenceDebounceRef.current = null;
+            }
+            setDisplaySilenceTimer(0);
           } else if (hasDetectedVoiceRef.current) {
             if (!silenceStartRef.current) {
               silenceStartRef.current = Date.now();
@@ -133,8 +143,15 @@ export function VoiceRecorder({
             const silenceDuration = Date.now() - silenceStartRef.current;
             setSilenceTimer(silenceDuration);
             
-            // Auto-stop after 1.5s of silence
-            if (silenceDuration > 1500) {
+            // Debounce UI update - only show after 500ms of actual silence
+            if (!silenceDebounceRef.current) {
+              silenceDebounceRef.current = window.setTimeout(() => {
+                setDisplaySilenceTimer(silenceDuration);
+              }, 500);
+            }
+            
+            // Auto-stop after 2s of silence (more forgiving)
+            if (silenceDuration > 2000) {
               console.log('Auto-stopping after silence');
               stopRecording();
               return;
@@ -166,6 +183,12 @@ export function VoiceRecorder({
       rafRef.current = null;
     }
     
+    // Clear debounce timer
+    if (silenceDebounceRef.current) {
+      clearTimeout(silenceDebounceRef.current);
+      silenceDebounceRef.current = null;
+    }
+    
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
     }
@@ -184,6 +207,7 @@ export function VoiceRecorder({
     hasDetectedVoiceRef.current = false;
     setHasDetectedVoiceState(false);
     setSilenceTimer(0);
+    setDisplaySilenceTimer(0);
     setIsReady(false);
     silenceStartRef.current = null;
     setAudioLevel(0);
@@ -191,16 +215,16 @@ export function VoiceRecorder({
     onStopListening();
   }, [onStopListening]);
   
-  // Auto-start for voice-activated mode
+  // Auto-start for voice-activated mode (but not if processing)
   useEffect(() => {
-    if (mode === 'voice-activated' && !isListening && !isRunningRef.current) {
+    if (mode === 'voice-activated' && !isListening && !isRunningRef.current && !isProcessing) {
       // Small delay to ensure component is mounted
       const timer = setTimeout(() => {
         startVAD();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [mode, isListening, startVAD]);
+  }, [mode, isListening, startVAD, isProcessing]);
   
   // Cleanup on unmount
   useEffect(() => {
@@ -234,11 +258,13 @@ export function VoiceRecorder({
       <div className="mode-indicator">
         {mode === 'voice-activated' && (
           <span className="vad-status">
-            {!isReady ? (
+            {isProcessing ? (
+              <>✅ Done! Click to speak again</>
+            ) : !isReady ? (
               <>Initializing microphone...</>
             ) : hasDetectedVoiceState ? (
-              silenceTimer > 0 ? (
-                <>⏱️ Auto-stop in {Math.ceil((1500 - silenceTimer) / 100) / 10}s</>
+              displaySilenceTimer > 0 ? (
+                <>⏱️ Auto-stop in {Math.max(0, Math.ceil((2000 - silenceTimer) / 100) / 10)}s</>
               ) : (
                 <>🎤 Recording... speak now!</>
               )
@@ -248,6 +274,19 @@ export function VoiceRecorder({
           </span>
         )}
       </div>
+      
+      {/* Restart button - show after voice-activated recording */}
+      {!isPushToTalk && isProcessing && (
+        <button
+          className="record-button"
+          onClick={() => {
+            setIsProcessing(false);
+            // Auto-start will trigger via useEffect
+          }}
+        >
+          🎤 Start New Recording
+        </button>
+      )}
       
       {/* Push to talk button - only show for push-to-talk mode */}
       {isPushToTalk && (
