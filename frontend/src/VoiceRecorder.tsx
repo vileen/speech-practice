@@ -19,8 +19,8 @@ export function VoiceRecorder({
   const [audioLevel, setAudioLevel] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [silenceTimer, setSilenceTimer] = useState(0);
-  const [hasDetectedVoice, setHasDetectedVoice] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [hasDetectedVoiceState, setHasDetectedVoiceState] = useState(false);
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -30,6 +30,7 @@ export function VoiceRecorder({
   const rafRef = useRef<number | null>(null);
   const silenceStartRef = useRef<number | null>(null);
   const isRunningRef = useRef(false);
+  const hasDetectedVoiceRef = useRef(false);
   
   // Start VAD monitoring
   const startVAD = useCallback(async () => {
@@ -87,7 +88,8 @@ export function VoiceRecorder({
       mediaRecorder.start(100); // Collect data every 100ms
       
       // Reset states
-      setHasDetectedVoice(false);
+      hasDetectedVoiceRef.current = false;
+      setHasDetectedVoiceState(false);
       setSilenceTimer(0);
       silenceStartRef.current = null;
       
@@ -118,12 +120,13 @@ export function VoiceRecorder({
         
         if (mode === 'voice-activated') {
           if (speaking) {
-            if (!hasDetectedVoice) {
-              setHasDetectedVoice(true);
+            if (!hasDetectedVoiceRef.current) {
+              hasDetectedVoiceRef.current = true;
+              setHasDetectedVoiceState(true);
             }
             silenceStartRef.current = null;
             setSilenceTimer(0);
-          } else if (hasDetectedVoice) {
+          } else if (hasDetectedVoiceRef.current) {
             if (!silenceStartRef.current) {
               silenceStartRef.current = Date.now();
             }
@@ -132,6 +135,7 @@ export function VoiceRecorder({
             
             // Auto-stop after 1.5s of silence
             if (silenceDuration > 1500) {
+              console.log('Auto-stopping after silence');
               stopRecording();
               return;
             }
@@ -177,7 +181,8 @@ export function VoiceRecorder({
     }
     
     setIsSpeaking(false);
-    setHasDetectedVoice(false);
+    hasDetectedVoiceRef.current = false;
+    setHasDetectedVoiceState(false);
     setSilenceTimer(0);
     setIsReady(false);
     silenceStartRef.current = null;
@@ -220,7 +225,7 @@ export function VoiceRecorder({
       {/* Audio level indicator - always visible */}
       <div className="audio-meter">
         <div 
-          className={`audio-level ${isSpeaking ? 'speaking' : ''} ${hasDetectedVoice ? 'active' : ''}`}
+          className={`audio-level ${isSpeaking ? 'speaking' : ''} ${hasDetectedVoiceState ? 'active' : ''}`}
           style={{ width: `${Math.min((audioLevel / 50) * 100, 100)}%` }}
         />
       </div>
@@ -231,7 +236,7 @@ export function VoiceRecorder({
           <span className="vad-status">
             {!isReady ? (
               <>Initializing microphone...</>
-            ) : hasDetectedVoice ? (
+            ) : hasDetectedVoiceState ? (
               silenceTimer > 0 ? (
                 <>⏱️ Auto-stop in {Math.ceil((1500 - silenceTimer) / 100) / 10}s</>
               ) : (
