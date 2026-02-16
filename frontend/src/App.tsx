@@ -75,8 +75,7 @@ function App() {
   // Recording mode: 'push-to-talk' | 'voice-activated'
   const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('voice-activated');
   
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
+  // Refs for audio recording are now handled by VoiceRecorder component
   const [isLoading, setIsLoading] = useState(true);
 
   // Load password from localStorage on mount and auto-login if exists
