@@ -421,6 +421,17 @@ function App() {
                   <span>{pronunciationResult.transcription || '(nothing)'}</span>
                 </div>
               </div>
+              
+              {pronunciationResult.errors && pronunciationResult.errors.length > 0 && (
+                <div className="errors-section">
+                  <label>💡 What to improve:</label>
+                  <ul>
+                    {pronunciationResult.errors.map((error: string, idx: number) => (
+                      <li key={idx}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
 
@@ -605,7 +616,7 @@ function App() {
           {/* Help text for new users */}
           {messages.length <= 1 && (
             <div className="help-text">
-              💡 <strong>How to practice:</strong> Click 🎤 and speak in Japanese, or type your message below. The AI will respond and correct your mistakes.
+              💡 <strong>How to practice:</strong> {recordingMode === 'voice-activated' ? 'Just start speaking in Japanese!' : 'Hold 🎙️ to speak'} or type your message below. The AI will respond and correct your mistakes.
             </div>
           )}
 

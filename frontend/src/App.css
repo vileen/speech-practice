@@ -497,6 +497,41 @@ header h1 {
 
 .transcription-comparison label {
   color: #888;
+}
+
+/* Errors Section */
+.errors-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #333;
+}
+
+.errors-section label {
+  display: block;
+  color: #fbbf24;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.errors-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.errors-section li {
+  color: #ccc;
+  padding: 4px 0;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.errors-section li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #e94560;
+}
   font-size: 0.8rem;
 }
 

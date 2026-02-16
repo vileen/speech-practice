@@ -251,12 +251,50 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
       return matrix[b.length][a.length];
     }
     
+    // Find differences between target and transcription
+    function findDifferences(target: string, heard: string): string[] {
+      const differences: string[] = [];
+      
+      // Normalize for comparison but keep original for display
+      const normTarget = target.replace(/[。、！？\s]/g, '');
+      const normHeard = heard.replace(/[。、！？\s]/g, '');
+      
+      // Check for missing words/particles
+      if (normTarget.includes('ています') && !normHeard.includes('ています') && !normHeard.includes('て')) {
+        differences.push('Missing ~ています (progressive form)');
+      }
+      if (normTarget.includes('ます') && !normHeard.includes('ます')) {
+        differences.push('Missing polite ending ~ます');
+      }
+      if (normTarget.includes('は') && !normHeard.includes('は')) {
+        differences.push('Missing topic particle は');
+      }
+      if (normTarget.includes('を') && !normHeard.includes('を')) {
+        differences.push('Missing object particle を');
+      }
+      if (normTarget.includes('に') && !normHeard.includes('に')) {
+        differences.push('Missing particle に');
+      }
+      if (normTarget.includes('が') && !normHeard.includes('が')) {
+        differences.push('Missing subject particle が');
+      }
+      
+      // Check length difference
+      if (Math.abs(normTarget.length - normHeard.length) > 2) {
+        differences.push('Sentence length differs significantly');
+      }
+      
+      return differences.length > 0 ? differences : ['Minor pronunciation differences'];
+    }
+    
     let score = 0;
     let feedback = '';
+    let errors: string[] = [];
     
     if (normalizedTranscription === normalizedTarget) {
       score = 100;
       feedback = 'Perfect! 🎉';
+      errors = [];
     } else if (normalizedTranscription.length > 0) {
       // Calculate Levenshtein similarity
       const distance = levenshteinDistance(normalizedTarget, normalizedTranscription);
@@ -265,6 +303,9 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
       
       // Boost score slightly for partial matches (more forgiving)
       score = Math.min(100, Math.round(score * 1.1));
+      
+      // Find specific errors
+      errors = findDifferences(target_text, transcription || '');
       
       if (score >= 85) {
         feedback = 'Excellent! Almost perfect 👏';
@@ -280,6 +321,7 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
     } else {
       score = 0;
       feedback = 'Could not hear you. Try again! 🎤';
+      errors = ['No audio detected'];
     }
 
     res.json({
@@ -287,6 +329,7 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
       transcription: transcription,
       score: score,
       feedback: feedback,
+      errors: errors,
       text_with_furigana: await addFurigana(target_text),
     });
   } catch (error) {
