@@ -20,6 +20,7 @@ export function VoiceRecorder({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [silenceTimer, setSilenceTimer] = useState(0);
   const [hasDetectedVoice, setHasDetectedVoice] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -28,9 +29,13 @@ export function VoiceRecorder({
   const audioChunksRef = useRef<Blob[]>([]);
   const rafRef = useRef<number | null>(null);
   const silenceStartRef = useRef<number | null>(null);
+  const isRunningRef = useRef(false);
   
   // Start VAD monitoring
   const startVAD = useCallback(async () => {
+    if (isRunningRef.current) return;
+    isRunningRef.current = true;
+    
     try {
       // Get microphone permission
       const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -81,9 +86,14 @@ export function VoiceRecorder({
       
       mediaRecorder.start(100); // Collect data every 100ms
       
+      // Reset states
+      setHasDetectedVoice(false);
+      setSilenceTimer(0);
+      silenceStartRef.current = null;
+      
       // Start VAD loop
       const checkAudio = () => {
-        if (!analyserRef.current) return;
+        if (!analyserRef.current || !isRunningRef.current) return;
         
         // Use time domain data for better voice detection
         const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
@@ -105,11 +115,6 @@ export function VoiceRecorder({
         const threshold = 0.02; // ~2% of max amplitude
         const speaking = rms > threshold;
         setIsSpeaking(speaking);
-        
-        // Debug logging
-        if (level > 5) {
-          console.log('Audio level:', level.toFixed(1), 'Speaking:', speaking);
-        }
         
         if (mode === 'voice-activated') {
           if (speaking) {
@@ -133,19 +138,25 @@ export function VoiceRecorder({
           }
         }
         
-        rafRef.current = requestAnimationFrame(checkAudio);
+        if (isRunningRef.current) {
+          rafRef.current = requestAnimationFrame(checkAudio);
+        }
       };
       
       checkAudio();
       onStartListening();
+      setIsReady(true);
       
     } catch (error) {
       console.error('Error starting VAD:', error);
+      isRunningRef.current = false;
     }
-  }, [isListening, mode, hasDetectedVoice, onStartListening, onRecordingComplete]);
+  }, [mode, hasDetectedVoice, onStartListening, onRecordingComplete]);
   
   // Stop recording
   const stopRecording = useCallback(() => {
+    isRunningRef.current = false;
+    
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
@@ -157,32 +168,39 @@ export function VoiceRecorder({
     
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
     }
     
     if (audioContextRef.current) {
       audioContextRef.current.close();
+      audioContextRef.current = null;
     }
     
     setIsSpeaking(false);
     setHasDetectedVoice(false);
     setSilenceTimer(0);
+    setIsReady(false);
     silenceStartRef.current = null;
+    setAudioLevel(0);
     
     onStopListening();
   }, [onStopListening]);
   
-  // Toggle recording
-  const toggleRecording = () => {
-    if (isListening) {
-      stopRecording();
-    } else {
-      startVAD();
+  // Auto-start for voice-activated mode
+  useEffect(() => {
+    if (mode === 'voice-activated' && !isListening && !isRunningRef.current) {
+      // Small delay to ensure component is mounted
+      const timer = setTimeout(() => {
+        startVAD();
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  };
+  }, [mode, isListening, startVAD]);
   
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      isRunningRef.current = false;
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
@@ -199,60 +217,57 @@ export function VoiceRecorder({
   
   return (
     <div className="voice-recorder">
-      {/* Audio level indicator */}
+      {/* Audio level indicator - always visible */}
       <div className="audio-meter">
         <div 
-          className={`audio-level ${isSpeaking ? 'speaking' : ''}`}
+          className={`audio-level ${isSpeaking ? 'speaking' : ''} ${hasDetectedVoice ? 'active' : ''}`}
           style={{ width: `${Math.min((audioLevel / 50) * 100, 100)}%` }}
         />
       </div>
       
-      {/* Mode indicator */}
+      {/* Status text */}
       <div className="mode-indicator">
-        {mode === 'voice-activated' && isListening && (
+        {mode === 'voice-activated' && (
           <span className="vad-status">
-            {hasDetectedVoice ? (
+            {!isReady ? (
+              <>Initializing microphone...</>
+            ) : hasDetectedVoice ? (
               silenceTimer > 0 ? (
-                <>Auto-stop in {Math.ceil((1500 - silenceTimer) / 100) / 10}s</>
+                <>⏱️ Auto-stop in {Math.ceil((1500 - silenceTimer) / 100) / 10}s</>
               ) : (
-                <>Listening... <span className="voice-detected">🎤 Voice detected</span></>
+                <>🎤 Recording... speak now!</>
               )
             ) : (
-              <>Waiting for voice...</>
+              <>👂 Listening... waiting for your voice</>
             )}
           </span>
         )}
       </div>
       
-      {/* Record button */}
-      <button
-        className={`record-button ${isListening ? 'recording' : ''} ${isSpeaking ? 'speaking' : ''}`}
-        onMouseDown={isPushToTalk ? startVAD : undefined}
-        onMouseUp={isPushToTalk ? stopRecording : undefined}
-        onMouseLeave={isPushToTalk && isListening ? stopRecording : undefined}
-        onClick={!isPushToTalk ? toggleRecording : undefined}
-        onTouchStart={isPushToTalk ? startVAD : undefined}
-        onTouchEnd={isPushToTalk ? stopRecording : undefined}
-      >
-        {isListening ? (
-          isPushToTalk ? (
-            <>🔴 Hold to speak</>
+      {/* Push to talk button - only show for push-to-talk mode */}
+      {isPushToTalk && (
+        <button
+          className={`record-button ${isListening ? 'recording' : ''} ${isSpeaking ? 'speaking' : ''}`}
+          onMouseDown={startVAD}
+          onMouseUp={stopRecording}
+          onMouseLeave={isListening ? stopRecording : undefined}
+          onTouchStart={startVAD}
+          onTouchEnd={stopRecording}
+        >
+          {isListening ? (
+            <>🔴 Recording...</>
           ) : (
-            <>⏹️ Stop</>
-          )
-        ) : (
-          <>
-            {isPushToTalk ? '🎙️ Push to Talk' : '🎙️ Voice Activated'}
-          </>
-        )}
-      </button>
+            <>🎙️ Hold to Speak</>
+          )}
+        </button>
+      )}
       
       {/* Instructions */}
       <div className="instructions">
         {isPushToTalk ? (
           <small>Hold the button while speaking</small>
         ) : (
-          <small>Click to start, speaks when you speak, stops after silence</small>
+          <small>Just start speaking - I'll detect your voice automatically</small>
         )}
       </div>
     </div>
