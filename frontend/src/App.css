@@ -281,6 +281,46 @@ header h1 {
   animation: pulse 1s infinite;
 }
 
+/* Voice Recorder Section */
+.voice-recorder-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: #16213e;
+  border-radius: 12px;
+  border: 1px solid #333;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 12px;
+  background: #1a1a2e;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.mode-toggle button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #888;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.mode-toggle button.active {
+  background: #e94560;
+  color: #fff;
+}
+
+.mode-toggle button:hover:not(.active) {
+  color: #fff;
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }

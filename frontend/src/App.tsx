@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import './App.css';
 import { LessonMode } from './LessonMode.js';
 import './LessonMode.css';
+import { VoiceRecorder } from './VoiceRecorder.js';
+import './VoiceRecorder.css';
 
 interface Session {
   id: number;
@@ -68,6 +70,9 @@ function App() {
   
   // Lesson Mode
   const [isLessonMode, setIsLessonMode] = useState(false);
+  
+  // Recording mode: 'push-to-talk' | 'voice-activated'
+  const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('voice-activated');
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -635,13 +640,69 @@ function App() {
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             />
             <button onClick={handleSendMessage}>Send</button>
+          </div>
+          
+          <div className="voice-recorder-section">
+            {/* Recording mode toggle */}
+            <div className="mode-toggle">
+              <button 
+                className={recordingMode === 'voice-activated' ? 'active' : ''}
+                onClick={() => setRecordingMode('voice-activated')}
+              >
+                🎤 Voice Activated
+              </button>
+              <button 
+                className={recordingMode === 'push-to-talk' ? 'active' : ''}
+                onClick={() => setRecordingMode('push-to-talk')}
+              >
+                🎙️ Push to Talk
+              </button>
+            </div>
             
-            <button 
-              className={`record-btn ${isRecording ? 'recording' : ''}`}
-              onClick={isRecording ? stopRecording : startRecording}
-            >
-              {isRecording ? '⏹️ Stop' : '🎙️ Record'}
-            </button>
+            {/* Voice Recorder with VAD */}
+            <VoiceRecorder
+              mode={recordingMode}
+              language={language}
+              isListening={isListening}
+              onStartListening={() => {
+                setIsListening(true);
+                setIsRecording(true);
+              }}
+              onStopListening={() => {
+                setIsListening(false);
+                setIsRecording(false);
+              }}
+              onRecordingComplete={async (audioBlob) => {
+                // Upload the recorded audio
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.webm');
+                formData.append('session_id', session?.id.toString() || '');
+                formData.append('target_language', language);
+                
+                try {
+                  const response = await fetch(`${API_URL}/api/upload`, {
+                    method: 'POST',
+                    headers: {
+                      'X-Password': password,
+                    },
+                    body: formData,
+                  });
+                  
+                  if (response.ok) {
+                    const data = await response.json();
+                    const displayText = data.transcription || '[Your recording]';
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
+                    
+                    if (data.transcription) {
+                      await generateAIResponse(data.transcription, language);
+                    }
+                  }
+                } catch (error) {
+                  console.error('Error uploading recording:', error);
+                }
+              }}
+            />
           </div>
         </main>
       )}
