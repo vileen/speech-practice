@@ -238,60 +238,6 @@ function App() {
     }
   };
 
-  const startRecordingRepeat = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      audioChunksRef.current = [];
-      
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-      
-      mediaRecorder.onstop = async () => {
-        const mimeType = mediaRecorder.mimeType || 'audio/webm';
-        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-        
-        // Submit for pronunciation check
-        const formData = new FormData();
-        formData.append('audio', audioBlob, 'recording.webm');
-        formData.append('target_text', currentPhrase);
-        formData.append('language', language);
-        
-        try {
-          const response = await fetch(`${API_URL}/api/repeat-after-me`, {
-            method: 'POST',
-            headers: {
-              'X-Password': password,
-            },
-            body: formData,
-          });
-          
-          if (response.ok) {
-            const result = await response.json();
-            setPronunciationResult(result);
-          }
-        } catch (error) {
-          console.error('Error checking pronunciation:', error);
-        }
-        
-        setIsListening(false);
-      };
-      
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.start();
-      setIsListening(true);
-    } catch (error) {
-      console.error('Error starting recording:', error);
-    }
-  };
-
-  const stopRecordingRepeat = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-    }
-  };
-
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
     generateTTS(inputText);
