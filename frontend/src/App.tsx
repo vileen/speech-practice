@@ -4,6 +4,7 @@ import { LessonMode } from './LessonMode.js';
 import './LessonMode.css';
 import { VoiceRecorder } from './VoiceRecorder.js';
 import './VoiceRecorder.css';
+import { translateLessonTitle } from './translations.js';
 
 interface Session {
   id: number;
@@ -285,12 +286,13 @@ function App() {
           const data = await response.json();
           console.log('Lesson system prompt loaded:', data.system_prompt);
           
-          // Generate initial greeting
+          // Generate initial greeting (use English/short title)
+          const lessonTitle = translateLessonTitle(data.lesson.title);
           const initialGreetings: Record<string, string> = {
-            japanese: `${data.lesson.title}を練習しましょう。何か話しましょう！`,
-            italian: `Pratichiamo ${data.lesson.title}. Parliamo!`,
+            japanese: `このレッスンを練習しましょう。何か話しましょう！`,
+            italian: `Pratichiamo questa lezione. Parliamo!`,
           };
-          const greeting = initialGreetings[language] || `Let's practice ${data.lesson.title}. What would you like to talk about?`;
+          const greeting = initialGreetings[language] || `Let's practice "${lessonTitle}". What would you like to talk about?`;
           
           // Add greeting as first message
           setMessages([{
@@ -539,7 +541,7 @@ function App() {
             <span>🌍 {language === 'japanese' ? 'Japanese' : 'Italian'}</span>
             <span>🎭 {gender === 'male' ? 'Male' : 'Female'} voice</span>
             {activeLesson && (
-              <span className="active-lesson">📚 {activeLesson.title}</span>
+              <span className="active-lesson">📚 {translateLessonTitle(activeLesson.title)}</span>
             )}
             <button className="mode-btn" onClick={startRepeatMode}>
               🎯 Practice Mode
@@ -548,7 +550,6 @@ function App() {
               setSession(null);
               setActiveLesson(null);
             }}>End Session</button>
-            <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
           </div>
 
           <div className="messages">
@@ -594,12 +595,19 @@ function App() {
             ))}
           </div>
 
+          {/* Help text for new users */}
+          {messages.length <= 1 && (
+            <div className="help-text">
+              💡 <strong>How to practice:</strong> Click 🎤 and speak in Japanese, or type your message below. The AI will respond and correct your mistakes.
+            </div>
+          )}
+
           <div className="input-area">
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Type text to speak..."
+              placeholder="Type in Japanese or English..."
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             />
             <button onClick={handleSendMessage}>Send</button>
