@@ -32,18 +32,35 @@ export function VoiceRecorder({
   // Start VAD monitoring
   const startVAD = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Get microphone permission
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        } 
+      });
       mediaStreamRef.current = stream;
       
+      // Create audio context
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Resume audio context (browser requires user interaction)
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      
       audioContextRef.current = audioContext;
       
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.8;
       analyserRef.current = analyser;
       
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
+      
+      console.log('VAD started - microphone active');
       
       // Start media recorder for actual audio capture
       const mediaRecorder = new MediaRecorder(stream);
@@ -66,23 +83,33 @@ export function VoiceRecorder({
       
       // Start VAD loop
       const checkAudio = () => {
-        if (!analyserRef.current || !isListening) return;
+        if (!analyserRef.current) return;
         
+        // Use time domain data for better voice detection
         const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-        analyserRef.current.getByteFrequencyData(dataArray);
+        analyserRef.current.getByteTimeDomainData(dataArray);
         
-        // Calculate RMS
+        // Calculate RMS (root mean square)
         let sum = 0;
         for (let i = 0; i < dataArray.length; i++) {
-          sum += dataArray[i] * dataArray[i];
+          const x = (dataArray[i] - 128) / 128.0; // Normalize to -1..1
+          sum += x * x;
         }
         const rms = Math.sqrt(sum / dataArray.length);
-        setAudioLevel(rms);
         
-        // Threshold for voice detection (0-255 scale)
-        const threshold = 15;
+        // Scale to 0-100 for display
+        const level = Math.min(rms * 200, 100);
+        setAudioLevel(level);
+        
+        // Threshold for voice detection (lower = more sensitive)
+        const threshold = 0.02; // ~2% of max amplitude
         const speaking = rms > threshold;
         setIsSpeaking(speaking);
+        
+        // Debug logging
+        if (level > 5) {
+          console.log('Audio level:', level.toFixed(1), 'Speaking:', speaking);
+        }
         
         if (mode === 'voice-activated') {
           if (speaking) {
