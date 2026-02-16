@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import { LessonMode } from './LessonMode.js';
 import './LessonMode.css';
