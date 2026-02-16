@@ -30,7 +30,7 @@ interface LessonDetail {
   practice_phrases: string[];
 }
 
-const API_URL = '';
+const API_URL = 'https://eds-grow-delivered-spending.trycloudflare.com';
 
 interface LessonModeProps {
   password: string;
