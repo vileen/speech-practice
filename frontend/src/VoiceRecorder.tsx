@@ -155,7 +155,7 @@ export function VoiceRecorder({
       console.error('Error starting VAD:', error);
       isRunningRef.current = false;
     }
-  }, [mode, hasDetectedVoice, onStartListening, onRecordingComplete]);
+  }, [mode, onStartListening, onRecordingComplete]);
   
   // Stop recording
   const stopRecording = useCallback(() => {
