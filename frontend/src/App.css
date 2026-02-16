@@ -132,12 +132,14 @@ header h1 {
 }
 
 .start-btn {
-  background: #0f3460;
+  background: #e94560;
   color: #fff;
+  width: 100%;
+  max-width: 300px;
 }
 
 .start-btn:hover {
-  background: #1a4a7a;
+  background: #c73e54;
 }
 
 .end-btn {
@@ -336,22 +338,24 @@ header h1 {
   background: #1a4a7a;
 }
 
-.repeat-mode-btn {
-  background: #4a7a1a !important;
-  margin-top: 10px;
-}
-
-.repeat-mode-btn:hover {
-  background: #5a8a2a !important;
-}
-
+.repeat-mode-btn,
 .lesson-mode-btn {
-  background: #7a1a4a !important;
+  background: #16213e !important;
+  border: 2px solid #e94560 !important;
+  color: #fff !important;
   margin-top: 10px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  transition: all 0.3s;
 }
 
+.repeat-mode-btn:hover,
 .lesson-mode-btn:hover {
-  background: #8a2a5a !important;
+  background: #e94560 !important;
 }
 
 .repeat-main {
