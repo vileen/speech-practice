@@ -225,7 +225,31 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
     const normalizedTarget = target_text.replace(/[。、！？\s]/g, '').toLowerCase();
     const normalizedTranscription = (transcription || '').replace(/[。、！？\s]/g, '').toLowerCase();
     
-    // Calculate similarity (simple version)
+    // Calculate similarity using Levenshtein distance
+    function levenshteinDistance(a: string, b: string): number {
+      const matrix = [];
+      for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+      }
+      for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+      }
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          if (b.charAt(i - 1) === a.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1];
+          } else {
+            matrix[i][j] = Math.min(
+              matrix[i - 1][j - 1] + 1,
+              matrix[i][j - 1] + 1,
+              matrix[i - 1][j] + 1
+            );
+          }
+        }
+      }
+      return matrix[b.length][a.length];
+    }
+    
     let score = 0;
     let feedback = '';
     
@@ -233,21 +257,24 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
       score = 100;
       feedback = 'Perfect! 🎉';
     } else if (normalizedTranscription.length > 0) {
-      // Calculate character match ratio
-      let matches = 0;
-      for (let i = 0; i < Math.min(normalizedTarget.length, normalizedTranscription.length); i++) {
-        if (normalizedTarget[i] === normalizedTranscription[i]) {
-          matches++;
-        }
-      }
-      score = Math.round((matches / normalizedTarget.length) * 100);
+      // Calculate Levenshtein similarity
+      const distance = levenshteinDistance(normalizedTarget, normalizedTranscription);
+      const maxLength = Math.max(normalizedTarget.length, normalizedTranscription.length);
+      score = Math.round(((maxLength - distance) / maxLength) * 100);
       
-      if (score >= 80) {
+      // Boost score slightly for partial matches (more forgiving)
+      score = Math.min(100, Math.round(score * 1.1));
+      
+      if (score >= 85) {
+        feedback = 'Excellent! Almost perfect 👏';
+      } else if (score >= 70) {
         feedback = 'Very good! 👍';
       } else if (score >= 50) {
         feedback = 'Good try! Keep practicing 💪';
+      } else if (score >= 30) {
+        feedback = 'Getting there! Try again 🎯';
       } else {
-        feedback = 'Try again! Listen carefully 🎯';
+        feedback = 'Keep practicing! Listen and repeat 🎤';
       }
     } else {
       score = 0;
