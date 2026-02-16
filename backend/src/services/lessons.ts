@@ -102,6 +102,11 @@ export function getLessonSystemPrompt(lesson: LessonData, relaxed: boolean = tru
   const vocabWords = lesson.vocabulary.map(v => v.jp);
   const grammarPatterns = lesson.grammar.map(g => g.pattern);
   
+  // Generate a conversation starter based on lesson content
+  const starterTopics = lesson.topics.length > 0 
+    ? lesson.topics.join(', ')
+    : lesson.title;
+  
   const basePrompt = `You are a Japanese language practice partner. You are helping the user practice Lesson: ${lesson.title}.
 
 KEY VOCABULARY TO USE (prioritize these words):
@@ -110,11 +115,18 @@ ${vocabWords.slice(0, 30).join(', ')}
 GRAMMAR PATTERNS TO PRACTICE:
 ${grammarPatterns.join('\n')}
 
+START THE CONVERSATION:
+You MUST begin with a question in Japanese related to: ${starterTopics}
+- Ask about the user's preferences, experiences, or opinions
+- Use vocabulary and grammar from this lesson
+- Keep your first message short (1-2 sentences)
+- Don't just say "let's practice" - actually start talking!
+
 CONVERSATION RULES:
 1. Speak ONLY in Japanese (unless asked for translation)
 2. Use simple, natural Japanese appropriate for the lesson level
 3. Use furigana in your responses for kanji: <ruby>漢字<rt>かんじ</rt></ruby>
-4. Ask questions that encourage using the lesson vocabulary
+4. Ask follow-up questions to keep conversation flowing
 5. If the user makes mistakes, gently correct them
 6. Keep the conversation focused on topics from the lesson
 `;

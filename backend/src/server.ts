@@ -10,6 +10,7 @@ import pg from 'pg';
 import { generateSpeech, addFurigana, addFuriganaSync, saveFuriganaCache } from './services/elevenlabs.js';
 import { getLessonIndex, getLesson, getRecentLessons, getLessonSystemPrompt } from './services/lessons.js';
 import { transcribeAudioDirect } from './services/whisper.js';
+import { generateChatResponse } from './services/chat.js';
 import { readFile } from 'fs/promises';
 
 const envPath = resolve(process.cwd(), '.env.local');
@@ -368,7 +369,7 @@ app.get('/api/lessons/:id', checkPassword, async (req, res) => {
 app.post('/api/lessons/:id/start', checkPassword, async (req, res) => {
   try {
     const { id } = req.params;
-    const { relaxed = true } = req.body;
+    const { relaxed = true, session_id } = req.body;
     
     const lesson = await getLesson(id);
     if (!lesson) {
@@ -376,6 +377,16 @@ app.post('/api/lessons/:id/start', checkPassword, async (req, res) => {
     }
     
     const systemPrompt = getLessonSystemPrompt(lesson, relaxed);
+    
+    // Store lesson context in session for chat
+    if (session_id) {
+      await pool.query(
+        `UPDATE sessions 
+         SET lesson_context = $1, lesson_id = $2 
+         WHERE id = $3`,
+        [systemPrompt, lesson.id, session_id]
+      );
+    }
     
     res.json({
       lesson: {
@@ -391,6 +402,70 @@ app.post('/api/lessons/:id/start', checkPassword, async (req, res) => {
   } catch (error) {
     console.error('Error starting lesson:', error);
     res.status(500).json({ error: 'Failed to start lesson' });
+  }
+});
+
+// Chat endpoint for AI conversation
+app.post('/api/chat', checkPassword, async (req, res) => {
+  try {
+    const { session_id, message } = req.body;
+    
+    if (!session_id) {
+      return res.status(400).json({ error: 'Session ID required' });
+    }
+    
+    // Get session with lesson context
+    const sessionResult = await pool.query(
+      'SELECT * FROM sessions WHERE id = $1',
+      [session_id]
+    );
+    
+    if (sessionResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+    
+    const session = sessionResult.rows[0];
+    const lessonContext = session.lesson_context;
+    
+    // Get conversation history
+    const historyResult = await pool.query(
+      'SELECT * FROM messages WHERE session_id = $1 ORDER BY created_at ASC LIMIT 20',
+      [session_id]
+    );
+    
+    // Build messages array
+    const messages = historyResult.rows.map((m: any) => ({
+      role: m.role,
+      content: m.content,
+    }));
+    
+    // Add user message (or start trigger)
+    if (message !== '[START_CONVERSATION]') {
+      messages.push({ role: 'user', content: message });
+      
+      // Save user message
+      await pool.query(
+        'INSERT INTO messages (session_id, role, content) VALUES ($1, $2, $3)',
+        [session_id, 'user', message]
+      );
+    }
+    
+    // Generate AI response
+    const aiResponse = await generateChatResponse(messages, lessonContext);
+    
+    // Save AI message
+    await pool.query(
+      'INSERT INTO messages (session_id, role, content) VALUES ($1, $2, $3)',
+      [session_id, 'assistant', aiResponse.text]
+    );
+    
+    res.json({
+      text: aiResponse.text,
+      text_with_furigana: aiResponse.textWithFurigana,
+    });
+  } catch (error) {
+    console.error('Error in chat:', error);
+    res.status(500).json({ error: 'Failed to generate response' });
   }
 });
 
