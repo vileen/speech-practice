@@ -19,6 +19,7 @@ interface PronunciationResult {
   score: number;
   feedback: string;
   text_with_furigana: string;
+  errors?: string[];
 }
 
 // API URL - use env var or default to GitHub Pages path
