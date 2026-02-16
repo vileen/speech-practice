@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './LessonMode.css';
+import { translateLessonTitle } from './translations.js';
 
 interface Lesson {
   id: string;
@@ -108,10 +109,10 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
       <div className="lesson-mode">
         <div className="lesson-header">
           <button className="back-btn" onClick={() => setSelectedLesson(null)}>← All Lessons</button>
-          <h2>{selectedLesson.title}</h2>
+          <h2>{translateLessonTitle(selectedLesson.title)}</h2>
           <button 
             className="start-chat-btn"
-            onClick={() => onStartLessonChat(selectedLesson.id, selectedLesson.title)}
+            onClick={() => onStartLessonChat(selectedLesson.id, translateLessonTitle(selectedLesson.title))}
           >
             💬 Practice Conversation
           </button>
@@ -240,7 +241,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
             onClick={() => loadLessonDetail(lesson.id)}
           >
             <div className="lesson-date">{lesson.date}</div>
-            <h3>{lesson.title}</h3>
+            <h3>{translateLessonTitle(lesson.title)}</h3>
             <div className="lesson-meta">
               <span>📝 {lesson.vocabCount} words</span>
               <span>📖 {lesson.grammarCount} grammar</span>
