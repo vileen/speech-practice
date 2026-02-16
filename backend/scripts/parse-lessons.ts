@@ -2,6 +2,12 @@
 /**
  * Parse Japanese lesson Markdown files into structured JSON
  * Extracts vocabulary, grammar, dialogues, and key phrases
+ * 
+ * Usage:
+ *   npx tsx parse-lessons.ts [LESSONS_DIR] [OUTPUT_DIR]
+ * 
+ * Or set environment variables:
+ *   LESSONS_DIR=/path/to/lessons OUTPUT_DIR=/path/to/output npx tsx parse-lessons.ts
  */
 
 import { readFile, writeFile, readdir } from 'fs/promises';
@@ -191,8 +197,9 @@ function inferType(jp: string, en: string): string | undefined {
 }
 
 async function parseAllLessons(): Promise<void> {
-  const lessonsDir = '/Users/dominiksoczewka/Library/Mobile Documents/iCloud~md~obsidian/Documents/Main/Skills/Japanese/Japanese Lessons';
-  const outputDir = '/Users/dominiksoczewka/Projects/speech-practice/backend/src/data/lessons';
+  // Get directories from command line arguments or environment variables
+  const lessonsDir = process.argv[2] || process.env.LESSONS_DIR || './lessons';
+  const outputDir = process.argv[3] || process.env.OUTPUT_DIR || '../src/data/lessons';
   
   // Create output directory
   try {

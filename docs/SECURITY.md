@@ -1,6 +1,6 @@
 # Cloudflare Tunnel Security Guide
 
-## 🔒 Jak to działa (i dlaczego jest bezpieczne)
+## 🔒 How It Works (and why it's secure)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -8,171 +8,180 @@
 │  User → https://api.yourdomain.com/api/health              │
 └──────────────┬──────────────────────────────────────────────┘
                │
-               │ 1. Request do Cloudflare Edge (150+ lokalizacji)
+               │ 1. Request to Cloudflare Edge (150+ locations)
                │    - DDoS protection
                │    - WAF (Web Application Firewall)
                │    - SSL/TLS termination
                ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  CLOUDFLARE NETWORK                                        │
-│  - Anycast routing (najszybsza ścieżka)                    │
-│  - Encrypted tunnel do Twojego serwera                     │
-│  - Nie ma bezpośredniego połączenia z Twoim IP             │
+│  - Anycast routing (fastest path)                          │
+│  - Encrypted tunnel to your server                         │
+│  - No direct connection to your IP                         │
 └──────────────┬──────────────────────────────────────────────┘
                │
-               │ 2. Cloudflared tunnel (outbound z Twojego Mac Mini)
-               │    - Tylko Ty inicjujesz połączenie
-               │    - Firewall nie musi mieć otwartych portów
+               │ 2. Cloudflared tunnel (outbound from your server)
+               │    - Only you initiate the connection
+               │    - Firewall doesn't need open ports
                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  YOUR MAC MINI (w domu/za NAT)                             │
+│  YOUR SERVER (home/behind NAT)                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │ Cloudflared daemon                                  │   │
-│  │ - Słucha tylko na localhost                         │   │
-│  │ - Nie otwiera portów na zewnątrz                    │   │
+│  │ - Listens only on localhost                         │   │
+│  │ - No ports exposed externally                       │   │
 │  └──────────────┬──────────────────────────────────────┘   │
 │                 │                                           │
-│                 │ 3. Tylko port 3001, tylko /api/*          │
+│                 │ 3. Only port 3001, only /api/*            │
 │                 ▼                                           │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │ Backend API (Node.js/Express)                       │   │
-│  │ - Hasło chronione endpointy                         │   │
-│  │ - API keys tylko tutaj, nigdy w frontend            │   │
+│  │ - Password-protected endpoints                      │   │
+│  │ - API keys only here, never in frontend             │   │
 │  └─────────────────────────────────────────────────────┘   │
 │                                                             │
-│  ❌ NIE DOSTĘPNE:                                          │
+│  ❌ NOT EXPOSED:                                           │
 │  - SSH (port 22)                                           │
 │  - VNC/screen sharing                                      │
 │  - File sharing                                            │
-│  - Inne porty                                              │
+│  - Other ports                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## ✅ Co jest chronione
+## ✅ What's Protected
 
 ### 1. Firewall stays CLOSED
 ```bash
-# Twój Mac Mini NIE musi mieć otwartych portów
-# Sprawdź: System Preferences → Security → Firewall
-# Powinno być: "Block all incoming connections" ✅
+# Your server does NOT need open ports
+# Check your firewall settings
+# Should be: "Block all incoming connections" ✅
 ```
 
 ### 2. Only ONE service exposed
-- Tylko `http://localhost:3001` (backend API)
-- Tylko ścieżki `/api/*` są routowane
-- Wszystko inne zwraca 404
+- Only `http://localhost:3001` (backend API)
+- Only paths `/api/*` are routed
+- Everything else returns 404
 
 ### 3. Multiple layers of security
-| Warstwa | Ochrona |
-|---------|---------|
+| Layer | Protection |
+|-------|------------|
 | Cloudflare Edge | DDoS protection, rate limiting |
 | Tunnel | Encrypted, authenticated connection |
 | Path filtering | Only `/api/*` allowed |
 | Backend | Password-protected endpoints |
 | API Keys | Server-side only |
 
-## ⚠️ Co MOŻE być ryzykiem (i jak temu zapobiec)
+## ⚠️ Potential Risks (and how to prevent them)
 
-### Ryzyko: Ktoś zna URL Twojego API
-**Zabezpieczenie:**
-- Backend wymaga `X-Password` header dla KAŻDEGO requestu
-- Hasło jest w `backend/.env.local` (nie w kodzie)
-- Używaj mocnego hasła (nie "dominik123")
+### Risk: Someone knows your API URL
+**Mitigation:**
+- Backend requires `X-Password` header for EVERY request
+- Password is in `backend/.env.local` (not in code)
+- Use a strong password (not "password123")
 
-### Ryzyko: DDoS na Twój API
-**Zabezpieczenie:**
-- Cloudflare automatycznie blokuje DDoS
-- Rate limiting jest domyślnie włączone
-- Możesz dodać IP whitelist w configu
+### Risk: DDoS on your API
+**Mitigation:**
+- Cloudflare automatically blocks DDoS
+- Rate limiting is enabled by default
+- You can add IP whitelist in config
 
-### Ryzyko: Ktoś wykryje Twój prawdziwy IP
-**Zabezpieczenie:**
-- Tunnel wychodzi z Twojego IP, ale użytkownik widzi tylko Cloudflare IP
-- Twój IP nie jest w DNS records (CNAME do Cloudflare)
-- W logach backendu: tylko 127.0.0.1 (localhost)
+### Risk: Someone discovers your real IP
+**Mitigation:**
+- Tunnel originates from your IP, but users only see Cloudflare IP
+- Your IP is not in DNS records (CNAME to Cloudflare)
+- Backend logs only show 127.0.0.1 (localhost)
 
-## 🔍 Weryfikacja bezpieczeństwa
+## 🔍 Security Verification
 
-### Sprawdź co jest wystawione:
+### Check what's exposed:
 ```bash
-# Zobacz aktywne tunele
+# List active tunnels
 cloudflared tunnel list
 
-# Sprawdź status tunelu
+# Check tunnel status
 cloudflared tunnel info speech-practice-api
 
-# Zobacz logi
+# View logs
 tail -f /tmp/cloudflared-speech-practice.out
 ```
 
-### Testuj z zewnątrz:
+### Test from outside:
 ```bash
-# To powinno działać (API endpoint)
+# This should work (API endpoint)
 curl https://api.yourdomain.com/api/health
 
-# To powinno zwrócić 404 (nie API)
+# These should return 404 (not API)
 curl https://api.yourdomain.com/
 curl https://api.yourdomain.com/not-api
 ```
 
-### Sprawdź firewall:
+### Check firewall:
 ```bash
-# Mac: czy firewall blokuje incoming?
+# Linux with ufw:
+sudo ufw status
+
+# macOS:
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
-# Powinno zwrócić: "Firewall is enabled. (State = 1)"
+
+# Should show firewall enabled
 ```
 
-## 🆚 Cloudflare Tunnel vs Alternatywy
+## 🆚 Cloudflare Tunnel vs Alternatives
 
-| Metoda | Bezpieczeństwo | Koszt | Użycie |
-|--------|---------------|-------|--------|
-| **Cloudflare Tunnel** | ⭐⭐⭐⭐⭐ | FREE | ✅ Rekomendowane |
-| Port forwarding | ⭐☆☆☆☆ | FREE | ❌ Otwiera firewall |
-| VPN (Tailscale) | ⭐⭐⭐⭐☆ | FREE | ⚠️ Wymaga klienta |
-| VPS (Render/Railway) | ⭐⭐⭐⭐⭐ | FREE tier | ✅ Bez infrastruktury |
+| Method | Security | Cost | Best For |
+|--------|----------|------|----------|
+| **Cloudflare Tunnel** | ⭐⭐⭐⭐⭐ | FREE | ✅ Recommended |
+| Port forwarding | ⭐☆☆☆☆ | FREE | ❌ Opens firewall |
+| VPN (Tailscale/WireGuard) | ⭐⭐⭐⭐☆ | FREE | ⚠️ Requires client |
+| VPS (Render/Railway/Fly) | ⭐⭐⭐⭐⭐ | Free tier | ✅ No infrastructure |
 
-## 🚨 Emergency: Jak wyłączyć
+## 🚨 Emergency: How to Disable
 
-### Tymczasowo (stop tunnel):
+### Temporarily (stop tunnel):
 ```bash
-Ctrl+C w terminalu z cloudflared
-# lub
+Ctrl+C in the terminal running cloudflared
+# or
 pkill cloudflared
 ```
 
-### Permanenty (delete tunnel):
+### Permanently (delete tunnel):
 ```bash
 cloudflared tunnel delete speech-practice-api
 ```
 
-### Wyłącz auto-start:
+### Disable auto-start:
 ```bash
+# macOS:
 launchctl unload ~/Library/LaunchAgents/com.cloudflare.speech-practice.plist
 rm ~/Library/LaunchAgents/com.cloudflare.speech-practice.plist
+
+# Linux (systemd):
+sudo systemctl stop cloudflared
+sudo systemctl disable cloudflared
 ```
 
-## 📋 Checklist przed uruchomieniem
+## 📋 Pre-launch Checklist
 
-- [ ] Firewall Maca włączony (System Preferences → Security)
-- [ ] Backend wymaga hasła (sprawdź `ACCESS_PASSWORD` w `.env.local`)
-- [ ] API keys NIE są w kodzie frontendu
-- [ ] Repository na GitHub jest PRYWATNE (lub publiczne bez sekretów)
-- [ ] Wybrałeś silne hasło (nie "123456" czy "dominik123")
-- [ ] Włączyłeś 2FA na Cloudflare (opcjonalne ale rekomendowane)
+- [ ] Firewall enabled on your server
+- [ ] Backend requires password (check `ACCESS_PASSWORD` in `.env.local`)
+- [ ] API keys NOT in frontend code
+- [ ] Repository is PRIVATE (or public without secrets)
+- [ ] Strong password chosen (not "123456" or "password")
+- [ ] 2FA enabled on Cloudflare (optional but recommended)
 
 ## ❓ FAQ
 
-**Q: Czy ktoś może się włamać na mój Mac Mini przez ten tunnel?**
-A: Nie. Tunnel wystawia tylko port 3001 (backend), i tylko ścieżki `/api/*`. Nie ma dostępu do SSH, plików, ani innych usług.
+**Q: Can someone hack my server through this tunnel?**
+A: No. The tunnel only exposes port 3001 (backend), and only paths `/api/*`. No access to SSH, files, or other services.
 
-**Q: Co jak ktoś zgadnie mój backend URL?**
-A: Każdy request wymaga `X-Password` header. Bez hasła dostaje 401 Unauthorized.
+**Q: What if someone guesses my backend URL?**
+A: Every request requires `X-Password` header. Without the password, they get 401 Unauthorized.
 
-**Q: Czy mój prawdziwy IP jest widoczny?**
-A: Nie dla użytkowników. Cloudflare ukrywa Twój IP. W logach backendu widzisz tylko 127.0.0.1.
+**Q: Is my real IP visible?**
+A: Not to users. Cloudflare hides your IP. Backend logs only show 127.0.0.1.
 
-**Q: Czy mogę ograniczyć do konkretnych krajów?**
-A: Tak, w Cloudflare Dashboard → Security → WAF → Custom rules.
+**Q: Can I restrict to specific countries?**
+A: Yes, in Cloudflare Dashboard → Security → WAF → Custom rules.
 
-**Q: Co jak zapomnę hasła?**
-A: Zmień `ACCESS_PASSWORD` w `backend/.env.local` i zrestartuj backend.
+**Q: What if I forget the password?**
+A: Change `ACCESS_PASSWORD` in `backend/.env.local` and restart the backend.
