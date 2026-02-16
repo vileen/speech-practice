@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { addFurigana } from './elevenlabs.js';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -31,12 +32,16 @@ export async function generateChatResponse(
     max_tokens: 500,
   });
 
-  const text = response.choices[0]?.message?.content || 'すみません、もう一度言ってください。';
+  let text = response.choices[0]?.message?.content || 'すみません、もう一度言ってください。';
   
-  // For now, return same text as furigana (furigana should already be in the response)
-  // In the future, we could parse and validate the furigana
+  // Add furigana if not already present
+  let textWithFurigana = text;
+  if (!text.includes('<ruby>')) {
+    textWithFurigana = await addFurigana(text);
+  }
+  
   return {
     text,
-    textWithFurigana: text,
+    textWithFurigana,
   };
 }
