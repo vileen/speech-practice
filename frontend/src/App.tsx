@@ -55,7 +55,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
-  const [, setIsRecording] = useState(false);
+  // Recording state managed by VoiceRecorder component
   const [session, setSession] = useState<Session | null>(null);
   const [messages, setMessages] = useState<Array<{role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string}>>([]);
   const [inputText, setInputText] = useState('');
@@ -606,11 +606,9 @@ function App() {
               isListening={isListening}
               onStartListening={() => {
                 setIsListening(true);
-                setIsRecording(true);
               }}
               onStopListening={() => {
                 setIsListening(false);
-                setIsRecording(false);
               }}
               onRecordingComplete={async (audioBlob) => {
                 // Upload the recorded audio
