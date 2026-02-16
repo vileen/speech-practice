@@ -10,7 +10,7 @@ Go to https://github.com/new and create a new repository:
 ## 2. Push Your Code
 
 ```bash
-cd ~/Projects/speech-practice
+cd /path/to/speech-practice
 
 # Add remote
 git remote add origin https://github.com/YOUR_USERNAME/speech-practice.git
@@ -26,7 +26,7 @@ git push -u origin main
 3. Under **Source**, select **GitHub Actions**
 4. That's it! The workflow is already configured
 
-## 4. Configure Backend Access (Choose one option)
+## 4. Configure Backend Access (Choose one)
 
 ### Option A: Cloudflare Tunnel (Recommended - FREE)
 
@@ -34,7 +34,8 @@ This exposes your local backend through a public URL:
 
 ```bash
 # Install cloudflared
-brew install cloudflare/cloudflare/cloudflared
+# macOS: brew install cloudflare/cloudflare/cloudflared
+# Linux: see https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/
 
 # Login
 cloudflared tunnel login
@@ -51,31 +52,27 @@ Then set GitHub Secret:
 3. Name: `VITE_API_URL`
 4. Value: `https://your-tunnel-domain.com`
 
-### Option B: Deploy to Render.com (FREE)
+### Option B: Deploy to Render.com / Railway / Fly.io (FREE tiers)
 
-1. Go to https://render.com and sign up
-2. Create new **Web Service**
-3. Connect your GitHub repo
-4. Settings:
+1. Push repo to GitHub
+2. Go to https://render.com (or alternative) and sign up
+3. Create new **Web Service**
+4. Connect your GitHub repo
+5. Settings:
    - **Root Directory**: `backend`
-   - **Build Command**: `yarn install`
-   - **Start Command**: `yarn start`
-5. Add environment variables from `.env.example`
-6. Get your Render URL (e.g., `https://speech-practice.onrender.com`)
-7. Set `VITE_API_URL` secret in GitHub to that URL
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+6. Add environment variables from `.env.example`
+7. Get your service URL
+8. Set `VITE_API_URL` secret in GitHub to that URL
 
-### Option C: Keep on Tailscale Only (PRIVATE)
+### Option C: Self-hosted VPS
 
-Don't use GitHub Pages. Keep accessing via:
-```
-https://dominiks-mini.tailfd99a9.ts.net/
-```
-
-(Only works when you're on Tailscale)
+Deploy to any VPS and configure nginx/Caddy as reverse proxy with SSL.
 
 ## 5. Update Frontend API URL
 
-After setting up the backend publicly, update the GitHub secret:
+After setting up the backend, update the GitHub secret:
 
 1. Repo → Settings → Secrets → Actions
 2. New repository secret
@@ -112,7 +109,7 @@ After GitHub Actions completes:
 - Make sure `VITE_API_URL` is set correctly
 
 ### Backend not accessible
-- Check if cloudflared tunnel is running
+- Check if tunnel/service is running
 - Verify CORS settings in backend include your GitHub Pages domain
 
 ### CORS errors

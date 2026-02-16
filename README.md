@@ -4,38 +4,42 @@ Japanese/Italian language learning app with AI conversation, speech recognition,
 
 ## Features
 
-- 🎙️ **Speech-to-Text** (Whisper API)
+- 🎙️ **Speech-to-Text** (OpenAI Whisper API)
 - 🔊 **Text-to-Speech** (ElevenLabs)
-- 📚 **Lesson Mode** — practice specific lessons
-- 🎯 **Repeat After Me** — pronunciation training
+- 📚 **Lesson Mode** — practice specific lessons with AI
+- 🎯 **Repeat After Me** — pronunciation training with feedback
 - 💬 **AI Conversation** — practice speaking naturally
 
 ## Architecture
 
 ```
-Frontend (React) → Backend (Node/Express) → APIs (OpenAI, ElevenLabs)
-     ↓                    ↓
-  GitHub Pages      Your Mac Mini (Tailscale)
-                         OR
-                    Cloudflare Tunnel (public)
+Frontend (React + Vite) → Backend (Node/Express) → APIs (OpenAI, ElevenLabs)
+     ↓                        ↓
+  GitHub Pages          Your Server
+                        (Local + Tunnel / Cloud / VPS)
 ```
 
 ## Quick Start (Development)
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database
+- API keys: OpenAI, ElevenLabs
 
 ### Backend
 ```bash
 cd backend
 cp .env.example .env.local
-# Fill in your API keys
-yarn install
-yarn dev
+# Edit .env.local with your API keys
+npm install
+npm run dev
 ```
 
 ### Frontend
 ```bash
 cd frontend
-yarn install
-yarn dev
+npm install
+npm run dev
 ```
 
 ## Deployment
@@ -46,30 +50,45 @@ Automatic via GitHub Actions on every push to `main`.
 ### Backend Options
 
 #### Option A: Local + Cloudflare Tunnel (Recommended for personal use)
-1. Install cloudflared: `brew install cloudflare/cloudflare/cloudflared`
-2. Login: `cloudflared tunnel login`
-3. Create tunnel: `cloudflared tunnel create speech-practice`
-4. Route traffic: `cloudflared tunnel route dns speech-practice your-domain.example.com`
-5. Run: `cloudflared tunnel run speech-practice`
+Expose your local backend through a secure public URL:
 
-#### Option B: Render.com (Free)
+```bash
+# Install cloudflared
+# macOS: brew install cloudflare/cloudflare/cloudflared
+# Linux: see https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/
+
+# Login
+cloudflared tunnel login
+
+# Create and run tunnel
+cloudflared tunnel create speech-practice
+cloudflared tunnel route dns speech-practice api.yourdomain.com
+cloudflared tunnel run speech-practice
+```
+
+#### Option B: Render.com / Railway / Fly.io (Free tiers)
 1. Push repo to GitHub
-2. Connect Render to repo
-3. Set environment variables in Render dashboard
+2. Connect platform to your repo
+3. Set environment variables
 4. Deploy
+
+#### Option C: Self-hosted VPS
+1. Deploy to any VPS (DigitalOcean, AWS, etc.)
+2. Set up reverse proxy (nginx/Caddy) with SSL
+3. Configure environment variables
 
 ## Environment Variables
 
 ### Backend (.env.local)
 ```
 PORT=3001
-DATABASE_URL=postgresql://...
+DATABASE_URL=postgresql://user:pass@localhost:5432/speech_practice
 ELEVENLABS_API_KEY=your_key
 OPENAI_API_KEY=your_key
-ACCESS_PASSWORD=your_password
+ACCESS_PASSWORD=secure_password_here
 ```
 
-### Frontend (.env)
+### Frontend (.env / GitHub Secret)
 ```
 VITE_API_URL=https://your-backend-url.com
 ```
@@ -77,8 +96,21 @@ VITE_API_URL=https://your-backend-url.com
 ## Security Notes
 
 - Never commit `.env.local` or `.env` files
-- Backend requires `X-Password` header for all requests
+- Backend requires `X-Password` header for all API requests
 - API keys are server-side only
+- Use strong password for `ACCESS_PASSWORD`
+
+## Development Notes
+
+### Database Migrations
+```bash
+cd backend
+psql "$DATABASE_URL" -f src/db/schema.sql
+```
+
+### Adding New Lessons
+Place lesson JSON files in `backend/src/data/lessons/`
+Format: see existing lesson files for structure.
 
 ## License
 
