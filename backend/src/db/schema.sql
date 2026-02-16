@@ -3,6 +3,8 @@ CREATE TABLE IF NOT EXISTS sessions (
   id SERIAL PRIMARY KEY,
   language VARCHAR(10) NOT NULL, -- 'japanese' or 'italian'
   voice_gender VARCHAR(10) NOT NULL, -- 'male' or 'female'
+  lesson_id VARCHAR(20), -- Associated lesson ID
+  lesson_context TEXT, -- System prompt for lesson mode
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

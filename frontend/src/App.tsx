@@ -279,30 +279,37 @@ function App() {
             'Content-Type': 'application/json',
             'X-Password': password,
           },
-          body: JSON.stringify({ relaxed: true }),
+          body: JSON.stringify({ relaxed: true, session_id: sessionData.id }),
         });
         
         if (response.ok) {
           const data = await response.json();
           console.log('Lesson system prompt loaded:', data.system_prompt);
           
-          // Generate initial greeting (use English/short title)
-          const lessonTitle = translateLessonTitle(data.lesson.title);
-          const initialGreetings: Record<string, string> = {
-            japanese: `このレッスンを練習しましょう。何か話しましょう！`,
-            italian: `Pratichiamo questa lezione. Parliamo!`,
-          };
-          const greeting = initialGreetings[language] || `Let's practice "${lessonTitle}". What would you like to talk about?`;
+          // AI will start the conversation - send empty user message to trigger first response
+          const aiResponse = await fetch(`${API_URL}/api/chat`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Password': password,
+            },
+            body: JSON.stringify({
+              session_id: sessionData.id,
+              message: '[START_CONVERSATION]', // Special trigger for AI to start
+            }),
+          });
           
-          // Add greeting as first message
-          setMessages([{
-            role: 'assistant',
-            text: greeting,
-            withFurigana: greeting,
-          }]);
-          
-          // Generate TTS for greeting
-          await generateTTS(greeting);
+          if (aiResponse.ok) {
+            const aiData = await aiResponse.json();
+            setMessages([{
+              role: 'assistant',
+              text: aiData.text,
+              withFurigana: aiData.text_with_furigana || aiData.text,
+            }]);
+            
+            // Generate TTS for AI's opening message
+            await generateTTS(aiData.text);
+          }
         }
       }
     } catch (error) {
