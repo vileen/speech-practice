@@ -260,23 +260,32 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
       const normHeard = heard.replace(/[。、！？\s]/g, '');
       
       // Check for missing words/particles
-      if (normTarget.includes('ています') && !normHeard.includes('ています') && !normHeard.includes('て')) {
-        differences.push('Missing ~ています (progressive form)');
+      if (normTarget.includes('ています') && !normHeard.includes('ています')) {
+        differences.push('Missing い in ~ています (progressive form)');
+      }
+      if (normTarget.includes('でいます') && !normHeard.includes('でいます')) {
+        differences.push('Missing い in ~でいます (progressive form)');
       }
       if (normTarget.includes('ます') && !normHeard.includes('ます')) {
         differences.push('Missing polite ending ~ます');
       }
       if (normTarget.includes('は') && !normHeard.includes('は')) {
-        differences.push('Missing topic particle は');
+        differences.push('Missing topic particle は (wa)');
       }
       if (normTarget.includes('を') && !normHeard.includes('を')) {
-        differences.push('Missing object particle を');
+        differences.push('Missing object particle を (wo)');
       }
       if (normTarget.includes('に') && !normHeard.includes('に')) {
-        differences.push('Missing particle に');
+        differences.push('Missing particle に (ni)');
       }
       if (normTarget.includes('が') && !normHeard.includes('が')) {
-        differences.push('Missing subject particle が');
+        differences.push('Missing subject particle が (ga)');
+      }
+      if (normTarget.includes('の') && !normHeard.includes('の')) {
+        differences.push('Missing possessive particle の (no)');
+      }
+      if (normTarget.includes('と') && !normHeard.includes('と')) {
+        differences.push('Missing particle と (to)');
       }
       
       // Check length difference
