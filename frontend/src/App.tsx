@@ -19,7 +19,7 @@ interface PronunciationResult {
 }
 
 // API URL - use env var or default to GitHub Pages path
-const API_URL = import.meta.env.VITE_API_URL || 'https://eds-grow-delivered-spending.trycloudflare.com';
+const API_URL = (import.meta.env.VITE_API_URL || 'https://eds-grow-delivered-spending.trycloudflare.com').replace(/\/$/, '');
 
 // Practice phrases for "Repeat After Me" mode
 const PRACTICE_PHRASES: Record<string, string[]> = {
