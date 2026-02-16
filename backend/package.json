@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc && npm run copy:data",
+    "copy:data": "cp -r src/data dist/",
     "start": "node dist/server.js",
     "db:init": "tsx src/db/init.ts"
   },

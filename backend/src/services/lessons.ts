@@ -6,7 +6,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const LESSONS_DIR = join(__dirname, '../data/lessons');
+// Look for lessons - try src first (dev), then dist (production)
+const { existsSync } = await import('fs');
+const srcPath = join(__dirname, '../../src/data/lessons');
+const distPath = join(__dirname, '../data/lessons');
+const LESSONS_DIR = existsSync(srcPath) ? srcPath : distPath;
 
 interface LessonIndex {
   count: number;
