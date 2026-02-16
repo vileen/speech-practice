@@ -1,0 +1,414 @@
+{
+  "id": "2025-10-15",
+  "date": "2025-10-15",
+  "title": "Lekcja 2025-10-15 — Hiragana: ma-mi-mu-me-mo, ya-yu-yo, czas, rodzina",
+  "order": 20251015,
+  "topics": [],
+  "vocabulary": [
+    {
+      "jp": "Znak",
+      "reading": "Czytanie",
+      "en": "Słówka przykładowe",
+      "tags": []
+    },
+    {
+      "jp": "------",
+      "reading": "----------",
+      "en": "-------------------",
+      "tags": []
+    },
+    {
+      "jp": "ま",
+      "reading": "ma",
+      "en": "machi (miasto), matsu (czekać), mata (jeszcze raz), mada (jeszcze nie), maccha (matcha)",
+      "tags": []
+    },
+    {
+      "jp": "み",
+      "reading": "mi",
+      "en": "mimi (ucho), michi (ulica), minato (port), minami (południe), tsunami",
+      "tags": []
+    },
+    {
+      "jp": "む",
+      "reading": "mu",
+      "en": "mushi (owad), nemui (śpiący), mukashi (dawno temu)",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "め",
+      "reading": "me",
+      "en": "me (oko), kame (żółw)",
+      "tags": []
+    },
+    {
+      "jp": "も",
+      "reading": "mo",
+      "en": "kaimono (zakupy), nomimono (napoje), momo (brzoskwinia), imo (słodki ziemniak/batat), motsu (trzymać, posiadać)",
+      "tags": []
+    },
+    {
+      "jp": "Znak",
+      "reading": "Czytanie",
+      "en": "Słówka przykładowe",
+      "tags": []
+    },
+    {
+      "jp": "------",
+      "reading": "----------",
+      "en": "-------------------",
+      "tags": []
+    },
+    {
+      "jp": "や",
+      "reading": "ya",
+      "en": "yama (góra), yasumu (odpoczywać), oya (rodzice), yakiniku (smażone mięso)",
+      "tags": []
+    },
+    {
+      "jp": "ゆ",
+      "reading": "yu",
+      "en": "yume (sen/marzenie), oyu (gorąca woda), kayui (swędzący), yuki (śnieg), fuyu (zima)",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "よ",
+      "reading": "yo",
+      "en": "yoyaku (rezerwacja), yonaka (środek nocy), yoi (dobry - alternatywa do i), oyogu (pływać), yobu (wołać, nazywać)",
+      "tags": []
+    },
+    {
+      "jp": "Japoński",
+      "reading": "Znaczenie",
+      "en": "Kontekst",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "-----------",
+      "en": "----------",
+      "tags": []
+    },
+    {
+      "jp": "Arigatou gozaimasu",
+      "reading": "Dziękuję",
+      "en": "Podziękowanie",
+      "tags": []
+    },
+    {
+      "jp": "Sayonara",
+      "reading": "Do widzenia",
+      "en": "Pożegnanie",
+      "tags": []
+    },
+    {
+      "jp": "Sumimasen",
+      "reading": "Przepraszam / Przepraszam (przed pytaniem)",
+      "en": "Przepraszam",
+      "tags": []
+    },
+    {
+      "jp": "Ohayou",
+      "reading": "Dzień dobry (rano)",
+      "en": "Rano",
+      "tags": []
+    },
+    {
+      "jp": "Oyasuminasai",
+      "reading": "Dobranoc",
+      "en": "Przed snem",
+      "tags": []
+    },
+    {
+      "jp": "Konnichiwa",
+      "reading": "Dzień dobry",
+      "en": "W ciągu dnia",
+      "tags": []
+    },
+    {
+      "jp": "Konbanwa",
+      "reading": "Dobry wieczór",
+      "en": "Wieczór",
+      "tags": []
+    },
+    {
+      "jp": "Gochisousama (deshita)",
+      "reading": "Dziękuję za posiłek",
+      "en": "Po jedzeniu",
+      "tags": []
+    },
+    {
+      "jp": "Itadakimasu",
+      "reading": "Dziękuję za posiłek (przed jedzeniem)",
+      "en": "Przed jedzeniem",
+      "tags": []
+    },
+    {
+      "jp": "Ittekimasu",
+      "reading": "Wychodzę i wrócę",
+      "en": "Wychodząc z domu",
+      "tags": []
+    },
+    {
+      "jp": "Tadaima",
+      "reading": "Wróciłem",
+      "en": "Wracając do domu",
+      "tags": []
+    },
+    {
+      "jp": "Okaeri (nasai)",
+      "reading": "Witaj z powrotem",
+      "en": "Odpowiedź na Tadaima",
+      "tags": []
+    },
+    {
+      "jp": "Japoński",
+      "reading": "Romaji",
+      "en": "Znaczenie",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-----------",
+      "tags": []
+    },
+    {
+      "jp": "かぞく",
+      "reading": "kazoku",
+      "en": "rodzina",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "りょうしん",
+      "reading": "ryoushin",
+      "en": "rodzice",
+      "tags": []
+    },
+    {
+      "jp": "きょうだい",
+      "reading": "kyoudai",
+      "en": "rodzeństwo (bracia i siostry)",
+      "tags": []
+    },
+    {
+      "jp": "しまい",
+      "reading": "shimai",
+      "en": "siostry",
+      "tags": []
+    },
+    {
+      "jp": "おかあさん",
+      "reading": "okaasan",
+      "en": "mama",
+      "tags": []
+    },
+    {
+      "jp": "はは",
+      "reading": "haha",
+      "en": "mama (formalnie)",
+      "tags": []
+    },
+    {
+      "jp": "おとうさん",
+      "reading": "otousan",
+      "en": "tata",
+      "tags": []
+    },
+    {
+      "jp": "ちち",
+      "reading": "chichi",
+      "en": "tata (formalnie)",
+      "tags": []
+    },
+    {
+      "jp": "おにいさん",
+      "reading": "oniisan",
+      "en": "starszy brat",
+      "tags": []
+    },
+    {
+      "jp": "あに",
+      "reading": "ani",
+      "en": "starszy brat (formalnie)",
+      "tags": []
+    },
+    {
+      "jp": "おとうと",
+      "reading": "otouto",
+      "en": "młodszy brat",
+      "tags": []
+    },
+    {
+      "jp": "おねえさん",
+      "reading": "oneesan",
+      "en": "starsza siostra",
+      "tags": []
+    },
+    {
+      "jp": "あね",
+      "reading": "ane",
+      "en": "starsza siostra (formalnie)",
+      "tags": []
+    },
+    {
+      "jp": "いもうと",
+      "reading": "imouto",
+      "en": "młodsza siostra",
+      "tags": []
+    },
+    {
+      "jp": "おじさん",
+      "reading": "ojisan",
+      "en": "wujek / dziadek (starszy mężczyzna)",
+      "tags": []
+    },
+    {
+      "jp": "おばさん",
+      "reading": "obasan",
+      "en": "ciocia / babcia (starsza kobieta)",
+      "tags": []
+    },
+    {
+      "jp": "おじいさん",
+      "reading": "ojiisan",
+      "en": "dziadek",
+      "tags": []
+    },
+    {
+      "jp": "おばあさん",
+      "reading": "obaasan",
+      "en": "babcia",
+      "tags": []
+    },
+    {
+      "jp": "Japoński",
+      "reading": "Romaji",
+      "en": "Znaczenie",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-----------",
+      "tags": []
+    },
+    {
+      "jp": "まち",
+      "reading": "machi",
+      "en": "miasto",
+      "tags": []
+    },
+    {
+      "jp": "まつ",
+      "reading": "matsu",
+      "en": "czekać",
+      "type": "u-verb",
+      "tags": []
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Powtórka",
+      "explanation": "- Dochira (który?) - słówka do porównywania\n- Kolory: aoi (niebieski), akai (czerwony)\n- Przeciwieństwa: naka (środek), soto (na zewnątrz)\n- Zwierzęta: neko (kot), inu (pies)\n- Słówka: sio (sól), sato",
+      "examples": [
+        {
+          "jp": "Dochira (który?)",
+          "en": "słówka do porównywania"
+        },
+        {
+          "jp": "Kolory: aoi (niebieski), akai (czerwony)",
+          "en": "Przeciwieństwa: naka (środek), soto (na zewnątrz)"
+        },
+        {
+          "jp": "Zwierzęta: neko (kot), inu (pies)",
+          "en": "Słówka: sio (sól), satou (cukier)"
+        }
+      ]
+    },
+    {
+      "pattern": "Nowy wiersz hiragany: ma-mi-mu-me-mo (まみむめも)",
+      "explanation": "| Znak | Czytanie | Słówka przykładowe |\n|------|----------|-------------------|\n| ま | ma | machi (miasto), matsu (czekać), mata (jeszcze raz), mada (jeszcze nie), maccha (matcha) |\n| み | mi | mimi (",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "---|----------|-------------------|"
+        },
+        {
+          "jp": "Wskazówki:",
+          "en": "ma (ま) - dwie poziome kreski z pętelką na dole"
+        },
+        {
+          "jp": "mi (み)",
+          "en": "pętelka za jednym pociągnięciem, kręcone do góry"
+        },
+        {
+          "jp": "mu (む)",
+          "en": "\"krowa\" - kanciasty znak, pozioma + pętelka"
+        },
+        {
+          "jp": "me (め)",
+          "en": "podobne do nu (ぬ) ale BEZ pętelki na końcu"
+        }
+      ]
+    },
+    {
+      "pattern": "Wyjątkowy wiersz: ya-yu-yo (やゆよ)",
+      "explanation": "Tylko trzy znaki!\n\n| Znak | Czytanie | Słówka przykładowe |\n|------|----------|-------------------|\n| や | ya | yama (góra), yasumu (odpoczywać), oya (rodzice), yakiniku (smażone mięso) |\n| ゆ | yu",
+      "examples": [
+        {
+          "jp": "Tylko trzy znaki!",
+          "en": ""
+        },
+        {
+          "jp": "-",
+          "en": "---|----------|-------------------|"
+        },
+        {
+          "jp": "Wskazówki:",
+          "en": "ya (や) - okrągły brzuszek, łezka, przecięcie w prawo (nie w lewo!)"
+        },
+        {
+          "jp": "yu (ゆ)",
+          "en": "odwrócona dwójka, przecięcie na środku"
+        },
+        {
+          "jp": "yo (よ)",
+          "en": "łapka w prawo, zjeżdżamy w dół, pętelka"
+        }
+      ]
+    },
+    {
+      "pattern": "Słuchanki - powitania i grzeczności",
+      "explanation": "| Japoński | Znaczenie | Kontekst |\n|----------|-----------|----------|\n| Arigatou gozaimasu | Dziękuję | Podziękowanie |\n| Sayonara | Do widzenia | Pożegnanie |\n| Sumimasen | Przepraszam / Przeprasz",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|-----------|----------|"
+        }
+      ]
+    },
+    {
+      "pattern": "Słownictwo rodziny",
+      "explanation": "| Japoński | Romaji | Znaczenie |\n|----------|--------|-----------|\n| かぞく | kazoku | rodzina |\n| りょうしん | ryoushin | rodzice |\n| きょうだい | kyoudai | rodzeństwo (bracia i siostry) |\n| しまい | shimai | sios",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|--------|-----------|"
+        }
+      ]
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [
+    "Watashi wa [imię] desu.",
+    "Watashi wa [wiek] sai desu.",
+    "Watashi wa [miasto] kara desu.",
+    "Watashi wa [zawód] desu.",
+    "Watashi wa [nihonjin/amerikajin/etc.] desu."
+  ],
+  "summary": "## 📅 Informacje ogólne\n- Data: 2025-10-15\n- Tydzień: #Tydzień-3\n- Status: ✓ Ukończona\n- Czas trwania: ~60 min"
+}

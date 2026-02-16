@@ -1,0 +1,394 @@
+{
+  "id": "2025-12-17",
+  "date": "2025-12-17",
+  "title": "Lesson: TE-form Review and Sentence Building",
+  "order": 20251217,
+  "topics": [],
+  "vocabulary": [
+    {
+      "jp": "Verb Type",
+      "reading": "Rule",
+      "en": "Dictionary Form",
+      "tags": []
+    },
+    {
+      "jp": "Meaning",
+      "reading": "",
+      "en": "-----------",
+      "tags": []
+    },
+    {
+      "jp": "-----------------",
+      "reading": "---------",
+      "en": "---------",
+      "tags": []
+    },
+    {
+      "jp": "Ichidan (iru/eru)",
+      "reading": "Remove る + て",
+      "en": "食べる (taberu)",
+      "tags": []
+    },
+    {
+      "jp": "eat",
+      "reading": "",
+      "en": "Godan (u verbs ending in く)",
+      "tags": []
+    },
+    {
+      "jp": "聞く (kiku)",
+      "reading": "聞いて (kiite)",
+      "en": "listen",
+      "tags": []
+    },
+    {
+      "jp": "Godan (u verbs ending in ぐ)",
+      "reading": "ぐ → いで",
+      "en": "泳ぐ (oyogu)",
+      "tags": []
+    },
+    {
+      "jp": "swim",
+      "reading": "",
+      "en": "Godan (u verbs ending in す)",
+      "tags": []
+    },
+    {
+      "jp": "話す (hanasu)",
+      "reading": "話して (hanashite)",
+      "en": "speak",
+      "tags": []
+    },
+    {
+      "jp": "Godan (u verbs ending in む/ぬ/ぶ)",
+      "reading": "む/ぬ/ぶ → んで",
+      "en": "読む (yomu)",
+      "tags": []
+    },
+    {
+      "jp": "read",
+      "reading": "",
+      "en": "Godan (u verbs ending in る/つ/う)",
+      "tags": []
+    },
+    {
+      "jp": "帰る (kaeru)",
+      "reading": "帰って (kaette)",
+      "en": "return",
+      "tags": []
+    },
+    {
+      "jp": "Irregular: いく",
+      "reading": "いく → いって",
+      "en": "行く (iku)",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "go",
+      "reading": "",
+      "en": "Irregular: する",
+      "tags": []
+    },
+    {
+      "jp": "する (suru)",
+      "reading": "して (shite)",
+      "en": "do",
+      "tags": []
+    },
+    {
+      "jp": "Irregular: くる",
+      "reading": "くる → きて",
+      "en": "来る (kuru)",
+      "type": "ru-verb",
+      "tags": []
+    },
+    {
+      "jp": "come",
+      "reading": "#### Detailed Conjugation Tables:\n\nIchidan Verbs (Group 2):",
+      "en": "Dictionary",
+      "tags": []
+    },
+    {
+      "jp": "---------",
+      "reading": "--------",
+      "en": "---------",
+      "tags": []
+    },
+    {
+      "jp": "見る (miru)",
+      "reading": "見て (mite)",
+      "en": "見ている",
+      "tags": []
+    },
+    {
+      "jp": "to eat",
+      "reading": "",
+      "en": "寝る (neru)",
+      "tags": []
+    },
+    {
+      "jp": "起きて (okite)",
+      "reading": "起きている",
+      "en": "to wake up",
+      "tags": []
+    },
+    {
+      "jp": "借りる (kariru)",
+      "reading": "借りて (karite)",
+      "en": "借りている",
+      "tags": []
+    },
+    {
+      "jp": "to teach",
+      "reading": "",
+      "en": "開ける (akeru)",
+      "tags": []
+    },
+    {
+      "jp": "閉めて (shimete)",
+      "reading": "閉めている",
+      "en": "to close",
+      "tags": []
+    },
+    {
+      "jp": "覚える (oboeru)",
+      "reading": "覚えて (oboete)",
+      "en": "覚えている",
+      "tags": []
+    },
+    {
+      "jp": "to forget",
+      "reading": "Godan Verbs - Ku/GU ending (Group 1):",
+      "en": "Dictionary",
+      "tags": []
+    },
+    {
+      "jp": "---------",
+      "reading": "--------",
+      "en": "---------",
+      "tags": []
+    },
+    {
+      "jp": "聞く (kiku)",
+      "reading": "聞いて (kiite)",
+      "en": "聞いている",
+      "tags": []
+    },
+    {
+      "jp": "to write",
+      "reading": "",
+      "en": "急ぐ (isogu)",
+      "tags": []
+    },
+    {
+      "jp": "泳いで (oyoide)",
+      "reading": "泳いでいる",
+      "en": "to swim",
+      "tags": []
+    },
+    {
+      "jp": "Dictionary",
+      "reading": "TE-form",
+      "en": "ている",
+      "tags": []
+    },
+    {
+      "jp": "---------",
+      "reading": "",
+      "en": "話す (hanasu)",
+      "tags": []
+    },
+    {
+      "jp": "貸して (kashite)",
+      "reading": "貸している",
+      "en": "to lend",
+      "tags": []
+    },
+    {
+      "jp": "返す (kaesu)",
+      "reading": "返して (kaeshite)",
+      "en": "返している",
+      "tags": []
+    },
+    {
+      "jp": "to search/look for",
+      "reading": "",
+      "en": "押す (osu)",
+      "tags": []
+    },
+    {
+      "jp": "押している",
+      "reading": "to push/press",
+      "en": "Godan Verbs - MU/NU/BU ending (Group 1):",
+      "type": "ru-verb",
+      "tags": []
+    },
+    {
+      "jp": "------------",
+      "reading": "---------",
+      "en": "--------",
+      "tags": []
+    },
+    {
+      "jp": "to read",
+      "reading": "",
+      "en": "飲む (nomu)",
+      "tags": []
+    },
+    {
+      "jp": "遊んで (asonde)",
+      "reading": "遊んでいる",
+      "en": "to play",
+      "tags": []
+    },
+    {
+      "jp": "死ぬ (shinu)",
+      "reading": "死んで (shinde)",
+      "en": "死んでいる",
+      "tags": []
+    },
+    {
+      "jp": "to call",
+      "reading": "",
+      "en": "飛ぶ (tobu)",
+      "tags": []
+    },
+    {
+      "jp": "飛んでいる",
+      "reading": "to fly/jump",
+      "en": "Godan Verbs - RU/TsU/U ending (Group 1):",
+      "type": "ru-verb",
+      "tags": []
+    },
+    {
+      "jp": "------------",
+      "reading": "---------",
+      "en": "--------",
+      "tags": []
+    },
+    {
+      "jp": "to return home",
+      "reading": "",
+      "en": "待つ (matsu)",
+      "tags": []
+    },
+    {
+      "jp": "買って (katte)",
+      "reading": "買っている",
+      "en": "to buy",
+      "tags": []
+    },
+    {
+      "jp": "会う (au)",
+      "reading": "会って (atte)",
+      "en": "会っている",
+      "tags": []
+    },
+    {
+      "jp": "to hold/carry",
+      "reading": "",
+      "en": "取る (toru)",
+      "tags": []
+    },
+    {
+      "jp": "取っている",
+      "reading": "to take",
+      "en": "Irregular Verbs:",
+      "type": "ru-verb",
+      "tags": []
+    },
+    {
+      "jp": "------------",
+      "reading": "---------",
+      "en": "--------",
+      "tags": []
+    },
+    {
+      "jp": "to do",
+      "reading": "",
+      "en": "来る (kuru)",
+      "tags": []
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "TE-form Conjugation Review",
+      "explanation": "The TE-form (て-form) is essential for connecting verbs, making requests, and describing sequential actions.",
+      "examples": [
+        {
+          "jp": "form (て",
+          "en": "form) is essential for connecting verbs, making requests, and describing sequential actions."
+        }
+      ]
+    },
+    {
+      "pattern": "Polite Present Continuous (ています)",
+      "explanation": "The continuous tense describes actions currently happening or ongoing states.\n\nFormation: Verb-TE + います (polite) / いる (casual)\n\nUses:\n1. Present continuous (action in progress right now)",
+      "examples": [
+        {
+          "jp": "Formation: Verb",
+          "en": "TE + います (polite) / いる (casual)"
+        },
+        {
+          "jp": "Uses:",
+          "en": ""
+        },
+        {
+          "jp": "Present continuous (action in progress right now)",
+          "en": ""
+        },
+        {
+          "jp": "State description (ongoing condition)",
+          "en": ""
+        },
+        {
+          "jp": "Habitual actions (work, live, married status)",
+          "en": ""
+        }
+      ]
+    },
+    {
+      "pattern": "Sentence Scrambling Exercise",
+      "explanation": "Practice constructing proper Japanese sentences from scrambled components. Key points:\n- Pay attention to particle placement (は, が, に, で, etc.)\n- Subject → Object → Verb order (SOV)\n- Include polite",
+      "examples": [
+        {
+          "jp": "Pay attention to particle placement (は, が, に, で, etc.)",
+          "en": "Subject → Object → Verb order (SOV)"
+        },
+        {
+          "jp": "Include polite endings (ます/です)",
+          "en": "Time expressions typically come early in the sentence"
+        },
+        {
+          "jp": "Sentence Structure Formula:",
+          "en": ""
+        },
+        {
+          "jp": "--",
+          "en": ""
+        }
+      ]
+    },
+    {
+      "pattern": "Question Formation with Context Clues",
+      "explanation": "Questions often contain hints to the answer:\n- Listen for key words in the question\n- Match particles and vocabulary\n- Consider the context of the conversation\n\n---",
+      "examples": [
+        {
+          "jp": "Listen for key words in the question",
+          "en": "Match particles and vocabulary"
+        },
+        {
+          "jp": "Consider the context of the conversation",
+          "en": "--"
+        }
+      ]
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [
+    "[Topic/Subject] + [Time] + [Location] + [Object] + [Verb]",
+    "   は/が        +  [に]  +   [で]    +   [を]   + [ます形]"
+  ],
+  "summary": "Date: December 17, 2025  \nDuration: 77 minutes  \nFormat: Polish/Japanese instruction  \nTopic: TE-form conjugation review, sentence building with scrambled words, polite present continuous"
+}

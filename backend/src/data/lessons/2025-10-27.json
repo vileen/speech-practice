@@ -1,0 +1,342 @@
+{
+  "id": "2025-10-27",
+  "date": "2025-10-27",
+  "title": "Lekcja 2025-10-27 — Katakana: ma-ya-ra, przeczenia, czasowniki (forma mas)",
+  "order": 20251027,
+  "topics": [],
+  "vocabulary": [
+    {
+      "jp": "Katakana",
+      "reading": "Romaji",
+      "en": "Uwagi",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "マ",
+      "reading": "ma",
+      "en": "Podobne do hiragany",
+      "tags": []
+    },
+    {
+      "jp": "ミ",
+      "reading": "mi",
+      "en": "Trzy poziome (jak hiragana)",
+      "tags": []
+    },
+    {
+      "jp": "ム",
+      "reading": "mu",
+      "en": "Pętelka z dołu do góry",
+      "tags": []
+    },
+    {
+      "jp": "メ",
+      "reading": "me",
+      "en": "Jak hiragana",
+      "tags": []
+    },
+    {
+      "jp": "モ",
+      "reading": "mo",
+      "en": "Dwie poziome + środkowa",
+      "tags": []
+    },
+    {
+      "jp": "Katakana",
+      "reading": "Romaji",
+      "en": "Uwagi",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "ヤ",
+      "reading": "ya",
+      "en": "Prosty kształt",
+      "tags": []
+    },
+    {
+      "jp": "ユ",
+      "reading": "yu",
+      "en": "Jak hiragana ale kanciaste",
+      "tags": []
+    },
+    {
+      "jp": "ヨ",
+      "reading": "yo",
+      "en": "Kwadratowy kształt",
+      "tags": []
+    },
+    {
+      "jp": "Katakana",
+      "reading": "Romaji",
+      "en": "Uwagi",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "ラ",
+      "reading": "ra",
+      "en": "Prosty kształt",
+      "tags": []
+    },
+    {
+      "jp": "リ",
+      "reading": "ri",
+      "en": "Dwie proste kreski",
+      "tags": []
+    },
+    {
+      "jp": "ル",
+      "reading": "ru",
+      "en": "Pętelka + zjazd",
+      "tags": []
+    },
+    {
+      "jp": "レ",
+      "reading": "re",
+      "en": "Jak hiragana",
+      "tags": []
+    },
+    {
+      "jp": "ロ",
+      "reading": "ro",
+      "en": "Kwadratowy",
+      "tags": []
+    },
+    {
+      "jp": "Katakana",
+      "reading": "Romaji",
+      "en": "Uwagi",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "ワ",
+      "reading": "wa",
+      "en": "Bez pętelki",
+      "tags": []
+    },
+    {
+      "jp": "ヲ",
+      "reading": "wo/o",
+      "en": "Rzadko używane (partykuła)",
+      "tags": []
+    },
+    {
+      "jp": "ン",
+      "reading": "n",
+      "en": "Z dołu do góry!",
+      "tags": []
+    },
+    {
+      "jp": "-------",
+      "reading": "",
+      "en": "A",
+      "tags": []
+    },
+    {
+      "jp": "タチツテト",
+      "reading": "",
+      "en": "N",
+      "tags": []
+    },
+    {
+      "jp": "ヤユヨ",
+      "reading": "",
+      "en": "R",
+      "tags": []
+    },
+    {
+      "jp": "-",
+      "reading": "ン",
+      "en": "### 7. Czasowniki - wprowadzenie formy masu\n\nTrzy grupy czasowników:\n\n#### Grupa 1: -iru / -eru (Ichidan)\nKończą się na iru lub eru:\n- Taberu (jeść)\n- Miru (oglądać)\n- Okiru (wstawać)\n- Neru (spać)\n\nOdmiana: Ucinamy -ru, dodajemy -masu\n- Taberu → Tabemasu\n- Miru → Mimasu\n- Okiru → Okimasu\n- Neru → Nemasu\n\n#### Grupa 2: -u (Godan)\nKończą się na u (różne sylaby):\n- Nomu (pić)\n- Kiku (słuchać)\n- Yomu (czytać)\n- Hanasu (rozmawiać)\n- Iku (iść)\n- Kaeru (wracać)\n\nOdmiana: Zamieniamy ostatnią sylabę u → i, dodajemy -masu\n- Nomu → Nomi + masu = Nomimasu\n- Kiku → Kiki + masu = Kikimasu\n- Yomu → Yomi + masu = Yomimasu\n- Hanasu → Hanashi + masu = Hanashimasu\n- Iku → Iki + masu = Ikimasu\n- Kaeru → Kaeri + masu = Kaerimasu\n\nKaeru wygląda jak grupa 1 ale jest grupą 2!\n\n#### Grupa 3: Nieregularne (Suru / Kuru)\n- Suru (robić) → Shimasu\n- Kuru (przychodzić) → Kimasu\n\n### 8. Przeczenia czasowników (masen)\n\nWzór: Zamieniamy -masu na -masen",
+      "tags": []
+    },
+    {
+      "jp": "Ikimasu",
+      "reading": "Ikimasen",
+      "en": "### 9. Partykuła を (wo/o)\n\nUżycie:\n- Wskazuje dopełnienie (co/kogo)\n- Czytana jak \"o\"\n- Pisana łącznie z hiraganą: を\n\nPrzykłady:\n- Sushi o tabemasu - Jem sushi\n- Kohi o nomimasu - Piję kawę\n- Eiga o mimasu - Oglądam film\n- Hon o yomimasu - Czytam książkę\n- Ongaku o kikimasu - Słucham muzyki\n\n---\n\n## 📝 Słownictwo nowe\n\n### Katakana",
+      "tags": []
+    },
+    {
+      "jp": "wain",
+      "reading": "wino",
+      "en": "### Czasowniki",
+      "tags": []
+    },
+    {
+      "jp": "masu",
+      "reading": "masen",
+      "en": "Znaczenie",
+      "tags": []
+    },
+    {
+      "jp": "tabemasu",
+      "reading": "tabemasen",
+      "en": "jeść",
+      "tags": []
+    },
+    {
+      "jp": "mimasu",
+      "reading": "mimasen",
+      "en": "oglądać",
+      "tags": []
+    },
+    {
+      "jp": "yomimasu",
+      "reading": "yomimasen",
+      "en": "czytać",
+      "tags": []
+    },
+    {
+      "jp": "ikimasu",
+      "reading": "ikimasen",
+      "en": "iść",
+      "tags": []
+    },
+    {
+      "jp": "shimasu",
+      "reading": "shimasen",
+      "en": "robić",
+      "tags": []
+    },
+    {
+      "jp": "przychodzić",
+      "reading": "3 (niereg.)",
+      "en": "Dodatkowe:\n- べんきょうする (benkyou suru) → benkyou shimasu - uczyć się\n- スポーツする (supōtsu suru) → supōtsu shimasu - uprawiać sport\n\n---\n\n## 📚 Zadanie domowe\n- Powtórka wszystkich znaków katakanii\n- Ćwiczenie odmiany czasowników (masu/masen)\n- Tworzenie zdań z partykułą を\n- Ćwiczenie rozróżniania hiragany i katakanii\n\n---\n\n## 🔗 Powiązania\n- Poprzednia: [[Lesson-2025-10-22---katakana-ta-na-ha",
+      "tags": []
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Powtórka katakanii",
+      "explanation": "- Ta-chi-tsu-te-to (タチツテト)\n- Na-ni-nu-ne-no (ナニヌネノ)\n- Ha-hi-fu-he-ho (ハヒフヘホ)\n- Rozróżnianie: ソ vs ン, シ vs ツ",
+      "examples": [
+        {
+          "jp": "Ta",
+          "en": "chi-tsu-te-to (タチツテト)"
+        },
+        {
+          "jp": "Na",
+          "en": "ni-nu-ne-no (ナニヌネノ)"
+        },
+        {
+          "jp": "Ha",
+          "en": "hi-fu-he-ho (ハヒフヘホ)"
+        },
+        {
+          "jp": "Rozróżnianie: ソ vs ン, シ vs ツ",
+          "en": ""
+        }
+      ]
+    },
+    {
+      "pattern": "Wiersz ma-mi-mu-me-mo (マミムメモ)",
+      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| マ | ma | Podobne do hiragany |\n| ミ | mi | Trzy poziome (jak hiragana) |\n| ム | mu | Pętelka z dołu do góry |\n| メ | me | Jak hiragana |\n| モ",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|--------|-------|"
+        },
+        {
+          "jp": "Przykłady:",
+          "en": "ママ (mama) - mama"
+        },
+        {
+          "jp": "ミルク (miruku)",
+          "en": "mleko"
+        },
+        {
+          "jp": "ムスメ (musume)",
+          "en": "córka"
+        },
+        {
+          "jp": "メニュー (menyū)",
+          "en": "menu"
+        }
+      ]
+    },
+    {
+      "pattern": "Wiersz ya-yu-yo (ヤユヨ)",
+      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| ヤ | ya | Prosty kształt |\n| ユ | yu | Jak hiragana ale kanciaste |\n| ヨ | yo | Kwadratowy kształt |\n\nPrzykłady:\n- ヨーロッパ (yōroppa) - Eur",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|--------|-------|"
+        },
+        {
+          "jp": "Przykłady:",
+          "en": "ヨーロッパ (yōroppa) - Europa"
+        },
+        {
+          "jp": "ヤクルト (yakuruto)",
+          "en": "Yakult"
+        }
+      ]
+    },
+    {
+      "pattern": "Wiersz ra-ri-ru-re-ro (ラリルレロ)",
+      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| ラ | ra | Prosty kształt |\n| リ | ri | Dwie proste kreski |\n| ル | ru | Pętelka + zjazd |\n| レ | re | Jak hiragana |\n| ロ | ro | Kwadratowy |",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|--------|-------|"
+        },
+        {
+          "jp": "Przykłady:",
+          "en": "ラーメン (rāmen) - ramen"
+        },
+        {
+          "jp": "リサイクル (risaikuru)",
+          "en": "recykling"
+        },
+        {
+          "jp": "ルール (rūru)",
+          "en": "zasada"
+        },
+        {
+          "jp": "レストラン (resutoran)",
+          "en": "restauracja"
+        }
+      ]
+    },
+    {
+      "pattern": "Wiersz wa-wo-n (ワヲン)",
+      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| ワ | wa | Bez pętelki |\n| ヲ | wo/o | Rzadko używane (partykuła) |\n| ン | n | Z dołu do góry! |\n\nUwaga: W katakanii ヲ (wo) jest prawie n",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|--------|-------|"
+        },
+        {
+          "jp": "Uwaga: W katakanii ヲ (wo) jest prawie nieużywane",
+          "en": "zamiast tego オ (o)"
+        }
+      ]
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [],
+  "summary": "## 📅 Informacje ogólne\n- Data: 2025-10-27\n- Tydzień: #Tydzień-5\n- Status: ✓ Ukończona\n- Czas trwania: ~60 min"
+}

@@ -1,0 +1,436 @@
+{
+  "id": "2025-10-22",
+  "date": "2025-10-22",
+  "title": "Lekcja 2025-10-22 — Katakana: ta-chi-tsu-te-to, na-ni-nu-ne-no, ha-hi-fu-he-ho",
+  "order": 20251022,
+  "topics": [],
+  "vocabulary": [
+    {
+      "jp": "Katakana",
+      "reading": "Romaji",
+      "en": "Uwagi",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "タ",
+      "reading": "ta",
+      "en": "Łezka + przecięcie (kanciaste)",
+      "tags": []
+    },
+    {
+      "jp": "チ",
+      "reading": "chi",
+      "en": "Jak hiraganie chi ale kanciaste",
+      "tags": []
+    },
+    {
+      "jp": "ツ",
+      "reading": "tsu",
+      "en": "Mała wersja, z góry na dół!",
+      "tags": []
+    },
+    {
+      "jp": "テ",
+      "reading": "te",
+      "en": "Dwie poziome + pionowa",
+      "tags": []
+    },
+    {
+      "jp": "ト",
+      "reading": "to",
+      "en": "Pionowa + zadziorek z prawej",
+      "tags": []
+    },
+    {
+      "jp": "Katakana",
+      "reading": "Romaji",
+      "en": "Uwagi",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "ナ",
+      "reading": "na",
+      "en": "Proste krzyżyk (krótsza kreska z lewej)",
+      "tags": []
+    },
+    {
+      "jp": "ニ",
+      "reading": "ni",
+      "en": "Dwie poziome kreski",
+      "tags": []
+    },
+    {
+      "jp": "ヌ",
+      "reading": "nu",
+      "en": "Pętelka z przytupem",
+      "tags": []
+    },
+    {
+      "jp": "ネ",
+      "reading": "ne",
+      "en": "Pętelka + przecięcie (kanciaste)",
+      "tags": []
+    },
+    {
+      "jp": "ノ",
+      "reading": "no",
+      "en": "Prosta kreska z góry w lewo",
+      "tags": []
+    },
+    {
+      "jp": "Katakana",
+      "reading": "Romaji",
+      "en": "Uwagi",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "ハ",
+      "reading": "ha",
+      "en": "Prosty kształt jak hiragana",
+      "tags": []
+    },
+    {
+      "jp": "ヒ",
+      "reading": "hi",
+      "en": "Dwie kreski (jak hiragana)",
+      "tags": []
+    },
+    {
+      "jp": "フ",
+      "reading": "fu",
+      "en": "Bez pętelki, kanciasty",
+      "tags": []
+    },
+    {
+      "jp": "ヘ",
+      "reading": "he",
+      "en": "Taki sam jak hiragana!",
+      "tags": []
+    },
+    {
+      "jp": "ホ",
+      "reading": "ho",
+      "en": "Krzyżyk + poziome kreski",
+      "tags": []
+    },
+    {
+      "jp": "Katakana",
+      "reading": "Romaji",
+      "en": "Znaczenie",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-----------",
+      "tags": []
+    },
+    {
+      "jp": "タオル",
+      "reading": "taoru",
+      "en": "ręcznik",
+      "tags": []
+    },
+    {
+      "jp": "タコ",
+      "reading": "tako",
+      "en": "ośmiornica",
+      "tags": []
+    },
+    {
+      "jp": "タクシー",
+      "reading": "takushī",
+      "en": "taksówka",
+      "tags": []
+    },
+    {
+      "jp": "チキン",
+      "reading": "chikin",
+      "en": "kurczak",
+      "tags": []
+    },
+    {
+      "jp": "チーズ",
+      "reading": "chīzu",
+      "en": "ser",
+      "tags": []
+    },
+    {
+      "jp": "テスト",
+      "reading": "tesuto",
+      "en": "test",
+      "tags": []
+    },
+    {
+      "jp": "ナイフ",
+      "reading": "naifu",
+      "en": "nóż",
+      "tags": []
+    },
+    {
+      "jp": "ニュース",
+      "reading": "nyūsu",
+      "en": "wiadomości",
+      "tags": []
+    },
+    {
+      "jp": "ノート",
+      "reading": "nōto",
+      "en": "notes",
+      "tags": []
+    },
+    {
+      "jp": "ハロウィン",
+      "reading": "harowin",
+      "en": "Halloween",
+      "tags": []
+    },
+    {
+      "jp": "パーティー",
+      "reading": "pātī",
+      "en": "party",
+      "tags": []
+    },
+    {
+      "jp": "ホテル",
+      "reading": "hoteru",
+      "en": "hotel",
+      "tags": []
+    },
+    {
+      "jp": "ハーフ",
+      "reading": "hāfu",
+      "en": "pół, połówka",
+      "tags": []
+    },
+    {
+      "jp": "Przymiotnik",
+      "reading": "Przeczenie",
+      "en": "Znaczenie",
+      "tags": []
+    },
+    {
+      "jp": "-------------",
+      "reading": "------------",
+      "en": "-----------",
+      "tags": []
+    },
+    {
+      "jp": "Oishii",
+      "reading": "Oishikunai",
+      "en": "niesmaczny",
+      "tags": []
+    },
+    {
+      "jp": "Takai",
+      "reading": "Takakunai",
+      "en": "niedrogi/niewysoki",
+      "tags": []
+    },
+    {
+      "jp": "Yasui",
+      "reading": "Yasukunai",
+      "en": "niedrogi",
+      "tags": []
+    },
+    {
+      "jp": "Ookii",
+      "reading": "Ookikunai",
+      "en": "nieduży",
+      "tags": []
+    },
+    {
+      "jp": "Chiisai",
+      "reading": "Chiisakunai",
+      "en": "niemały",
+      "tags": []
+    },
+    {
+      "jp": "Atarashii",
+      "reading": "Atarashikunai",
+      "en": "niestary",
+      "tags": []
+    },
+    {
+      "jp": "Furui",
+      "reading": "Furukunai",
+      "en": "nowy",
+      "tags": []
+    },
+    {
+      "jp": "Omoshiroi",
+      "reading": "Omoshirokunai",
+      "en": "nudny",
+      "tags": []
+    },
+    {
+      "jp": "Genki",
+      "reading": "Genki janai",
+      "en": "chory, bez energii",
+      "tags": []
+    },
+    {
+      "jp": "Kirei",
+      "reading": "Kirei janai",
+      "en": "brzydki, brudny",
+      "tags": []
+    },
+    {
+      "jp": "Kantan",
+      "reading": "Kantan janai",
+      "en": "trudny",
+      "tags": []
+    },
+    {
+      "jp": "Shizuka",
+      "reading": "Shizuka janai",
+      "en": "głośny",
+      "tags": []
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Powtórka katakanii",
+      "explanation": "- A-i-u-e-o (アイウエオ)\n- Ka-ki-ku-ke-ko (カキクケコ)\n- Sa-shi-su-se-so (サシスセソ)\n- Rozróżnianie: シ vs ン vs ソ",
+      "examples": [
+        {
+          "jp": "A",
+          "en": "i-u-e-o (アイウエオ)"
+        },
+        {
+          "jp": "Ka",
+          "en": "ki-ku-ke-ko (カキクケコ)"
+        },
+        {
+          "jp": "Sa",
+          "en": "shi-su-se-so (サシスセソ)"
+        },
+        {
+          "jp": "Rozróżnianie: シ vs ン vs ソ",
+          "en": ""
+        }
+      ]
+    },
+    {
+      "pattern": "Wiersz ta-chi-tsu-te-to (タチツテト)",
+      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| タ | ta | Łezka + przecięcie (kanciaste) |\n| チ | chi | Jak hiraganie chi ale kanciaste |\n| ツ | tsu | Mała wersja, z góry na dół! |\n| テ | t",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|--------|-------|"
+        },
+        {
+          "jp": "Różnice kluczowe:",
+          "en": "シ (shi) - trzy kreski, z dołu do góry"
+        },
+        {
+          "jp": "ツ (tsu)",
+          "en": "mały, z góry na dół"
+        },
+        {
+          "jp": "ソ (so)",
+          "en": "dwie kreski, z góry na dół"
+        },
+        {
+          "jp": "ン (n)",
+          "en": "dwie kreski, z dołu do góry"
+        }
+      ]
+    },
+    {
+      "pattern": "Wiersz na-ni-nu-ne-no (ナニヌネノ)",
+      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| ナ | na | Proste krzyżyk (krótsza kreska z lewej) |\n| ニ | ni | Dwie poziome kreski |\n| ヌ | nu | Pętelka z przytupem |\n| ネ | ne | Pętelka +",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|--------|-------|"
+        },
+        {
+          "jp": "Przykłady:",
+          "en": "ナイフ (naifu) - nóż"
+        },
+        {
+          "jp": "ニュース (nyūsu)",
+          "en": "wiadomości"
+        },
+        {
+          "jp": "ノート (nōto)",
+          "en": "notes"
+        }
+      ]
+    },
+    {
+      "pattern": "Wiersz ha-hi-fu-he-ho (ハヒフヘホ)",
+      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| ハ | ha | Prosty kształt jak hiragana |\n| ヒ | hi | Dwie kreski (jak hiragana) |\n| フ | fu | Bez pętelki, kanciasty |\n| ヘ | he | Taki sam ja",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "-------|--------|-------|"
+        },
+        {
+          "jp": "Przykłady:",
+          "en": "ハロウィン (harowin) - Halloween"
+        },
+        {
+          "jp": "パーティー (pātī)",
+          "en": "party"
+        },
+        {
+          "jp": "ヒーロー (hīrō)",
+          "en": "bohater"
+        },
+        {
+          "jp": "ホテル (hoteru)",
+          "en": "hotel"
+        }
+      ]
+    },
+    {
+      "pattern": "Pomniejszenia w katakanii (Yoon)",
+      "explanation": "Tworzenie nowych dźwięków:\n- Małe a-i-u-e-o łączone z poprzednią sylabą\n\nPrzykłady:\n- ファ (fa) = fu (フ) + małe a (ァ)\n- フィ (fi) = fu + małe i (ィ)\n- フェ (fe) = fu + małe e (ェ)\n- フォ (fo) = fu + ma",
+      "examples": [
+        {
+          "jp": "Tworzenie nowych dźwięków:",
+          "en": "Małe a-i-u-e-o łączone z poprzednią sylabą"
+        },
+        {
+          "jp": "Przykłady:",
+          "en": "ファ (fa) = fu (フ) + małe a (ァ)"
+        },
+        {
+          "jp": "フィ (fi) = fu + małe i (ィ)",
+          "en": "フェ (fe) = fu + małe e (ェ)"
+        },
+        {
+          "jp": "フォ (fo) = fu + małe o (ォ)",
+          "en": ""
+        },
+        {
+          "jp": "Użycie:",
+          "en": "Słowa obce z dźwiękami nienaturalnymi dla japońskiego"
+        }
+      ]
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [],
+  "summary": "## 📅 Informacje ogólne\n- Data: 2025-10-22\n- Tydzień: #Tydzień-4\n- Status: ✓ Ukończona\n- Czas trwania: ~60 min"
+}

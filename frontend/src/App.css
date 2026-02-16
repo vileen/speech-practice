@@ -147,6 +147,18 @@ header h1 {
   font-size: 0.9rem;
 }
 
+.logout-btn {
+  background: #666;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  margin-left: 8px;
+}
+
+.logout-btn:hover {
+  background: #888;
+}
+
 .session-info {
   display: flex;
   justify-content: space-between;
@@ -182,10 +194,49 @@ header h1 {
   align-self: flex-end;
 }
 
-.message audio {
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.role-badge {
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.translate-toggle {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.translate-toggle:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.audio-player {
   margin-top: 8px;
-  width: 100%;
-  max-width: 250px;
+}
+
+.play-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.play-btn:hover {
+  background: rgba(255,255,255,0.3);
 }
 
 .input-area {
@@ -231,4 +282,211 @@ header h1 {
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
+}
+
+/* Furigana styles */
+.furigana-text ruby {
+  ruby-align: center;
+}
+
+.furigana-text rt {
+  font-size: 0.5em;
+  color: #aaa;
+}
+
+.toggle-furigana {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.toggle-furigana:hover {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+/* Repeat After Me Mode */
+.repeat-mode {
+  max-width: 600px;
+}
+
+.mode-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.mode-btn {
+  background: #16213e;
+  border: 2px solid #333;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.mode-btn:hover {
+  background: #1a4a7a;
+}
+
+.repeat-mode-btn {
+  background: #4a7a1a !important;
+  margin-top: 10px;
+}
+
+.repeat-mode-btn:hover {
+  background: #5a8a2a !important;
+}
+
+.lesson-mode-btn {
+  background: #7a1a4a !important;
+  margin-top: 10px;
+}
+
+.lesson-mode-btn:hover {
+  background: #8a2a5a !important;
+}
+
+.repeat-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.phrase-card {
+  background: #16213e;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  text-align: center;
+}
+
+.phrase-display {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phrase-display .plain-text {
+  font-size: 2rem;
+}
+
+.phrase-controls {
+  margin-top: 1rem;
+}
+
+.play-btn.large {
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  background: #0f3460;
+}
+
+.play-btn.large:hover {
+  background: #1a4a7a;
+}
+
+/* Result Card */
+.result-card {
+  background: #16213e;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 100%;
+  border: 2px solid #333;
+}
+
+.result-card.score-100 {
+  border-color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.result-card.score-80 {
+  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+}
+
+.result-card.score-50 {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.result-card.score-0 {
+  border-color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.score-number {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #e94560;
+}
+
+.feedback {
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.transcription-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.transcription-comparison label {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.transcription-comparison .expected {
+  color: #4ade80;
+}
+
+.transcription-comparison .heard {
+  color: #fbbf24;
+}
+
+/* Repeat Controls */
+.repeat-controls {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.record-btn.large {
+  padding: 20px 48px;
+  font-size: 1.3rem;
+}
+
+.next-btn {
+  padding: 16px 32px;
+  border: none;
+  border-radius: 8px;
+  background: #0f3460;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.next-btn:hover {
+  background: #1a4a7a;
 }

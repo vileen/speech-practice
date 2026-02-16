@@ -1,0 +1,322 @@
+{
+  "id": "2025-10-06",
+  "date": "2025-10-06",
+  "title": "Lekcja 2025-10-06 — Liczby, Wiek i Hiragana (na-ni-nu-ne-no)",
+  "order": 20251006,
+  "topics": [],
+  "vocabulary": [
+    {
+      "jp": "-----------",
+      "reading": "",
+      "en": "O-genki desu ka?",
+      "tags": []
+    },
+    {
+      "jp": "Nie, jestem chory",
+      "reading": "",
+      "en": "Kyō wa samui desu",
+      "tags": []
+    },
+    {
+      "jp": "Cyfra",
+      "reading": "Japoński",
+      "en": "Uwagi",
+      "tags": []
+    },
+    {
+      "jp": "-------",
+      "reading": "----------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "0",
+      "reading": "zero / rei",
+      "en": "Rei używane w niektórych kontekstach",
+      "tags": []
+    },
+    {
+      "jp": "4",
+      "reading": "yon / shi",
+      "en": "Uwaga: Shi unikać (śmierć!)",
+      "tags": []
+    },
+    {
+      "jp": "7",
+      "reading": "nana / shichi",
+      "en": "Nana częściej używane",
+      "tags": []
+    },
+    {
+      "jp": "9",
+      "reading": "kyū / ku",
+      "en": "Obie formy OK",
+      "tags": []
+    },
+    {
+      "jp": "Cyfra",
+      "reading": "Japoński",
+      "en": "Skład",
+      "tags": []
+    },
+    {
+      "jp": "-------",
+      "reading": "----------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "11",
+      "reading": "jū ichi",
+      "en": "10 + 1",
+      "tags": []
+    },
+    {
+      "jp": "12",
+      "reading": "jū ni",
+      "en": "10 + 2",
+      "tags": []
+    },
+    {
+      "jp": "13",
+      "reading": "jū san",
+      "en": "10 + 3",
+      "tags": []
+    },
+    {
+      "jp": "14",
+      "reading": "jū yon",
+      "en": "10 + 4 (NIE jū shi!)",
+      "tags": []
+    },
+    {
+      "jp": "15",
+      "reading": "jū go",
+      "en": "10 + 5",
+      "tags": []
+    },
+    {
+      "jp": "16",
+      "reading": "jū roku",
+      "en": "10 + 6",
+      "tags": []
+    },
+    {
+      "jp": "17",
+      "reading": "jū nana",
+      "en": "10 + 7",
+      "tags": []
+    },
+    {
+      "jp": "18",
+      "reading": "jū hachi",
+      "en": "10 + 8",
+      "tags": []
+    },
+    {
+      "jp": "19",
+      "reading": "jū kyū",
+      "en": "10 + 9",
+      "tags": []
+    },
+    {
+      "jp": "Cyfra",
+      "reading": "Japoński",
+      "en": "Skład",
+      "tags": []
+    },
+    {
+      "jp": "-------",
+      "reading": "----------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "20",
+      "reading": "ni jū",
+      "en": "2 × 10",
+      "tags": []
+    },
+    {
+      "jp": "30",
+      "reading": "san jū",
+      "en": "3 × 10",
+      "tags": []
+    },
+    {
+      "jp": "40",
+      "reading": "yon jū",
+      "en": "4 × 10",
+      "tags": []
+    },
+    {
+      "jp": "50",
+      "reading": "go jū",
+      "en": "5 × 10",
+      "tags": []
+    },
+    {
+      "jp": "60",
+      "reading": "roku jū",
+      "en": "6 × 10",
+      "tags": []
+    },
+    {
+      "jp": "70",
+      "reading": "nana jū",
+      "en": "7 × 10",
+      "tags": []
+    },
+    {
+      "jp": "80",
+      "reading": "hachi jū",
+      "en": "8 × 10",
+      "tags": []
+    },
+    {
+      "jp": "90",
+      "reading": "kyū jū",
+      "en": "9 × 10",
+      "tags": []
+    },
+    {
+      "jp": "Cyfra",
+      "reading": "Japoński",
+      "en": "Skład",
+      "tags": []
+    },
+    {
+      "jp": "-------",
+      "reading": "----------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "21",
+      "reading": "ni jū ichi",
+      "en": "20 + 1",
+      "tags": []
+    },
+    {
+      "jp": "22",
+      "reading": "ni jū ni",
+      "en": "20 + 2",
+      "tags": []
+    },
+    {
+      "jp": "35",
+      "reading": "san jū go",
+      "en": "30 + 5",
+      "tags": []
+    },
+    {
+      "jp": "48",
+      "reading": "yon jū hachi",
+      "en": "40 + 8",
+      "tags": []
+    },
+    {
+      "jp": "99",
+      "reading": "kyū jū kyū",
+      "en": "90 + 9",
+      "tags": []
+    },
+    {
+      "jp": "Wiek",
+      "reading": "Japoński",
+      "en": "Uwagi",
+      "tags": []
+    },
+    {
+      "jp": "------",
+      "reading": "----------",
+      "en": "-------",
+      "tags": []
+    },
+    {
+      "jp": "1 rok",
+      "reading": "issai",
+      "en": "NIE ichi-sai!",
+      "tags": []
+    },
+    {
+      "jp": "8 lat",
+      "reading": "hassai",
+      "en": "Specjalne (hachi → ha)",
+      "tags": []
+    },
+    {
+      "jp": "10 lat",
+      "reading": "jū-sai",
+      "en": "Specjalne (podwojone)",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "",
+      "en": "11 lat",
+      "tags": []
+    },
+    {
+      "jp": "hatachi",
+      "reading": "⭐ Magiczna liczba!",
+      "en": "21 lat",
+      "tags": []
+    },
+    {
+      "jp": "40 lat",
+      "reading": "yon jū sai",
+      "en": "⭐ Hatachi (20 lat):\n- W Japonii 20 lat = pełnoletność (dorosłość)\n- Od tego momentu można pić alkohol, głosować\n- Ceremonia Seijin-shiki (成人式) — święto dorosłości w styczniu\n- Dziewczyny ubierają się w drogie kimona\n- UWAGA: Nie dodajemy \"sai\" — mówi się po prostu hatachi desu\n\n## Szkoły i Rok Szkolny (nensei)\n\n### Rodzaje szkół",
+      "tags": []
+    },
+    {
+      "jp": "Znaczenie",
+      "reading": "",
+      "en": "----------",
+      "tags": []
+    },
+    {
+      "jp": "szkoła podstawowa",
+      "reading": "",
+      "en": "shōgakusei",
+      "tags": []
+    },
+    {
+      "jp": "liceum",
+      "reading": "",
+      "en": "kōkōsei",
+      "tags": []
+    },
+    {
+      "jp": "szkoła (ogólnie)",
+      "reading": "",
+      "en": "gakusei",
+      "tags": []
+    },
+    {
+      "jp": "### Pytanie o rok szkolny\n- Nan nensei desu ka? — Na którym roku jesteś? / Którą klasą jesteś?\n\n### Odpowiedzi (klasy 1-6)",
+      "reading": "Japoński",
+      "en": "Znaczenie",
+      "tags": []
+    },
+    {
+      "jp": "pierwszak",
+      "reading": "",
+      "en": "ni-nensei",
+      "tags": []
+    }
+  ],
+  "grammar": [],
+  "dialogues": [],
+  "practice_phrases": [
+    "A: Kore wa nan desu ka? (Co to jest?)",
+    "B: Kore wa go desu. (To jest piętka.)",
+    "A: Ii wa nan desu ka? (Ile to jest \"I\"?)",
+    "B: I wa jū desu. (To jest dziesięć.)",
+    "A: F wa? (A \"F\"?)",
+    "B: F wa hachi desu. (To jest osiem.)",
+    "A: Meri-san wa nan sai desu ka? (Ile lat ma Meri?)",
+    "B: Meri-san wa jū kyū sai desu. (Meri ma 19 lat.)"
+  ],
+  "summary": "## Informacje\n- Data: 2025-10-06\n- Temat: Liczby 0-100+, wyrażanie wieku, hiragana na-ni-nu-ne-no\n- Poziom: Początkujący (wczesny etap)"
+}

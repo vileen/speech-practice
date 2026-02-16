@@ -1,0 +1,327 @@
+{
+  "id": "2025-10-08",
+  "date": "2025-10-08",
+  "title": "Lekcja 2025-10-08 — Hiragana: wiersz ha-hi-fu-he-ho, udźwięcznienia, dialogi",
+  "order": 20251008,
+  "topics": [],
+  "vocabulary": [
+    {
+      "jp": "Znak",
+      "reading": "Czytanie",
+      "en": "Słówka przykładowe",
+      "tags": []
+    },
+    {
+      "jp": "------",
+      "reading": "----------",
+      "en": "-------------------",
+      "tags": []
+    },
+    {
+      "jp": "は",
+      "reading": "ha",
+      "en": "hana (nos/kwiat), hanasu (rozmawiać), ohashi (pałeczki), hako (pudełko)",
+      "tags": []
+    },
+    {
+      "jp": "ひ",
+      "reading": "hi",
+      "en": "hikui (niski), hi (ogień)",
+      "tags": []
+    },
+    {
+      "jp": "ふ",
+      "reading": "fu",
+      "en": "fune (statek), futsu (normalny), futatsu (dwa - licznik), fuku (ubranie), futoi (gruby)",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "へ",
+      "reading": "he",
+      "en": "hei (ogrodzenie), partykuła e (dokąd się wybieramy)",
+      "tags": []
+    },
+    {
+      "jp": "ほ",
+      "reading": "ho",
+      "en": "hoshi (gwiazda), hone (kości), hoho (policzek), hosoi (szczupły)",
+      "tags": []
+    },
+    {
+      "jp": "Japoński",
+      "reading": "Romaji",
+      "en": "Znaczenie",
+      "tags": []
+    },
+    {
+      "jp": "----------",
+      "reading": "--------",
+      "en": "-----------",
+      "tags": []
+    },
+    {
+      "jp": "はな",
+      "reading": "hana",
+      "en": "nos / kwiat",
+      "tags": []
+    },
+    {
+      "jp": "はなす",
+      "reading": "hanasu",
+      "en": "rozmawiać",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "おはし",
+      "reading": "ohashi",
+      "en": "pałeczki",
+      "tags": []
+    },
+    {
+      "jp": "はこ",
+      "reading": "hako",
+      "en": "pudełko",
+      "tags": []
+    },
+    {
+      "jp": "ひ",
+      "reading": "hi",
+      "en": "ogień",
+      "tags": []
+    },
+    {
+      "jp": "ひくい",
+      "reading": "hikui",
+      "en": "niski",
+      "tags": []
+    },
+    {
+      "jp": "ふね",
+      "reading": "fune",
+      "en": "statek",
+      "tags": []
+    },
+    {
+      "jp": "ふつう",
+      "reading": "futsu",
+      "en": "normalny, przeciętny",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "ふたつ",
+      "reading": "futatsu",
+      "en": "dwa (licznik)",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "ふく",
+      "reading": "fuku",
+      "en": "ubranie",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "ふとい",
+      "reading": "futoi",
+      "en": "gruby",
+      "tags": []
+    },
+    {
+      "jp": "へい",
+      "reading": "hei",
+      "en": "ogrodzenie",
+      "tags": []
+    },
+    {
+      "jp": "ほし",
+      "reading": "hoshi",
+      "en": "gwiazda",
+      "tags": []
+    },
+    {
+      "jp": "ほね",
+      "reading": "hone",
+      "en": "kości",
+      "tags": []
+    },
+    {
+      "jp": "ほほ",
+      "reading": "hoho",
+      "en": "policzek",
+      "tags": []
+    },
+    {
+      "jp": "ほそい",
+      "reading": "hosoi",
+      "en": "szczupły",
+      "tags": []
+    },
+    {
+      "jp": "たばこ",
+      "reading": "tabako",
+      "en": "papieros",
+      "tags": []
+    },
+    {
+      "jp": "ことば",
+      "reading": "kotoba",
+      "en": "słowo",
+      "tags": []
+    },
+    {
+      "jp": "いぬ",
+      "reading": "inu",
+      "en": "pies",
+      "type": "u-verb",
+      "tags": []
+    },
+    {
+      "jp": "のど",
+      "reading": "nodo",
+      "en": "gardło",
+      "tags": []
+    },
+    {
+      "jp": "におい",
+      "reading": "nioi",
+      "en": "zapach",
+      "tags": []
+    },
+    {
+      "jp": "おかね",
+      "reading": "okane",
+      "en": "pieniądze",
+      "tags": []
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Powtórka hiragany (na-ni-nu-ne-no)",
+      "explanation": "- Krótka powtórka poprzedniego wiersza\n- Ćwiczenia rozpoznawania znaków\n- Słówka: inu (pies), nodo (gardło), nioi (zapach), okany (pieniądze)",
+      "examples": [
+        {
+          "jp": "Krótka powtórka poprzedniego wiersza",
+          "en": "Ćwiczenia rozpoznawania znaków"
+        }
+      ]
+    },
+    {
+      "pattern": "Nowy wiersz hiragany: ha-hi-fu-he-ho (はひふへほ)",
+      "explanation": "| Znak | Czytanie | Słówka przykładowe |\n|------|----------|-------------------|\n| は | ha | hana (nos/kwiat), hanasu (rozmawiać), ohashi (pałeczki), hako (pudełko) |\n| ひ | hi | hikui (niski), hi (ogi",
+      "examples": [
+        {
+          "jp": "-",
+          "en": "---|----------|-------------------|"
+        },
+        {
+          "jp": "licznik), fuku (ubranie), futoi (gruby) |",
+          "en": ""
+        },
+        {
+          "jp": "Uwagi do pisania:",
+          "en": "fu (ふ) - głowa osobno, brzuszek osobno, nie łączyć w trójkę"
+        },
+        {
+          "jp": "he (へ)",
+          "en": "krótsza z lewej, dłuższa z prawej, ważne żeby leciała w dół"
+        },
+        {
+          "jp": "ho (ほ)",
+          "en": "kreseczka nie może wystawać ponad górną poziomą"
+        }
+      ]
+    },
+    {
+      "pattern": "Udźwięcznienia wiersza ha-hi-fu-he-ho",
+      "explanation": "Z dakuon (dwiema kreseczkami):\n- ha → ba (ば)\n- hi → bi (び)  \n- fu → bu (ぶ)\n- he → be (べ)\n- ho → bo (ぼ)\n\nZ handakuon (małą kropką):\n- ha → pa (ぱ)\n- hi → pi (ぴ)\n- fu → pu (ぷ)\n- he → pe (ぺ)\n- ho",
+      "examples": [
+        {
+          "jp": "Z dakuon (dwiema kreseczkami):",
+          "en": "ha → ba (ば)"
+        },
+        {
+          "jp": "hi → bi (び)",
+          "en": "fu → bu (ぶ)"
+        },
+        {
+          "jp": "he → be (べ)",
+          "en": "ho → bo (ぼ)"
+        },
+        {
+          "jp": "Z handakuon (małą kropką):",
+          "en": "ha → pa (ぱ)"
+        },
+        {
+          "jp": "hi → pi (ぴ)",
+          "en": "fu → pu (ぷ)"
+        }
+      ]
+    },
+    {
+      "pattern": "Powtórka wszystkich wierszy hiragany",
+      "explanation": "- Sa-shi-su-se-so (さしすせそ)\n- Ta-chi-tsu-te-to (たちつてと)\n- Ka-ki-ku-ke-ko (かきくけこ)\n- A-i-u-e-o (あいうえお)\n- Na-ni-nu-ne-no (なにぬねの)\n- Ha-hi-fu-he-ho (はひふへほ)",
+      "examples": [
+        {
+          "jp": "Sa",
+          "en": "shi-su-se-so (さしすせそ)"
+        },
+        {
+          "jp": "Ta",
+          "en": "chi-tsu-te-to (たちつてと)"
+        },
+        {
+          "jp": "Ka",
+          "en": "ki-ku-ke-ko (かきくけこ)"
+        },
+        {
+          "jp": "A",
+          "en": "i-u-e-o (あいうえお)"
+        },
+        {
+          "jp": "Na",
+          "en": "ni-nu-ne-no (なにぬねの)"
+        }
+      ]
+    },
+    {
+      "pattern": "Gramatyka - powtórka pytań",
+      "explanation": "Pytania o pochodzenie:\n- Doko kara desu ka? (Skąd jesteś?)\n- Odpowiedź: [miejsce] kara desu\n\nPytania o wiek:\n- Nan sai desu ka? (Ile masz lat?)\n- Odpowiedź: [liczba] sai desu\n\nPytania o kla",
+      "examples": [
+        {
+          "jp": "Pytania o pochodzenie:",
+          "en": "Doko kara desu ka? (Skąd jesteś?)"
+        },
+        {
+          "jp": "Odpowiedź: [miejsce] kara desu",
+          "en": ""
+        },
+        {
+          "jp": "Pytania o wiek:",
+          "en": "Nan sai desu ka? (Ile masz lat?)"
+        },
+        {
+          "jp": "Odpowiedź: [liczba] sai desu",
+          "en": ""
+        },
+        {
+          "jp": "Pytania o klasę/rok:",
+          "en": "Nan nensei desu ka? (Na którym roku jesteś?)"
+        }
+      ]
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [
+    "A: Anata no namae wa nan desu ka?",
+    "B: Watashi no namae wa Ayaka desu.",
+    "A: Anata wa nan sai desu ka?",
+    "B: Juunana sai desu.",
+    "A: Anata wa doko kara desu ka?",
+    "B: Osaka kara desu."
+  ],
+  "summary": "## 📅 Informacje ogólne\n- Data: 2025-10-08\n- Tydzień: #Tydzień-2\n- Status: ✓ Ukończona\n- Czas trwania: ~60 min"
+}

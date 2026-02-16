@@ -1,14 +1,22 @@
 import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
+import { resolve } from 'path';
 import { mkdirSync, existsSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import pg from 'pg';
-import { generateSpeech } from './services/elevenlabs.js';
+import { generateSpeech, addFurigana, addFuriganaSync, saveFuriganaCache } from './services/elevenlabs.js';
+import { getLessonIndex, getLesson, getRecentLessons, getLessonSystemPrompt } from './services/lessons.js';
+import { transcribeAudioDirect } from './services/whisper.js';
+import { readFile } from 'fs/promises';
 
-config();
+const envPath = resolve(process.cwd(), '.env.local');
+console.log('Loading env from:', envPath);
+const result = config({ path: envPath });
+console.log('Dotenv result:', result.error ? 'Error: ' + result.error.message : 'OK');
+console.log('ELEVENLABS_API_KEY exists:', !!process.env.ELEVENLABS_API_KEY);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -112,10 +120,30 @@ app.post('/api/upload', checkPassword, upload.single('audio'), async (req, res) 
       [session_id, req.file.path, target_language]
     );
     
+    // Transcribe audio with Whisper
+    let transcription = null;
+    try {
+      const audioBuffer = await readFile(req.file.path);
+      const langCode = target_language === 'japanese' ? 'ja' : 'it';
+      transcription = await transcribeAudioDirect(audioBuffer, langCode);
+      
+      // Update database with transcription
+      await pool.query(
+        'UPDATE user_recordings SET transcription = $1 WHERE id = $2',
+        [transcription, result.rows[0].id]
+      );
+      
+      console.log(`Transcribed: ${transcription}`);
+    } catch (transcriptionError) {
+      console.error('Transcription error:', transcriptionError);
+      // Don't fail the upload if transcription fails
+    }
+    
     res.json({
       id: result.rows[0].id,
       filename: req.file.filename,
       path: req.file.path,
+      transcription: transcription,
     });
   } catch (error) {
     console.error('Error uploading recording:', error);
@@ -161,9 +189,199 @@ app.get('/api/sessions', checkPassword, async (req, res) => {
   }
 });
 
+// Repeat After Me - Practice mode with pronunciation checking
+app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (req, res) => {
+  try {
+    const { target_text, language } = req.body;
+    
+    if (!target_text) {
+      return res.status(400).json({ error: 'No target text provided' });
+    }
+
+    // If no audio file, just return the TTS for "listen" phase
+    if (!req.file) {
+      const audioBuffer = await generateSpeech({ 
+        text: target_text, 
+        language: language || 'japanese', 
+        gender: 'female' 
+      });
+      
+      // Add furigana for display (async with Jisho API)
+      const textWithFurigana = await addFurigana(target_text);
+      
+      res.set('Content-Type', 'audio/mpeg');
+      res.set('X-Text-With-Furigana', encodeURIComponent(textWithFurigana));
+      res.set('X-Target-Text', encodeURIComponent(target_text));
+      res.send(audioBuffer);
+      return;
+    }
+
+    // User provided audio - check pronunciation
+    const audioBuffer = await readFile(req.file.path);
+    const langCode = language === 'japanese' ? 'ja' : 'it';
+    const transcription = await transcribeAudioDirect(audioBuffer, langCode);
+    
+    // Compare transcription with target (fuzzy matching)
+    const normalizedTarget = target_text.replace(/[。、！？\s]/g, '').toLowerCase();
+    const normalizedTranscription = (transcription || '').replace(/[。、！？\s]/g, '').toLowerCase();
+    
+    // Calculate similarity (simple version)
+    let score = 0;
+    let feedback = '';
+    
+    if (normalizedTranscription === normalizedTarget) {
+      score = 100;
+      feedback = 'Perfect! 🎉';
+    } else if (normalizedTranscription.length > 0) {
+      // Calculate character match ratio
+      let matches = 0;
+      for (let i = 0; i < Math.min(normalizedTarget.length, normalizedTranscription.length); i++) {
+        if (normalizedTarget[i] === normalizedTranscription[i]) {
+          matches++;
+        }
+      }
+      score = Math.round((matches / normalizedTarget.length) * 100);
+      
+      if (score >= 80) {
+        feedback = 'Very good! 👍';
+      } else if (score >= 50) {
+        feedback = 'Good try! Keep practicing 💪';
+      } else {
+        feedback = 'Try again! Listen carefully 🎯';
+      }
+    } else {
+      score = 0;
+      feedback = 'Could not hear you. Try again! 🎤';
+    }
+
+    res.json({
+      target_text: target_text,
+      transcription: transcription,
+      score: score,
+      feedback: feedback,
+      text_with_furigana: await addFurigana(target_text),
+    });
+  } catch (error) {
+    console.error('Error in repeat-after-me:', error);
+    res.status(500).json({ error: 'Failed to process pronunciation check' });
+  }
+});
+
+// Get text with furigana (async with Jisho API fallback)
+app.post('/api/furigana', checkPassword, async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text) {
+      return res.status(400).json({ error: 'No text provided' });
+    }
+    
+    const textWithFurigana = await addFurigana(text);
+    res.json({ 
+      original: text,
+      with_furigana: textWithFurigana 
+    });
+  } catch (error) {
+    console.error('Error adding furigana:', error);
+    res.status(500).json({ error: 'Failed to add furigana' });
+  }
+});
+
+// Save furigana cache to disk
+app.post('/api/furigana/save', checkPassword, async (req, res) => {
+  try {
+    await saveFuriganaCache();
+    res.json({ status: 'saved', message: 'Furigana cache saved to disk' });
+  } catch (error) {
+    console.error('Error saving cache:', error);
+    res.status(500).json({ error: 'Failed to save cache' });
+  }
+});
+
+// LESSON MODE API
+
+// List all lessons
+app.get('/api/lessons', checkPassword, async (req, res) => {
+  try {
+    const index = await getLessonIndex();
+    res.json(index);
+  } catch (error) {
+    console.error('Error fetching lessons:', error);
+    res.status(500).json({ error: 'Failed to fetch lessons' });
+  }
+});
+
+// Get recent lessons for quick access
+app.get('/api/lessons/recent', checkPassword, async (req, res) => {
+  try {
+    const count = parseInt(req.query.count as string) || 3;
+    const lessons = await getRecentLessons(count);
+    res.json({ lessons });
+  } catch (error) {
+    console.error('Error fetching recent lessons:', error);
+    res.status(500).json({ error: 'Failed to fetch recent lessons' });
+  }
+});
+
+// Get specific lesson
+app.get('/api/lessons/:id', checkPassword, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const lesson = await getLesson(id);
+    if (!lesson) {
+      return res.status(404).json({ error: 'Lesson not found' });
+    }
+    res.json(lesson);
+  } catch (error) {
+    console.error('Error fetching lesson:', error);
+    res.status(500).json({ error: 'Failed to fetch lesson' });
+  }
+});
+
+// Start lesson conversation (returns system prompt)
+app.post('/api/lessons/:id/start', checkPassword, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { relaxed = true } = req.body;
+    
+    const lesson = await getLesson(id);
+    if (!lesson) {
+      return res.status(404).json({ error: 'Lesson not found' });
+    }
+    
+    const systemPrompt = getLessonSystemPrompt(lesson, relaxed);
+    
+    res.json({
+      lesson: {
+        id: lesson.id,
+        title: lesson.title,
+        date: lesson.date,
+        topics: lesson.topics,
+      },
+      system_prompt: systemPrompt,
+      vocabulary_count: lesson.vocabulary.length,
+      grammar_count: lesson.grammar.length,
+    });
+  } catch (error) {
+    console.error('Error starting lesson:', error);
+    res.status(500).json({ error: 'Failed to start lesson' });
+  }
+});
+
+// Serve static frontend files
+const staticPath = join(__dirname, '../dist');
+app.use(express.static(staticPath));
+
+// Serve index.html for all non-API routes (SPA support)
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(join(staticPath, 'index.html'));
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Audio storage: ${audioStoragePath}`);
+  console.log(`Static files: ${staticPath}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
