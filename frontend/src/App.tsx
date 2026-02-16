@@ -55,7 +55,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
-  const [isRecording, setIsRecording] = useState(false);
+  const [, setIsRecording] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [messages, setMessages] = useState<Array<{role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string}>>([]);
   const [inputText, setInputText] = useState('');
@@ -288,65 +288,6 @@ function App() {
   const stopRecordingRepeat = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
-    }
-  };
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      audioChunksRef.current = [];
-      
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-      
-      mediaRecorder.onstop = async () => {
-        const mimeType = mediaRecorder.mimeType || 'audio/webm';
-        const extension = mimeType.includes('mp4') ? 'mp4' : 'webm';
-        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-        
-        const formData = new FormData();
-        formData.append('audio', audioBlob, `recording.${extension}`);
-        formData.append('session_id', session?.id.toString() || '');
-        formData.append('target_language', language);
-        
-        try {
-          const response = await fetch(`${API_URL}/api/upload`, {
-            method: 'POST',
-            headers: {
-              'X-Password': password,
-            },
-            body: formData,
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            const displayText = data.transcription || '[Your recording]';
-            const audioUrl = URL.createObjectURL(audioBlob);
-            setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
-            
-            if (data.transcription) {
-              await generateAIResponse(data.transcription, language);
-            }
-          }
-        } catch (error) {
-          console.error('Error uploading recording:', error);
-        }
-      };
-      
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (error) {
-      console.error('Error starting recording:', error);
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
     }
   };
 
@@ -662,7 +603,6 @@ function App() {
             {/* Voice Recorder with VAD */}
             <VoiceRecorder
               mode={recordingMode}
-              language={language}
               isListening={isListening}
               onStartListening={() => {
                 setIsListening(true);

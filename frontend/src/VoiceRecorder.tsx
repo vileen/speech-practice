@@ -7,31 +7,6 @@ interface VoiceRecorderProps {
   onStartListening: () => void;
   onStopListening: () => void;
   mode: 'push-to-talk' | 'voice-activated';
-  language: string;
-}
-
-// Simple energy-based VAD
-function detectVoiceActivity(
-  analyser: AnalyserNode,
-  threshold: number = 30,
-  minVoiceDuration: number = 200,
-  silenceTimeout: number = 1500
-): { isSpeaking: boolean; hasSpoken: boolean; silenceDuration: number } {
-  const dataArray = new Uint8Array(analyser.frequencyBinCount);
-  analyser.getByteFrequencyData(dataArray);
-  
-  // Calculate average energy
-  let sum = 0;
-  for (let i = 0; i < dataArray.length; i++) {
-    sum += dataArray[i];
-  }
-  const average = sum / dataArray.length;
-  
-  return {
-    isSpeaking: average > threshold,
-    hasSpoken: average > threshold * 0.8,
-    silenceDuration: average < threshold ? Date.now() : 0,
-  };
 }
 
 export function VoiceRecorder({
@@ -40,7 +15,6 @@ export function VoiceRecorder({
   onStartListening,
   onStopListening,
   mode,
-  language,
 }: VoiceRecorderProps) {
   const [audioLevel, setAudioLevel] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -54,7 +28,6 @@ export function VoiceRecorder({
   const audioChunksRef = useRef<Blob[]>([]);
   const rafRef = useRef<number | null>(null);
   const silenceStartRef = useRef<number | null>(null);
-  const voiceStartRef = useRef<number | null>(null);
   
   // Start VAD monitoring
   const startVAD = useCallback(async () => {
@@ -115,7 +88,6 @@ export function VoiceRecorder({
           if (speaking) {
             if (!hasDetectedVoice) {
               setHasDetectedVoice(true);
-              voiceStartRef.current = Date.now();
             }
             silenceStartRef.current = null;
             setSilenceTimer(0);
@@ -168,7 +140,6 @@ export function VoiceRecorder({
     setHasDetectedVoice(false);
     setSilenceTimer(0);
     silenceStartRef.current = null;
-    voiceStartRef.current = null;
     
     onStopListening();
   }, [onStopListening]);
