@@ -73,8 +73,8 @@ export function VoiceRecorder({
       audioContextRef.current = audioContext;
       
       const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.8;
+      analyser.fftSize = 512; // Higher resolution for better detection
+      analyser.smoothingTimeConstant = 0.3; // Less smoothing = more responsive
       analyserRef.current = analyser;
       
       const source = audioContext.createMediaStreamSource(stream);
@@ -85,10 +85,13 @@ export function VoiceRecorder({
       // Prepare media recorder but don't start yet - wait for voice detection
       let mediaRecorder: MediaRecorder | null = null;
       let recordingStarted = false;
+      let recordingStartTime: number = 0;
+      const MIN_RECORDING_DURATION = 1000; // Minimum 1 second recording
       
       const startRecording = () => {
         if (recordingStarted || !mediaStreamRef.current) return;
         recordingStarted = true;
+        recordingStartTime = Date.now();
         
         mediaRecorder = new MediaRecorder(mediaStreamRef.current);
         mediaRecorderRef.current = mediaRecorder;
@@ -101,13 +104,22 @@ export function VoiceRecorder({
         };
         
         mediaRecorder.onstop = () => {
+          const duration = Date.now() - recordingStartTime;
           const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-          setIsProcessing(true);
-          onRecordingComplete(audioBlob);
+          
+          // Only process if minimum duration met
+          if (duration >= MIN_RECORDING_DURATION && audioChunksRef.current.length > 0) {
+            setIsProcessing(true);
+            onRecordingComplete(audioBlob);
+          } else {
+            // Too short, don't send - just reset
+            console.log('Recording too short, discarding');
+            onStopListening();
+          }
           audioChunksRef.current = [];
         };
         
-        mediaRecorder.start(100);
+        mediaRecorder.start(50); // More frequent chunks for smoother recording
         console.log('Recording started - voice detected');
       };
       
@@ -117,6 +129,7 @@ export function VoiceRecorder({
       setSilenceTimer(0);
       silenceStartRef.current = null;
       recordingStarted = false;
+      recordingStartTime = 0;
       
       // Start VAD loop
       const checkAudio = () => {
@@ -134,12 +147,12 @@ export function VoiceRecorder({
         }
         const rms = Math.sqrt(sum / dataArray.length);
         
-        // Scale to 0-100 for display (more sensitive scaling)
-        const level = Math.min(rms * 300, 100);
+        // Scale to 0-100 for display (very responsive)
+        const level = Math.min(rms * 400, 100);
         setAudioLevel(level);
         
-        // Threshold for voice detection (higher = less noise pickup)
-        const threshold = 0.03; // ~3% of max amplitude
+        // Threshold for voice detection (lower = earlier detection)
+        const threshold = 0.015; // ~1.5% of max amplitude - very sensitive
         const speaking = rms > threshold;
         setIsSpeaking(speaking);
         
@@ -176,9 +189,10 @@ export function VoiceRecorder({
               }, 500);
             }
             
-            // Auto-stop after 2s of silence (more forgiving)
-            if (silenceDuration > 2000) {
-              console.log('Auto-stopping after silence');
+            // Auto-stop after 2s of silence, but only if minimum duration met
+            const recordingDuration = Date.now() - recordingStartTime;
+            if (silenceDuration > 2000 && recordingDuration >= MIN_RECORDING_DURATION) {
+              console.log('Auto-stopping after silence (min duration met)');
               stopRecording();
               return;
             }
@@ -298,17 +312,38 @@ export function VoiceRecorder({
             {initError ? (
               <span style={{ color: '#f87171' }}>❌ {initError}</span>
             ) : isProcessing ? (
-              <>✅ Done! Click to speak again</>
+              <>✅ Processing... Click to speak again</>
             ) : !isReady ? (
-              <>Initializing microphone...</>
+              <>
+                Initializing microphone...
+                <button 
+                  onClick={() => {
+                    setInitError('Retrying...');
+                    isRunningRef.current = false;
+                    setTimeout(() => startVAD(), 100);
+                  }}
+                  style={{ 
+                    marginLeft: '10px', 
+                    padding: '4px 8px',
+                    fontSize: '0.8rem',
+                    background: '#e94560',
+                    border: 'none',
+                    borderRadius: '4px',
+                    color: 'white',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Retry
+                </button>
+              </>
             ) : hasDetectedVoiceState ? (
               displaySilenceTimer > 0 ? (
                 <>⏱️ Auto-stop in {Math.max(0, Math.ceil((2000 - silenceTimer) / 100) / 10)}s</>
               ) : (
-                <>🎤 Recording your voice...</>
+                <>🎤 Recording... ({Math.ceil(silenceTimer / 100) / 10}s)</>
               )
             ) : (
-              <>👂 Say something to start recording...</>
+              <>👂 Speak to start recording...</>
             )}
           </span>
         )}
