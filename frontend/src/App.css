@@ -291,36 +291,7 @@ header h1 {
   background: #1a4a7a;
 }
 
-.record-btn {
-  background: #e94560;
-  color: #fff;
-  padding: 16px 32px;
-  border: none;
-  border-radius: 50px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 200px;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-}
-
-.record-btn:hover {
-  background: #d63d54;
-  transform: scale(1.02);
-}
-
-.record-btn.recording {
-  background: #ff0000;
-}
-
-.record-btn.speaking {
-  background: #ff4444;
-  box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
-  transform: scale(1.02);
-}
+/* .record-btn styles moved to VoiceRecorder.css */
 
 /* Voice Recorder Section */
 .voice-recorder-section {
