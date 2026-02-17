@@ -71,3 +71,4 @@ coverage/
 *.temp
 *.swp
 *~
+scripts/
