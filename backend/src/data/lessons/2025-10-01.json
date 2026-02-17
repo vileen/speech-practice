@@ -1,0 +1,201 @@
+{
+  "id": "2025-10-01",
+  "date": "2025-10-01",
+  "title": "Review and Particle NO (Possession)",
+  "order": 20251001,
+  "topics": ["Hiragana/Katakana Review", "Particle NO", "Particle TO (listing)"],
+  "vocabulary": [
+    {
+      "jp": "わたし",
+      "reading": "わたし",
+      "en": "I, me",
+      "tags": ["pronoun"]
+    },
+    {
+      "jp": "なまえ",
+      "reading": "なまえ",
+      "en": "name",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "です",
+      "reading": "です",
+      "en": "is/am/are (polite)",
+      "tags": ["copula"]
+    },
+    {
+      "jp": "すき",
+      "reading": "すき",
+      "en": "like, fond of",
+      "tags": ["na-adjective"]
+    },
+    {
+      "jp": "きらい",
+      "reading": "きらい",
+      "en": "dislike, hate",
+      "tags": ["na-adjective"]
+    },
+    {
+      "jp": "だいすき",
+      "reading": "だいすき",
+      "en": "love, like very much",
+      "tags": ["na-adjective"]
+    },
+    {
+      "jp": "だいきらい",
+      "reading": "だいきらい",
+      "en": "hate, detest",
+      "tags": ["na-adjective"]
+    },
+    {
+      "jp": "ゲーム",
+      "reading": "ゲーム",
+      "en": "game",
+      "tags": ["noun", "katakana"]
+    },
+    {
+      "jp": "サッカー",
+      "reading": "サッカー",
+      "en": "soccer, football",
+      "tags": ["noun", "katakana"]
+    },
+    {
+      "jp": "スポーツ",
+      "reading": "スポーツ",
+      "en": "sports",
+      "tags": ["noun", "katakana"]
+    },
+    {
+      "jp": "ショッピング",
+      "reading": "ショッピング",
+      "en": "shopping",
+      "tags": ["noun", "katakana"]
+    },
+    {
+      "jp": "パーティー",
+      "reading": "パーティー",
+      "en": "party",
+      "tags": ["noun", "katakana"]
+    },
+    {
+      "jp": "ダンス",
+      "reading": "ダンス",
+      "en": "dance",
+      "tags": ["noun", "katakana"]
+    },
+    {
+      "jp": "パソコン",
+      "reading": "パソコン",
+      "en": "personal computer",
+      "tags": ["noun", "katakana"]
+    },
+    {
+      "jp": "かいしゃいん",
+      "reading": "かいしゃいん",
+      "en": "company employee",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "かんごし",
+      "reading": "かんごし",
+      "en": "nurse",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "せんせい",
+      "reading": "せんせい",
+      "en": "teacher",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "しゅふ",
+      "reading": "しゅふ",
+      "en": "housewife/househusband",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "おんがくか",
+      "reading": "おんがくか",
+      "en": "musician",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "いえ",
+      "reading": "いえ",
+      "en": "house, home",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "めがね",
+      "reading": "めがね",
+      "en": "glasses",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "かばん",
+      "reading": "かばん",
+      "en": "bag, briefcase",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "こうこうせい",
+      "reading": "こうこうせい",
+      "en": "high school student",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "こえ",
+      "reading": "こえ",
+      "en": "voice",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "へん",
+      "reading": "へん",
+      "en": "strange, funny, weird",
+      "tags": ["na-adjective"]
+    },
+    {
+      "jp": "きれい",
+      "reading": "きれい",
+      "en": "pretty, clean",
+      "tags": ["na-adjective"]
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Noun の Noun",
+      "explanation": "Particle NO shows possession or association - 's, of",
+      "examples": [
+        {"jp": "わたしのほん", "en": "My book"},
+        {"jp": "にほんのかぶき", "en": "Japanese kabuki"},
+        {"jp": "ともだちのいえ", "en": "Friend's house"}
+      ]
+    },
+    {
+      "pattern": "Noun と Noun",
+      "explanation": "Particle TO connects nouns - 'and', listing items",
+      "examples": [
+        {"jp": "ねこといぬ", "en": "Cats and dogs"},
+        {"jp": "にほんごとえいご", "en": "Japanese and English"},
+        {"jp": "おちゃとこーひー", "en": "Tea and coffee"}
+      ]
+    },
+    {
+      "pattern": "Noun がすきです",
+      "explanation": "Expressing likes using particle GA with SUKI",
+      "examples": [
+        {"jp": "ねこがすきです", "en": "I like cats"},
+        {"jp": "サッカーがだいすきです", "en": "I love soccer"},
+        {"jp": "あめがきらいです", "en": "I dislike rain"}
+      ]
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [
+    "わたしのなまえは___です",
+    "___がすきです",
+    "___と___がすきです"
+  ],
+  "summary": "Review of hiragana/katakana, particle NO for possession, and particle TO for listing items."
+}
