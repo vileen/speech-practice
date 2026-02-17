@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import './LessonMode.css';
 import { translateLessonTitle } from './translations.js';
 
@@ -55,6 +55,10 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
   const [showFurigana, setShowFurigana] = useState(true);
+  
+  // Furigana cache to avoid repeated API calls
+  const [furiganaCache, setFuriganaCache] = useState<Record<string, string>>({});
+  const [furiganaLoading, setFuriganaLoading] = useState<Record<string, boolean>>({});
   
   // Ref for scroll position
   const lessonsListRef = useRef<HTMLDivElement>(null);
@@ -158,10 +162,86 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     setSelectedLesson(null);
   };
 
+  // Fetch furigana from backend
+  const fetchFurigana = useCallback(async (text: string): Promise<string> => {
+    // Skip if already cached
+    if (furiganaCache[text]) {
+      return furiganaCache[text];
+    }
+    
+    // Skip if already loading
+    if (furiganaLoading[text]) {
+      return text;
+    }
+    
+    // Mark as loading
+    setFuriganaLoading(prev => ({ ...prev, [text]: true }));
+    
+    try {
+      const response = await fetch(`${API_URL}/api/furigana`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({ text }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const withFurigana = data.with_furigana;
+        // Cache the result
+        setFuriganaCache(prev => ({ ...prev, [text]: withFurigana }));
+        return withFurigana;
+      }
+    } catch (error) {
+      console.error('Error fetching furigana:', error);
+    } finally {
+      setFuriganaLoading(prev => ({ ...prev, [text]: false }));
+    }
+    
+    return text;
+  }, [password, furiganaCache, furiganaLoading]);
+
+  // Fetch all furigana for a lesson when showFurigana is enabled
+  useEffect(() => {
+    if (!selectedLesson || !showFurigana) return;
+    
+    const textsToFetch: string[] = [];
+    
+    // Collect all Japanese text that needs furigana
+    selectedLesson.vocabulary.forEach(item => {
+      if (!furiganaCache[item.jp]) textsToFetch.push(item.jp);
+    });
+    
+    selectedLesson.grammar.forEach(item => {
+      item.examples.forEach(ex => {
+        if (!furiganaCache[ex.jp]) textsToFetch.push(ex.jp);
+      });
+    });
+    
+    selectedLesson.practice_phrases.forEach(phrase => {
+      if (!furiganaCache[phrase]) textsToFetch.push(phrase);
+    });
+    
+    // Fetch furigana for all texts (with small delays to avoid overwhelming the API)
+    textsToFetch.forEach((text, index) => {
+      setTimeout(() => {
+        fetchFurigana(text);
+      }, index * 100); // 100ms delay between requests
+    });
+  }, [selectedLesson, showFurigana, fetchFurigana, furiganaCache]);
+
   const renderFurigana = (text: string) => {
     if (!showFurigana) return text;
-    // Simple regex to replace known patterns - backend does full furigana
-    return <span dangerouslySetInnerHTML={{ __html: text }} />;
+    
+    // If we have cached furigana, use it
+    if (furiganaCache[text]) {
+      return <span dangerouslySetInnerHTML={{ __html: furiganaCache[text] }} />;
+    }
+    
+    // Otherwise show plain text (it will be fetched)
+    return text;
   };
 
   // Render explanation with support for both markdown and HTML tables
