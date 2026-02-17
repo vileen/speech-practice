@@ -305,6 +305,26 @@ header h1 {
   border: 1px solid #333;
 }
 
+/* Audio loading indicator */
+.audio-loading {
+  margin-top: 8px;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+  100% { content: ''; }
+}
+
 /* Voice Recorder Section */
 .voice-recorder-section {
   margin-top: 16px;
