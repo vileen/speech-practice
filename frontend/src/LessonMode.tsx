@@ -102,6 +102,60 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     return <span dangerouslySetInnerHTML={{ __html: text }} />;
   };
 
+  // Parse markdown tables and render as HTML
+  const renderExplanationWithTables = (explanation: string) => {
+    const lines = explanation.split('\n');
+    const elements: JSX.Element[] = [];
+    let currentTable: string[] = [];
+    let tableKey = 0;
+
+    const flushTable = () => {
+      if (currentTable.length === 0) return;
+      
+      // Filter out separator lines (|-----|)
+      const dataRows = currentTable.filter(row => !row.trim().startsWith('|-'));
+      if (dataRows.length === 0) {
+        currentTable = [];
+        return;
+      }
+
+      elements.push(
+        <table key={`table-${tableKey++}`} className="grammar-table">
+          <tbody>
+            {dataRows.map((row, rowIdx) => {
+              const cells = row.split('|').map(c => c.trim()).filter(c => c);
+              return (
+                <tr key={rowIdx}>
+                  {cells.map((cell, cellIdx) => (
+                    <td key={cellIdx}>{cell}</td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      );
+      currentTable = [];
+    };
+
+    lines.forEach((line, i) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('|')) {
+        currentTable.push(line);
+      } else {
+        flushTable();
+        if (trimmed) {
+          elements.push(<p key={`p-${i}`}>{line}</p>);
+        } else {
+          elements.push(<br key={`br-${i}`} />);
+        }
+      }
+    });
+    flushTable();
+
+    return <>{elements}</>;
+  };
+
   if (loading && lessons.length === 0) {
     return (
       <div className="lesson-mode">
@@ -201,11 +255,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
                 <div key={idx} className="grammar-card">
                   <h4>{point.pattern}</h4>
                   <div className="explanation">
-                    {point.explanation.split('\n').map((line, i) => (
-                      <p key={i} className={line.trim().startsWith('|') ? 'table-line' : ''}>
-                        {line.trim().startsWith('|-') ? <span className="table-separator">{line}</span> : line}
-                      </p>
-                    ))}
+                    {renderExplanationWithTables(point.explanation)}
                   </div>
                   {point.examples.length > 0 && (
                     <div className="examples">
