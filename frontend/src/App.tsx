@@ -83,6 +83,7 @@ function App() {
   const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [vadResetCounter, setVadResetCounter] = useState(0); // Force VAD reset on Next Phrase
+  const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null); // Track currently playing audio
   
   // Lesson Mode
   const [isLessonMode, setIsLessonMode] = useState(false);
@@ -758,13 +759,29 @@ function App() {
                 {msg.audioUrl && (
                   <div className="audio-player">
                     <button 
-                      className="play-btn"
+                      className={`play-btn ${playingAudio?.id === idx ? 'playing' : ''}`}
                       onClick={() => {
-                        const audio = new Audio(msg.audioUrl);
-                        audio.play();
+                        if (playingAudio?.id === idx) {
+                          // Stop current audio
+                          playingAudio.audio.pause();
+                          playingAudio.audio.currentTime = 0;
+                          setPlayingAudio(null);
+                        } else {
+                          // Stop any playing audio first
+                          if (playingAudio) {
+                            playingAudio.audio.pause();
+                            playingAudio.audio.currentTime = 0;
+                          }
+                          // Play new audio
+                          const audio = new Audio(msg.audioUrl);
+                          audio.onended = () => setPlayingAudio(null);
+                          audio.onpause = () => setPlayingAudio(null);
+                          audio.play();
+                          setPlayingAudio({ id: idx, audio });
+                        }
                       }}
                     >
-                      ▶️ Play
+                      {playingAudio?.id === idx ? '⏹️ Stop' : '▶️ Play'}
                     </button>
                   </div>
                 )}
