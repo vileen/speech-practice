@@ -1,14 +1,14 @@
 {
   "id": "2025-10-08",
   "date": "2025-10-08",
-  "title": "Lekcja 2025-10-08 — Hiragana: wiersz ha-hi-fu-he-ho, udźwięcznienia, dialogi",
+  "title": "Lesson 2025-10-08 — Hiragana: wiersz ha-hi-fu-he-ho, udźwięcznienia, dialogi",
   "order": 20251008,
   "topics": [],
   "vocabulary": [
     {
-      "jp": "Znak",
-      "reading": "Czytanie",
-      "en": "Słówka przykładowe",
+      "jp": "Character",
+      "reading": "Reading",
+      "en": "Vocabulary przykładowe",
       "tags": []
     },
     {
@@ -32,7 +32,7 @@
     {
       "jp": "ふ",
       "reading": "fu",
-      "en": "fune (statek), futsu (normalny), futatsu (dwa - licznik), fuku (ubranie), futoi (gruby)",
+      "en": "fune (statek), futsu (normalny), futatsu (dwa - counter), fuku (ubranie), futoi (gruby)",
       "type": "u-verb",
       "tags": []
     },
@@ -113,7 +113,7 @@
     {
       "jp": "ふたつ",
       "reading": "futatsu",
-      "en": "dwa (licznik)",
+      "en": "dwa (counter)",
       "type": "u-verb",
       "tags": []
     },
@@ -201,7 +201,7 @@
   "grammar": [
     {
       "pattern": "Powtórka hiragany (na-ni-nu-ne-no)",
-      "explanation": "- Krótka powtórka poprzedniego wiersza\n- Ćwiczenia rozpoznawania znaków\n- Słówka: inu (pies), nodo (gardło), nioi (zapach), okany (pieniądze)",
+      "explanation": "- Krótka powtórka poprzedniego wiersza\n- Ćwiczenia rozpoznawania znaków\n- Vocabulary: inu (pies), nodo (gardło), nioi (zapach), okany (pieniądze)",
       "examples": [
         {
           "jp": "Krótka powtórka poprzedniego wiersza",
@@ -211,18 +211,18 @@
     },
     {
       "pattern": "Nowy wiersz hiragany: ha-hi-fu-he-ho (はひふへほ)",
-      "explanation": "| Znak | Czytanie | Słówka przykładowe |\n|------|----------|-------------------|\n| は | ha | hana (nos/kwiat), hanasu (rozmawiać), ohashi (pałeczki), hako (pudełko) |\n| ひ | hi | hikui (niski), hi (ogi",
+      "explanation": "| Character | Reading | Vocabulary przykładowe |\n|------|----------|-------------------|\n| は | ha | hana (nos/kwiat), hanasu (rozmawiać), ohashi (pałeczki), hako (pudełko) |\n| ひ | hi | hikui (niski), hi (ogi",
       "examples": [
         {
           "jp": "-",
           "en": "---|----------|-------------------|"
         },
         {
-          "jp": "licznik), fuku (ubranie), futoi (gruby) |",
+          "jp": "counter), fuku (ubranie), futoi (gruby) |",
           "en": ""
         },
         {
-          "jp": "Uwagi do pisania:",
+          "jp": "Notes do pisania:",
           "en": "fu (ふ) - głowa osobno, brzuszek osobno, nie łączyć w trójkę"
         },
         {
@@ -289,7 +289,7 @@
     },
     {
       "pattern": "Gramatyka - powtórka pytań",
-      "explanation": "Pytania o pochodzenie:\n- Doko kara desu ka? (Skąd jesteś?)\n- Odpowiedź: [miejsce] kara desu\n\nPytania o wiek:\n- Nan sai desu ka? (Ile masz lat?)\n- Odpowiedź: [liczba] sai desu\n\nPytania o kla",
+      "explanation": "Pytania o pochodzenie:\n- Doko kara desu ka? (Skąd jesteś?)\n- Odpowiedź: [miejsce] kara desu\n\nPytania o age:\n- Nan sai desu ka? (Ile masz lat?)\n- Odpowiedź: [liczba] sai desu\n\nPytania o kla",
       "examples": [
         {
           "jp": "Pytania o pochodzenie:",
@@ -300,7 +300,7 @@
           "en": ""
         },
         {
-          "jp": "Pytania o wiek:",
+          "jp": "Pytania o age:",
           "en": "Nan sai desu ka? (Ile masz lat?)"
         },
         {
