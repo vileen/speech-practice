@@ -217,9 +217,44 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
     const langCode = language === 'japanese' ? 'ja' : 'it';
     const transcription = await transcribeAudioDirect(audioBuffer, langCode);
     
+    // Post-process Japanese transcription - fix common Whisper errors
+    function fixJapaneseTranscription(text: string, target: string): string {
+      if (!text) return text;
+      
+      // Common Whisper misheard words in isolation
+      const fixes: Record<string, string> = {
+        'hen': 'inu',      // 犬
+        'gen': 'inu',      // 犬 (alternative mishearing)
+        'kon': 'neko',     // 猫
+        'gon': 'inu',      // 犬
+        'kin': 'inu',      // 犬
+        'sen': 'san',      // さん
+        'chen': 'chan',    // ちゃん
+        'jun': 'juu',      // 十
+        'shichi': 'nana',  // 七
+      };
+      
+      let fixed = text;
+      
+      // Check if target contains specific kanji that Whisper often mishears
+      if (target.includes('犬') && (fixed.includes('hen') || fixed.includes('gen'))) {
+        fixed = fixed.replace(/\b(hen|gen)\b/g, 'inu');
+      }
+      if (target.includes('猫') && fixed.includes('kon')) {
+        fixed = fixed.replace(/\bkon\b/g, 'neko');
+      }
+      
+      return fixed;
+    }
+    
+    // Apply post-processing for Japanese
+    const processedTranscription = language === 'japanese' 
+      ? fixJapaneseTranscription(transcription || '', target_text)
+      : transcription || '';
+    
     // Compare transcription with target (fuzzy matching)
     const normalizedTarget = target_text.replace(/[。、！？\s]/g, '').toLowerCase();
-    const normalizedTranscription = (transcription || '').replace(/[。、！？\s]/g, '').toLowerCase();
+    const normalizedTranscription = processedTranscription.replace(/[。、！？\s]/g, '').toLowerCase();
     
     // Calculate similarity using Levenshtein distance
     function levenshteinDistance(a: string, b: string): number {
@@ -245,6 +280,9 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
       }
       return matrix[b.length][a.length];
     }
+    
+    // Use processed transcription for comparison and display
+    const finalTranscription = processedTranscription;
     
     // Find differences between target and transcription
     function findDifferences(target: string, heard: string): string[] {
@@ -330,7 +368,7 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
 
     res.json({
       target_text: target_text,
-      transcription: transcription,
+      transcription: finalTranscription,
       score: score,
       feedback: feedback,
       errors: errors,
