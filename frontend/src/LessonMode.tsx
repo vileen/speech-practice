@@ -102,8 +102,15 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     return <span dangerouslySetInnerHTML={{ __html: text }} />;
   };
 
-  // Parse markdown tables and render as HTML
+  // Render explanation with support for both markdown and HTML tables
   const renderExplanationWithTables = (explanation: string) => {
+    // Check if explanation contains HTML table
+    if (explanation.includes('<table')) {
+      // Use dangerouslySetInnerHTML for HTML tables
+      return <div className="grammar-explanation" dangerouslySetInnerHTML={{ __html: explanation }} />;
+    }
+    
+    // Parse markdown tables
     const lines = explanation.split('\n');
     const elements: JSX.Element[] = [];
     let currentTable: string[] = [];
