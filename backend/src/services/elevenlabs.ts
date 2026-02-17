@@ -220,5 +220,13 @@ export async function toHiraganaForTTS(text: string): Promise<string> {
     }
   }
   
+  // Fix particle pronunciations
+  // は as particle → わ, へ as particle → え
+  // Pattern: word boundaries or spaces before は/へ indicate particles
+  result = result.replace(/(\s|^)(は|へ)(\s|$)/g, (match, before, particle, after) => {
+    const replacement = particle === 'は' ? 'わ' : 'え';
+    return before + replacement + after;
+  });
+  
   return result;
 }
