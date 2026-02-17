@@ -532,6 +532,48 @@ header h1 {
   left: 0;
   color: #e94560;
 }
+
+/* Result Phrase Section with Furigana and Translation */
+.result-phrase-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.result-phrase-section label {
+  display: block;
+  color: #888;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.result-furigana-text {
+  font-size: 150% !important;
+  line-height: 1.6;
+  margin: 0.5rem 0;
+}
+
+.result-furigana-text ruby {
+  ruby-align: center;
+}
+
+.result-furigana-text rt {
+  font-size: 50%;
+  color: #888;
+}
+
+.result-translation {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #4ade80;
+  font-size: 1rem;
+  font-style: italic;
+}
   font-size: 0.8rem;
 }
 
