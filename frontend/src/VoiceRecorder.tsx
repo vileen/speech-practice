@@ -35,6 +35,8 @@ export function VoiceRecorder({
   const isRunningRef = useRef(false);
   const hasDetectedVoiceRef = useRef(false);
   const silenceDebounceRef = useRef<number | null>(null);
+  const speakingDebounceRef = useRef<number | null>(null);
+  const lastSpeakingTimeRef = useRef<number>(0);
   
   // Start VAD monitoring
   const startVAD = useCallback(async () => {
@@ -287,7 +289,28 @@ export function VoiceRecorder({
         const level = Math.min(rms * 400, 100);
         
         setAudioLevel(level);
-        setIsSpeaking(level > 8);
+        
+        // Debounced speaking state - turns on immediately, off with delay
+        const isCurrentlySpeaking = level > 8;
+        if (isCurrentlySpeaking) {
+          lastSpeakingTimeRef.current = Date.now();
+          if (!isSpeaking) {
+            setIsSpeaking(true);
+          }
+          if (speakingDebounceRef.current) {
+            clearTimeout(speakingDebounceRef.current);
+            speakingDebounceRef.current = null;
+          }
+        } else if (isSpeaking && !speakingDebounceRef.current) {
+          // Start debounce timer to turn off speaking state
+          speakingDebounceRef.current = window.setTimeout(() => {
+            const timeSinceLastSpeak = Date.now() - lastSpeakingTimeRef.current;
+            if (timeSinceLastSpeak >= 300) { // 300ms debounce
+              setIsSpeaking(false);
+            }
+            speakingDebounceRef.current = null;
+          }, 300);
+        }
         
         if (isRunningRef.current) {
           rafRef.current = requestAnimationFrame(checkAudio);
@@ -314,10 +337,14 @@ export function VoiceRecorder({
       rafRef.current = null;
     }
     
-    // Clear debounce timer
+    // Clear debounce timers
     if (silenceDebounceRef.current) {
       clearTimeout(silenceDebounceRef.current);
       silenceDebounceRef.current = null;
+    }
+    if (speakingDebounceRef.current) {
+      clearTimeout(speakingDebounceRef.current);
+      speakingDebounceRef.current = null;
     }
     
     // Only stop recorder if it was started and has data
