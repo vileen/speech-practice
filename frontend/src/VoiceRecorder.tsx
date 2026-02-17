@@ -256,14 +256,18 @@ export function VoiceRecorder({
       audioContextRef.current = null;
     }
     
+    // Reset all states for both modes
     setIsSpeaking(false);
+    setIsReady(false);
     hasDetectedVoiceRef.current = false;
     setHasDetectedVoiceState(false);
     setSilenceTimer(0);
     setDisplaySilenceTimer(0);
-    setIsReady(false);
     silenceStartRef.current = null;
     setAudioLevel(0);
+    
+    // Important: for push-to-talk, we need to notify parent
+    onStopListening();
   }, [onStopListening]);
   
   // Auto-start for voice-activated mode (but not if processing)
