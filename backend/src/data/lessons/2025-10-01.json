@@ -1,181 +1,201 @@
 {
   "id": "2025-10-01",
   "date": "2025-10-01",
-  "title": "Lekcja 2025-10-01 — Powtórka i Partykuła NO (Własność)",
+  "title": "Review and Particle NO (Possession)",
   "order": 20251001,
-  "topics": [],
+  "topics": ["Hiragana/Katakana Review", "Particle NO", "Particle TO (listing)"],
   "vocabulary": [
     {
-      "jp": "-----------",
-      "reading": "",
-      "en": "Watashi wa [imię] desu",
-      "tags": []
+      "jp": "わたし",
+      "reading": "わたし",
+      "en": "I, me",
+      "tags": ["pronoun"]
     },
     {
-      "jp": "Mam na imię [imię]",
-      "reading": "### Pytanie o samopoczucie",
-      "en": "Japoński",
-      "tags": []
+      "jp": "なまえ",
+      "reading": "なまえ",
+      "en": "name",
+      "tags": ["noun"]
     },
     {
-      "jp": "Czuję się dobrze",
-      "reading": "",
-      "en": "Byōki desu",
-      "tags": []
+      "jp": "です",
+      "reading": "です",
+      "en": "is/am/are (polite)",
+      "tags": ["copula"]
     },
     {
-      "jp": "Japoński",
-      "reading": "Znaczenie",
-      "en": "Uwagi",
-      "tags": []
+      "jp": "すき",
+      "reading": "すき",
+      "en": "like, fond of",
+      "tags": ["na-adjective"]
     },
     {
-      "jp": "----------",
-      "reading": "-----------",
-      "en": "-------",
-      "tags": []
+      "jp": "きらい",
+      "reading": "きらい",
+      "en": "dislike, hate",
+      "tags": ["na-adjective"]
     },
     {
-      "jp": "suki",
-      "reading": "lubić",
-      "en": "+ ga",
-      "tags": []
+      "jp": "だいすき",
+      "reading": "だいすき",
+      "en": "love, like very much",
+      "tags": ["na-adjective"]
     },
     {
-      "jp": "kirai",
-      "reading": "nie lubić",
-      "en": "+ ga",
-      "tags": []
+      "jp": "だいきらい",
+      "reading": "だいきらい",
+      "en": "hate, detest",
+      "tags": ["na-adjective"]
     },
     {
-      "jp": "daisuki",
-      "reading": "uwielbiać, kochać",
-      "en": "dai- = bardzo",
-      "tags": []
+      "jp": "ゲーム",
+      "reading": "ゲーム",
+      "en": "game",
+      "tags": ["noun", "katakana"]
     },
     {
-      "jp": "daikirai",
-      "reading": "nienawidzić",
-      "en": "dai- = bardzo",
-      "tags": []
+      "jp": "サッカー",
+      "reading": "サッカー",
+      "en": "soccer, football",
+      "tags": ["noun", "katakana"]
     },
     {
-      "jp": "gēmu",
-      "reading": "gry",
-      "en": "z ang. \"game\"",
-      "tags": []
+      "jp": "スポーツ",
+      "reading": "スポーツ",
+      "en": "sports",
+      "tags": ["noun", "katakana"]
     },
     {
-      "jp": "sakkā",
-      "reading": "piłka nożna",
-      "en": "z ang. \"soccer\"",
-      "tags": []
+      "jp": "ショッピング",
+      "reading": "ショッピング",
+      "en": "shopping",
+      "tags": ["noun", "katakana"]
     },
     {
-      "jp": "supōtsu",
-      "reading": "sporty",
-      "en": "z ang. \"sports\"",
-      "tags": []
+      "jp": "パーティー",
+      "reading": "パーティー",
+      "en": "party",
+      "tags": ["noun", "katakana"]
     },
     {
-      "jp": "shoppingu",
-      "reading": "zakupy (rekreacyjne)",
-      "en": "z ang. \"shopping\"",
-      "tags": []
+      "jp": "ダンス",
+      "reading": "ダンス",
+      "en": "dance",
+      "tags": ["noun", "katakana"]
     },
     {
-      "jp": "pāti",
-      "reading": "impreza",
-      "en": "z ang. \"party\"",
-      "tags": []
+      "jp": "パソコン",
+      "reading": "パソコン",
+      "en": "personal computer",
+      "tags": ["noun", "katakana"]
     },
     {
-      "jp": "dansu",
-      "reading": "taniec",
-      "en": "z ang. \"dance\"",
-      "tags": []
+      "jp": "かいしゃいん",
+      "reading": "かいしゃいん",
+      "en": "company employee",
+      "tags": ["noun"]
     },
     {
-      "jp": "pasokon",
-      "reading": "komputer",
-      "en": "PC = personal computer",
-      "tags": []
+      "jp": "かんごし",
+      "reading": "かんごし",
+      "en": "nurse",
+      "tags": ["noun"]
     },
     {
-      "jp": "-----------",
-      "reading": "",
-      "en": "kaishain",
-      "tags": []
+      "jp": "せんせい",
+      "reading": "せんせい",
+      "en": "teacher",
+      "tags": ["noun"]
     },
     {
-      "jp": "pielęgniarka/pielęgniarz",
-      "reading": "",
-      "en": "sensei",
-      "tags": []
+      "jp": "しゅふ",
+      "reading": "しゅふ",
+      "en": "housewife/househusband",
+      "tags": ["noun"]
     },
     {
-      "jp": "office lady",
-      "reading": "",
-      "en": "shachō",
-      "tags": []
+      "jp": "おんがくか",
+      "reading": "おんがくか",
+      "en": "musician",
+      "tags": ["noun"]
     },
     {
-      "jp": "adwokat",
-      "reading": "",
-      "en": "sengōka",
-      "tags": []
+      "jp": "いえ",
+      "reading": "いえ",
+      "en": "house, home",
+      "tags": ["noun"]
     },
     {
-      "jp": "polityk",
-      "reading": "",
-      "en": "syufu",
-      "tags": []
+      "jp": "めがね",
+      "reading": "めがね",
+      "en": "glasses",
+      "tags": ["noun"]
     },
     {
-      "jp": "ongakuka",
-      "reading": "muzyk",
-      "en": "## Słownictwo — Rzeczy",
-      "tags": []
+      "jp": "かばん",
+      "reading": "かばん",
+      "en": "bag, briefcase",
+      "tags": ["noun"]
     },
     {
-      "jp": "Znaczenie",
-      "reading": "",
-      "en": "----------",
-      "tags": []
+      "jp": "こうこうせい",
+      "reading": "こうこうせい",
+      "en": "high school student",
+      "tags": ["noun"]
     },
     {
-      "jp": "dom",
-      "reading": "",
-      "en": "pen",
-      "tags": []
+      "jp": "こえ",
+      "reading": "こえ",
+      "en": "voice",
+      "tags": ["noun"]
     },
     {
-      "jp": "okulary",
-      "reading": "",
-      "en": "kaban",
-      "tags": []
+      "jp": "へん",
+      "reading": "へん",
+      "en": "strange, funny, weird",
+      "tags": ["na-adjective"]
     },
     {
-      "jp": "liceum",
-      "reading": "",
-      "en": "kōkōsei",
-      "tags": []
-    },
-    {
-      "jp": "głos",
-      "reading": "## Słownictwo — Przymiotniki \"Dziwny\"",
-      "en": "Japoński",
-      "tags": []
-    },
-    {
-      "jp": "dziwny, śmieszny",
-      "reading": "",
-      "en": "kirei",
-      "tags": []
+      "jp": "きれい",
+      "reading": "きれい",
+      "en": "pretty, clean",
+      "tags": ["na-adjective"]
     }
   ],
-  "grammar": [],
+  "grammar": [
+    {
+      "pattern": "Noun の Noun",
+      "explanation": "Particle NO shows possession or association - 's, of",
+      "examples": [
+        {"jp": "わたしのほん", "en": "My book"},
+        {"jp": "にほんのかぶき", "en": "Japanese kabuki"},
+        {"jp": "ともだちのいえ", "en": "Friend's house"}
+      ]
+    },
+    {
+      "pattern": "Noun と Noun",
+      "explanation": "Particle TO connects nouns - 'and', listing items",
+      "examples": [
+        {"jp": "ねこといぬ", "en": "Cats and dogs"},
+        {"jp": "にほんごとえいご", "en": "Japanese and English"},
+        {"jp": "おちゃとこーひー", "en": "Tea and coffee"}
+      ]
+    },
+    {
+      "pattern": "Noun がすきです",
+      "explanation": "Expressing likes using particle GA with SUKI",
+      "examples": [
+        {"jp": "ねこがすきです", "en": "I like cats"},
+        {"jp": "サッカーがだいすきです", "en": "I love soccer"},
+        {"jp": "あめがきらいです", "en": "I dislike rain"}
+      ]
+    }
+  ],
   "dialogues": [],
-  "practice_phrases": [],
-  "summary": "## Informacje\n- Data: 2025-10-01\n- Temat: Powtórka hiragany/katakany, partykuła NO (własność), partykuła TO (wyliczanie)\n- Poziom: Początkujący (wczesny etap)"
+  "practice_phrases": [
+    "わたしのなまえは___です",
+    "___がすきです",
+    "___と___がすきです"
+  ],
+  "summary": "Review of hiragana/katakana, particle NO for possession, and particle TO for listing items."
 }
