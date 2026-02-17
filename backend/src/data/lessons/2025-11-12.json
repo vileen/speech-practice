@@ -1,391 +1,266 @@
 {
   "id": "2025-11-12",
   "date": "2025-11-12",
-  "title": "Lekcja 2025-11-12 — Partykuły, krótka forma, czytanki",
+  "title": "Particles, Short Form, Readings",
   "order": 20251112,
-  "topics": [],
+  "topics": ["Particles", "Short Form", "Readings"],
   "vocabulary": [
     {
-      "jp": "Grupa",
-      "reading": "Wzór",
-      "en": "Przykład",
-      "tags": []
-    },
-    {
-      "jp": "-------",
-      "reading": "------",
-      "en": "----------",
-      "tags": []
-    },
-    {
-      "jp": "1 (-iru/-eru)",
-      "reading": "Ucinamy -masu, dodajemy -ru",
-      "en": "Tabemasu → Taberu",
-      "tags": []
-    },
-    {
-      "jp": "2 (-u)",
-      "reading": "Zmieniamy ostatnią sylabę na u",
-      "en": "Nomimasu → Nomu",
-      "tags": []
-    },
-    {
-      "jp": "3 (niereg.)",
-      "reading": "Shimasu → Suru, Kimasu → Kuru",
-      "en": "Shimasu → Suru",
-      "tags": []
-    },
-    {
-      "jp": "Japoński",
-      "reading": "Znaczenie",
-      "en": "Użycie",
-      "tags": []
-    },
-    {
-      "jp": "----------",
-      "reading": "-----------",
-      "en": "--------",
-      "tags": []
-    },
-    {
-      "jp": "Ogenki desu ka?",
-      "reading": "Jak się masz?",
-      "en": "Pytanie o samopoczucie",
-      "tags": []
-    },
-    {
-      "jp": "Genki desu",
-      "reading": "Czuję się dobrze",
-      "en": "Odpowiedź",
-      "tags": []
-    },
-    {
-      "jp": "Ki wo tsukete kudasai",
-      "reading": "Uważaj na siebie",
-      "en": "Żegnanie",
-      "tags": []
-    },
-    {
-      "jp": "Daijoubu desu ka?",
-      "reading": "Czy wszystko w porządku?",
-      "en": "Troska",
-      "tags": []
-    },
-    {
-      "jp": "Daijoubu desu",
-      "reading": "Wszystko w porządku",
-      "en": "Odpowiedź",
-      "tags": []
-    },
-    {
-      "jp": "Zannen desu",
-      "reading": "Szkoda",
-      "en": "Wyrażanie współczucia",
-      "tags": []
-    },
-    {
-      "jp": "Hontou desu ka?",
-      "reading": "Naprawdę?",
-      "en": "Zdziwienie",
-      "tags": []
-    },
-    {
-      "jp": "Japoński",
-      "reading": "Romaji",
-      "en": "Znaczenie",
-      "tags": []
-    },
-    {
-      "jp": "----------",
-      "reading": "--------",
-      "en": "-----------",
-      "tags": []
-    },
-    {
       "jp": "でも",
-      "reading": "demo",
-      "en": "ale",
-      "tags": []
+      "reading": "でも",
+      "en": "but, however",
+      "tags": ["conjunction"]
     },
     {
       "jp": "あと",
-      "reading": "ato",
-      "en": "po, po tym",
-      "tags": []
+      "reading": "あと",
+      "en": "after, later",
+      "tags": ["noun"]
     },
     {
       "jp": "いっしょに",
-      "reading": "issho ni",
-      "en": "razem",
-      "tags": []
+      "reading": "いっしょに",
+      "en": "together",
+      "tags": ["adverb"]
     },
     {
       "jp": "もっていく",
-      "reading": "motte iku",
-      "en": "zabrać ze sobą",
+      "reading": "もっていく",
+      "en": "to bring, take with",
       "type": "u-verb",
       "tags": []
     },
     {
       "jp": "わかりました",
-      "reading": "wakarimashita",
-      "en": "rozumiem",
+      "reading": "わかりました",
+      "en": "I understand, I see",
       "tags": []
     },
     {
       "jp": "つかれる",
-      "reading": "tsukareru",
-      "en": "być zmęczonym",
+      "reading": "つかれる",
+      "en": "to get tired",
       "type": "ru-verb",
       "tags": []
     },
     {
       "jp": "きをつける",
-      "reading": "ki wo tsukeru",
-      "en": "uważać na siebie",
+      "reading": "きをつける",
+      "en": "to be careful",
       "type": "ru-verb",
       "tags": []
     },
     {
       "jp": "かえる",
-      "reading": "kaeru",
-      "en": "wracać",
+      "reading": "かえる",
+      "en": "to return home",
       "type": "ru-verb",
       "tags": []
     },
     {
       "jp": "うち",
-      "reading": "uchi",
-      "en": "dom (nasz), my (nasza firma/rodzina)",
-      "tags": []
+      "reading": "うち",
+      "en": "home (one's own), we/our",
+      "tags": ["noun"]
     },
     {
       "jp": "いえ",
-      "reading": "ie",
-      "en": "dom (budynek)",
-      "tags": []
+      "reading": "いえ",
+      "en": "house (building)",
+      "tags": ["noun"]
     },
     {
       "jp": "ざんねん",
-      "reading": "zannen",
-      "en": "szkoda, przykro",
-      "tags": []
-    },
-    {
-      "jp": "Japoński",
-      "reading": "Romaji",
-      "en": "Znaczenie",
-      "tags": []
-    },
-    {
-      "jp": "----------",
-      "reading": "--------",
-      "en": "-----------",
-      "tags": []
+      "reading": "ざんねん",
+      "en": "regrettable, unfortunate",
+      "tags": ["na-adjective"]
     },
     {
       "jp": "あう",
-      "reading": "au",
-      "en": "spotykać się",
+      "reading": "あう",
+      "en": "to meet",
       "type": "u-verb",
       "tags": []
     },
     {
       "jp": "でる",
-      "reading": "deru",
-      "en": "wychodzić",
+      "reading": "でる",
+      "en": "to exit, leave",
       "type": "ru-verb",
       "tags": []
     },
     {
       "jp": "あそぶ",
-      "reading": "asobu",
-      "en": "bawić się",
+      "reading": "あそぶ",
+      "en": "to play, have fun",
+      "type": "u-verb",
       "tags": []
     },
     {
       "jp": "まなぶ",
-      "reading": "manabu",
-      "en": "uczyć się",
+      "reading": "まなぶ",
+      "en": "to learn, study",
+      "type": "u-verb",
       "tags": []
     },
     {
-      "jp": "Partykuła",
-      "reading": "Znaczenie",
-      "en": "Przykład",
-      "tags": []
+      "jp": "おげんきですか",
+      "reading": "おげんきですか",
+      "en": "How are you? (formal)",
+      "tags": ["expression"]
     },
     {
-      "jp": "-----------",
-      "reading": "-----------",
-      "en": "----------",
-      "tags": []
+      "jp": "げんきです",
+      "reading": "げんきです",
+      "en": "I'm fine/well",
+      "tags": ["expression"]
     },
     {
-      "jp": "wa (は)",
-      "reading": "temat",
-      "en": "Watashi wa gakusei desu",
-      "tags": []
+      "jp": "きをつけてください",
+      "reading": "きをつけてください",
+      "en": "Please take care",
+      "tags": ["expression"]
     },
     {
-      "jp": "ga (が)",
-      "reading": "podmiot",
-      "en": "Nihongo ga suki desu",
-      "tags": []
+      "jp": "だいじょうぶですか",
+      "reading": "だいじょうぶですか",
+      "en": "Are you okay?",
+      "tags": ["expression"]
     },
     {
-      "jp": "no (の)",
-      "reading": "przynależność",
-      "en": "Watashi no hon",
-      "tags": []
+      "jp": "だいじょうぶです",
+      "reading": "だいじょうぶです",
+      "en": "I'm okay",
+      "tags": ["expression"]
     },
     {
-      "jp": "o (を)",
-      "reading": "dopełnienie",
-      "en": "Sushi o tabemasu",
-      "tags": []
+      "jp": "ざんねんです",
+      "reading": "ざんねんです",
+      "en": "That's unfortunate",
+      "tags": ["expression"]
     },
     {
-      "jp": "ni (に)",
-      "reading": "czas/miejsce/cel",
-      "en": "Ni-ji ni / Gakkou ni / Tomodachi ni",
-      "tags": []
+      "jp": "ほんとうですか",
+      "reading": "ほんとうですか",
+      "en": "Really?",
+      "tags": ["expression"]
     },
     {
-      "jp": "e (へ)",
-      "reading": "kierunek",
-      "en": "Uchi e kaerimasu",
-      "tags": []
+      "jp": "は",
+      "reading": "わ",
+      "en": "topic particle",
+      "tags": ["particle"]
     },
     {
-      "jp": "de (で)",
-      "reading": "miejsce działania",
-      "en": "Kissaten de nomimasu",
-      "tags": []
+      "jp": "が",
+      "reading": "が",
+      "en": "subject particle",
+      "tags": ["particle"]
     },
     {
-      "jp": "to (と)",
-      "reading": "razem z, i",
-      "en": "Tomodachi to / Sushi to tenpura",
-      "tags": []
+      "jp": "の",
+      "reading": "の",
+      "en": "possession particle",
+      "tags": ["particle"]
     },
     {
-      "jp": "kara (から)",
-      "reading": "od, skąd, ponieważ",
-      "en": "Toukyou kara / Ame ga furu kara",
-      "tags": []
+      "jp": "を",
+      "reading": "を",
+      "en": "object particle",
+      "tags": ["particle"]
     },
     {
-      "jp": "made (まで)",
-      "reading": "do",
-      "en": "Gakkou made",
-      "tags": []
+      "jp": "に",
+      "reading": "に",
+      "en": "time/location/target particle",
+      "tags": ["particle"]
+    },
+    {
+      "jp": "へ",
+      "reading": "え",
+      "en": "direction particle",
+      "tags": ["particle"]
+    },
+    {
+      "jp": "で",
+      "reading": "で",
+      "en": "location of action particle",
+      "tags": ["particle"]
+    },
+    {
+      "jp": "と",
+      "reading": "と",
+      "en": "together with, and (listing)",
+      "tags": ["particle"]
+    },
+    {
+      "jp": "から",
+      "reading": "から",
+      "en": "from, since, because",
+      "tags": ["particle"]
+    },
+    {
+      "jp": "まで",
+      "reading": "まで",
+      "en": "until, to",
+      "tags": ["particle"]
     }
   ],
   "grammar": [
     {
-      "pattern": "Czytanki w hiraganie",
-      "explanation": "Dialog 1:\n\nOhayou gozaimasu. Tanaka sensei.\nOhayou. Maaya-chan. Ogenki desu ka?\nHai, genki desu.\nKyou wa ii tenki desu ne.\nHai. Demo gogo yoji ni ame ga furimasu.\nHontou desu ka? Zannen desu.",
+      "pattern": "Plain Form (Dictionary Form)",
+      "explanation": "The casual form of verbs used in informal situations. For ru-verbs: drop -masu, add -ru. For u-verbs: change the final syllable to u.",
       "examples": [
-        {
-          "jp": "Dialog 1:",
-          "en": ""
-        },
-        {
-          "jp": "chan. Ogenki desu ka?",
-          "en": ""
-        },
-        {
-          "jp": "Tłumaczenie:",
-          "en": "Dzień dobry panie Tanaka."
-        },
-        {
-          "jp": "Dzień dobry Maaya. Jak się masz?",
-          "en": "Dobrze się czuję."
-        },
-        {
-          "jp": "Dzisiaj jest dobra pogoda, prawda?",
-          "en": "Tak. Ale o 16:00 będzie padał deszcz."
-        }
+        {"jp": "たべます → たべる", "en": "ru-verb: eat"},
+        {"jp": "のみます → のむ", "en": "u-verb: drink"},
+        {"jp": "します → する", "en": "irregular: do"},
+        {"jp": "きます → くる", "en": "irregular: come"}
       ]
     },
     {
-      "pattern": "Partykuła ni (に)",
-      "explanation": "Zastosowania:",
+      "pattern": "Particle に (ni)",
+      "explanation": "Used for: specific time (at 2 o'clock), location (in/at school), target/destination (to a friend)",
       "examples": [
-        {
-          "jp": "Zastosowania:",
-          "en": ""
-        }
+        {"jp": "にじにはいきます", "en": "Go at 2 o'clock"},
+        {"jp": "がっこうにいきます", "en": "Go to school"},
+        {"jp": "ともだちにあげます", "en": "Give to a friend"}
       ]
     },
     {
-      "pattern": "Partykuła e (へ)",
-      "explanation": "Tylko kierunek (dokąd):\n- Uchi e kaerimasu - Wracam do domu\n- Nihon e ikimasu - Jadę do Japonii\n\nUwaga: Czytane jak \"e\" ale zapisane znakiem へ (he)!",
+      "pattern": "Particle へ (e)",
+      "explanation": "Only for direction (towards where). Note: Written as へ (he) but pronounced 'e'!",
       "examples": [
-        {
-          "jp": "Tylko kierunek (dokąd):",
-          "en": "Uchi e kaerimasu - Wracam do domu"
-        },
-        {
-          "jp": "Nihon e ikimasu",
-          "en": "Jadę do Japonii"
-        }
+        {"jp": "うちへかえります", "en": "Return home"},
+        {"jp": "にほんへいきます", "en": "Go to Japan"}
       ]
     },
     {
-      "pattern": "Partykuła de (で)",
-      "explanation": "Miejsce działania:\n- Kissaten de kohi o nomimasu - Piję kawę w kawiarni\n- Gakkou de benkyou shimasu - Uczę się w szkole\n- Uchi de terebi o mimasu - Oglądam TV w domu",
+      "pattern": "Particle で (de)",
+      "explanation": "Location of action - where an activity takes place",
       "examples": [
-        {
-          "jp": "Miejsce działania:",
-          "en": "Kissaten de kohi o nomimasu - Piję kawę w kawiarni"
-        },
-        {
-          "jp": "Gakkou de benkyou shimasu",
-          "en": "Uczę się w szkole"
-        },
-        {
-          "jp": "Uchi de terebi o mimasu",
-          "en": "Oglądam TV w domu"
-        }
+        {"jp": "きっさてんでこーひーをのみます", "en": "Drink coffee at a cafe"},
+        {"jp": "がっこうでべんきょうします", "en": "Study at school"},
+        {"jp": "うちでてれびをみます", "en": "Watch TV at home"}
       ]
     },
     {
-      "pattern": "Partykuła to (と)",
-      "explanation": "Razem z:\n- Tomodachi to eiga ni ikimasu - Idę z przyjacielem do kina\n- Kazoku to tabemasu - Jem z rodziną\n\nŁączenie rzeczowników:\n- Sushi to tenpura - Sushi i tempura\n- Kore to sore - To i ta",
+      "pattern": "Particle と (to)",
+      "explanation": "Together with someone, or listing items",
       "examples": [
-        {
-          "jp": "Razem z:",
-          "en": "Tomodachi to eiga ni ikimasu - Idę z przyjacielem do kina"
-        },
-        {
-          "jp": "Kazoku to tabemasu",
-          "en": "Jem z rodziną"
-        },
-        {
-          "jp": "Łączenie rzeczowników:",
-          "en": "Sushi to tenpura - Sushi i tempura"
-        },
-        {
-          "jp": "Kore to sore",
-          "en": "To i tamto"
-        }
+        {"jp": "ともだちとえいがにいきます", "en": "Go to cinema with a friend"},
+        {"jp": "かぞくとたべます", "en": "Eat with family"},
+        {"jp": "すしとてんぷら", "en": "Sushi and tempura"}
       ]
     }
   ],
   "dialogues": [],
   "practice_phrases": [
-    "Ohayou gozaimasu. Tanaka sensei.",
-    "Ohayou. Maaya-chan. Ogenki desu ka?",
-    "Hai, genki desu.",
-    "Kyou wa ii tenki desu ne.",
-    "Hai. Demo gogo yoji ni ame ga furimasu.",
-    "Hontou desu ka? Zannen desu.",
-    "Kyou gakkou no ato tomodachi to isshoni kissaten ni ikimasu.",
-    "Sore wa ii desu ne.",
-    "Demo ame ga furu kara, kasa to atatakai uwagi o motte itte kudasai.",
-    "Wakarimashita. Ki wo tsukete."
+    "おはようございます。たなかせんせい。",
+    "おはよう。まあやちゃん。おげんきですか？",
+    "はい、げんきです。",
+    "きょうはいいてんきですね。",
+    "はい。でもごごよじにあめがふります。",
+    "ほんとうですか？ざんねんです。"
   ],
-  "summary": "## 📅 Informacje ogólne\n- Data: 2025-11-12\n- Tydzień: #Tydzień-6\n- Status: ✓ Ukończona\n- Czas trwania: ~60 min"
+  "summary": "Particles (ni, e, de, to), plain form of verbs, and reading practice."
 }
