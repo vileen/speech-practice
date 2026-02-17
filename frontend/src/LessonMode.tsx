@@ -200,7 +200,13 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
               {selectedLesson.grammar.map((point, idx) => (
                 <div key={idx} className="grammar-card">
                   <h4>{point.pattern}</h4>
-                  <p className="explanation">{point.explanation}</p>
+                  <div className="explanation">
+                    {point.explanation.split('\n').map((line, i) => (
+                      <p key={i} className={line.trim().startsWith('|') ? 'table-line' : ''}>
+                        {line.trim().startsWith('|-') ? <span className="table-separator">{line}</span> : line}
+                      </p>
+                    ))}
+                  </div>
                   {point.examples.length > 0 && (
                     <div className="examples">
                       <h5>Examples:</h5>

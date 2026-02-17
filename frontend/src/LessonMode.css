@@ -313,6 +313,23 @@
   line-height: 1.6;
 }
 
+.grammar-card .explanation p {
+  margin: 4px 0;
+}
+
+.grammar-card .explanation .table-line {
+  font-family: monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  background: #0f1a30;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.grammar-card .explanation .table-separator {
+  color: #666;
+}
+
 .grammar-card .examples {
   background: #0f3460;
   padding: 12px;
