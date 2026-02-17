@@ -49,12 +49,24 @@ interface LessonModeProps {
   onStartLessonChat: (lessonId: string, lessonTitle: string) => void;
 }
 
+const LESSON_STORAGE_KEY = 'speech-practice-last-lesson';
+
 export function LessonMode({ password, onBack, onStartLessonChat }: LessonModeProps) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [selectedLesson, setSelectedLesson] = useState<LessonDetail | null>(null);
+  const [selectedLesson, setSelectedLessonState] = useState<LessonDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
   const [showFurigana, setShowFurigana] = useState(true);
+
+  // Wrapper to save lesson to localStorage when selected
+  const setSelectedLesson = (lesson: LessonDetail | null) => {
+    setSelectedLessonState(lesson);
+    if (lesson) {
+      localStorage.setItem(LESSON_STORAGE_KEY, lesson.id);
+    } else {
+      localStorage.removeItem(LESSON_STORAGE_KEY);
+    }
+  };
 
   useEffect(() => {
     loadLessons();
@@ -70,6 +82,15 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
         // Sort by date descending (most recent first)
         const sorted = data.lessons.sort((a: Lesson, b: Lesson) => b.order - a.order);
         setLessons(sorted);
+        
+        // Check for saved lesson and load it
+        const savedLessonId = localStorage.getItem(LESSON_STORAGE_KEY);
+        if (savedLessonId) {
+          const lessonExists = sorted.find((l: Lesson) => l.id === savedLessonId);
+          if (lessonExists) {
+            loadLessonDetail(savedLessonId);
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading lessons:', error);
