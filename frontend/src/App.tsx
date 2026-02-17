@@ -85,18 +85,35 @@ function App() {
   const [vadResetCounter, setVadResetCounter] = useState(0); // Force VAD reset on Next Phrase
   const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null); // Track currently playing audio
   
-  // Lesson Mode
+  // Lesson Mode - use URL hash for persistence
   const [isLessonMode, setIsLessonModeState] = useState(false);
   const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
   
-  // Wrapper to save lesson mode state to localStorage
+  // Read initial state from URL hash
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#/lessons')) {
+      setIsLessonModeState(true);
+    }
+  }, []);
+  
+  // Listen for hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      setIsLessonModeState(hash.startsWith('#/lessons'));
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+  
+  // Wrapper to update URL hash when entering/exiting lesson mode
   const setIsLessonMode = (value: boolean) => {
     setIsLessonModeState(value);
     if (value) {
-      localStorage.setItem('speech-practice-lesson-mode', 'true');
+      window.location.hash = '#/lessons';
     } else {
-      localStorage.removeItem('speech-practice-lesson-mode');
-      localStorage.removeItem('speech-practice-last-lesson');
+      window.location.hash = '';
     }
   };
   
@@ -106,18 +123,12 @@ function App() {
   // Refs for audio recording are now handled by VoiceRecorder component
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load password and lesson mode from localStorage on mount
+  // Load password from localStorage on mount and auto-login if exists
   useEffect(() => {
     const savedPassword = localStorage.getItem('speech_practice_password');
     if (savedPassword) {
       setPassword(savedPassword);
       setIsAuthenticated(true);
-    }
-    
-    // Restore lesson mode state
-    const savedLessonMode = localStorage.getItem('speech-practice-lesson-mode');
-    if (savedLessonMode === 'true') {
-      setIsLessonModeState(true);
     }
     setIsLoading(false);
   }, []);
