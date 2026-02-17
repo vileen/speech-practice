@@ -82,6 +82,7 @@ function App() {
   const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
   const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
   const [isListening, setIsListening] = useState(false);
+  const [isNewPhrase, setIsNewPhrase] = useState(false);
   
   // Lesson Mode
   const [isLessonMode, setIsLessonMode] = useState(false);
@@ -102,6 +103,24 @@ function App() {
     }
     setIsLoading(false);
   }, []);
+
+  // Spacebar shortcut for Next Phrase in Repeat After Me mode
+  useEffect(() => {
+    if (!isRepeatMode) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && !e.repeat && !e.ctrlKey && !e.metaKey) {
+        // Don't trigger if user is typing in an input
+        if (document.activeElement?.tagName === 'INPUT') return;
+        
+        e.preventDefault();
+        nextPhrase();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isRepeatMode]);
 
   const handleLogin = async () => {
     localStorage.setItem('speech_practice_password', password);
@@ -223,9 +242,16 @@ function App() {
       setCurrentAudioUrl(null);
     }
     
+    // Show "New Phrase" indicator
+    setIsNewPhrase(true);
+    setTimeout(() => setIsNewPhrase(false), 1500);
+    
     setCurrentPhrase(randomPhrase.text);
     setCurrentTranslation(randomPhrase.translation);
     setPronunciationResult(null);
+    
+    // Reset voice recording state to force re-listening
+    setIsListening(false);
     
     // Get furigana
     const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase.text) : randomPhrase.text;
@@ -233,6 +259,11 @@ function App() {
     
     // Auto-play the phrase (will fetch new audio)
     playPhrase(randomPhrase.text, true);
+    
+    // Auto-start voice recording for new phrase (after a short delay)
+    setTimeout(() => {
+      setIsListening(true);
+    }, 500);
   };
 
   const playPhrase = async (text: string, forceNew: boolean = false) => {
@@ -416,6 +447,11 @@ function App() {
 
         <main className="repeat-main">
           <div className="phrase-card">
+            {isNewPhrase && (
+              <div className="new-phrase-indicator">
+                ✨ New Phrase! (Press Space for next)
+              </div>
+            )}
             <div className="phrase-display">
               {showFurigana && currentFurigana ? (
                 <div 
@@ -508,6 +544,7 @@ function App() {
               </div>
               
               <VoiceRecorder
+                key={currentPhrase}
                 mode={recordingMode}
                 isListening={isListening}
                 onStartListening={() => {
