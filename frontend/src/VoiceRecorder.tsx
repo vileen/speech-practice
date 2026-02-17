@@ -215,6 +215,94 @@ export function VoiceRecorder({
       clearTimeout(initTimeout);
     }
   }, [mode, onStartListening, onRecordingComplete]);
+
+  // Start recording immediately for push-to-talk (no VAD)
+  const startPushToTalk = useCallback(async () => {
+    if (isRunningRef.current) return;
+    isRunningRef.current = true;
+    setInitError(null);
+    
+    try {
+      // Get microphone permission
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        }
+      });
+      
+      mediaStreamRef.current = stream;
+      
+      // Setup audio context for level monitoring (visual feedback only)
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = audioContext;
+      
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.3;
+      analyserRef.current = analyser;
+      
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      
+      // Start recording immediately
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        if (audioChunksRef.current.length > 0) {
+          onRecordingComplete(audioBlob);
+        } else {
+          onStopListening();
+        }
+        audioChunksRef.current = [];
+      };
+      
+      mediaRecorder.start(50);
+      
+      // Visual feedback loop
+      const checkAudio = () => {
+        if (!analyserRef.current || !isRunningRef.current) return;
+        
+        const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+        analyserRef.current.getByteTimeDomainData(dataArray);
+        
+        // Calculate level for visual feedback only
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          const value = (dataArray[i] - 128) / 128;
+          sum += value * value;
+        }
+        const rms = Math.sqrt(sum / dataArray.length);
+        const level = Math.min(rms * 200, 100);
+        
+        setAudioLevel(level);
+        setIsSpeaking(level > 15);
+        
+        if (isRunningRef.current) {
+          rafRef.current = requestAnimationFrame(checkAudio);
+        }
+      };
+      
+      checkAudio();
+      onStartListening();
+      setIsReady(true);
+      
+    } catch (error) {
+      console.error('Error starting push-to-talk:', error);
+      setInitError('Failed to access microphone. Please check permissions.');
+      isRunningRef.current = false;
+    }
+  }, [onStartListening, onRecordingComplete, onStopListening]);
   
   // Stop recording
   const stopRecording = useCallback(() => {
@@ -348,7 +436,7 @@ export function VoiceRecorder({
       {/* Restart button - show after voice-activated recording or error */}
       {(!isPushToTalk && (isProcessing || initError)) && (
         <button
-          className="record-button"
+          className="record-btn"
           onClick={() => {
             setIsProcessing(false);
             setIsReady(false);
@@ -364,11 +452,11 @@ export function VoiceRecorder({
       {/* Push to talk button - only show for push-to-talk mode */}
       {isPushToTalk && (
         <button
-          className={`record-button ${isListening ? 'recording' : ''} ${isSpeaking ? 'speaking' : ''}`}
-          onMouseDown={startVAD}
+          className={`record-btn ${isListening ? 'recording' : ''} ${isSpeaking ? 'speaking' : ''}`}
+          onMouseDown={startPushToTalk}
           onMouseUp={stopRecording}
           onMouseLeave={isListening ? stopRecording : undefined}
-          onTouchStart={startVAD}
+          onTouchStart={startPushToTalk}
           onTouchEnd={stopRecording}
         >
           {isListening ? (

@@ -163,12 +163,18 @@ header h1 {
 
 .session-info {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
   background: #16213e;
   border-radius: 8px;
   margin-bottom: 1rem;
+}
+
+.session-info button {
+  margin-left: 8px;
 }
 
 .messages {
@@ -287,10 +293,17 @@ header h1 {
 
 .record-btn {
   background: #e94560 !important;
+  transition: all 0.3s ease;
 }
 
 .record-btn.recording {
   background: #ff0000 !important;
+}
+
+.record-btn.speaking {
+  background: #ff4444 !important;
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+  transform: scale(1.02);
 }
 
 /* Voice Recorder Section */
