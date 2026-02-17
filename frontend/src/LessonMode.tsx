@@ -33,6 +33,16 @@ interface LessonDetail {
 
 const API_URL = 'https://eds-grow-delivered-spending.trycloudflare.com'.replace(/\/$/, '');
 
+// Format date to YYYY-MM-DD
+function formatDate(dateString: string): string {
+  try {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  } catch {
+    return dateString;
+  }
+}
+
 interface LessonModeProps {
   password: string;
   onBack: () => void;
@@ -137,7 +147,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
             <div className="overview-tab">
               <div className="info-card">
                 <h3>Lesson Info</h3>
-                <p><strong>Date:</strong> {selectedLesson.date}</p>
+                <p><strong>Date:</strong> {formatDate(selectedLesson.date)}</p>
                 {selectedLesson.topics.length > 0 && (
                   <p><strong>Topics:</strong> {selectedLesson.topics.join(', ')}</p>
                 )}
@@ -240,7 +250,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
             className="lesson-card"
             onClick={() => loadLessonDetail(lesson.id)}
           >
-            <div className="lesson-date">{lesson.date}</div>
+            <div className="lesson-date">{formatDate(lesson.date)}</div>
             <h3>{translateLessonTitle(lesson.title)}</h3>
             <div className="lesson-meta">
               <span>📝 {lesson.vocabCount} words</span>
