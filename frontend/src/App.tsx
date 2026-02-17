@@ -301,15 +301,38 @@ function App() {
     setInputText('');
   };
 
-  const generateAIResponse = async (_userText: string, lang: string) => {
-    const responses: Record<string, string> = {
-      japanese: 'はい、理解しました。続けてください。',
-      italian: 'Sì, ho capito. Continua pure.',
-    };
-    const responseText = responses[lang] || 'OK, understood. Please continue.';
+  const generateAIResponse = async (userText: string, lang: string) => {
+    if (!session) return;
     
-    await new Promise(resolve => setTimeout(resolve, 500));
-    await generateTTS(responseText);
+    try {
+      const response = await fetch(`${API_URL}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({
+          session_id: session.id,
+          message: userText,
+        }),
+      });
+      
+      if (response.ok) {
+        const aiData = await response.json();
+        
+        // Add AI message to chat
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          text: aiData.text,
+          withFurigana: aiData.text_with_furigana || aiData.text,
+        }]);
+        
+        // Generate TTS for AI response
+        await generateTTS(aiData.text);
+      }
+    } catch (error) {
+      console.error('Error generating AI response:', error);
+    }
   };
 
   // Initialize lesson chat with system prompt
