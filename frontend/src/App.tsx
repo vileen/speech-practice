@@ -89,19 +89,22 @@ function App() {
   const [isLessonMode, setIsLessonModeState] = useState(false);
   const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
   
+  // Check if hash is a lesson URL (either list or specific lesson)
+  const isLessonHash = (hash: string): boolean => {
+    return hash.startsWith('#/lessons');
+  };
+  
   // Read initial state from URL hash
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash.startsWith('#/lessons')) {
-      setIsLessonModeState(true);
-    }
+    setIsLessonModeState(isLessonHash(hash));
   }, []);
   
   // Listen for hash changes
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
-      setIsLessonModeState(hash.startsWith('#/lessons'));
+      setIsLessonModeState(isLessonHash(hash));
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
@@ -111,7 +114,11 @@ function App() {
   const setIsLessonMode = (value: boolean) => {
     setIsLessonModeState(value);
     if (value) {
-      window.location.hash = '#/lessons';
+      // Only set default hash if not already on a lesson page
+      const currentHash = window.location.hash;
+      if (!isLessonHash(currentHash)) {
+        window.location.hash = '#/lessons';
+      }
     } else {
       window.location.hash = '';
     }
