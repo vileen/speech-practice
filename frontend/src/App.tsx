@@ -82,7 +82,6 @@ function App() {
   const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
   const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
   const [isListening, setIsListening] = useState(false);
-  const [isNewPhrase, setIsNewPhrase] = useState(false);
   
   // Lesson Mode
   const [isLessonMode, setIsLessonMode] = useState(false);
@@ -241,10 +240,6 @@ function App() {
       URL.revokeObjectURL(currentAudioUrl);
       setCurrentAudioUrl(null);
     }
-    
-    // Show "New Phrase" indicator
-    setIsNewPhrase(true);
-    setTimeout(() => setIsNewPhrase(false), 1500);
     
     setCurrentPhrase(randomPhrase.text);
     setCurrentTranslation(randomPhrase.translation);
