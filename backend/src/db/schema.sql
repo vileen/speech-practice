@@ -30,3 +30,20 @@ CREATE TABLE IF NOT EXISTS user_recordings (
   target_language VARCHAR(10) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Lessons table
+CREATE TABLE IF NOT EXISTS lessons (
+  id VARCHAR(20) PRIMARY KEY,
+  date DATE NOT NULL,
+  title TEXT NOT NULL,
+  order_num INTEGER NOT NULL,
+  topics TEXT[] DEFAULT '{}',
+  vocabulary JSONB DEFAULT '[]',
+  grammar JSONB DEFAULT '[]',
+  practice_phrases TEXT[] DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create index for ordering
+CREATE INDEX IF NOT EXISTS idx_lessons_order ON lessons(order_num DESC);

@@ -1,29 +1,5 @@
-// Lesson Data Management
-import { readFile } from 'fs/promises';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Look for lessons - try src first (dev), then dist (production)
-const { existsSync } = await import('fs');
-const srcPath = join(__dirname, '../../src/data/lessons');
-const distPath = join(__dirname, '../data/lessons');
-const LESSONS_DIR = existsSync(srcPath) ? srcPath : distPath;
-
-interface LessonIndex {
-  count: number;
-  lessons: Array<{
-    id: string;
-    date: string;
-    title: string;
-    order: number;
-    topics: string[];
-    vocabCount: number;
-    grammarCount: number;
-  }>;
-}
+// Lesson Data Management - PostgreSQL version
+import { pool } from '../db/pool.js';
 
 interface VocabItem {
   jp: string;
@@ -48,47 +24,122 @@ interface LessonData {
   vocabulary: VocabItem[];
   grammar: GrammarPoint[];
   practice_phrases: string[];
-  summary: string;
 }
 
-let lessonsCache: LessonIndex | null = null;
+interface LessonIndex {
+  count: number;
+  lessons: Array<{
+    id: string;
+    date: string;
+    title: string;
+    order: number;
+    topics: string[];
+    vocabCount: number;
+    grammarCount: number;
+  }>;
+}
 
-// Load lesson index
+// Get lesson index (list all lessons)
 export async function getLessonIndex(): Promise<LessonIndex> {
-  if (lessonsCache) return lessonsCache;
+  const result = await pool.query(
+    'SELECT id, date, title, order_num as order, topics, ' +
+    'jsonb_array_length(vocabulary) as vocabCount, ' +
+    'jsonb_array_length(grammar) as grammarCount ' +
+    'FROM lessons ORDER BY order_num DESC'
+  );
   
-  const indexPath = join(LESSONS_DIR, 'index.json');
-  const data = await readFile(indexPath, 'utf-8');
-  lessonsCache = JSON.parse(data);
-  return lessonsCache!;
+  return {
+    count: result.rows.length,
+    lessons: result.rows.map(row => ({
+      id: row.id,
+      date: row.date,
+      title: row.title,
+      order: row.order,
+      topics: row.topics || [],
+      vocabCount: parseInt(row.vocabcount) || 0,
+      grammarCount: parseInt(row.grammarcount) || 0
+    }))
+  };
 }
 
-// Load specific lesson
+// Get specific lesson
 export async function getLesson(id: string): Promise<LessonData | null> {
-  try {
-    const lessonPath = join(LESSONS_DIR, `${id}.json`);
-    const data = await readFile(lessonPath, 'utf-8');
-    return JSON.parse(data);
-  } catch {
+  const result = await pool.query(
+    'SELECT id, date, title, order_num as order, topics, vocabulary, grammar, practice_phrases ' +
+    'FROM lessons WHERE id = $1',
+    [id]
+  );
+  
+  if (result.rows.length === 0) {
     return null;
   }
-}
-
-// Get recent lessons (for "review last lesson" feature)
-export async function getRecentLessons(count: number = 3): Promise<LessonData[]> {
-  const index = await getLessonIndex();
-  const sorted = index.lessons.sort((a, b) => b.order - a.order);
-  const recentIds = sorted.slice(0, count).map(l => l.id);
   
-  const lessons: LessonData[] = [];
-  for (const id of recentIds) {
-    const lesson = await getLesson(id);
-    if (lesson) lessons.push(lesson);
-  }
-  return lessons;
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    date: row.date,
+    title: row.title,
+    order: row.order,
+    topics: row.topics || [],
+    vocabulary: row.vocabulary || [],
+    grammar: row.grammar || [],
+    practice_phrases: row.practice_phrases || []
+  };
 }
 
-// Get lesson topics for AI context
+// Get recent lessons
+export async function getRecentLessons(count: number = 3): Promise<LessonData[]> {
+  const result = await pool.query(
+    'SELECT id, date, title, order_num as order, topics, vocabulary, grammar, practice_phrases ' +
+    'FROM lessons ORDER BY order_num DESC LIMIT $1',
+    [count]
+  );
+  
+  return result.rows.map(row => ({
+    id: row.id,
+    date: row.date,
+    title: row.title,
+    order: row.order,
+    topics: row.topics || [],
+    vocabulary: row.vocabulary || [],
+    grammar: row.grammar || [],
+    practice_phrases: row.practice_phrases || []
+  }));
+}
+
+// Create or update lesson
+export async function upsertLesson(lesson: LessonData): Promise<void> {
+  await pool.query(
+    `INSERT INTO lessons (id, date, title, order_num, topics, vocabulary, grammar, practice_phrases)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     ON CONFLICT (id) DO UPDATE SET
+       date = EXCLUDED.date,
+       title = EXCLUDED.title,
+       order_num = EXCLUDED.order_num,
+       topics = EXCLUDED.topics,
+       vocabulary = EXCLUDED.vocabulary,
+       grammar = EXCLUDED.grammar,
+       practice_phrases = EXCLUDED.practice_phrases,
+       updated_at = CURRENT_TIMESTAMP`,
+    [
+      lesson.id,
+      lesson.date,
+      lesson.title,
+      lesson.order,
+      lesson.topics,
+      JSON.stringify(lesson.vocabulary),
+      JSON.stringify(lesson.grammar),
+      lesson.practice_phrases
+    ]
+  );
+}
+
+// Delete lesson
+export async function deleteLesson(id: string): Promise<void> {
+  await pool.query('DELETE FROM lessons WHERE id = $1', [id]);
+}
+
+// Get lesson context for AI
 export function getLessonContext(lesson: LessonData): string {
   const vocabList = lesson.vocabulary.slice(0, 20).map(v => `${v.jp} (${v.reading}) = ${v.en}`).join(', ');
   const grammarList = lesson.grammar.map(g => g.pattern).join(', ');
@@ -153,19 +204,27 @@ STRICT MODE:
 
 // Find lesson by partial ID (for URL matching)
 export async function findLesson(query: string): Promise<LessonData | null> {
-  const index = await getLessonIndex();
-  
   // Try exact match first
-  let match = index.lessons.find(l => l.id === query);
-  if (match) return getLesson(match.id);
+  let lesson = await getLesson(query);
+  if (lesson) return lesson;
   
   // Try partial date match
-  match = index.lessons.find(l => l.id.includes(query));
-  if (match) return getLesson(match.id);
+  const result = await pool.query(
+    'SELECT id FROM lessons WHERE id LIKE $1 LIMIT 1',
+    [`%${query}%`]
+  );
+  if (result.rows.length > 0) {
+    return getLesson(result.rows[0].id);
+  }
   
   // Try title match
-  match = index.lessons.find(l => l.title.toLowerCase().includes(query.toLowerCase()));
-  if (match) return getLesson(match.id);
+  const titleResult = await pool.query(
+    'SELECT id FROM lessons WHERE title ILIKE $1 LIMIT 1',
+    [`%${query}%`]
+  );
+  if (titleResult.rows.length > 0) {
+    return getLesson(titleResult.rows[0].id);
+  }
   
   return null;
 }
