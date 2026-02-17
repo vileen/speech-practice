@@ -82,6 +82,7 @@ function App() {
   const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
   const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
   const [isListening, setIsListening] = useState(false);
+  const [vadResetCounter, setVadResetCounter] = useState(0); // Force VAD reset on Next Phrase
   
   // Lesson Mode
   const [isLessonMode, setIsLessonMode] = useState(false);
@@ -245,8 +246,9 @@ function App() {
     setCurrentTranslation(randomPhrase.translation);
     setPronunciationResult(null);
     
-    // Reset voice recording state to force re-listening
+    // Reset all voice recorder states to force fresh initialization
     setIsListening(false);
+    setVadResetCounter(c => c + 1); // Force VoiceRecorder full reset
     
     // Get furigana
     const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase.text) : randomPhrase.text;
@@ -457,9 +459,6 @@ function App() {
             }}>
               ← Back to Chat
             </button>
-            <button className="mode-btn" onClick={handleLogout}>
-              🚪 Logout
-            </button>
           </div>
         </header>
 
@@ -557,7 +556,7 @@ function App() {
               </div>
               
               <VoiceRecorder
-                key={currentPhrase}
+                key={`${currentPhrase}-${vadResetCounter}`}
                 mode={recordingMode}
                 isListening={isListening}
                 onStartListening={() => {
