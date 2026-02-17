@@ -169,6 +169,34 @@ function App() {
     return text;
   };
 
+  // Fetch TTS and return audio URL without adding to messages
+  const fetchTTS = async (text: string): Promise<string | null> => {
+    if (!session) return null;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/tts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({
+          text,
+          language: session.language,
+          gender: session.voice_gender,
+        }),
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+      }
+    } catch (error) {
+      console.error('Error fetching TTS:', error);
+    }
+    return null;
+  };
+
   const generateTTS = async (text: string) => {
     if (!session) return;
     
@@ -375,14 +403,16 @@ function App() {
           
           if (aiResponse.ok) {
             const aiData = await aiResponse.json();
+            
+            // Fetch TTS for AI's opening message
+            const audioUrl = await fetchTTS(aiData.text);
+            
             setMessages([{
               role: 'assistant',
               text: aiData.text,
               withFurigana: aiData.text_with_furigana || aiData.text,
+              audioUrl: audioUrl || undefined,
             }]);
-            
-            // Generate TTS for AI's opening message
-            await generateTTS(aiData.text);
           }
         }
       }
