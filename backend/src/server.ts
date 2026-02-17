@@ -7,7 +7,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { pool } from './db/pool.js';
-import { generateSpeech, addFurigana, addFuriganaSync, saveFuriganaCache } from './services/elevenlabs.js';
+import { generateSpeech, addFurigana, addFuriganaSync, saveFuriganaCache, toHiraganaForTTS } from './services/elevenlabs.js';
 import { getLessonIndex, getLesson, getRecentLessons, getLessonSystemPrompt } from './services/lessons.js';
 import { transcribeAudioDirect } from './services/whisper.js';
 import { generateChatResponse } from './services/chat.js';
@@ -196,8 +196,15 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
 
     // If no audio file, just return the TTS for "listen" phase
     if (!req.file) {
+      // For Japanese, convert kanji to hiragana for better TTS pronunciation
+      let ttsText = target_text;
+      if (language === 'japanese') {
+        ttsText = await toHiraganaForTTS(target_text);
+        console.log(`TTS: "${target_text}" -> "${ttsText}"`);
+      }
+      
       const audioBuffer = await generateSpeech({ 
-        text: target_text, 
+        text: ttsText, 
         language: language || 'japanese', 
         gender: 'female' 
       });
