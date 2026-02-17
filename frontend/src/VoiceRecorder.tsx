@@ -327,28 +327,7 @@ export function VoiceRecorder({
             ) : isProcessing ? (
               <>✅ Processing... Click to speak again</>
             ) : !isReady ? (
-              <>
-                Initializing microphone...
-                <button 
-                  onClick={() => {
-                    setInitError('Retrying...');
-                    isRunningRef.current = false;
-                    setTimeout(() => startVAD(), 100);
-                  }}
-                  style={{ 
-                    marginLeft: '10px', 
-                    padding: '4px 8px',
-                    fontSize: '0.8rem',
-                    background: '#e94560',
-                    border: 'none',
-                    borderRadius: '4px',
-                    color: 'white',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Retry
-                </button>
-              </>
+              <>Initializing microphone (auto-retrying)...</>
             ) : hasDetectedVoiceState ? (
               displaySilenceTimer > 0 ? (
                 <>⏱️ Auto-stop in {Math.max(0, Math.ceil((2000 - silenceTimer) / 100) / 10)}s</>
