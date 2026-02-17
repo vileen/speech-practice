@@ -1,14 +1,14 @@
 {
   "id": "2025-10-15",
   "date": "2025-10-15",
-  "title": "Lekcja 2025-10-15 — Hiragana: ma-mi-mu-me-mo, ya-yu-yo, czas, rodzina",
+  "title": "Lesson 2025-10-15 — Hiragana: ma-mi-mu-me-mo, ya-yu-yo, czas, rodzina",
   "order": 20251015,
   "topics": [],
   "vocabulary": [
     {
-      "jp": "Znak",
-      "reading": "Czytanie",
-      "en": "Słówka przykładowe",
+      "jp": "Character",
+      "reading": "Reading",
+      "en": "Vocabulary przykładowe",
       "tags": []
     },
     {
@@ -49,9 +49,9 @@
       "tags": []
     },
     {
-      "jp": "Znak",
-      "reading": "Czytanie",
-      "en": "Słówka przykładowe",
+      "jp": "Character",
+      "reading": "Reading",
+      "en": "Vocabulary przykładowe",
       "tags": []
     },
     {
@@ -313,7 +313,7 @@
   "grammar": [
     {
       "pattern": "Powtórka",
-      "explanation": "- Dochira (który?) - słówka do porównywania\n- Kolory: aoi (niebieski), akai (czerwony)\n- Przeciwieństwa: naka (środek), soto (na zewnątrz)\n- Zwierzęta: neko (kot), inu (pies)\n- Słówka: sio (sól), sato",
+      "explanation": "- Dochira (który?) - słówka do porównywania\n- Kolory: aoi (niebieski), akai (czerwony)\n- Przeciwieństwa: naka (środek), soto (na zewnątrz)\n- Zwierzęta: neko (kot), inu (pies)\n- Vocabulary: sio (sól), sato",
       "examples": [
         {
           "jp": "Dochira (który?)",
@@ -325,13 +325,13 @@
         },
         {
           "jp": "Zwierzęta: neko (kot), inu (pies)",
-          "en": "Słówka: sio (sól), satou (cukier)"
+          "en": "Vocabulary: sio (sól), satou (cukier)"
         }
       ]
     },
     {
       "pattern": "Nowy wiersz hiragany: ma-mi-mu-me-mo (まみむめも)",
-      "explanation": "| Znak | Czytanie | Słówka przykładowe |\n|------|----------|-------------------|\n| ま | ma | machi (miasto), matsu (czekać), mata (jeszcze raz), mada (jeszcze nie), maccha (matcha) |\n| み | mi | mimi (",
+      "explanation": "| Character | Reading | Vocabulary przykładowe |\n|------|----------|-------------------|\n| ま | ma | machi (miasto), matsu (czekać), mata (jeszcze raz), mada (jeszcze nie), maccha (matcha) |\n| み | mi | mimi (",
       "examples": [
         {
           "jp": "-",
@@ -357,7 +357,7 @@
     },
     {
       "pattern": "Wyjątkowy wiersz: ya-yu-yo (やゆよ)",
-      "explanation": "Tylko trzy znaki!\n\n| Znak | Czytanie | Słówka przykładowe |\n|------|----------|-------------------|\n| や | ya | yama (góra), yasumu (odpoczywać), oya (rodzice), yakiniku (smażone mięso) |\n| ゆ | yu",
+      "explanation": "Tylko trzy znaki!\n\n| Character | Reading | Vocabulary przykładowe |\n|------|----------|-------------------|\n| や | ya | yama (góra), yasumu (odpoczywać), oya (rodzice), yakiniku (smażone mięso) |\n| ゆ | yu",
       "examples": [
         {
           "jp": "Tylko trzy znaki!",
@@ -404,8 +404,8 @@
   ],
   "dialogues": [],
   "practice_phrases": [
-    "Watashi wa [imię] desu.",
-    "Watashi wa [wiek] sai desu.",
+    "Watashi wa [name] desu.",
+    "Watashi wa [age] sai desu.",
     "Watashi wa [miasto] kara desu.",
     "Watashi wa [zawód] desu.",
     "Watashi wa [nihonjin/amerikajin/etc.] desu."
