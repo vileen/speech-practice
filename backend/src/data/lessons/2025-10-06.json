@@ -1,0 +1,301 @@
+{
+  "id": "2025-10-06",
+  "date": "2025-10-06",
+  "title": "Numbers, Age and Hiragana (na-ni-nu-ne-no)",
+  "order": 20251006,
+  "topics": ["Numbers 0-100", "Age expressions", "Hiragana na-ni-nu-ne-no"],
+  "vocabulary": [
+    {
+      "jp": "ゼロ",
+      "reading": "zero / rei",
+      "en": "zero (rei used in some contexts)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "いち",
+      "reading": "ichi",
+      "en": "one",
+      "tags": ["number"]
+    },
+    {
+      "jp": "に",
+      "reading": "ni",
+      "en": "two",
+      "tags": ["number"]
+    },
+    {
+      "jp": "さん",
+      "reading": "san",
+      "en": "three",
+      "tags": ["number"]
+    },
+    {
+      "jp": "よん",
+      "reading": "yon / shi",
+      "en": "four (avoid shi - means death)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "ご",
+      "reading": "go",
+      "en": "five",
+      "tags": ["number"]
+    },
+    {
+      "jp": "ろく",
+      "reading": "roku",
+      "en": "six",
+      "tags": ["number"]
+    },
+    {
+      "jp": "なな",
+      "reading": "nana / shichi",
+      "en": "seven (nana more commonly used)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "はち",
+      "reading": "hachi",
+      "en": "eight",
+      "tags": ["number"]
+    },
+    {
+      "jp": "きゅう",
+      "reading": "kyū / ku",
+      "en": "nine (both forms OK)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅう",
+      "reading": "jū",
+      "en": "ten",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅういち",
+      "reading": "jū ichi",
+      "en": "eleven (10 + 1)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅうに",
+      "reading": "jū ni",
+      "en": "twelve (10 + 2)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅうさん",
+      "reading": "jū san",
+      "en": "thirteen (10 + 3)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅうよん",
+      "reading": "jū yon",
+      "en": "fourteen (10 + 4, NOT jū shi)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅうご",
+      "reading": "jū go",
+      "en": "fifteen (10 + 5)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅうろく",
+      "reading": "jū roku",
+      "en": "sixteen (10 + 6)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅうなな",
+      "reading": "jū nana",
+      "en": "seventeen (10 + 7)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅうはち",
+      "reading": "jū hachi",
+      "en": "eighteen (10 + 8)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "じゅうきゅう",
+      "reading": "jū kyū",
+      "en": "nineteen (10 + 9)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "にじゅう",
+      "reading": "ni jū",
+      "en": "twenty (2 × 10)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "さんじゅう",
+      "reading": "san jū",
+      "en": "thirty (3 × 10)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "よんじゅう",
+      "reading": "yon jū",
+      "en": "forty (4 × 10)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "ごじゅう",
+      "reading": "go jū",
+      "en": "fifty (5 × 10)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "ろくじゅう",
+      "reading": "roku jū",
+      "en": "sixty (6 × 10)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "ななじゅう",
+      "reading": "nana jū",
+      "en": "seventy (7 × 10)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "はちじゅう",
+      "reading": "hachi jū",
+      "en": "eighty (8 × 10)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "きゅうじゅう",
+      "reading": "kyū jū",
+      "en": "ninety (9 × 10)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "にじゅういち",
+      "reading": "ni jū ichi",
+      "en": "twenty-one (20 + 1)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "にじゅうに",
+      "reading": "ni jū ni",
+      "en": "twenty-two (20 + 2)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "さんじゅうご",
+      "reading": "san jū go",
+      "en": "thirty-five (30 + 5)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "よんじゅうはち",
+      "reading": "yon jū hachi",
+      "en": "forty-eight (40 + 8)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "きゅうじゅうきゅう",
+      "reading": "kyū jū kyū",
+      "en": "ninety-nine (90 + 9)",
+      "tags": ["number"]
+    },
+    {
+      "jp": "いっさい",
+      "reading": "issai",
+      "en": "one year old (NOT ichi-sai)",
+      "tags": ["age"]
+    },
+    {
+      "jp": "はっさい",
+      "reading": "hassai",
+      "en": "eight years old (special: hachi → ha)",
+      "tags": ["age"]
+    },
+    {
+      "jp": "じゅっさい",
+      "reading": "jūssai",
+      "en": "ten years old (special, doubled)",
+      "tags": ["age"]
+    },
+    {
+      "jp": "はたち",
+      "reading": "hatachi",
+      "en": "twenty years old (coming of age - no 'sai' added)",
+      "tags": ["age"]
+    },
+    {
+      "jp": "なんさい",
+      "reading": "nan sai",
+      "en": "how old",
+      "tags": ["question"]
+    },
+    {
+      "jp": "なんねんせい",
+      "reading": "nan nensei",
+      "en": "what year/grade",
+      "tags": ["question"]
+    },
+    {
+      "jp": "しょうがくせい",
+      "reading": "shōgakusei",
+      "en": "elementary school student",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "こうこうせい",
+      "reading": "kōkōsei",
+      "en": "high school student",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "がくせい",
+      "reading": "gakusei",
+      "en": "student (general)",
+      "tags": ["noun"]
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Number + sai",
+      "explanation": "Expressing age by adding 'sai' (years old) to numbers. Some numbers have special forms.",
+      "examples": [
+        {"jp": "いっさいです", "en": "I am one year old"},
+        {"jp": "はっさいです", "en": "I am eight years old"},
+        {"jp": "じゅっさいです", "en": "I am ten years old"},
+        {"jp": "はたちです", "en": "I am twenty years old"}
+      ]
+    },
+    {
+      "pattern": "Nan sai desu ka?",
+      "explanation": "Asking someone's age",
+      "examples": [
+        {"jp": "なんさいですか", "en": "How old are you?"},
+        {"jp": "じゅうきゅうさいです", "en": "I am 19 years old"}
+      ]
+    },
+    {
+      "pattern": "Nan nensei desu ka?",
+      "explanation": "Asking what year/grade someone is in",
+      "examples": [
+        {"jp": "なんねんせいですか", "en": "What year are you in?"},
+        {"jp": "いちねんせいです", "en": "I am a first-year student"}
+      ]
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [
+    "A: これはなんですか",
+    "B: これはごです",
+    "A: いいくらいですか",
+    "B: いいはじゅうです",
+    "A: エフは",
+    "B: エフははちです",
+    "A: メリーさんはなんさいですか",
+    "B: メリーさんはじゅうきゅうさいです"
+  ],
+  "summary": "Numbers 0-100+, expressing age, hiragana na-ni-nu-ne-no. Hatachi (20) is the age of majority in Japan."
+}
