@@ -330,6 +330,33 @@
   color: #666;
 }
 
+/* Grammar Tables */
+.grammar-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  background: #0f1a30;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+
+.grammar-table td {
+  padding: 10px 12px;
+  border: 1px solid #1a3a5c;
+  vertical-align: top;
+}
+
+.grammar-table tr:first-child td {
+  background: #1a3a5c;
+  font-weight: bold;
+  color: #fff;
+}
+
+.grammar-table tr:nth-child(even) td {
+  background: rgba(26, 58, 92, 0.3);
+}
+
 .grammar-card .examples {
   background: #0f3460;
   padding: 12px;
