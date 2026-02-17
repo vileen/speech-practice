@@ -344,16 +344,26 @@ function App() {
       if (response.ok) {
         const aiData = await response.json();
         
-        // Add AI message to chat with translation
+        // Add AI message with loading state
+        const messageId = Date.now();
         setMessages(prev => [...prev, {
+          id: messageId,
           role: 'assistant',
           text: aiData.text,
           withFurigana: aiData.text_with_furigana || aiData.text,
           translation: aiData.translation,
+          isLoading: true,
         }]);
         
         // Generate TTS for AI response
-        await generateTTS(aiData.text);
+        const audioUrl = await fetchTTS(aiData.text);
+        
+        // Update message with audio (remove loading state)
+        setMessages(prev => prev.map(msg => 
+          (msg as any).id === messageId 
+            ? { ...msg, audioUrl: audioUrl || undefined, isLoading: false }
+            : msg
+        ));
       }
     } catch (error) {
       console.error('Error generating AI response:', error);
@@ -407,15 +417,29 @@ function App() {
           if (aiResponse.ok) {
             const aiData = await aiResponse.json();
             
-            // Fetch TTS for AI's opening message (pass sessionData directly since setSession is async)
-            const audioUrl = await fetchTTS(aiData.text, sessionData);
-            
+            // Add AI message with loading state
+            const messageId = Date.now();
             setMessages([{
+              id: messageId,
               role: 'assistant',
               text: aiData.text,
               withFurigana: aiData.text_with_furigana || aiData.text,
-              audioUrl: audioUrl || undefined,
               translation: aiData.translation,
+              isLoading: true,
+            }]);
+            
+            // Fetch TTS for AI's opening message (pass sessionData directly since setSession is async)
+            const audioUrl = await fetchTTS(aiData.text, sessionData);
+            
+            // Update message with audio (remove loading state)
+            setMessages([{
+              id: messageId,
+              role: 'assistant',
+              text: aiData.text,
+              withFurigana: aiData.text_with_furigana || aiData.text,
+              translation: aiData.translation,
+              audioUrl: audioUrl || undefined,
+              isLoading: false,
             }]);
           }
         }
@@ -726,6 +750,11 @@ function App() {
                     ) : msg.text)
                   }
                 </div>
+                {(msg as any).isLoading && (
+                  <div className="audio-loading">
+                    <span className="loading-dots">Generating audio</span>
+                  </div>
+                )}
                 {msg.audioUrl && (
                   <div className="audio-player">
                     <button 
