@@ -70,7 +70,7 @@ function App() {
   const [gender, setGender] = useState<'male' | 'female'>('female');
   // Recording state managed by VoiceRecorder component
   const [session, setSession] = useState<Session | null>(null);
-  const [messages, setMessages] = useState<Array<{role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string}>>([]);
+  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean}>>([]);
   const [inputText, setInputText] = useState('');
   const [showFurigana, setShowFurigana] = useState(true);
   
