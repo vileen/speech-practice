@@ -344,11 +344,12 @@ function App() {
       if (response.ok) {
         const aiData = await response.json();
         
-        // Add AI message to chat
+        // Add AI message to chat with translation
         setMessages(prev => [...prev, {
           role: 'assistant',
           text: aiData.text,
           withFurigana: aiData.text_with_furigana || aiData.text,
+          translation: aiData.translation,
         }]);
         
         // Generate TTS for AI response
@@ -414,6 +415,7 @@ function App() {
               text: aiData.text,
               withFurigana: aiData.text_with_furigana || aiData.text,
               audioUrl: audioUrl || undefined,
+              translation: aiData.translation,
             }]);
           }
         }
