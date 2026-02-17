@@ -19,8 +19,8 @@
 
 .audio-level {
   height: 100%;
-  background: linear-gradient(90deg, #4ade80 0%, #e94560 100%);
-  transition: width 0.05s ease-out;
+  background: linear-gradient(90deg, #4ade80 0%, #22c55e 50%, #fbbf24 80%, #e94560 100%);
+  transition: width 0.03s ease-out;
   border-radius: 4px;
 }
 
@@ -86,7 +86,9 @@
 .record-button.recording.speaking,
 .record-btn.speaking {
   background: linear-gradient(135deg, #e94560 0%, #4ade80 100%);
-  box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+  box-shadow: 0 0 30px rgba(74, 222, 128, 0.6);
+  transform: scale(1.05);
+  transition: all 0.1s ease-out;
 }
 
 @keyframes recording-pulse {
