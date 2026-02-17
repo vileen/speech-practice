@@ -291,7 +291,6 @@ header h1 {
 
 .record-btn.recording {
   background: #ff0000 !important;
-  animation: pulse 1s infinite;
 }
 
 /* Voice Recorder Section */
