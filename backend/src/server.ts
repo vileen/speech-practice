@@ -6,7 +6,7 @@ import { mkdirSync, existsSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
-import pg from 'pg';
+import { pool } from './db/pool.js';
 import { generateSpeech, addFurigana, addFuriganaSync, saveFuriganaCache } from './services/elevenlabs.js';
 import { getLessonIndex, getLesson, getRecentLessons, getLessonSystemPrompt } from './services/lessons.js';
 import { transcribeAudioDirect } from './services/whisper.js';
@@ -33,12 +33,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Database
-const { Pool } = pg;
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-});
+// Database pool imported from ./db/pool.js
 
 // Ensure audio storage directory exists
 const audioStoragePath = process.env.AUDIO_STORAGE_PATH || './audio_recordings';
