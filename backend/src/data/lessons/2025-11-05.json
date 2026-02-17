@@ -8,7 +8,7 @@
     {
       "jp": "Katakana",
       "reading": "Romaji",
-      "en": "Przykłady",
+      "en": "Exampley",
       "tags": []
     },
     {
@@ -50,7 +50,7 @@
     {
       "jp": "Katakana",
       "reading": "Romaji",
-      "en": "Przykłady",
+      "en": "Exampley",
       "tags": []
     },
     {
@@ -217,7 +217,7 @@
     },
     {
       "jp": "Forma",
-      "reading": "Przykład",
+      "reading": "Example",
       "en": "Znaczenie",
       "tags": []
     },
@@ -328,7 +328,7 @@
     },
     {
       "pattern": "Wiersz sa-shi-su-se-so (サシスセソ) - powtórka",
-      "explanation": "| Katakana | Romaji | Przykłady |\n|----------|--------|-----------|\n| サ | sa | サッカー (sakkā), サイズ (saizu) |\n| シ | shi | シャツ (shatsu), シャワー (shawā) |\n| ス | su | スキー (sukī), スポーツ (supōtsu) |\n| セ | se |",
+      "explanation": "| Katakana | Romaji | Exampley |\n|----------|--------|-----------|\n| サ | sa | サッカー (sakkā), サイズ (saizu) |\n| シ | shi | シャツ (shatsu), シャワー (shawā) |\n| ス | su | スキー (sukī), スポーツ (supōtsu) |\n| セ | se |",
       "examples": [
         {
           "jp": "-",
@@ -342,7 +342,7 @@
     },
     {
       "pattern": "Wiersz ta-chi-tsu-te-to (タチツテト) - powtórka",
-      "explanation": "| Katakana | Romaji | Przykłady |\n|----------|--------|-----------|\n| タ | ta | タクシー (takushī) |\n| チ | chi | チキン (chikin), チーズ (chīzu) |\n| ツ | tsu | ツアー (tsuā) |\n| テ | te | テスト (tesuto), テレビ (terebi)",
+      "explanation": "| Katakana | Romaji | Exampley |\n|----------|--------|-----------|\n| タ | ta | タクシー (takushī) |\n| チ | chi | チキン (chikin), チーズ (chīzu) |\n| ツ | tsu | ツアー (tsuā) |\n| テ | te | テスト (tesuto), テレビ (terebi)",
       "examples": [
         {
           "jp": "-",
@@ -361,7 +361,7 @@
     },
     {
       "pattern": "Wyjątki i pułapki",
-      "explanation": "Kiru - dwa znaczenia, dwie grupy:\n1. Kiru (切る) - ciąć, kroić → Kirimasu (GRUPA 2 -u)\n2. Kiru (着る) - nosić (ubranie) → Kimasu (GRUPA 1 -iru)\n\nContext matters!\n- Kaminoke o kirimasu - Tnę włosy",
+      "explanation": "Kiru - dwa znaczenia, dwie grupy:\n1. Kiru (切る) - ciąć, kroić → Kirimasu (GRUPA 2 -u)\n2. Kiru (着る) - nosić (ubranie) → Kimasu (GRUPA 1 -iru)\n\nWhatntext matters!\n- Kaminoke o kirimasu - Tnę włosy",
       "examples": [
         {
           "jp": "Kiru",
@@ -376,7 +376,7 @@
           "en": "iru)"
         },
         {
-          "jp": "Context matters!",
+          "jp": "Whatntext matters!",
           "en": "Kaminoke o kirimasu - Tnę włosy"
         },
         {

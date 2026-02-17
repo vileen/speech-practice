@@ -1,14 +1,14 @@
 {
   "id": "2025-10-16",
   "date": "2025-10-16",
-  "title": "Lekcja 2025-10-16 — Hiragana: ra-ri-ru-re-ro, wa-wo-n, przymiotniki",
+  "title": "Lekcja 2025-10-16 — Hiragana: ra-ri-ru-re-ro, wa-wo-n, adjectivei",
   "order": 20251016,
   "topics": [],
   "vocabulary": [
     {
       "jp": "Znak",
       "reading": "Czytanie",
-      "en": "Słówka przykładowe",
+      "en": "Vocabulary przykładowe",
       "tags": []
     },
     {
@@ -129,26 +129,26 @@
     {
       "jp": "kirei",
       "reading": "piękny, czysty",
-      "en": "Kirei wygląda jak i-przymiotnik ale jest na-przymiotnikiem!\n\n#### B. Przymiotniki na- (な-przymiotniki)\nWymagają \"na\" przed rzeczownikiem:",
+      "en": "Kirei wygląda jak i-adjective ale jest na-adjectiveiem!\n\n#### B. Adjectivei na- (な-adjectivei)\nWymagają \"na\" przed nouniem:",
       "tags": []
     },
     {
       "jp": "ważny",
       "reading": "daiji na hito (ważna osoba)",
-      "en": "### 7. Łączenie przymiotników\n\nDwa i-przymiotniki:\n- Ucinamy \"i\" z pierwszego, dodajemy \"kute\"\n- Przykład: ookii (duży) + takai (drogi) → ookikute takai desu\n\nDwa na-przymiotniki:\n- Dodajemy \"de\" po pierwszym\n- Przykład: genki + kirei → genki de kirei desu\n\nMieszane (i- + na-):\n- i-przymiotnik: ucinamy i, dodajemy kute\n- na-przymiotnik: dodajemy de\n- Przykład: omoshirokute kirei desu\n\n---\n\n## 📝 Słownictwo nowe",
+      "en": "### 7. Łączenie adjectiveów\n\nDwa i-adjectivei:\n- Ucinamy \"i\" z pierwszego, dodajemy \"kute\"\n- Example: ookii (duży) + takai (drogi) → ookikute takai desu\n\nDwa na-adjectivei:\n- Dodajemy \"de\" po pierwszym\n- Example: genki + kirei → genki de kirei desu\n\nMieszane (i- + na-):\n- i-adjective: ucinamy i, dodajemy kute\n- na-adjective: dodajemy de\n- Example: omoshirokute kirei desu\n\n---\n\n## 📝 Słownictwo nowe",
       "tags": []
     },
     {
       "jp": "nigiyaka",
       "reading": "tętniący życiem",
-      "en": "---\n\n## 📚 Zadanie domowe\n- Dokończyć naukę hiragany (powtórka wszystkich znaków)\n- Ćwiczenie czytania zdań w hiraganie\n- Ćwiczenie łączenia przymiotników\n- Opisać pokój/przedmioty używając przymiotników\n\n---\n\n## 🔗 Powiązania\n- Poprzednia: [[Lesson-2025-10-15---hiragana-ma-ya-czas",
+      "en": "---\n\n## 📚 Zadanie domowe\n- Dokończyć naukę hiragany (powtórka wszystkich znaków)\n- Ćwiczenie czytania zdań w hiraganie\n- Ćwiczenie łączenia adjectiveów\n- Opisać pokój/przedmioty używając adjectiveów\n\n---\n\n## 🔗 Powiązania\n- Poprzednia: [[Lesson-2025-10-15---hiragana-ma-ya-czas",
       "tags": []
     }
   ],
   "grammar": [
     {
       "pattern": "Powtórka",
-      "explanation": "- Ma-mi-mu-me-mo (まみむめも)\n- Ya-yu-yo (やゆよ)\n- Słówka: maci, mise, mune, yume, moja, yomu",
+      "explanation": "- Ma-mi-mu-me-mo (まみむめも)\n- Ya-yu-yo (やゆよ)\n- Vocabulary: maci, mise, mune, yume, moja, yomu",
       "examples": [
         {
           "jp": "Ma",
@@ -159,14 +159,14 @@
           "en": "yu-yo (やゆよ)"
         },
         {
-          "jp": "Słówka: maci, mise, mune, yume, moja, yomu",
+          "jp": "Vocabulary: maci, mise, mune, yume, moja, yomu",
           "en": ""
         }
       ]
     },
     {
       "pattern": "Nowy wiersz hiragany: ra-ri-ru-re-ro (らりるれろ)",
-      "explanation": "| Znak | Czytanie | Słówka przykładowe |\n|------|----------|-------------------|\n| ら | ra | sakura (wiśnia), raku (wygoda), mirai (przyszłość), raigetsu (przyszły miesiąc), kyou (dzisiaj) |\n| り | ri",
+      "explanation": "| Znak | Czytanie | Vocabulary przykładowe |\n|------|----------|-------------------|\n| ら | ra | sakura (wiśnia), raku (wygoda), mirai (przyszłość), raigetsu (przyszły miesiąc), kyou (dzisiaj) |\n| り | ri",
       "examples": [
         {
           "jp": "-",

@@ -170,13 +170,13 @@
     {
       "jp": "-",
       "reading": "ン",
-      "en": "### 7. Czasowniki - wprowadzenie formy masu\n\nTrzy grupy czasowników:\n\n#### Grupa 1: -iru / -eru (Ichidan)\nKończą się na iru lub eru:\n- Taberu (jeść)\n- Miru (oglądać)\n- Okiru (wstawać)\n- Neru (spać)\n\nOdmiana: Ucinamy -ru, dodajemy -masu\n- Taberu → Tabemasu\n- Miru → Mimasu\n- Okiru → Okimasu\n- Neru → Nemasu\n\n#### Grupa 2: -u (Godan)\nKończą się na u (różne sylaby):\n- Nomu (pić)\n- Kiku (słuchać)\n- Yomu (czytać)\n- Hanasu (rozmawiać)\n- Iku (iść)\n- Kaeru (wracać)\n\nOdmiana: Zamieniamy ostatnią sylabę u → i, dodajemy -masu\n- Nomu → Nomi + masu = Nomimasu\n- Kiku → Kiki + masu = Kikimasu\n- Yomu → Yomi + masu = Yomimasu\n- Hanasu → Hanashi + masu = Hanashimasu\n- Iku → Iki + masu = Ikimasu\n- Kaeru → Kaeri + masu = Kaerimasu\n\nKaeru wygląda jak grupa 1 ale jest grupą 2!\n\n#### Grupa 3: Nieregularne (Suru / Kuru)\n- Suru (robić) → Shimasu\n- Kuru (przychodzić) → Kimasu\n\n### 8. Przeczenia czasowników (masen)\n\nWzór: Zamieniamy -masu na -masen",
+      "en": "### 7. Czasowniki - wprowadzenie formy masu\n\nTrzy grupy czasowników:\n\n#### Grupa 1: -iru / -eru (Ichidan)\nKończą się na iru lub eru:\n- Taberu (jeść)\n- Miru (oglądać)\n- Okiru (wstawać)\n- Neru (spać)\n\nOdmiana: Ucinamy -ru, dodajemy -masu\n- Taberu → Tabemasu\n- Miru → Mimasu\n- Okiru → Okimasu\n- Neru → Nemasu\n\n#### Grupa 2: -u (Godan)\nKończą się na u (różne sylaby):\n- Nomu (pić)\n- Kiku (słuchać)\n- Yomu (czytać)\n- Hanasu (rozmawiać)\n- Iku (iść)\n- Kaeru (wracać)\n\nOdmiana: Zamieniamy ostatnią sylabę u → i, dodajemy -masu\n- Nomu → Nomi + masu = Nomimasu\n- Kiku → Kiki + masu = Kikimasu\n- Yomu → Yomi + masu = Yomimasu\n- Hanasu → Hanashi + masu = Hanashimasu\n- Iku → Iki + masu = Ikimasu\n- Kaeru → Kaeri + masu = Kaerimasu\n\nKaeru wygląda jak grupa 1 ale jest grupą 2!\n\n#### Grupa 3: Nieregularne (Suru / Kuru)\n- Suru (robić) → Shimasu\n- Kuru (przychodzić) → Kimasu\n\n### 8. Przeczenia czasowników (masen)\n\nPattern: Zamieniamy -masu na -masen",
       "tags": []
     },
     {
       "jp": "Ikimasu",
       "reading": "Ikimasen",
-      "en": "### 9. Partykuła を (wo/o)\n\nUżycie:\n- Wskazuje dopełnienie (co/kogo)\n- Czytana jak \"o\"\n- Pisana łącznie z hiraganą: を\n\nPrzykłady:\n- Sushi o tabemasu - Jem sushi\n- Kohi o nomimasu - Piję kawę\n- Eiga o mimasu - Oglądam film\n- Hon o yomimasu - Czytam książkę\n- Ongaku o kikimasu - Słucham muzyki\n\n---\n\n## 📝 Słownictwo nowe\n\n### Katakana",
+      "en": "### 9. Partykuła を (wo/o)\n\nUżycie:\n- Wskazuje dopełnienie (co/kogo)\n- Czytana jak \"o\"\n- Pisana łącznie z hiraganą: を\n\nExampley:\n- Sushi o tabemasu - Jem sushi\n- Kohi o nomimasu - Piję kawę\n- Eiga o mimasu - Oglądam film\n- Hon o yomimasu - Czytam książkę\n- Ongaku o kikimasu - Słucham muzyki\n\n---\n\n## 📝 Słownictwo nowe\n\n### Katakana",
       "tags": []
     },
     {
@@ -260,7 +260,7 @@
           "en": "-------|--------|-------|"
         },
         {
-          "jp": "Przykłady:",
+          "jp": "Exampley:",
           "en": "ママ (mama) - mama"
         },
         {
@@ -279,14 +279,14 @@
     },
     {
       "pattern": "Wiersz ya-yu-yo (ヤユヨ)",
-      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| ヤ | ya | Prosty kształt |\n| ユ | yu | Jak hiragana ale kanciaste |\n| ヨ | yo | Kwadratowy kształt |\n\nPrzykłady:\n- ヨーロッパ (yōroppa) - Eur",
+      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| ヤ | ya | Prosty kształt |\n| ユ | yu | Jak hiragana ale kanciaste |\n| ヨ | yo | Kwadratowy kształt |\n\nExampley:\n- ヨーロッパ (yōroppa) - Eur",
       "examples": [
         {
           "jp": "-",
           "en": "-------|--------|-------|"
         },
         {
-          "jp": "Przykłady:",
+          "jp": "Exampley:",
           "en": "ヨーロッパ (yōroppa) - Europa"
         },
         {
@@ -304,7 +304,7 @@
           "en": "-------|--------|-------|"
         },
         {
-          "jp": "Przykłady:",
+          "jp": "Exampley:",
           "en": "ラーメン (rāmen) - ramen"
         },
         {

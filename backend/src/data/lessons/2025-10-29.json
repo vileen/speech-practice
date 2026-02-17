@@ -1,14 +1,14 @@
 {
   "id": "2025-10-29",
   "date": "2025-10-29",
-  "title": "Lekcja 2025-10-29 — Przymiotniki, łączenie, pytania o preferencje",
+  "title": "Lekcja 2025-10-29 — Adjectivei, łączenie, pytania o preferencje",
   "order": 20251029,
   "topics": [],
   "vocabulary": [
     {
-      "jp": "Typ",
-      "reading": "Wzór",
-      "en": "Przykład",
+      "jp": "Type",
+      "reading": "Pattern",
+      "en": "Example",
       "tags": []
     },
     {
@@ -18,27 +18,27 @@
       "tags": []
     },
     {
-      "jp": "i-przymiotnik",
-      "reading": "[przymiotnik] + [rzeczownik]",
-      "en": "kawaii inu (słodki pies)",
+      "jp": "i-adjective",
+      "reading": "[adjective] + [noun]",
+      "en": "kawaii inu (cute dog)",
       "tags": []
     },
     {
-      "jp": "na-przymiotnik",
-      "reading": "[przymiotnik] + na + [rzeczownik]",
+      "jp": "na-adjective",
+      "reading": "[adjective] + na + [noun]",
       "en": "kirei na hana (piękny kwiat)",
       "tags": []
     },
     {
-      "jp": "na-przymiotnik",
-      "reading": "[przymiotnik] + na + [rzeczownik]",
+      "jp": "na-adjective",
+      "reading": "[adjective] + na + [noun]",
       "en": "genki na hito (zdrowa osoba)",
       "tags": []
     },
     {
       "jp": "Partykuła",
       "reading": "Znaczenie",
-      "en": "Przykład",
+      "en": "Example",
       "tags": []
     },
     {
@@ -116,13 +116,13 @@
     {
       "jp": "どっち",
       "reading": "docchi",
-      "en": "który (z dwóch, potocznie)",
+      "en": "which (from two, potocznie)",
       "tags": []
     },
     {
       "jp": "どちら",
       "reading": "dochira",
-      "en": "który (z dwóch, uprzejmie)",
+      "en": "which (from two, uprzejmie)",
       "tags": []
     },
     {
@@ -250,7 +250,7 @@
     {
       "jp": "あまい",
       "reading": "amai",
-      "en": "słodki",
+      "en": "cute",
       "tags": []
     },
     {
@@ -263,7 +263,7 @@
   "grammar": [
     {
       "pattern": "Powtórka gramatyki",
-      "explanation": "- Partykuła no (przynależność)\n- Partykuła wa/ga (temat/podmiot)\n- Czasowniki - forma masu/masen\n- Przymiotniki i- i na-",
+      "explanation": "- Partykuła no (przynależność)\n- Partykuła wa/ga (temat/podmiot)\n- Czasowniki - forma masu/masen\n- Adjectivei i- i na-",
       "examples": [
         {
           "jp": "Partykuła no (przynależność)",
@@ -274,17 +274,17 @@
           "en": "forma masu/masen"
         },
         {
-          "jp": "Przymiotniki i",
+          "jp": "Adjectivei i",
           "en": "i na-"
         }
       ]
     },
     {
-      "pattern": "Przymiotniki - przydawki",
-      "explanation": "Przymiotnik + rzeczownik:\n\n| Typ | Wzór | Przykład |\n|-----|------|----------|\n| i-przymiotnik | [przymiotnik] + [rzeczownik] | kawaii inu (słodki pies) |\n| na-przymiotnik | [przymiotnik] + na +",
+      "pattern": "Adjectivei - przydawki",
+      "explanation": "Adjective + noun:\n\n| Type | Pattern | Example |\n|-----|------|----------|\n| i-adjective | [adjective] + [noun] | kawaii inu (cute dog) |\n| na-adjective | [adjective] + na +",
       "examples": [
         {
-          "jp": "Przymiotnik + rzeczownik:",
+          "jp": "Adjective + noun:",
           "en": ""
         },
         {
@@ -292,7 +292,7 @@
           "en": "--|------|----------|"
         },
         {
-          "jp": "Przykłady:",
+          "jp": "Exampley:",
           "en": "Omoshiroi eiga - ciekawy film"
         },
         {
@@ -306,12 +306,12 @@
       ]
     },
     {
-      "pattern": "Łączenie przymiotników - powtórka",
-      "explanation": "Dwa i-przymiotniki:\n- Ookikute takai desu - Duży i drogi\n- Oishikute yasui desu - Smaczny i tani\n- Yasashikute kawaii desu - Miły i słodki\n\nDwa na-przymiotniki:\n- Genki de kirei desu - Zdrowy",
+      "pattern": "Łączenie adjectiveów - powtórka",
+      "explanation": "Dwa i-adjectivei:\n- Ookikute takai desu - Duży i drogi\n- Oishikute yasui desu - Smaczny i tani\n- Yasashikute kawaii desu - Miły i cute\n\nDwa na-adjectivei:\n- Genki de kirei desu - Zdrowy",
       "examples": [
         {
           "jp": "Dwa i",
-          "en": "przymiotniki:"
+          "en": "adjectivei:"
         },
         {
           "jp": "Ookikute takai desu",
@@ -323,29 +323,29 @@
         },
         {
           "jp": "Yasashikute kawaii desu",
-          "en": "Miły i słodki"
+          "en": "Miły i cute"
         },
         {
           "jp": "Dwa na",
-          "en": "przymiotniki:"
+          "en": "adjectivei:"
         }
       ]
     },
     {
       "pattern": "Pytania o preferencje - docchi / dochira",
-      "explanation": "Słówka:\n- Docchi / dochira - który (z dwóch)\n\nWzór pytania:\n- Docchi no [rzeczownik] ga suki desu ka?\n\nPrzykłady:\n- Docchi no hana ga kirei desu ka? - Który kwiatek jest ładniejszy?\n- Doc",
+      "explanation": "Vocabulary:\n- Docchi / dochira - which (from two)\n\nPattern pytania:\n- Docchi no [noun] ga suki desu ka?\n\nExampley:\n- Docchi no hana ga kirei desu ka? - Który flower jest more beautiful?\n- Doc",
       "examples": [
         {
-          "jp": "Słówka:",
-          "en": "Docchi / dochira - który (z dwóch)"
+          "jp": "Vocabulary:",
+          "en": "Docchi / dochira - which (from two)"
         },
         {
-          "jp": "Wzór pytania:",
-          "en": "Docchi no [rzeczownik] ga suki desu ka?"
+          "jp": "Pattern pytania:",
+          "en": "Docchi no [noun] ga suki desu ka?"
         },
         {
-          "jp": "Przykłady:",
-          "en": "Docchi no hana ga kirei desu ka? - Który kwiatek jest ładniejszy?"
+          "jp": "Exampley:",
+          "en": "Docchi no hana ga kirei desu ka? - Który flower jest more beautiful?"
         },
         {
           "jp": "Docchi no hon ga omoshiroi desu ka?",
@@ -358,28 +358,28 @@
       ]
     },
     {
-      "pattern": "Pytania o preferencje - co lubisz",
-      "explanation": "Wzór:\n- Nani ga suki desu ka? - Co lubisz?\n- Donna [rzeczownik] ga suki desu ka? - Jakiego/jakiej... lubisz?\n\nPrzykłady:\n- Donna eiga ga suki desu ka? - Jakie filmy lubisz?\n- Donna tabemono g",
+      "pattern": "Pytania o preferencje - co you like",
+      "explanation": "Pattern:\n- Nani ga suki desu ka? - What you like?\n- Donna [noun] ga suki desu ka? - What kind of/jakiej... you like?\n\nExampley:\n- Donna eiga ga suki desu ka? - Jakie movies you like?\n- Donna tabemono g",
       "examples": [
         {
-          "jp": "Wzór:",
-          "en": "Nani ga suki desu ka? - Co lubisz?"
+          "jp": "Pattern:",
+          "en": "Nani ga suki desu ka? - What you like?"
         },
         {
-          "jp": "Donna [rzeczownik] ga suki desu ka?",
-          "en": "Jakiego/jakiej... lubisz?"
+          "jp": "Donna [noun] ga suki desu ka?",
+          "en": "What kind of/jakiej... you like?"
         },
         {
-          "jp": "Przykłady:",
-          "en": "Donna eiga ga suki desu ka? - Jakie filmy lubisz?"
+          "jp": "Exampley:",
+          "en": "Donna eiga ga suki desu ka? - Jakie movies you like?"
         },
         {
           "jp": "Donna tabemono ga suki desu ka?",
-          "en": "Jakie jedzenie lubisz?"
+          "en": "Jakie jedzenie you like?"
         },
         {
           "jp": "Amai tabemono ga suki desu",
-          "en": "Lubię słodkie jedzenie"
+          "en": "Lubię cutee jedzenie"
         }
       ]
     }

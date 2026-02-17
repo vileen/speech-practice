@@ -8,7 +8,7 @@
     {
       "jp": "Katakana",
       "reading": "Romaji",
-      "en": "Przykłady",
+      "en": "Exampley",
       "tags": []
     },
     {
@@ -74,7 +74,7 @@
     {
       "jp": "Czasownik",
       "reading": "Użycie",
-      "en": "Przykład",
+      "en": "Example",
       "tags": []
     },
     {
@@ -96,9 +96,9 @@
       "tags": []
     },
     {
-      "jp": "Grupa",
-      "reading": "Wzór",
-      "en": "Przykład",
+      "jp": "Group",
+      "reading": "Pattern",
+      "en": "Example",
       "tags": []
     },
     {
@@ -259,7 +259,7 @@
   "grammar": [
     {
       "pattern": "Katakana - ostatnie znaki",
-      "explanation": "Wiersz ra-ri-ru-re-ro (ラリルレロ):\n\n| Katakana | Romaji | Przykłady |\n|----------|--------|-----------|\n| ラ | ra | ラーメン (rāmen), ラジオ (rajio) |\n| リ | ri | リサイクル (risaikuru) |\n| ル | ru | ルール (rūru) |\n|",
+      "explanation": "Wiersz ra-ri-ru-re-ro (ラリルレロ):\n\n| Katakana | Romaji | Exampley |\n|----------|--------|-----------|\n| ラ | ra | ラーメン (rāmen), ラジオ (rajio) |\n| リ | ri | リサイクル (risaikuru) |\n| ル | ru | ルール (rūru) |\n|",
       "examples": [
         {
           "jp": "Wiersz ra",
@@ -307,7 +307,7 @@
     },
     {
       "pattern": "Czasowniki być - iru i aru",
-      "explanation": "Dwa czasowniki \"być\":\n\n| Czasownik | Użycie | Przykład |\n|-----------|--------|----------|\n| iru (いる) | Osoby, zwierzęta | Hito ga iru (jest osoba) |\n| aru (ある) | Przedmioty | Hon ga aru (jest ks",
+      "explanation": "Dwa czasowniki \"być\":\n\n| Czasownik | Użycie | Example |\n|-----------|--------|----------|\n| iru (いる) | Osoby, zwierzęta | Hito ga iru (jest osoba) |\n| aru (ある) | Przedmioty | Hon ga aru (jest ks",
       "examples": [
         {
           "jp": "Dwa czasowniki \"być\":",
@@ -332,12 +332,12 @@
       ]
     },
     {
-      "pattern": "Przeczenia przymiotników - powtórka",
-      "explanation": "i-przymiotniki (kunai):\n- Oishii → Oishikunai (niesmaczny)\n- Takai → Takakunai (niedrogi)\n- Muzukashii → Muzukashikunai (łatwy)\n\nna-przymiotniki (janai):\n- Genki → Genki janai (bez energii)\n-",
+      "pattern": "Przeczenia adjectiveów - powtórka",
+      "explanation": "i-adjectivei (kunai):\n- Oishii → Oishikunai (niesmaczny)\n- Takai → Takakunai (niedrogi)\n- Muzukashii → Muzukashikunai (łatwy)\n\nna-adjectivei (janai):\n- Genki → Genki janai (bez energii)\n-",
       "examples": [
         {
           "jp": "i",
-          "en": "przymiotniki (kunai):"
+          "en": "adjectivei (kunai):"
         },
         {
           "jp": "Oishii → Oishikunai (niesmaczny)",
@@ -349,7 +349,7 @@
         },
         {
           "jp": "na",
-          "en": "przymiotniki (janai):"
+          "en": "adjectivei (janai):"
         },
         {
           "jp": "Genki → Genki janai (bez energii)",
@@ -359,7 +359,7 @@
     },
     {
       "pattern": "Forma słownikowa czasowników",
-      "explanation": "Zamiana masu → słownik:\n\n| Grupa | Wzór | Przykład |\n|-------|------|----------|\n| 1 (-iru/-eru) | -masu → -ru | Tabemasu → Taberu |\n| 2 (-u) | -masu → baza + u | Nomimasu → Nomu |\n| 3 (niereg.)",
+      "explanation": "Zamiana masu → słownik:\n\n| Grupa | Pattern | Example |\n|-------|------|----------|\n| 1 (-iru/-eru) | -masu → -ru | Tabemasu → Taberu |\n| 2 (-u) | -masu → baza + u | Nomimasu → Nomu |\n| 3 (niereg.)",
       "examples": [
         {
           "jp": "Zamiana masu → słownik:",
