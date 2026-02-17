@@ -188,7 +188,7 @@ app.get('/api/sessions', checkPassword, async (req, res) => {
 // Repeat After Me - Practice mode with pronunciation checking
 app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (req, res) => {
   try {
-    const { target_text, language } = req.body;
+    const { target_text, language, gender } = req.body;
     
     if (!target_text) {
       return res.status(400).json({ error: 'No target text provided' });
@@ -206,7 +206,7 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
       const audioBuffer = await generateSpeech({ 
         text: ttsText, 
         language: language || 'japanese', 
-        gender: 'female' 
+        gender: gender || 'female'
       });
       
       // Add furigana for display (async with Jisho API)
