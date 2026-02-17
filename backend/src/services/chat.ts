@@ -13,14 +13,14 @@ export interface ChatMessage {
 export async function generateChatResponse(
   messages: ChatMessage[],
   lessonContext?: string
-): Promise<{ text: string; textWithFurigana: string }> {
+): Promise<{ text: string; textWithFurigana: string; translation?: string }> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY not set');
   }
 
   const systemPrompt = lessonContext 
-    ? `${lessonContext}\n\nIMPORTANT: Always respond in Japanese (unless asked for translation). Use furigana for kanji in this format: <ruby>漢字<rt>かんじ</rt></ruby>`
-    : 'You are a helpful Japanese language practice partner. Respond in Japanese with furigana for kanji: <ruby>漢字<rt>かんじ</rt></ruby>';
+    ? `${lessonContext}\n\nIMPORTANT: Always respond in Japanese (unless asked for translation). Use furigana for kanji in this format: <ruby>漢字<rt>かんじ</rt></ruby>. Also provide an English translation on a new line starting with "TRANSLATION:".`
+    : 'You are a helpful Japanese language practice partner. Respond in Japanese with furigana for kanji: <ruby>漢字<rt>かんじ</rt></ruby>. Also provide an English translation on a new line starting with "TRANSLATION:".';
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
@@ -34,6 +34,15 @@ export async function generateChatResponse(
 
   let text = response.choices[0]?.message?.content || 'すみません、もう一度言ってください。';
   
+  // Extract translation if present
+  let translation: string | undefined;
+  const translationMatch = text.match(/TRANSLATION:\s*(.+)$/);
+  if (translationMatch) {
+    translation = translationMatch[1].trim();
+    // Remove translation from main text
+    text = text.replace(/\s*TRANSLATION:.+$/, '').trim();
+  }
+  
   // Add furigana if not already present
   let textWithFurigana = text;
   if (!text.includes('<ruby>')) {
@@ -43,5 +52,6 @@ export async function generateChatResponse(
   return {
     text,
     textWithFurigana,
+    translation,
   };
 }
