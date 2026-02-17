@@ -293,6 +293,18 @@ header h1 {
 
 /* .record-btn styles moved to VoiceRecorder.css */
 
+/* Help text for new users */
+.help-text {
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #16213e;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
 /* Voice Recorder Section */
 .voice-recorder-section {
   margin-top: 16px;
