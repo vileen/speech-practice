@@ -88,7 +88,12 @@
   background: linear-gradient(135deg, #e94560 0%, #4ade80 100%);
   box-shadow: 0 0 30px rgba(74, 222, 128, 0.6);
   transform: scale(1.05);
-  transition: all 0.1s ease-out;
+  transition: all 0.3s ease-out;
+}
+
+.record-button,
+.record-btn {
+  transition: all 0.3s ease-out;
 }
 
 @keyframes recording-pulse {
