@@ -127,14 +127,6 @@ function App() {
     setIsAuthenticated(true);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('speech_practice_password');
-    setIsAuthenticated(false);
-    setPassword('');
-    setSession(null);
-    setIsRepeatMode(false);
-  };
-
   const startSession = async () => {
     try {
       const response = await fetch(`${API_URL}/api/sessions`, {
