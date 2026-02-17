@@ -447,11 +447,6 @@ function App() {
 
         <main className="repeat-main">
           <div className="phrase-card">
-            {isNewPhrase && (
-              <div className="new-phrase-indicator">
-                ✨ New Phrase! (Press Space for next)
-              </div>
-            )}
             <div className="phrase-display">
               {showFurigana && currentFurigana ? (
                 <div 
@@ -583,6 +578,7 @@ function App() {
             <button className="next-btn" onClick={nextPhrase}>
               Next Phrase →
             </button>
+            <small className="shortcut-hint">(space)</small>
           </div>
         </main>
       </div>
