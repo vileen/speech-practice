@@ -303,6 +303,7 @@ function App() {
         body: JSON.stringify({
           target_text: text,
           language,
+          gender,
         }),
       });
       
