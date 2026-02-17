@@ -79,6 +79,7 @@ function App() {
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [currentFurigana, setCurrentFurigana] = useState('');
   const [currentTranslation, setCurrentTranslation] = useState('');
+  const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
   const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
   const [isListening, setIsListening] = useState(false);
   
@@ -215,6 +216,13 @@ function App() {
   const nextPhrase = async () => {
     const phrases = PRACTICE_PHRASES[language];
     const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    
+    // Clear cached audio for new phrase
+    if (currentAudioUrl) {
+      URL.revokeObjectURL(currentAudioUrl);
+      setCurrentAudioUrl(null);
+    }
+    
     setCurrentPhrase(randomPhrase.text);
     setCurrentTranslation(randomPhrase.translation);
     setPronunciationResult(null);
@@ -223,12 +231,20 @@ function App() {
     const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase.text) : randomPhrase.text;
     setCurrentFurigana(withFurigana);
     
-    // Auto-play the phrase
-    playPhrase(randomPhrase.text);
+    // Auto-play the phrase (will fetch new audio)
+    playPhrase(randomPhrase.text, true);
   };
 
-  const playPhrase = async (text: string) => {
+  const playPhrase = async (text: string, forceNew: boolean = false) => {
     try {
+      // Use cached audio if available and not forcing new
+      if (!forceNew && currentAudioUrl && text === currentPhrase) {
+        const audio = new Audio(currentAudioUrl);
+        audio.play();
+        return;
+      }
+      
+      // Fetch new audio
       const response = await fetch(`${API_URL}/api/repeat-after-me`, {
         method: 'POST',
         headers: {
@@ -244,6 +260,7 @@ function App() {
       if (response.ok) {
         const blob = await response.blob();
         const audioUrl = URL.createObjectURL(blob);
+        setCurrentAudioUrl(audioUrl);
         const audio = new Audio(audioUrl);
         audio.play();
       }
@@ -381,7 +398,14 @@ function App() {
         <header>
           <h1>🎯 Repeat After Me</h1>
           <div className="mode-controls">
-            <button className="mode-btn" onClick={() => setIsRepeatMode(false)}>
+            <button className="mode-btn" onClick={() => {
+              // Clean up cached audio when leaving
+              if (currentAudioUrl) {
+                URL.revokeObjectURL(currentAudioUrl);
+                setCurrentAudioUrl(null);
+              }
+              setIsRepeatMode(false);
+            }}>
               ← Back to Chat
             </button>
             <button className="mode-btn" onClick={handleLogout}>
@@ -413,8 +437,12 @@ function App() {
             )}
             
             <div className="phrase-controls">
-              <button className="play-btn large" onClick={() => playPhrase(currentPhrase)}>
-                🔊 Listen Again
+              <button 
+                className="play-btn large" 
+                onClick={() => playPhrase(currentPhrase)}
+                title={currentAudioUrl ? "Playing cached audio" : "Fetching new audio..."}
+              >
+                {currentAudioUrl ? '🔊 Listen Again (cached)' : '🔊 Listen Again'}
               </button>
             </div>
           </div>
