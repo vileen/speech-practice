@@ -571,9 +571,9 @@ function App() {
             </div>
             
             <button className="next-btn" onClick={nextPhrase}>
-              Next Phrase →
+              <div>Next Phrase →</div>
+              <small className="shortcut-hint">(space)</small>
             </button>
-            <small className="shortcut-hint">(space)</small>
           </div>
         </main>
       </div>
