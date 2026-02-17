@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './LessonMode.css';
 import { translateLessonTitle } from './translations.js';
 
@@ -51,10 +51,54 @@ interface LessonModeProps {
 
 export function LessonMode({ password, onBack, onStartLessonChat }: LessonModeProps) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [selectedLesson, setSelectedLesson] = useState<LessonDetail | null>(null);
+  const [selectedLesson, setSelectedLessonState] = useState<LessonDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
   const [showFurigana, setShowFurigana] = useState(true);
+  
+  // Ref for scroll position
+  const lessonsListRef = useRef<HTMLDivElement>(null);
+  const scrollPositionRef = useRef<number>(0);
+
+  // Parse URL hash to get lesson ID
+  const getLessonIdFromUrl = (): string | null => {
+    const hash = window.location.hash;
+    const match = hash.match(/#\/lessons\/(.+)/);
+    return match ? match[1] : null;
+  };
+
+  // Update URL when selecting a lesson
+  const setSelectedLesson = (lesson: LessonDetail | null) => {
+    setSelectedLessonState(lesson);
+    if (lesson) {
+      window.location.hash = `#/lessons/${lesson.id}`;
+    } else {
+      window.location.hash = '#/lessons';
+      // Restore scroll position when going back
+      setTimeout(() => {
+        if (lessonsListRef.current) {
+          lessonsListRef.current.scrollTop = scrollPositionRef.current;
+        }
+      }, 0);
+    }
+  };
+
+  // Listen for URL changes (back/forward buttons)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const lessonId = getLessonIdFromUrl();
+      if (lessonId && lessons.length > 0) {
+        // Load lesson if URL has ID
+        loadLessonDetail(lessonId, false);
+      } else if (!lessonId) {
+        // Go back to list if no ID in URL
+        setSelectedLessonState(null);
+      }
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [lessons]);
 
   useEffect(() => {
     loadLessons();
@@ -70,6 +114,12 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
         // Sort by date descending (most recent first)
         const sorted = data.lessons.sort((a: Lesson, b: Lesson) => b.order - a.order);
         setLessons(sorted);
+        
+        // Check if URL has a lesson ID and load it
+        const lessonId = getLessonIdFromUrl();
+        if (lessonId) {
+          await loadLessonDetail(lessonId, false);
+        }
       }
     } catch (error) {
       console.error('Error loading lessons:', error);
@@ -78,7 +128,11 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     }
   };
 
-  const loadLessonDetail = async (id: string) => {
+  const loadLessonDetail = async (id: string, saveScroll = true) => {
+    if (saveScroll && lessonsListRef.current) {
+      scrollPositionRef.current = lessonsListRef.current.scrollTop;
+    }
+    
     setLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/lessons/${id}`, {
@@ -86,7 +140,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
       });
       if (response.ok) {
         const data = await response.json();
-        setSelectedLesson(data);
+        setSelectedLessonState(data);
         setActiveTab('overview');
       }
     } catch (error) {
@@ -94,6 +148,14 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLessonClick = (lessonId: string) => {
+    loadLessonDetail(lessonId, true);
+  };
+
+  const handleBackToList = () => {
+    setSelectedLesson(null);
   };
 
   const renderFurigana = (text: string) => {
@@ -179,7 +241,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     return (
       <div className="lesson-mode">
         <div className="lesson-header">
-          <button className="back-btn" onClick={() => setSelectedLesson(null)}>← All Lessons</button>
+          <button className="back-btn" onClick={handleBackToList}>← All Lessons</button>
           <h2>{translateLessonTitle(selectedLesson.title)}</h2>
           <button 
             className="start-chat-btn"
@@ -258,16 +320,16 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
 
           {activeTab === 'grammar' && (
             <div className="grammar-tab">
-              {selectedLesson.grammar.map((point, idx) => (
+              {selectedLesson.grammar.map((item, idx) => (
                 <div key={idx} className="grammar-card">
-                  <h4>{point.pattern}</h4>
+                  <h3>{item.pattern}</h3>
                   <div className="explanation">
-                    {renderExplanationWithTables(point.explanation)}
+                    {renderExplanationWithTables(item.explanation)}
                   </div>
-                  {point.examples.length > 0 && (
+                  {item.examples.length > 0 && (
                     <div className="examples">
-                      <h5>Examples:</h5>
-                      {point.examples.map((ex, exIdx) => (
+                      <h4>Examples:</h4>
+                      {item.examples.map((ex, exIdx) => (
                         <div key={exIdx} className="example">
                           <span className="jp">{renderFurigana(ex.jp)}</span>
                           <span className="en">{ex.en}</span>
@@ -282,10 +344,9 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
 
           {activeTab === 'practice' && (
             <div className="practice-tab">
-              <h3>Practice Phrases</h3>
-              <div className="phrases-list">
+              <div className="practice-list">
                 {selectedLesson.practice_phrases.map((phrase, idx) => (
-                  <div key={idx} className="phrase-item">
+                  <div key={idx} className="practice-item">
                     <span className="number">{idx + 1}.</span>
                     <span className="phrase">{renderFurigana(phrase)}</span>
                   </div>
@@ -301,29 +362,29 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   return (
     <div className="lesson-mode">
       <div className="lesson-header">
-        <button className="back-btn" onClick={onBack}>← Back to Menu</button>
-        <h2>📚 Lesson Mode</h2>
-        <span className="lesson-count">{lessons.length} lessons available</span>
+        <button className="back-btn" onClick={onBack}>← Back</button>
+        <h2>📚 Lessons</h2>
       </div>
-
-      <div className="lessons-list">
-        {lessons.map((lesson) => (
+      
+      <div className="lessons-list" ref={lessonsListRef}>
+        {lessons.map(lesson => (
           <div 
             key={lesson.id} 
             className="lesson-card"
-            onClick={() => loadLessonDetail(lesson.id)}
+            onClick={() => handleLessonClick(lesson.id)}
           >
-            <div className="lesson-date">{formatDate(lesson.date)}</div>
-            <h3>{translateLessonTitle(lesson.title)}</h3>
-            <div className="lesson-meta">
+            <div className="lesson-card-header">
+              <span className="lesson-date">{formatDate(lesson.date)}</span>
+              <span className="lesson-title">{translateLessonTitle(lesson.title)}</span>
+            </div>
+            <div className="lesson-card-stats">
               <span>📝 {lesson.vocabCount} words</span>
               <span>📖 {lesson.grammarCount} grammar</span>
             </div>
             {lesson.topics.length > 0 && (
               <div className="lesson-topics">
-                {lesson.topics.slice(0, 3).map((topic, i) => (
-                  <span key={i} className="topic-tag">{topic}</span>
-                ))}
+                {lesson.topics.slice(0, 3).join(', ')}
+                {lesson.topics.length > 3 && '...'}
               </div>
             )}
           </div>
