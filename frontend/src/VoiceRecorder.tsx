@@ -283,10 +283,11 @@ export function VoiceRecorder({
           sum += value * value;
         }
         const rms = Math.sqrt(sum / dataArray.length);
-        const level = Math.min(rms * 200, 100);
+        // More sensitive scaling for better range
+        const level = Math.min(rms * 400, 100);
         
         setAudioLevel(level);
-        setIsSpeaking(level > 15);
+        setIsSpeaking(level > 8);
         
         if (isRunningRef.current) {
           rafRef.current = requestAnimationFrame(checkAudio);
