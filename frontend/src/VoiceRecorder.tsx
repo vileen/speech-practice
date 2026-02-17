@@ -276,6 +276,19 @@ export function VoiceRecorder({
       return () => clearTimeout(timer);
     }
   }, [mode, isListening, startVAD, isProcessing]);
+
+  // Auto-retry on initialization error
+  useEffect(() => {
+    if (initError && mode === 'voice-activated' && !isProcessing) {
+      console.log('Auto-retrying microphone initialization...');
+      const retryTimer = setTimeout(() => {
+        setInitError(null);
+        isRunningRef.current = false;
+        startVAD();
+      }, 2000); // Wait 2 seconds before retry
+      return () => clearTimeout(retryTimer);
+    }
+  }, [initError, mode, isProcessing, startVAD]);
   
   // Cleanup on unmount
   useEffect(() => {
