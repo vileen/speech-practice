@@ -196,6 +196,19 @@ header h1 {
   align-self: flex-end;
 }
 
+.message .text {
+  font-size: 150%;
+  line-height: 1.6;
+}
+
+.message .text ruby {
+  font-size: 100%;
+}
+
+.message .text rt {
+  font-size: 50%;
+}
+
 .message-header {
   display: flex;
   justify-content: space-between;
