@@ -301,7 +301,7 @@ function App() {
     setInputText('');
   };
 
-  const generateAIResponse = async (userText: string, lang: string) => {
+  const generateAIResponse = async (userText: string, _lang: string) => {
     if (!session) return;
     
     try {
