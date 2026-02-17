@@ -23,6 +23,7 @@ export function VoiceRecorder({
   const [isReady, setIsReady] = useState(false);
   const [hasDetectedVoiceState, setHasDetectedVoiceState] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false); // Lock after recording
+  const [initError, setInitError] = useState<string | null>(null);
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -39,6 +40,15 @@ export function VoiceRecorder({
   const startVAD = useCallback(async () => {
     if (isRunningRef.current) return;
     isRunningRef.current = true;
+    setInitError(null);
+    
+    // Set a timeout for initialization
+    const initTimeout = setTimeout(() => {
+      if (!isReady) {
+        setInitError('Microphone initialization timeout. Please check permissions.');
+        isRunningRef.current = false;
+      }
+    }, 5000);
     
     try {
       // Get microphone permission
@@ -50,6 +60,7 @@ export function VoiceRecorder({
         } 
       });
       mediaStreamRef.current = stream;
+      clearTimeout(initTimeout);
       
       // Create audio context
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -185,7 +196,9 @@ export function VoiceRecorder({
       
     } catch (error) {
       console.error('Error starting VAD:', error);
+      setInitError('Failed to access microphone. Please check permissions.');
       isRunningRef.current = false;
+      clearTimeout(initTimeout);
     }
   }, [mode, onStartListening, onRecordingComplete]);
   
@@ -282,7 +295,9 @@ export function VoiceRecorder({
       <div className="mode-indicator">
         {mode === 'voice-activated' && (
           <span className="vad-status">
-            {isProcessing ? (
+            {initError ? (
+              <span style={{ color: '#f87171' }}>❌ {initError}</span>
+            ) : isProcessing ? (
               <>✅ Done! Click to speak again</>
             ) : !isReady ? (
               <>Initializing microphone...</>
@@ -299,16 +314,19 @@ export function VoiceRecorder({
         )}
       </div>
       
-      {/* Restart button - show after voice-activated recording */}
-      {!isPushToTalk && isProcessing && (
+      {/* Restart button - show after voice-activated recording or error */}
+      {(!isPushToTalk && (isProcessing || initError)) && (
         <button
           className="record-button"
           onClick={() => {
             setIsProcessing(false);
+            setIsReady(false);
+            setInitError(null);
+            isRunningRef.current = false;
             // Auto-start will trigger via useEffect
           }}
         >
-          🎤 Start New Recording
+          🎤 {initError ? 'Retry' : 'Start New Recording'}
         </button>
       )}
       
