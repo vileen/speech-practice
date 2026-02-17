@@ -144,7 +144,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
       });
       if (response.ok) {
         const data = await response.json();
-        setSelectedLessonState(data);
+        setSelectedLesson(data);  // This updates URL and state
         setActiveTab('overview');
       }
     } catch (error) {
