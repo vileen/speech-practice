@@ -26,29 +26,40 @@ interface PronunciationResult {
 const API_URL = (import.meta.env.VITE_API_URL || 'https://eds-grow-delivered-spending.trycloudflare.com').replace(/\/$/, '');
 
 // Practice phrases for "Repeat After Me" mode
-const PRACTICE_PHRASES: Record<string, string[]> = {
+interface PracticePhrase {
+  text: string;
+  translation: string;
+}
+
+const PRACTICE_PHRASES: Record<string, PracticePhrase[]> = {
   japanese: [
-    'おはようございます',
-    'こんにちは',
-    'こんばんは',
-    'ありがとうございます',
-    'すみません',
-    'お名前は何ですか',
-    '私は学生です',
-    '日本語を勉強しています',
-    '今日は寒いです',
-    '明日は火曜日です',
+    { text: 'おはようございます', translation: 'Good morning' },
+    { text: 'こんにちは', translation: 'Hello / Good afternoon' },
+    { text: 'こんばんは', translation: 'Good evening' },
+    { text: 'ありがとうございます', translation: 'Thank you (polite)' },
+    { text: 'すみません', translation: 'Excuse me / Sorry' },
+    { text: 'お名前は何ですか', translation: 'What is your name?' },
+    { text: '私は学生です', translation: 'I am a student' },
+    { text: '日本語を勉強しています', translation: 'I am studying Japanese' },
+    { text: '今日は寒いです', translation: 'Today is cold' },
+    { text: '明日は火曜日です', translation: 'Tomorrow is Tuesday' },
+    { text: '犬と猫とどちらの方が好きですか', translation: 'Which do you prefer, dogs or cats?' },
+    { text: '寿司とラーメンとどちらがいいですか', translation: 'Which is better, sushi or ramen?' },
+    { text: '京都と東京とどちらが好きですか', translation: 'Which do you like more, Kyoto or Tokyo?' },
+    { text: 'ポーランドの方がイタリアより好きです', translation: 'I prefer Poland over Italy' },
+    { text: 'ラーメンの方がおいしいです', translation: 'Ramen is tastier' },
+    { text: '伝統的な町が好きですから', translation: 'Because I like traditional towns' },
   ],
   italian: [
-    'Buongiorno',
-    'Buonasera',
-    'Grazie mille',
-    'Mi scusi',
-    'Come si chiama',
-    'Sono uno studente',
-    'Studio italiano',
-    'Oggi fa freddo',
-    'Domani è martedì',
+    { text: 'Buongiorno', translation: 'Good morning' },
+    { text: 'Buonasera', translation: 'Good evening' },
+    { text: 'Grazie mille', translation: 'Thank you very much' },
+    { text: 'Mi scusi', translation: 'Excuse me' },
+    { text: 'Come si chiama', translation: 'What is your name?' },
+    { text: 'Sono uno studente', translation: 'I am a student' },
+    { text: 'Studio italiano', translation: 'I study Italian' },
+    { text: 'Oggi fa freddo', translation: 'Today it is cold' },
+    { text: 'Domani è martedì', translation: 'Tomorrow is Tuesday' },
   ],
 };
 
@@ -67,6 +78,7 @@ function App() {
   const [isRepeatMode, setIsRepeatMode] = useState(false);
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [currentFurigana, setCurrentFurigana] = useState('');
+  const [currentTranslation, setCurrentTranslation] = useState('');
   const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
   const [isListening, setIsListening] = useState(false);
   
@@ -203,15 +215,16 @@ function App() {
   const nextPhrase = async () => {
     const phrases = PRACTICE_PHRASES[language];
     const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-    setCurrentPhrase(randomPhrase);
+    setCurrentPhrase(randomPhrase.text);
+    setCurrentTranslation(randomPhrase.translation);
     setPronunciationResult(null);
     
     // Get furigana
-    const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase) : randomPhrase;
+    const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase.text) : randomPhrase.text;
     setCurrentFurigana(withFurigana);
     
     // Auto-play the phrase
-    playPhrase(randomPhrase);
+    playPhrase(randomPhrase.text);
   };
 
   const playPhrase = async (text: string) => {
@@ -412,6 +425,22 @@ function App() {
                 <span className="score-number">{pronunciationResult.score}%</span>
                 <span className="feedback">{pronunciationResult.feedback}</span>
               </div>
+              
+              {/* Expected phrase with furigana and translation */}
+              <div className="result-phrase-section">
+                <label>Target Phrase:</label>
+                <div 
+                  className="result-furigana-text"
+                  style={{ fontSize: '150%' }}
+                  dangerouslySetInnerHTML={{ __html: currentFurigana || pronunciationResult.target_text }}
+                />
+                {currentTranslation && (
+                  <div className="result-translation">
+                    🇬🇧 {currentTranslation}
+                  </div>
+                )}
+              </div>
+              
               <div className="transcription-comparison">
                 <div className="expected">
                   <label>Expected:</label>
