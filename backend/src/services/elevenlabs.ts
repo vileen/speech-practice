@@ -195,3 +195,30 @@ export function addFuriganaSync(text: string): string {
 export async function saveFuriganaCache(): Promise<void> {
   await saveCache();
 }
+
+// Convert kanji text to hiragana for TTS (better pronunciation)
+export async function toHiraganaForTTS(text: string): Promise<string> {
+  await loadCache();
+  
+  let result = text;
+  const kanjiRegex = /[\u4e00-\u9faf]+/g;
+  const matches = text.match(kanjiRegex) || [];
+  
+  // Sort by length (longest first) to avoid partial matches
+  const uniqueMatches = [...new Set(matches)].sort((a, b) => b.length - a.length);
+  
+  for (const kanjiWord of uniqueMatches) {
+    let reading = furiganaCache.get(kanjiWord);
+    
+    // If not in cache, try to fetch
+    if (!reading) {
+      reading = await getReadingFromJisho(kanjiWord);
+    }
+    
+    if (reading) {
+      result = result.replace(new RegExp(kanjiWord, 'g'), reading);
+    }
+  }
+  
+  return result;
+}
