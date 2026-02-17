@@ -55,7 +55,8 @@
 }
 
 /* Record Button */
-.record-button {
+.record-button,
+.record-btn {
   padding: 16px 32px;
   border: 2px solid #e94560;
   border-radius: 50px;
@@ -71,17 +72,19 @@
   touch-action: manipulation;
 }
 
-.record-button:hover:not(:active) {
+.record-button:hover:not(:active),
+.record-btn:hover {
   background: rgba(233, 69, 96, 0.2);
   transform: scale(1.02);
 }
 
-.record-button.recording {
+.record-button.recording,
+.record-btn.recording {
   background: #e94560;
-  animation: recording-pulse 1s infinite;
 }
 
-.record-button.recording.speaking {
+.record-button.recording.speaking,
+.record-btn.speaking {
   background: linear-gradient(135deg, #e94560 0%, #4ade80 100%);
   box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
 }
