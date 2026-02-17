@@ -437,12 +437,8 @@ function App() {
             )}
             
             <div className="phrase-controls">
-              <button 
-                className="play-btn large" 
-                onClick={() => playPhrase(currentPhrase)}
-                title={currentAudioUrl ? "Playing cached audio" : "Fetching new audio..."}
-              >
-                {currentAudioUrl ? '🔊 Listen Again (cached)' : '🔊 Listen Again'}
+              <button className="play-btn large" onClick={() => playPhrase(currentPhrase)}>
+                🔊 Listen Again
               </button>
             </div>
           </div>
