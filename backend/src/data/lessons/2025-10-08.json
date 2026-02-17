@@ -1,0 +1,303 @@
+{
+  "id": "2025-10-08",
+  "date": "2025-10-08",
+  "title": "Hiragana: ha-hi-fu-he-ho row, voicing, dialogues",
+  "order": 20251008,
+  "topics": ["Hiragana ha-hi-fu-he-ho", "Dakuon/Handakuon", "Hiragana review"],
+  "vocabulary": [
+    {
+      "jp": "は",
+      "reading": "ha",
+      "en": "ha (also particle wa)",
+      "tags": ["hiragana"]
+    },
+    {
+      "jp": "ひ",
+      "reading": "hi",
+      "en": "hi",
+      "tags": ["hiragana"]
+    },
+    {
+      "jp": "ふ",
+      "reading": "fu",
+      "en": "fu",
+      "tags": ["hiragana"]
+    },
+    {
+      "jp": "へ",
+      "reading": "he",
+      "en": "he (also particle e)",
+      "tags": ["hiragana"]
+    },
+    {
+      "jp": "ほ",
+      "reading": "ho",
+      "en": "ho",
+      "tags": ["hiragana"]
+    },
+    {
+      "jp": "はな",
+      "reading": "hana",
+      "en": "flower / nose",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "はなす",
+      "reading": "hanasu",
+      "en": "to talk, to speak",
+      "type": "u-verb",
+      "tags": ["verb"]
+    },
+    {
+      "jp": "おはし",
+      "reading": "ohashi",
+      "en": "chopsticks",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "はこ",
+      "reading": "hako",
+      "en": "box",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ひ",
+      "reading": "hi",
+      "en": "fire",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ひくい",
+      "reading": "hikui",
+      "en": "short, low",
+      "tags": ["i-adjective"]
+    },
+    {
+      "jp": "ふね",
+      "reading": "fune",
+      "en": "ship, boat",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ふつう",
+      "reading": "futsū",
+      "en": "normal, ordinary, regular",
+      "tags": ["na-adjective"]
+    },
+    {
+      "jp": "ふたつ",
+      "reading": "futatsu",
+      "en": "two (counter)",
+      "tags": ["counter"]
+    },
+    {
+      "jp": "ふく",
+      "reading": "fuku",
+      "en": "clothes",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ふとい",
+      "reading": "futoi",
+      "en": "thick, fat",
+      "tags": ["i-adjective"]
+    },
+    {
+      "jp": "へい",
+      "reading": "hei",
+      "en": "fence, wall",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ほし",
+      "reading": "hoshi",
+      "en": "star",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ほね",
+      "reading": "hone",
+      "en": "bone",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ほほ",
+      "reading": "hoho",
+      "en": "cheek",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ほそい",
+      "reading": "hosoi",
+      "en": "thin, slender",
+      "tags": ["i-adjective"]
+    },
+    {
+      "jp": "たばこ",
+      "reading": "tabako",
+      "en": "cigarette, tobacco",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ことば",
+      "reading": "kotoba",
+      "en": "word, language",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "いぬ",
+      "reading": "inu",
+      "en": "dog",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "のど",
+      "reading": "nodo",
+      "en": "throat",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "におい",
+      "reading": "nioi",
+      "en": "smell, scent",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "おかね",
+      "reading": "okane",
+      "en": "money",
+      "tags": ["noun"]
+    },
+    {
+      "jp": "ば",
+      "reading": "ba",
+      "en": "ba (voiced ha)",
+      "tags": ["hiragana", "dakuon"]
+    },
+    {
+      "jp": "び",
+      "reading": "bi",
+      "en": "bi (voiced hi)",
+      "tags": ["hiragana", "dakuon"]
+    },
+    {
+      "jp": "ぶ",
+      "reading": "bu",
+      "en": "bu (voiced fu)",
+      "tags": ["hiragana", "dakuon"]
+    },
+    {
+      "jp": "べ",
+      "reading": "be",
+      "en": "be (voiced he)",
+      "tags": ["hiragana", "dakuon"]
+    },
+    {
+      "jp": "ぼ",
+      "reading": "bo",
+      "en": "bo (voiced ho)",
+      "tags": ["hiragana", "dakuon"]
+    },
+    {
+      "jp": "ぱ",
+      "reading": "pa",
+      "en": "pa (half-voiced ha)",
+      "tags": ["hiragana", "handakuon"]
+    },
+    {
+      "jp": "ぴ",
+      "reading": "pi",
+      "en": "pi (half-voiced hi)",
+      "tags": ["hiragana", "handakuon"]
+    },
+    {
+      "jp": "ぷ",
+      "reading": "pu",
+      "en": "pu (half-voiced fu)",
+      "tags": ["hiragana", "handakuon"]
+    },
+    {
+      "jp": "ぺ",
+      "reading": "pe",
+      "en": "pe (half-voiced he)",
+      "tags": ["hiragana", "handakuon"]
+    },
+    {
+      "jp": "ぽ",
+      "reading": "po",
+      "en": "po (half-voiced ho)",
+      "tags": ["hiragana", "handakuon"]
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "Hiragana Review (na-ni-nu-ne-no)",
+      "explanation": "Review of the previous hiragana row with vocabulary: inu (dog), nodo (throat), nioi (smell), okane (money)",
+      "examples": [
+        {"jp": "いぬ", "en": "dog"},
+        {"jp": "のど", "en": "throat"},
+        {"jp": "におい", "en": "smell, scent"},
+        {"jp": "おかね", "en": "money"}
+      ]
+    },
+    {
+      "pattern": "New hiragana row: ha-hi-fu-he-ho",
+      "explanation": "The H-row hiragana: は (ha), ひ (hi), ふ (fu), へ (he), ほ (ho). Writing tips: fu - head and belly separate; he - shorter on left, longer on right; ho - line should not extend above the top line.",
+      "examples": [
+        {"jp": "はな", "en": "flower / nose"},
+        {"jp": "はなす", "en": "to talk"},
+        {"jp": "おはし", "en": "chopsticks"},
+        {"jp": "はこ", "en": "box"},
+        {"jp": "ひくい", "en": "short, low"},
+        {"jp": "ふとつ", "en": "two (counter)"},
+        {"jp": "ふく", "en": "clothes"},
+        {"jp": "ほし", "en": "star"}
+      ]
+    },
+    {
+      "pattern": "Voicing (dakuon and handakuon)",
+      "explanation": "Adding dakuten (two dots) creates voiced sounds: ha→ba, hi→bi, fu→bu, he→be, ho→bo. Adding handakuten (small circle) creates half-voiced sounds: ha→pa, hi→pi, fu→pu, he→pe, ho→po.",
+      "examples": [
+        {"jp": "ば", "en": "ba"},
+        {"jp": "び", "en": "bi"},
+        {"jp": "ぶ", "en": "bu"},
+        {"jp": "べ", "en": "be"},
+        {"jp": "ぼ", "en": "bo"},
+        {"jp": "ぱ", "en": "pa"},
+        {"jp": "ぴ", "en": "pi"},
+        {"jp": "ぷ", "en": "pu"}
+      ]
+    },
+    {
+      "pattern": "Full hiragana review",
+      "explanation": "Review of all hiragana rows learned so far",
+      "examples": [
+        {"jp": "あいうえお", "en": "a-i-u-e-o"},
+        {"jp": "かきくけこ", "en": "ka-ki-ku-ke-ko"},
+        {"jp": "さしすせそ", "en": "sa-shi-su-se-so"},
+        {"jp": "たちつてと", "en": "ta-chi-tsu-te-to"},
+        {"jp": "なにぬねの", "en": "na-ni-nu-ne-no"},
+        {"jp": "はひふへほ", "en": "ha-hi-fu-he-ho"}
+      ]
+    },
+    {
+      "pattern": "Question review",
+      "explanation": "Review of question patterns: origin (doko kara desu ka), age (nan sai desu ka), grade (nan nensei desu ka)",
+      "examples": [
+        {"jp": "どこからですか", "en": "Where are you from?"},
+        {"jp": "なんさいですか", "en": "How old are you?"},
+        {"jp": "なんねんせいですか", "en": "What year are you in?"}
+      ]
+    }
+  ],
+  "dialogues": [],
+  "practice_phrases": [
+    "A: あなたのなまえはなんですか",
+    "B: わたしのなまえはあやかです",
+    "A: あなたはなんさいですか",
+    "B: じゅうななさいです",
+    "A: あなたはどこからですか",
+    "B: おおさかからです"
+  ],
+  "summary": "Hiragana ha-hi-fu-he-ho row, dakuon and handakuon voicing, full hiragana review, and question pattern practice."
+}

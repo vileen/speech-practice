@@ -9,10 +9,10 @@ const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_BASE_URL = 'https://api.elevenlabs.io/v1';
 const CACHE_FILE = './furigana-cache.json';
 
-// Voice IDs - Younger, more casual voices
+// Voice IDs - Multilingual voices that support Japanese and Italian
 const VOICES = {
   japanese: {
-    male: 'TxGEqnHWrfWFTfGW9jX',     // Japanese male - younger, casual
+    male: '9cW0l6d2vB8nQK8o8b1z',     // Adam - multilingual, supports Japanese
     female: 'XB0fDUnXU5powFXDhCwa',   // Japanese female - young, natural
   },
   italian: {
