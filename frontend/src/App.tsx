@@ -86,8 +86,19 @@ function App() {
   const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null); // Track currently playing audio
   
   // Lesson Mode
-  const [isLessonMode, setIsLessonMode] = useState(false);
+  const [isLessonMode, setIsLessonModeState] = useState(false);
   const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
+  
+  // Wrapper to save lesson mode state to localStorage
+  const setIsLessonMode = (value: boolean) => {
+    setIsLessonModeState(value);
+    if (value) {
+      localStorage.setItem('speech-practice-lesson-mode', 'true');
+    } else {
+      localStorage.removeItem('speech-practice-lesson-mode');
+      localStorage.removeItem('speech-practice-last-lesson');
+    }
+  };
   
   // Recording mode: 'push-to-talk' | 'voice-activated'
   const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('voice-activated');
@@ -95,12 +106,18 @@ function App() {
   // Refs for audio recording are now handled by VoiceRecorder component
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load password from localStorage on mount and auto-login if exists
+  // Load password and lesson mode from localStorage on mount
   useEffect(() => {
     const savedPassword = localStorage.getItem('speech_practice_password');
     if (savedPassword) {
       setPassword(savedPassword);
       setIsAuthenticated(true);
+    }
+    
+    // Restore lesson mode state
+    const savedLessonMode = localStorage.getItem('speech-practice-lesson-mode');
+    if (savedLessonMode === 'true') {
+      setIsLessonModeState(true);
     }
     setIsLoading(false);
   }, []);
