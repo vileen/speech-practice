@@ -71,31 +71,41 @@ export function VoiceRecorder({
       
       console.log('VAD started - microphone active');
       
-      // Start media recorder for actual audio capture
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
+      // Prepare media recorder but don't start yet - wait for voice detection
+      let mediaRecorder: MediaRecorder | null = null;
+      let recordingStarted = false;
       
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-      
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        setIsProcessing(true); // Lock to prevent immediate re-trigger
-        onRecordingComplete(audioBlob);
+      const startRecording = () => {
+        if (recordingStarted || !mediaStreamRef.current) return;
+        recordingStarted = true;
+        
+        mediaRecorder = new MediaRecorder(mediaStreamRef.current);
+        mediaRecorderRef.current = mediaRecorder;
         audioChunksRef.current = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
+        
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+          setIsProcessing(true);
+          onRecordingComplete(audioBlob);
+          audioChunksRef.current = [];
+        };
+        
+        mediaRecorder.start(100);
+        console.log('Recording started - voice detected');
       };
-      
-      mediaRecorder.start(100); // Collect data every 100ms
       
       // Reset states
       hasDetectedVoiceRef.current = false;
       setHasDetectedVoiceState(false);
       setSilenceTimer(0);
       silenceStartRef.current = null;
+      recordingStarted = false;
       
       // Start VAD loop
       const checkAudio = () => {
@@ -113,17 +123,22 @@ export function VoiceRecorder({
         }
         const rms = Math.sqrt(sum / dataArray.length);
         
-        // Scale to 0-100 for display
-        const level = Math.min(rms * 200, 100);
+        // Scale to 0-100 for display (more sensitive scaling)
+        const level = Math.min(rms * 300, 100);
         setAudioLevel(level);
         
-        // Threshold for voice detection (lower = more sensitive)
-        const threshold = 0.02; // ~2% of max amplitude
+        // Threshold for voice detection (higher = less noise pickup)
+        const threshold = 0.03; // ~3% of max amplitude
         const speaking = rms > threshold;
         setIsSpeaking(speaking);
         
         if (mode === 'voice-activated') {
           if (speaking) {
+            // Start recording on first voice detection
+            if (!recordingStarted) {
+              startRecording();
+            }
+            
             if (!hasDetectedVoiceRef.current) {
               hasDetectedVoiceRef.current = true;
               setHasDetectedVoiceState(true);
@@ -189,8 +204,19 @@ export function VoiceRecorder({
       silenceDebounceRef.current = null;
     }
     
+    // Only stop recorder if it was started and has data
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
+      // Check if we have any audio chunks before stopping
+      if (audioChunksRef.current.length > 0) {
+        mediaRecorderRef.current.stop();
+      } else {
+        // No audio recorded, just cleanup
+        mediaRecorderRef.current.stop();
+        onStopListening();
+      }
+    } else {
+      // Recording never started, just cleanup
+      onStopListening();
     }
     
     if (mediaStreamRef.current) {
@@ -211,8 +237,6 @@ export function VoiceRecorder({
     setIsReady(false);
     silenceStartRef.current = null;
     setAudioLevel(0);
-    
-    onStopListening();
   }, [onStopListening]);
   
   // Auto-start for voice-activated mode (but not if processing)
@@ -266,10 +290,10 @@ export function VoiceRecorder({
               displaySilenceTimer > 0 ? (
                 <>⏱️ Auto-stop in {Math.max(0, Math.ceil((2000 - silenceTimer) / 100) / 10)}s</>
               ) : (
-                <>🎤 Recording... speak now!</>
+                <>🎤 Recording your voice...</>
               )
             ) : (
-              <>👂 Listening... waiting for your voice</>
+              <>👂 Say something to start recording...</>
             )}
           </span>
         )}
