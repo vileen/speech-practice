@@ -170,8 +170,9 @@ function App() {
   };
 
   // Fetch TTS and return audio URL without adding to messages
-  const fetchTTS = async (text: string): Promise<string | null> => {
-    if (!session) return null;
+  const fetchTTS = async (text: string, sessionData?: { language: string, voice_gender: string }): Promise<string | null> => {
+    const activeSession = sessionData || session;
+    if (!activeSession) return null;
     
     try {
       const response = await fetch(`${API_URL}/api/tts`, {
@@ -182,8 +183,8 @@ function App() {
         },
         body: JSON.stringify({
           text,
-          language: session.language,
-          gender: session.voice_gender,
+          language: activeSession.language,
+          gender: activeSession.voice_gender,
         }),
       });
       
@@ -404,8 +405,8 @@ function App() {
           if (aiResponse.ok) {
             const aiData = await aiResponse.json();
             
-            // Fetch TTS for AI's opening message
-            const audioUrl = await fetchTTS(aiData.text);
+            // Fetch TTS for AI's opening message (pass sessionData directly since setSession is async)
+            const audioUrl = await fetchTTS(aiData.text, sessionData);
             
             setMessages([{
               role: 'assistant',
