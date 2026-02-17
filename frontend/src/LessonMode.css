@@ -66,6 +66,27 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.lessons-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lessons-list::-webkit-scrollbar-track {
+  background: #1a1a2e;
+  border-radius: 4px;
+}
+
+.lessons-list::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+.lessons-list::-webkit-scrollbar-thumb:hover {
+  background: #e94560;
 }
 
 .lesson-card {
@@ -83,30 +104,36 @@
   transform: translateX(4px);
 }
 
-.lesson-card h3 {
-  font-size: 1.1rem;
+.lesson-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   margin-bottom: 8px;
+}
+
+.lesson-card-header .lesson-date {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.lesson-card-header .lesson-title {
+  font-size: 1.1rem;
+  font-weight: bold;
   color: #fff;
 }
 
-.lesson-date {
-  font-size: 0.8rem;
-  color: #888;
-  margin-bottom: 4px;
-}
-
-.lesson-meta {
+.lesson-card-stats {
   display: flex;
   gap: 16px;
   font-size: 0.85rem;
   color: #aaa;
+  margin-bottom: 8px;
 }
 
 .lesson-topics {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
 }
 
 .topic-tag {
