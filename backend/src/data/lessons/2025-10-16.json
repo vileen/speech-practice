@@ -1,13 +1,13 @@
 {
   "id": "2025-10-16",
   "date": "2025-10-16",
-  "title": "Lekcja 2025-10-16 — Hiragana: ra-ri-ru-re-ro, wa-wo-n, adjectivei",
+  "title": "Lesson 2025-10-16 — Hiragana: ra-ri-ru-re-ro, wa-wo-n, adjectivei",
   "order": 20251016,
   "topics": [],
   "vocabulary": [
     {
-      "jp": "Znak",
-      "reading": "Czytanie",
+      "jp": "Character",
+      "reading": "Reading",
       "en": "Vocabulary przykładowe",
       "tags": []
     },
@@ -49,9 +49,9 @@
       "tags": []
     },
     {
-      "jp": "Znak",
-      "reading": "Czytanie",
-      "en": "Uwagi",
+      "jp": "Character",
+      "reading": "Reading",
+      "en": "Notes",
       "tags": []
     },
     {
@@ -99,7 +99,7 @@
     {
       "jp": "-",
       "reading": "ん",
-      "en": "### 5. Czas - minuty\n\nCzytanie minut:\n- Ipun (1 min)\n- Nifun (2 min)\n- Sanpun (3 min)\n- Yonpun (4 min)",
+      "en": "### 5. Czas - minuty\n\nReading minut:\n- Ipun (1 min)\n- Nifun (2 min)\n- Sanpun (3 min)\n- Yonpun (4 min)",
       "tags": []
     },
     {
@@ -166,7 +166,7 @@
     },
     {
       "pattern": "Nowy wiersz hiragany: ra-ri-ru-re-ro (らりるれろ)",
-      "explanation": "| Znak | Czytanie | Vocabulary przykładowe |\n|------|----------|-------------------|\n| ら | ra | sakura (wiśnia), raku (wygoda), mirai (przyszłość), raigetsu (przyszły miesiąc), kyou (dzisiaj) |\n| り | ri",
+      "explanation": "| Character | Reading | Vocabulary przykładowe |\n|------|----------|-------------------|\n| ら | ra | sakura (wiśnia), raku (wygoda), mirai (przyszłość), raigetsu (przyszły miesiąc), kyou (dzisiaj) |\n| り | ri",
       "examples": [
         {
           "jp": "-",
@@ -192,7 +192,7 @@
     },
     {
       "pattern": "Ostatni wiersz hiragany: wa-wo-n (わをん)",
-      "explanation": "| Znak | Czytanie | Uwagi |\n|------|----------|-------|\n| わ | wa | watashi (ja), watakushi (ja - formalnie/staroświecko) |\n| を | wo/o | partykuła wo (dopełnienie) - czytana jak \"o\" |\n| ん | n | hon (k",
+      "explanation": "| Character | Reading | Notes |\n|------|----------|-------|\n| わ | wa | watashi (ja), watakushi (ja - formalnie/staroświecko) |\n| を | wo/o | partykuła wo (dopełnienie) - czytana jak \"o\" |\n| ん | n | hon (k",
       "examples": [
         {
           "jp": "-",
@@ -218,7 +218,7 @@
     },
     {
       "pattern": "Podsumowanie całej hiragany",
-      "explanation": "| Wiersz | Znaki |\n|--------|-------|\n| A | あいうえお |\n| K | かきくけこ |\n| S | さしすせそ |\n| T | たちつてと |\n| N | なにぬねの |\n| H | はひふへほ |\n| M | まみむめも |\n| Y | やゆよ |\n| R | らりるれろ |\n| W | わを |\n| - | ん |",
+      "explanation": "| Wiersz | Characteri |\n|--------|-------|\n| A | あいうえお |\n| K | かきくけこ |\n| S | さしすせそ |\n| T | たちつてと |\n| N | なにぬねの |\n| H | はひふへほ |\n| M | まみむめも |\n| Y | やゆよ |\n| R | らりるれろ |\n| W | わを |\n| - | ん |",
       "examples": [
         {
           "jp": "-",
@@ -232,10 +232,10 @@
     },
     {
       "pattern": "Czas - minuty",
-      "explanation": "Czytanie minut:\n- Ipun (1 min)\n- Nifun (2 min)\n- Sanpun (3 min)\n- Yonpun (4 min)\n| Gofun (5 min)\n| Roppun (6 min)\n| Nanafun / Hachifun (7-8 min)\n| Kyuufun (9 min)\n| Juuppun (10 min)\n\nPełne godz",
+      "explanation": "Reading minut:\n- Ipun (1 min)\n- Nifun (2 min)\n- Sanpun (3 min)\n- Yonpun (4 min)\n| Gofun (5 min)\n| Roppun (6 min)\n| Nanafun / Hachifun (7-8 min)\n| Kyuufun (9 min)\n| Juuppun (10 min)\n\nPełne godz",
       "examples": [
         {
-          "jp": "Czytanie minut:",
+          "jp": "Reading minut:",
           "en": "Ipun (1 min)"
         },
         {

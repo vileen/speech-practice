@@ -1,14 +1,14 @@
 {
   "id": "2025-10-22",
   "date": "2025-10-22",
-  "title": "Lekcja 2025-10-22 — Katakana: ta-chi-tsu-te-to, na-ni-nu-ne-no, ha-hi-fu-he-ho",
+  "title": "Lesson 2025-10-22 — Katakana: ta-chi-tsu-te-to, na-ni-nu-ne-no, ha-hi-fu-he-ho",
   "order": 20251022,
   "topics": [],
   "vocabulary": [
     {
       "jp": "Katakana",
       "reading": "Romaji",
-      "en": "Uwagi",
+      "en": "Notes",
       "tags": []
     },
     {
@@ -50,7 +50,7 @@
     {
       "jp": "Katakana",
       "reading": "Romaji",
-      "en": "Uwagi",
+      "en": "Notes",
       "tags": []
     },
     {
@@ -92,7 +92,7 @@
     {
       "jp": "Katakana",
       "reading": "Romaji",
-      "en": "Uwagi",
+      "en": "Notes",
       "tags": []
     },
     {
@@ -331,7 +331,7 @@
     },
     {
       "pattern": "Wiersz ta-chi-tsu-te-to (タチツテト)",
-      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| タ | ta | Łezka + przecięcie (kanciaste) |\n| チ | chi | Jak hiraganie chi ale kanciaste |\n| ツ | tsu | Mała wersja, z góry na dół! |\n| テ | t",
+      "explanation": "| Katakana | Romaji | Notes |\n|----------|--------|-------|\n| タ | ta | Łezka + przecięcie (kanciaste) |\n| チ | chi | Jak hiraganie chi ale kanciaste |\n| ツ | tsu | Mała wersja, z góry na dół! |\n| テ | t",
       "examples": [
         {
           "jp": "-",
@@ -357,14 +357,14 @@
     },
     {
       "pattern": "Wiersz na-ni-nu-ne-no (ナニヌネノ)",
-      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| ナ | na | Proste krzyżyk (krótsza kreska z lewej) |\n| ニ | ni | Dwie poziome kreski |\n| ヌ | nu | Pętelka z przytupem |\n| ネ | ne | Pętelka +",
+      "explanation": "| Katakana | Romaji | Notes |\n|----------|--------|-------|\n| ナ | na | Proste krzyżyk (krótsza kreska z lewej) |\n| ニ | ni | Dwie poziome kreski |\n| ヌ | nu | Pętelka z przytupem |\n| ネ | ne | Pętelka +",
       "examples": [
         {
           "jp": "-",
           "en": "-------|--------|-------|"
         },
         {
-          "jp": "Przykłady:",
+          "jp": "Examples:",
           "en": "ナイフ (naifu) - nóż"
         },
         {
@@ -379,14 +379,14 @@
     },
     {
       "pattern": "Wiersz ha-hi-fu-he-ho (ハヒフヘホ)",
-      "explanation": "| Katakana | Romaji | Uwagi |\n|----------|--------|-------|\n| ハ | ha | Prosty kształt jak hiragana |\n| ヒ | hi | Dwie kreski (jak hiragana) |\n| フ | fu | Bez pętelki, kanciasty |\n| ヘ | he | Taki sam ja",
+      "explanation": "| Katakana | Romaji | Notes |\n|----------|--------|-------|\n| ハ | ha | Prosty kształt jak hiragana |\n| ヒ | hi | Dwie kreski (jak hiragana) |\n| フ | fu | Bez pętelki, kanciasty |\n| ヘ | he | Taki sam ja",
       "examples": [
         {
           "jp": "-",
           "en": "-------|--------|-------|"
         },
         {
-          "jp": "Przykłady:",
+          "jp": "Examples:",
           "en": "ハロウィン (harowin) - Halloween"
         },
         {
@@ -405,14 +405,14 @@
     },
     {
       "pattern": "Pomniejszenia w katakanii (Yoon)",
-      "explanation": "Tworzenie nowych dźwięków:\n- Małe a-i-u-e-o łączone z poprzednią sylabą\n\nPrzykłady:\n- ファ (fa) = fu (フ) + małe a (ァ)\n- フィ (fi) = fu + małe i (ィ)\n- フェ (fe) = fu + małe e (ェ)\n- フォ (fo) = fu + ma",
+      "explanation": "Tworzenie nowych dźwięków:\n- Małe a-i-u-e-o łączone z poprzednią sylabą\n\nExamples:\n- ファ (fa) = fu (フ) + małe a (ァ)\n- フィ (fi) = fu + małe i (ィ)\n- フェ (fe) = fu + małe e (ェ)\n- フォ (fo) = fu + ma",
       "examples": [
         {
           "jp": "Tworzenie nowych dźwięków:",
           "en": "Małe a-i-u-e-o łączone z poprzednią sylabą"
         },
         {
-          "jp": "Przykłady:",
+          "jp": "Examples:",
           "en": "ファ (fa) = fu (フ) + małe a (ァ)"
         },
         {
