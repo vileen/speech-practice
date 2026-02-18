@@ -458,9 +458,9 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
 
           {activeTab === 'practice' && (
             <div className="practice-tab">
-              <div className="practice-list">
+              <div className="phrases-list">
                 {selectedLesson.practice_phrases.map((phrase, idx) => (
-                  <div key={idx} className="practice-item">
+                  <div key={idx} className="phrase-item" style={{ background: idx % 2 === 0 ? '#1a1a2e' : '#16213e' }}>
                     <span className="number">{idx + 1}.</span>
                     <span className="phrase">{renderFurigana(phrase)}</span>
                   </div>
