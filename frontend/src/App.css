@@ -889,3 +889,16 @@ header h1 {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Japanese text and translation layout */
+.jp-text {
+  margin-bottom: 8px;
+}
+
+.translation-text {
+  padding-top: 8px;
+  border-top: 1px solid #333;
+  color: #aaa;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
