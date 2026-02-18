@@ -120,23 +120,8 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-// Fallback dictionary for proper nouns and words Jisho doesn't provide readings for
-const FALLBACK_READINGS: Record<string, string> = {
-  // Common surnames
-  '田中': 'たなか',
-  '山田': 'やまだ',
-  '鈴木': 'すずき',
-  '佐藤': 'さとう',
-  '伊藤': 'いとう',
-  '渡辺': 'わたなべ',
-  '高橋': 'たかはし',
-  '小林': 'こばやし',
-  '田中': 'たなか',
-  // Kanji with context-dependent readings (override Jisho's default)
-  '願': 'ねが', // Usually がん, but ねが in 願う/お願いします
-  // Common words that might be missing
-  ' Penn': 'ペン',
-};
+// Note: Fallback dictionary removed - relying on context-aware lookup
+// Context-dependent readings are handled by looking up full words with okurigana
 
 // Fetch reading from Jisho API
 async function getReadingFromJisho(word: string): Promise<string | null> {
@@ -148,14 +133,6 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
     return furiganaCache.get(word)!;
   }
   
-  // Check fallback dictionary
-  if (FALLBACK_READINGS[word]) {
-    console.log(`[Furigana] Fallback hit for: ${word} = ${FALLBACK_READINGS[word]}`);
-    furiganaCache.set(word, FALLBACK_READINGS[word]);
-    await saveCache();
-    return FALLBACK_READINGS[word];
-  }
-
   console.log(`[Furigana] Fetching from Jisho: ${word}`);
   try {
     const response = await fetch(`https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(word)}`);
