@@ -7,6 +7,7 @@ interface VoiceRecorderProps {
   onStartListening: () => void;
   onStopListening: () => void;
   mode: 'push-to-talk' | 'voice-activated';
+  disabled?: boolean;
 }
 
 export function VoiceRecorder({
@@ -15,6 +16,7 @@ export function VoiceRecorder({
   onStartListening,
   onStopListening,
   mode,
+  disabled = false,
 }: VoiceRecorderProps) {
   const [audioLevel, setAudioLevel] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -386,8 +388,9 @@ export function VoiceRecorder({
     onStopListening();
   }, [onStopListening]);
   
-  // Auto-start for voice-activated mode (but not if processing)
+  // Auto-start for voice-activated mode (but not if processing or disabled)
   useEffect(() => {
+    if (disabled) return; // Don't auto-start if disabled
     if (mode === 'voice-activated' && !isListening && !isRunningRef.current && !isProcessing) {
       // Small delay to ensure component is mounted
       const timer = setTimeout(() => {
@@ -395,7 +398,7 @@ export function VoiceRecorder({
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [mode, isListening, startVAD, isProcessing]);
+  }, [mode, isListening, startVAD, isProcessing, disabled]);
 
   // Auto-retry on initialization error
   useEffect(() => {

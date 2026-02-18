@@ -748,21 +748,31 @@ header h1 {
   font-size: 1.3rem;
 }
 
-/* Waiting for AI loader with animated dots */
-.recorder-waiting {
+/* Voice Recorder wrapper with overlay */
+.voice-recorder-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.recorder-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: #16213e;
+  background: rgba(22, 33, 62, 0.95);
   border: 2px dashed #333;
   border-radius: 12px;
   color: #888;
-  min-height: 120px;
+  z-index: 10;
 }
 
-.recorder-waiting p {
+.recorder-overlay p {
   margin-top: 1rem;
   font-size: 0.95rem;
 }
