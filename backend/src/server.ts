@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { pool } from './db/pool.js';
 import { generateSpeech, addFurigana, addFuriganaSync, saveFuriganaCache, toHiraganaForTTS } from './services/elevenlabs.js';
-import { getLessonIndex, getLesson, getRecentLessons, getLessonSystemPrompt } from './services/lessons.js';
+import { getLessonIndex, getLesson, getRecentLessons, getLessonSystemPrompt, cacheFurigana } from './services/lessons.js';
 import { transcribeAudioDirect } from './services/whisper.js';
 import { generateChatResponse } from './services/chat.js';
 import { readFile } from 'fs/promises';
@@ -395,10 +395,26 @@ app.post('/api/furigana', checkPassword, async (req, res) => {
       return res.status(400).json({ error: 'No text provided' });
     }
     
+    // Check database cache first
+    const cached = await getCachedFurigana(text);
+    if (cached) {
+      return res.json({ 
+        original: text,
+        with_furigana: cached,
+        cached: true
+      });
+    }
+    
+    // Generate furigana
     const textWithFurigana = await addFurigana(text);
+    
+    // Cache in database
+    await cacheFurigana(text, textWithFurigana);
+    
     res.json({ 
       original: text,
-      with_furigana: textWithFurigana 
+      with_furigana: textWithFurigana,
+      cached: false
     });
   } catch (error) {
     console.error('Error adding furigana:', error);
@@ -446,7 +462,8 @@ app.get('/api/lessons/recent', checkPassword, async (req, res) => {
 app.get('/api/lessons/:id', checkPassword, async (req, res) => {
   try {
     const { id } = req.params;
-    const lesson = await getLesson(id);
+    const includeFurigana = req.query.furigana === 'true';
+    const lesson = await getLesson(id, includeFurigana);
     if (!lesson) {
       return res.status(404).json({ error: 'Lesson not found' });
     }

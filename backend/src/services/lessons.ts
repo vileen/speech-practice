@@ -12,7 +12,11 @@ interface VocabItem {
 interface GrammarPoint {
   pattern: string;
   explanation: string;
-  examples: Array<{jp: string; en: string}>;
+  examples: Array<{
+    jp: string; 
+    en: string;
+    furigana?: string | null;
+  }>;
 }
 
 interface LessonData {
@@ -62,8 +66,33 @@ export async function getLessonIndex(): Promise<LessonIndex> {
   };
 }
 
-// Get specific lesson
-export async function getLesson(id: string): Promise<LessonData | null> {
+// Get furigana from cache
+export async function getCachedFurigana(text: string): Promise<string | null> {
+  const result = await pool.query(
+    'SELECT furigana_html FROM furigana_cache WHERE original_text = $1',
+    [text]
+  );
+  
+  if (result.rows.length === 0) {
+    return null;
+  }
+  
+  return result.rows[0].furigana_html;
+}
+
+// Store furigana in cache
+export async function cacheFurigana(text: string, furiganaHtml: string): Promise<void> {
+  await pool.query(
+    `INSERT INTO furigana_cache (original_text, furigana_html)
+     VALUES ($1, $2)
+     ON CONFLICT (original_text) DO UPDATE SET
+       furigana_html = EXCLUDED.furigana_html`,
+    [text, furiganaHtml]
+  );
+}
+
+// Get specific lesson with enriched grammar examples (includes furigana)
+export async function getLesson(id: string, includeFurigana: boolean = false): Promise<LessonData | null> {
   const result = await pool.query(
     'SELECT id, date, title, order_num as order, topics, vocabulary, grammar, practice_phrases ' +
     'FROM lessons WHERE id = $1',
@@ -75,6 +104,28 @@ export async function getLesson(id: string): Promise<LessonData | null> {
   }
   
   const row = result.rows[0];
+  let grammar = row.grammar || [];
+  
+  // Enrich grammar examples with cached furigana if requested
+  if (includeFurigana && grammar.length > 0) {
+    grammar = await Promise.all(grammar.map(async (g: GrammarPoint) => {
+      if (!g.examples || g.examples.length === 0) return g;
+      
+      const enrichedExamples = await Promise.all(g.examples.map(async (ex) => {
+        const cached = await getCachedFurigana(ex.jp);
+        return {
+          ...ex,
+          furigana: cached || null
+        };
+      }));
+      
+      return {
+        ...g,
+        examples: enrichedExamples
+      };
+    }));
+  }
+  
   return {
     id: row.id,
     date: row.date,
@@ -82,7 +133,7 @@ export async function getLesson(id: string): Promise<LessonData | null> {
     order: row.order,
     topics: row.topics || [],
     vocabulary: row.vocabulary || [],
-    grammar: row.grammar || [],
+    grammar: grammar,
     practice_phrases: row.practice_phrases || []
   };
 }
