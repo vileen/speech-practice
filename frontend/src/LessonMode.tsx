@@ -59,6 +59,18 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   // Furigana cache to avoid repeated API calls
   const [furiganaCache, setFuriganaCache] = useState<Record<string, string>>({});
   const [furiganaLoading, setFuriganaLoading] = useState<Record<string, boolean>>({});
+  // Use refs to avoid dependency loops in useEffect
+  const furiganaCacheRef = useRef<Record<string, string>>({});
+  const furiganaLoadingRef = useRef<Record<string, boolean>>({});
+  
+  // Keep refs in sync with state
+  useEffect(() => {
+    furiganaCacheRef.current = furiganaCache;
+  }, [furiganaCache]);
+  
+  useEffect(() => {
+    furiganaLoadingRef.current = furiganaLoading;
+  }, [furiganaLoading]);
   
   // Ref for scroll position
   const lessonsListRef = useRef<HTMLDivElement>(null);
@@ -162,20 +174,22 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     setSelectedLesson(null);
   };
 
-  // Fetch furigana from backend
+  // Fetch furigana from backend - uses refs to avoid dependency loops
   const fetchFurigana = useCallback(async (text: string): Promise<string> => {
-    // Skip if already cached
-    if (furiganaCache[text]) {
-      return furiganaCache[text];
+    // Check cache using ref to avoid dependency loop
+    const cached = furiganaCacheRef.current[text];
+    if (cached) {
+      return cached;
     }
     
     // Skip if already loading
-    if (furiganaLoading[text]) {
+    if (furiganaLoadingRef.current[text]) {
       return text;
     }
     
     // Mark as loading
-    setFuriganaLoading(prev => ({ ...prev, [text]: true }));
+    furiganaLoadingRef.current = { ...furiganaLoadingRef.current, [text]: true };
+    setFuriganaLoading({ ...furiganaLoadingRef.current });
     
     try {
       const response = await fetch(`${API_URL}/api/furigana`, {
@@ -191,53 +205,57 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
         const data = await response.json();
         const withFurigana = data.with_furigana;
         // Cache the result
-        setFuriganaCache(prev => ({ ...prev, [text]: withFurigana }));
+        furiganaCacheRef.current = { ...furiganaCacheRef.current, [text]: withFurigana };
+        setFuriganaCache({ ...furiganaCacheRef.current });
         return withFurigana;
       }
     } catch (error) {
       console.error('Error fetching furigana:', error);
     } finally {
-      setFuriganaLoading(prev => ({ ...prev, [text]: false }));
+      furiganaLoadingRef.current = { ...furiganaLoadingRef.current, [text]: false };
+      setFuriganaLoading({ ...furiganaLoadingRef.current });
     }
     
     return text;
-  }, [password, furiganaCache, furiganaLoading]);
+  }, [password]);
 
   // Fetch all furigana for a lesson when showFurigana is enabled
+  // Only runs when selectedLesson or showFurigana changes - NOT when cache changes
   useEffect(() => {
     if (!selectedLesson || !showFurigana) return;
     
     const textsToFetch: string[] = [];
     
-    // Collect all Japanese text that needs furigana
+    // Collect all Japanese text that needs furigana (check cache ref to avoid dependency loop)
     selectedLesson.vocabulary.forEach(item => {
-      if (!furiganaCache[item.jp]) textsToFetch.push(item.jp);
+      if (!furiganaCacheRef.current[item.jp]) textsToFetch.push(item.jp);
     });
     
     selectedLesson.grammar.forEach(item => {
       item.examples.forEach(ex => {
-        if (!furiganaCache[ex.jp]) textsToFetch.push(ex.jp);
+        if (!furiganaCacheRef.current[ex.jp]) textsToFetch.push(ex.jp);
       });
     });
     
     selectedLesson.practice_phrases.forEach(phrase => {
-      if (!furiganaCache[phrase]) textsToFetch.push(phrase);
+      if (!furiganaCacheRef.current[phrase]) textsToFetch.push(phrase);
     });
     
     // Fetch furigana for all texts (with small delays to avoid overwhelming the API)
     textsToFetch.forEach((text, index) => {
       setTimeout(() => {
         fetchFurigana(text);
-      }, index * 100); // 100ms delay between requests
+      }, index * 50); // 50ms delay between requests
     });
-  }, [selectedLesson, showFurigana, fetchFurigana, furiganaCache]);
+  }, [selectedLesson, showFurigana]); // Intentionally NOT including fetchFurigana or cache
 
   const renderFurigana = (text: string) => {
     if (!showFurigana) return text;
     
     // If we have cached furigana, use it
-    if (furiganaCache[text]) {
-      return <span dangerouslySetInnerHTML={{ __html: furiganaCache[text] }} />;
+    const cached = furiganaCacheRef.current[text] || furiganaCache[text];
+    if (cached) {
+      return <span dangerouslySetInnerHTML={{ __html: cached }} />;
     }
     
     // Otherwise show plain text (it will be fetched)
