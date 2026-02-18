@@ -120,8 +120,58 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-// Note: Fallback dictionary removed - relying on context-aware lookup
-// Context-dependent readings are handled by looking up full words with okurigana
+// Fallback dictionary for proper nouns and words Jisho doesn't provide readings for
+const FALLBACK_READINGS: Record<string, string> = {
+  // Common surnames
+  '田中': 'たなか',
+  '山田': 'やまだ',
+  '鈴木': 'すずき',
+  '佐藤': 'さとう',
+  '伊藤': 'いとう',
+  '渡辺': 'わたなべ',
+  '高橋': 'たかはし',
+  '小林': 'こばやし',
+  '田中': 'たなか',
+  // Common words that might be missing
+  ' Penn': 'ペン',
+};
+
+// Helper function to fetch from Jisho with retry logic for 429 rate limit
+async function fetchFromJisho(word: string): Promise<Response | null> {
+  const maxRetries = 3;
+  const baseDelay = 500; // 500ms
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(`https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(word)}`);
+      
+      if (response.status === 429) {
+        if (attempt < maxRetries) {
+          const delay = baseDelay + (attempt * 500); // 500ms, 1000ms, 1500ms
+          console.log(`[Furigana] Rate limited (429), retry ${attempt + 1}/${maxRetries} after ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        } else {
+          console.log('[Furigana] Max retries reached for 429');
+          return null;
+        }
+      }
+      
+      return response;
+    } catch (error) {
+      if (attempt < maxRetries) {
+        const delay = baseDelay + (attempt * 500);
+        console.log(`[Furigana] Fetch error, retry ${attempt + 1}/${maxRetries} after ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        console.error('[Furigana] Fetch failed after all retries:', error);
+        return null;
+      }
+    }
+  }
+  
+  return null;
+}
 
 // Fetch reading from Jisho API
 async function getReadingFromJisho(word: string): Promise<string | null> {
@@ -133,21 +183,32 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
     return furiganaCache.get(word)!;
   }
   
+  // Check fallback dictionary
+  if (FALLBACK_READINGS[word]) {
+    console.log(`[Furigana] Fallback hit for: ${word} = ${FALLBACK_READINGS[word]}`);
+    furiganaCache.set(word, FALLBACK_READINGS[word]);
+    await saveCache();
+    return FALLBACK_READINGS[word];
+  }
+
   console.log(`[Furigana] Fetching from Jisho: ${word}`);
+  const response = await fetchFromJisho(word);
+  
+  if (!response) {
+    return null;
+  }
+  
+  if (!response.ok) {
+    console.log(`[Furigana] Jisho request failed: ${response.status}`);
+    return null;
+  }
+  
   try {
-    const response = await fetch(`https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(word)}`);
-    console.log(`[Furigana] Jisho response status: ${response.status}`);
-    
-    if (!response.ok) {
-      console.log(`[Furigana] Jisho request failed: ${response.status}`);
-      return null;
-    }
-    
     const data = await response.json();
     console.log(`[Furigana] Jisho results count: ${data.data?.length || 0}`);
     
     if (data.data && data.data.length > 0) {
-      // First try: exact match
+      // Try to find a result with a reading
       for (const result of data.data) {
         const japanese = result.japanese?.[0];
         if (japanese) {
@@ -158,34 +219,11 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
           if (resultWord === word && reading) {
             furiganaCache.set(word, reading);
             await saveCache();
-            console.log(`[Furigana] Cached (exact): ${word} = ${reading}`);
+            console.log(`[Furigana] Cached: ${word} = ${reading}`);
             return reading;
           }
         }
       }
-      
-      // Second try: find exact match including okurigana
-      // This ensures we get the right reading (kun'yomi vs on'yomi)
-      // e.g., "眠い" should use ねむい, not ねむる from "眠る"
-      for (const result of data.data) {
-        for (const japanese of (result.japanese || [])) {
-          const resultWord = japanese.word;
-          const fullReading = japanese.reading;
-          
-          // Check if this is an exact match for a word with okurigana
-          // e.g., original text "眠い" matches resultWord "眠い"
-          // We need the original text, not just the kanji
-          if (resultWord && fullReading && resultWord.includes(word)) {
-            // For now, store the full word-to-reading mapping
-            // This is safer than trying to extract partial readings
-            furiganaCache.set(word, fullReading);
-            await saveCache();
-            console.log(`[Furigana] Cached (partial match): ${word} = ${fullReading} (from ${resultWord})`);
-            return fullReading;
-          }
-        }
-      }
-      
       console.log(`[Furigana] No result with reading found for: ${word}`);
     } else {
       console.log(`[Furigana] No results for: ${word}`);
@@ -212,71 +250,19 @@ export async function addFurigana(text: string): Promise<string> {
   console.log(`[Furigana] Unique matches to process: [${uniqueMatches.join(', ')}]`);
   
   for (const kanjiWord of uniqueMatches) {
-    // First, try to find reading for the full word context (kanji + okurigana)
-    // This helps get the correct kun'yomi reading
-    const fullWordReading = await getReadingForFullWord(text, kanjiWord);
+    const reading = await getReadingFromJisho(kanjiWord);
     
-    if (fullWordReading) {
-      const ruby = `<ruby>${kanjiWord}<rt>${fullWordReading}</rt></ruby>`;
+    if (reading) {
+      const ruby = `<ruby>${kanjiWord}<rt>${reading}</rt></ruby>`;
       result = result.replace(new RegExp(kanjiWord, 'g'), ruby);
-      console.log(`[Furigana] Replaced "${kanjiWord}" with "${ruby}" (from full word context)`);
+      console.log(`[Furigana] Replaced "${kanjiWord}" with "${ruby}"`);
     } else {
-      // Fallback: get reading just for the kanji
-      const reading = await getReadingFromJisho(kanjiWord);
-      
-      if (reading) {
-        const ruby = `<ruby>${kanjiWord}<rt>${reading}</rt></ruby>`;
-        result = result.replace(new RegExp(kanjiWord, 'g'), ruby);
-        console.log(`[Furigana] Replaced "${kanjiWord}" with "${ruby}"`);
-      } else {
-        console.log(`[Furigana] No reading found for: "${kanjiWord}"`);
-      }
+      console.log(`[Furigana] No reading found for: "${kanjiWord}"`);
     }
   }
   
   console.log(`[Furigana] Result: "${result}"`);
   return result;
-}
-
-// Try to get reading for kanji in context of full word (with okurigana)
-async function getReadingForFullWord(fullText: string, kanjiWord: string): Promise<string | null> {
-  // Find the kanji position in the full text
-  const kanjiIndex = fullText.indexOf(kanjiWord);
-  if (kanjiIndex === -1) return null;
-  
-  // Extract the word including okurigana (hiragana after kanji)
-  // Simple heuristic: take chars after kanji until we hit non-hiragana or end
-  let okurigana = '';
-  for (let i = kanjiIndex + kanjiWord.length; i < fullText.length; i++) {
-    const char = fullText[i];
-    // Check if hiragana (3040-309F)
-    if (/[\u3040-\u309F]/.test(char)) {
-      okurigana += char;
-    } else {
-      break;
-    }
-  }
-  
-  if (!okurigana) return null; // No okurigana, use regular lookup
-  
-  const fullWord = kanjiWord + okurigana;
-  console.log(`[Furigana] Looking up full word: "${fullWord}" for kanji "${kanjiWord}"`);
-  
-  // Try to get reading for the full word
-  const fullReading = await getReadingFromJisho(fullWord);
-  if (!fullReading) return null;
-  
-  // Extract just the kanji reading by removing okurigana portion from the end
-  // This is approximate but works for most cases
-  let kanjiReading = fullReading;
-  for (let i = okurigana.length - 1; i >= 0; i--) {
-    if (kanjiReading.endsWith(okurigana[i])) {
-      kanjiReading = kanjiReading.slice(0, -1);
-    }
-  }
-  
-  console.log(`[Furigana] Extracted kanji reading: "${kanjiReading}" from "${fullReading}"`);
-  return kanjiReading;
 }
 
 // Synchronous version for simple cases (uses only cached readings)

@@ -34,38 +34,13 @@ export async function generateChatResponse(
 
   let text = response.choices[0]?.message?.content || 'すみません、もう一度言ってください。';
   
-  console.log('[Chat] AI response:', text.substring(0, 100) + '...');
-  
-  // Extract translation if present (handles multiline)
+  // Extract translation if present
   let translation: string | undefined;
-  const translationMatch = text.match(/TRANSLATION:\s*([\s\S]+)$/);
+  const translationMatch = text.match(/TRANSLATION:\s*(.+)$/);
   if (translationMatch) {
     translation = translationMatch[1].trim();
     // Remove translation from main text
-    text = text.replace(/\s*TRANSLATION:[\s\S]+$/, '').trim();
-    console.log('[Chat] Found translation in AI response:', translation.substring(0, 50) + '...');
-  } else {
-    console.log('[Chat] No TRANSLATION: found in AI response');
-  }
-  
-  // Always generate translation if not provided (AI doesn't always follow instructions)
-  if (!translation && text.length > 0) {
-    try {
-      console.log('[Chat] Generating automatic translation for:', text.substring(0, 50) + '...');
-      const translationResponse = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: 'You are a translator. Translate the given Japanese text to English. Respond with ONLY the English translation, nothing else.' },
-          { role: 'user', content: text },
-        ],
-        temperature: 0.3,
-        max_tokens: 200,
-      });
-      translation = translationResponse.choices[0]?.message?.content?.trim();
-      console.log('[Chat] Translation generated:', translation?.substring(0, 50) + '...');
-    } catch (e) {
-      console.error('Error generating translation:', e);
-    }
+    text = text.replace(/\s*TRANSLATION:.+$/, '').trim();
   }
   
   // Add furigana if not already present
