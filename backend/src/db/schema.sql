@@ -47,3 +47,14 @@ CREATE TABLE IF NOT EXISTS lessons (
 
 -- Create index for ordering
 CREATE INDEX IF NOT EXISTS idx_lessons_order ON lessons(order_num DESC);
+
+-- Furigana cache table - stores pre-computed furigana to avoid repeated API calls
+CREATE TABLE IF NOT EXISTS furigana_cache (
+  id SERIAL PRIMARY KEY,
+  original_text TEXT NOT NULL UNIQUE,
+  furigana_html TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Index for quick lookup
+CREATE INDEX IF NOT EXISTS idx_furigana_original ON furigana_cache(original_text);
