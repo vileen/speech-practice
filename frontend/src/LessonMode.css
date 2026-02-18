@@ -172,6 +172,28 @@
   background: #1a4a7a;
 }
 
+.toggles-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.toggle-label input {
+  width: 18px;
+  height: 18px;
+  accent-color: #e94560;
+}
+
+/* Legacy class for backwards compatibility */
 .furigana-toggle {
   margin-bottom: 16px;
 }
