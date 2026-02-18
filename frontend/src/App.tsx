@@ -85,6 +85,11 @@ function App() {
   const [vadResetCounter, setVadResetCounter] = useState(0); // Force VAD reset on Next Phrase
   const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null); // Track currently playing audio
   
+  // Repeat After Me - track if phrase has been played (for disabling recorder)
+  const [phrasePlayed, setPhrasePlayed] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [volume, setVolume] = useState(1); // Volume 0-1
+  
   // Lesson Mode - use URL hash for persistence
   const [isLessonMode, setIsLessonModeState] = useState(false);
   const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
@@ -302,6 +307,8 @@ function App() {
     setCurrentPhrase(randomPhrase.text);
     setCurrentTranslation(randomPhrase.translation);
     setPronunciationResult(null);
+    setShowTranslation(false);
+    setPhrasePlayed(false);
     
     // Reset all voice recorder states to force fresh initialization
     setIsListening(false);
@@ -325,7 +332,9 @@ function App() {
       // Use cached audio if available and not forcing new
       if (!forceNew && currentAudioUrl && text === currentPhrase) {
         const audio = new Audio(currentAudioUrl);
+        audio.volume = volume;
         audio.play();
+        setPhrasePlayed(true);
         return;
       }
       
@@ -348,7 +357,9 @@ function App() {
         const audioUrl = URL.createObjectURL(blob);
         setCurrentAudioUrl(audioUrl);
         const audio = new Audio(audioUrl);
+        audio.volume = volume;
         audio.play();
+        setPhrasePlayed(true);
       }
     } catch (error) {
       console.error('Error playing phrase:', error);
@@ -570,9 +581,22 @@ function App() {
               </button>
             )}
             
+            {/* Translation display */}
+            {showTranslation && currentTranslation && (
+              <div className="translation-display">
+                🇬🇧 {currentTranslation}
+              </div>
+            )}
+            
             <div className="phrase-controls">
               <button className="play-btn large" onClick={() => playPhrase(currentPhrase)}>
-                🔊 Listen Again
+                🔊 {phrasePlayed ? 'Listen Again' : 'Listen'}
+              </button>
+              <button 
+                className="translate-btn"
+                onClick={() => setShowTranslation(!showTranslation)}
+              >
+                {showTranslation ? '🙈 Hide Translation' : '🇬🇧 Show Translation'}
               </button>
             </div>
           </div>
@@ -626,56 +650,76 @@ function App() {
           <div className="repeat-controls">
             {/* Voice Recorder with VAD for Repeat After Me */}
             <div className="voice-recorder-section" style={{ width: '100%', maxWidth: '400px' }}>
+              {/* Volume control */}
+              <div className="volume-control">
+                <label>🔊 Volume:</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={volume}
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
+                />
+                <span>{Math.round(volume * 100)}%</span>
+              </div>
+              
               <div className="mode-toggle">
-                <button 
+                <button
                   className={recordingMode === 'voice-activated' ? 'active' : ''}
                   onClick={() => setRecordingMode('voice-activated')}
                 >
                   🎤 Voice Activated
                 </button>
-                <button 
+                <button
                   className={recordingMode === 'push-to-talk' ? 'active' : ''}
                   onClick={() => setRecordingMode('push-to-talk')}
                 >
                   🎙️ Push to Talk
                 </button>
               </div>
-              
-              <VoiceRecorder
-                key={`${currentPhrase}-${vadResetCounter}`}
-                mode={recordingMode}
-                isListening={isListening}
-                onStartListening={() => {
-                  setIsListening(true);
-                }}
-                onStopListening={() => {
-                  setIsListening(false);
-                }}
-                onRecordingComplete={async (audioBlob) => {
-                  // Submit for pronunciation check
-                  const formData = new FormData();
-                  formData.append('audio', audioBlob, 'recording.webm');
-                  formData.append('target_text', currentPhrase);
-                  formData.append('language', language);
-                  
-                  try {
-                    const response = await fetch(`${API_URL}/api/repeat-after-me`, {
-                      method: 'POST',
-                      headers: {
-                        'X-Password': password,
-                      },
-                      body: formData,
-                    });
-                    
-                    if (response.ok) {
-                      const result = await response.json();
-                      setPronunciationResult(result);
+
+              {!phrasePlayed ? (
+                <div className="recorder-disabled">
+                  <p>👆 Click "Listen" first to hear the phrase</p>
+                </div>
+              ) : (
+                <VoiceRecorder
+                  key={`${currentPhrase}-${vadResetCounter}`}
+                  mode={recordingMode}
+                  isListening={isListening}
+                  onStartListening={() => {
+                    setIsListening(true);
+                  }}
+                  onStopListening={() => {
+                    setIsListening(false);
+                  }}
+                  onRecordingComplete={async (audioBlob) => {
+                    // Submit for pronunciation check
+                    const formData = new FormData();
+                    formData.append('audio', audioBlob, 'recording.webm');
+                    formData.append('target_text', currentPhrase);
+                    formData.append('language', language);
+
+                    try {
+                      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
+                        method: 'POST',
+                        headers: {
+                          'X-Password': password,
+                        },
+                        body: formData,
+                      });
+
+                      if (response.ok) {
+                        const result = await response.json();
+                        setPronunciationResult(result);
+                      }
+                    } catch (error) {
+                      console.error('Error checking pronunciation:', error);
                     }
-                  } catch (error) {
-                    console.error('Error checking pronunciation:', error);
-                  }
-                }}
-              />
+                  }}
+                />
+              )}
             </div>
             
             <button className="next-btn" onClick={nextPhrase}>
