@@ -234,6 +234,46 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
   return null;
 }
 
+// Try to get reading for kanji in context of full word (with okurigana)
+// This gives correct kun'yomi reading (e.g., 暑い -> あつ not しょ)
+async function getReadingForFullWord(fullText: string, kanjiWord: string): Promise<string | null> {
+  // Find the kanji position in the full text
+  const kanjiIndex = fullText.indexOf(kanjiWord);
+  if (kanjiIndex === -1) return null;
+  
+  // Extract the word including okurigana (hiragana after kanji)
+  let okurigana = '';
+  for (let i = kanjiIndex + kanjiWord.length; i < fullText.length; i++) {
+    const char = fullText[i];
+    // Check if hiragana (3040-309F)
+    if (/[\u3040-\u309F]/.test(char)) {
+      okurigana += char;
+    } else {
+      break;
+    }
+  }
+  
+  if (!okurigana) return null; // No okurigana, use regular lookup
+  
+  const fullWord = kanjiWord + okurigana;
+  console.log(`[Furigana] Looking up full word: "${fullWord}" for kanji "${kanjiWord}"`);
+  
+  // Try to get reading for the full word
+  const fullReading = await getReadingFromJisho(fullWord);
+  if (!fullReading) return null;
+  
+  // Extract just the kanji reading by removing okurigana portion from the end
+  let kanjiReading = fullReading;
+  for (let i = okurigana.length - 1; i >= 0; i--) {
+    if (kanjiReading.endsWith(okurigana[i])) {
+      kanjiReading = kanjiReading.slice(0, -1);
+    }
+  }
+  
+  console.log(`[Furigana] Extracted kanji reading: "${kanjiReading}" from "${fullReading}"`);
+  return kanjiReading;
+}
+
 // Add furigana using Jisho API for unknown kanji
 export async function addFurigana(text: string): Promise<string> {
   await loadCache();
@@ -250,7 +290,16 @@ export async function addFurigana(text: string): Promise<string> {
   console.log(`[Furigana] Unique matches to process: [${uniqueMatches.join(', ')}]`);
   
   for (const kanjiWord of uniqueMatches) {
-    const reading = await getReadingFromJisho(kanjiWord);
+    // First try: get reading for kanji in context of full word (with okurigana)
+    // This gives correct kun'yomi reading (e.g., 暑い -> あつ not しょ)
+    const fullWordReading = await getReadingForFullWord(text, kanjiWord);
+    
+    let reading = fullWordReading;
+    
+    if (!reading) {
+      // Fallback: get reading for kanji alone
+      reading = await getReadingFromJisho(kanjiWord);
+    }
     
     if (reading) {
       const ruby = `<ruby>${kanjiWord}<rt>${reading}</rt></ruby>`;
