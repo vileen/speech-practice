@@ -132,7 +132,7 @@ function App() {
   }, []);
   
   // Wrapper to update URL hash when entering/exiting lesson mode
-  const setIsLessonMode = (value: boolean) => {
+  const setIsLessonMode = (value: boolean, keepHash = false) => {
     setIsLessonModeState(value);
     if (value) {
       // Only set default hash if not already on a lesson page
@@ -140,7 +140,7 @@ function App() {
       if (!isLessonHash(currentHash)) {
         window.location.hash = '#/lessons';
       }
-    } else {
+    } else if (!keepHash) {
       window.location.hash = '';
     }
   };
@@ -574,7 +574,7 @@ function App() {
         password={password}
         onBack={() => setIsLessonMode(false)}
         onStartLessonChat={(lessonId, lessonTitle) => {
-          setIsLessonMode(false);
+          setIsLessonMode(false, true); // Keep hash when going to chat
           setActiveLesson({ id: lessonId, title: lessonTitle });
           // Initialize lesson chat with system prompt
           initializeLessonChat(lessonId);
@@ -943,11 +943,20 @@ function App() {
                       <span></span>
                     </div>
                   ) : (
-                    msg.showTranslation && msg.translation 
-                      ? msg.translation 
-                      : (showFurigana && msg.withFurigana ? (
-                        <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
-                      ) : msg.text)
+                    <>
+                      {/* Japanese text (always shown) */}
+                      <div className="jp-text">
+                        {showFurigana && msg.withFurigana ? (
+                          <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
+                        ) : msg.text}
+                      </div>
+                      {/* Translation shown below when toggled */}
+                      {msg.showTranslation && msg.translation && (
+                        <div className="translation-text">
+                          🇬🇧 {msg.translation}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
                 {(msg as any).isLoading && msg.text && (
