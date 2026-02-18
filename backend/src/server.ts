@@ -408,10 +408,22 @@ app.post('/api/furigana', checkPassword, async (req, res) => {
     // Generate furigana
     const textWithFurigana = await addFurigana(text);
     
-    // Only cache if furigana was actually added (contains <ruby> tags)
+    // Check if furigana was found
     const hasFurigana = textWithFurigana.includes('<ruby>');
+    
     if (hasFurigana) {
       await cacheFurigana(text, textWithFurigana);
+    }
+    
+    if (!hasFurigana && text.match(/[\u4e00-\u9faf]/)) {
+      // Text contains kanji but no furigana was generated
+      return res.status(404).json({
+        original: text,
+        with_furigana: text,
+        cached: false,
+        hasFurigana: false,
+        error: 'No furigana found for this text'
+      });
     }
     
     res.json({ 
