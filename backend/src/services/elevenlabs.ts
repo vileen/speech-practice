@@ -168,7 +168,7 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
     console.log(`[Furigana] Jisho results count: ${data.data?.length || 0}`);
     
     if (data.data && data.data.length > 0) {
-      // Try to find a result with a reading
+      // First try: exact match
       for (const result of data.data) {
         const japanese = result.japanese?.[0];
         if (japanese) {
@@ -179,11 +179,43 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
           if (resultWord === word && reading) {
             furiganaCache.set(word, reading);
             await saveCache();
-            console.log(`[Furigana] Cached: ${word} = ${reading}`);
+            console.log(`[Furigana] Cached (exact): ${word} = ${reading}`);
             return reading;
           }
         }
       }
+      
+      // Second try: the kanji appears at the start of a word with okurigana
+      // Extract just the kanji portion from result words
+      for (const result of data.data) {
+        for (const japanese of (result.japanese || [])) {
+          const resultWord = japanese.word;
+          const reading = japanese.reading;
+          
+          if (resultWord && reading) {
+            // Check if result word starts with our kanji
+            // e.g., word="待", resultWord="待つ" -> use reading for "待" part
+            if (resultWord.startsWith(word)) {
+              // For words with okurigana, we need to extract just the kanji reading
+              // This is simplified - assumes reading length matches kanji count
+              const kanjiCount = word.length;
+              const readingForKanji = reading.substring(0, kanjiCount * 2); // Rough approximation
+              
+              // Better: check if reading has okurigana portion
+              // "まつ" for "待つ" - the okurigana "つ" is not in reading
+              // So reading "まつ" is just for the kanji "待"
+              if (resultWord.length > word.length) {
+                // Word has okurigana, reading is just for kanji
+                furiganaCache.set(word, reading);
+                await saveCache();
+                console.log(`[Furigana] Cached (okurigana): ${word} = ${reading} (from ${resultWord})`);
+                return reading;
+              }
+            }
+          }
+        }
+      }
+      
       console.log(`[Furigana] No result with reading found for: ${word}`);
     } else {
       console.log(`[Furigana] No results for: ${word}`);
