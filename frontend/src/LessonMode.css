@@ -459,3 +459,9 @@ rt {
   font-size: 0.75em;
   color: #aaa;
 }
+
+/* Failed furigana indicator */
+ruby.furigana-failed rt {
+  color: #e94560;
+  font-weight: bold;
+}
