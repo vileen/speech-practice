@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { LessonMode } from './LessonMode.js';
 import './LessonMode.css';
@@ -26,6 +26,157 @@ interface PronunciationResult {
 const API_URL = (import.meta.env.VITE_API_URL || 'https://eds-grow-delivered-spending.trycloudflare.com').replace(/\/$/, '');
 
 // Practice phrases for "Repeat After Me" mode
+// Audio Player Component with progress bar
+interface AudioPlayerProps {
+  audioUrl: string;
+  volume: number;
+  isActive: boolean;
+  onPlay: (audio: HTMLAudioElement) => void;
+  onStop: () => void;
+  onStopOthers: () => void;
+}
+
+function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers }: AudioPlayerProps) {
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+
+  // Initialize audio when URL changes
+  useEffect(() => {
+    const audio = new Audio(audioUrl);
+    audio.volume = volume;
+    
+    audio.addEventListener('loadedmetadata', () => {
+      setDuration(audio.duration);
+    });
+    
+    audio.addEventListener('ended', () => {
+      onStop();
+      setProgress(0);
+      setCurrentTime(0);
+    });
+    
+    audio.addEventListener('pause', () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    });
+    
+    audioRef.current = audio;
+    
+    return () => {
+      audio.pause();
+      audio.src = '';
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, [audioUrl]);
+
+  // Update volume when prop changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  // Start/stop animation frame for progress updates
+  useEffect(() => {
+    if (isActive && audioRef.current) {
+      const updateProgress = () => {
+        if (audioRef.current) {
+          const current = audioRef.current.currentTime;
+          const dur = audioRef.current.duration;
+          setCurrentTime(current);
+          setDuration(dur);
+          setProgress(dur ? (current / dur) * 100 : 0);
+          rafRef.current = requestAnimationFrame(updateProgress);
+        }
+      };
+      rafRef.current = requestAnimationFrame(updateProgress);
+    } else {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    }
+    
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, [isActive]);
+
+  const handlePlayClick = () => {
+    if (isActive && audioRef.current) {
+      // Stop
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      onStop();
+      setProgress(0);
+      setCurrentTime(0);
+    } else {
+      // Play
+      onStopOthers();
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+        onPlay(audioRef.current);
+      }
+    }
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!progressBarRef.current || !audioRef.current || !duration) return;
+    
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(1, x / rect.width));
+    const newTime = percentage * duration;
+    
+    audioRef.current.currentTime = newTime;
+    setProgress(percentage * 100);
+    setCurrentTime(newTime);
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="audio-player-with-progress">
+      <button 
+        className={`play-btn ${isActive ? 'playing' : ''}`}
+        onClick={handlePlayClick}
+      >
+        {isActive ? '⏹️' : '▶️'}
+      </button>
+      <div className="progress-container">
+        <div 
+          className="progress-bar"
+          ref={progressBarRef}
+          onClick={handleSeek}
+        >
+          <div 
+            className="progress-fill"
+            style={{ width: `${progress}%` }}
+          />
+          {isActive && <div className="progress-handle" style={{ left: `${progress}%` }} />}
+        </div>
+        <div className="time-display">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface PracticePhrase {
   text: string;
   translation: string;
@@ -997,34 +1148,19 @@ function App() {
                   </div>
                 )}
                 {msg.audioUrl && (
-                  <div className="audio-player">
-                    <button 
-                      className={`play-btn ${playingAudio?.id === idx ? 'playing' : ''}`}
-                      onClick={() => {
-                        if (playingAudio?.id === idx) {
-                          // Stop current audio
-                          playingAudio.audio.pause();
-                          playingAudio.audio.currentTime = 0;
-                          setPlayingAudio(null);
-                        } else {
-                          // Stop any playing audio first
-                          if (playingAudio) {
-                            playingAudio.audio.pause();
-                            playingAudio.audio.currentTime = 0;
-                          }
-                          // Play new audio with global volume
-                          const audio = new Audio(msg.audioUrl);
-                          audio.volume = volume;
-                          audio.onended = () => setPlayingAudio(null);
-                          audio.onpause = () => setPlayingAudio(null);
-                          audio.play();
-                          setPlayingAudio({ id: idx, audio });
-                        }
-                      }}
-                    >
-                      {playingAudio?.id === idx ? '⏹️ Stop' : '▶️ Play'}
-                    </button>
-                  </div>
+                  <AudioPlayer 
+                    audioUrl={msg.audioUrl}
+                    volume={volume}
+                    isActive={playingAudio?.id === idx}
+                    onPlay={(audio) => setPlayingAudio({ id: idx, audio })}
+                    onStop={() => setPlayingAudio(null)}
+                    onStopOthers={() => {
+                      if (playingAudio && playingAudio.id !== idx) {
+                        playingAudio.audio.pause();
+                        playingAudio.audio.currentTime = 0;
+                      }
+                    }}
+                  />
                 )}
               </div>
             ))}
