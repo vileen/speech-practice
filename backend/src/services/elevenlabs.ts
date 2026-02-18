@@ -208,22 +208,50 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
     console.log(`[Furigana] Jisho results count: ${data.data?.length || 0}`);
     
     if (data.data && data.data.length > 0) {
-      // Try to find a result with a reading
+      // First pass: check all japanese entries in all results for exact word match
       for (const result of data.data) {
-        const japanese = result.japanese?.[0];
-        if (japanese) {
-          const resultWord = japanese.word;
-          const reading = japanese.reading;
-          
-          // Only use if the word matches exactly and has a reading
-          if (resultWord === word && reading) {
-            furiganaCache.set(word, reading);
-            await saveCache();
-            console.log(`[Furigana] Cached: ${word} = ${reading}`);
-            return reading;
+        // Check ALL japanese variants, not just the first one
+        for (const japanese of result.japanese || []) {
+          if (japanese && japanese.reading) {
+            const resultWord = japanese.word;
+            const reading = japanese.reading;
+            
+            // Accept exact word match
+            if (resultWord === word) {
+              furiganaCache.set(word, reading);
+              await saveCache();
+              console.log(`[Furigana] Cached: ${word} = ${reading}`);
+              return reading;
+            }
           }
         }
       }
+      
+      // Second pass: try slug match (when no exact word match found)
+      for (const result of data.data) {
+        const japanese = result.japanese?.[0];
+        if (japanese && japanese.reading && result.slug === word) {
+          furiganaCache.set(word, japanese.reading);
+          await saveCache();
+          console.log(`[Furigana] Cached (by slug): ${word} = ${japanese.reading}`);
+          return japanese.reading;
+        }
+      }
+      
+      // Third pass: try reading-only entries
+      for (const result of data.data) {
+        for (const japanese of result.japanese || []) {
+          if (japanese && !japanese.word && japanese.reading) {
+            if (result.slug === word) {
+              furiganaCache.set(word, japanese.reading);
+              await saveCache();
+              console.log(`[Furigana] Cached (reading-only): ${word} = ${japanese.reading}`);
+              return japanese.reading;
+            }
+          }
+        }
+      }
+      
       console.log(`[Furigana] No result with reading found for: ${word}`);
     } else {
       console.log(`[Furigana] No results for: ${word}`);
@@ -234,6 +262,12 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
   return null;
 }
 
+// Common particles that indicate word boundaries
+const PARTICLES = new Set(['は', 'が', 'を', 'に', 'で', 'から', 'まで', 'より', 'と', 'や', 'の', 'へ', 'も', 'と', 'ね', 'よ', 'か', 'わ']);
+
+// Common okurigana patterns for adjectives and verbs
+const OKURIGANA_PATTERNS = ['くない', 'くて', 'く', 'すぎる', 'すぎ', 'かった', 'かっ', 'い', 'しい', 'ちゃう', 'ちゃ', 'なさい', 'なさ', 'ない', 'たい', 'た', 'て', 'ば', 'べ', 'む', 'る', 'う', 'く', 'す', 'つ', 'ぬ', 'ふ', 'ゆ', 'ぐ', 'ず', 'づ', 'ぶ', 'ぷ', 'れ', 'せ', 'め'];
+
 // Try to get reading for kanji in context of full word (with okurigana)
 // This gives correct kun'yomi reading (e.g., 暑い -> あつ not しょ)
 async function getReadingForFullWord(fullText: string, kanjiWord: string): Promise<string | null> {
@@ -241,13 +275,19 @@ async function getReadingForFullWord(fullText: string, kanjiWord: string): Promi
   const kanjiIndex = fullText.indexOf(kanjiWord);
   if (kanjiIndex === -1) return null;
   
-  // Extract the word including okurigana (hiragana after kanji)
+  // Extract hiragana after kanji, but stop at word boundaries
   let okurigana = '';
   for (let i = kanjiIndex + kanjiWord.length; i < fullText.length; i++) {
     const char = fullText[i];
     // Check if hiragana (3040-309F)
     if (/[\u3040-\u309F]/.test(char)) {
+      // Stop at common particles (word boundaries)
+      if (PARTICLES.has(char) && okurigana.length > 0) {
+        break;
+      }
       okurigana += char;
+      // Limit okurigana length to avoid capturing grammar
+      if (okurigana.length >= 5) break;
     } else {
       break;
     }
@@ -255,23 +295,32 @@ async function getReadingForFullWord(fullText: string, kanjiWord: string): Promi
   
   if (!okurigana) return null; // No okurigana, use regular lookup
   
-  const fullWord = kanjiWord + okurigana;
-  console.log(`[Furigana] Looking up full word: "${fullWord}" for kanji "${kanjiWord}"`);
-  
-  // Try to get reading for the full word
-  const fullReading = await getReadingFromJisho(fullWord);
-  if (!fullReading) return null;
-  
-  // Extract just the kanji reading by removing okurigana portion from the end
-  let kanjiReading = fullReading;
-  for (let i = okurigana.length - 1; i >= 0; i--) {
-    if (kanjiReading.endsWith(okurigana[i])) {
-      kanjiReading = kanjiReading.slice(0, -1);
+  // Try progressively shorter okurigana to find a match
+  // This handles cases like "速いです" -> try "速いです", "速いで", "速い"
+  let testOkurigana = okurigana;
+  while (testOkurigana.length > 0) {
+    const fullWord = kanjiWord + testOkurigana;
+    console.log(`[Furigana] Looking up full word: "${fullWord}" for kanji "${kanjiWord}"`);
+    
+    const fullReading = await getReadingFromJisho(fullWord);
+    if (fullReading) {
+      // Extract just the kanji reading by removing okurigana portion from the end
+      let kanjiReading = fullReading;
+      for (let i = testOkurigana.length - 1; i >= 0; i--) {
+        if (kanjiReading.endsWith(testOkurigana[i])) {
+          kanjiReading = kanjiReading.slice(0, -1);
+        }
+      }
+      
+      console.log(`[Furigana] Extracted kanji reading: "${kanjiReading}" from "${fullReading}"`);
+      return kanjiReading;
     }
+    
+    // Try shorter okurigana
+    testOkurigana = testOkurigana.slice(0, -1);
   }
   
-  console.log(`[Furigana] Extracted kanji reading: "${kanjiReading}" from "${fullReading}"`);
-  return kanjiReading;
+  return null;
 }
 
 // Add furigana using Jisho API for unknown kanji
