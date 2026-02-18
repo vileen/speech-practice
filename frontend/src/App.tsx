@@ -388,29 +388,44 @@ function App() {
         }),
       });
       
+      // Add temporary "AI is typing" message
+      const tempMessageId = Date.now();
+      setMessages(prev => [...prev, {
+        id: tempMessageId,
+        role: 'assistant',
+        text: '',
+        isLoading: true,
+        isTyping: true,
+      }]);
+      
       if (response.ok) {
         const aiData = await response.json();
         
-        // Add AI message with loading state
-        const messageId = Date.now();
-        setMessages(prev => [...prev, {
-          id: messageId,
-          role: 'assistant',
-          text: aiData.text,
-          withFurigana: aiData.text_with_furigana || aiData.text,
-          translation: aiData.translation,
-          isLoading: true,
-        }]);
+        // Update the temporary message with actual content
+        setMessages(prev => prev.map(msg => 
+          (msg as any).id === tempMessageId 
+            ? { 
+                ...msg, 
+                text: aiData.text,
+                withFurigana: aiData.text_with_furigana || aiData.text,
+                translation: aiData.translation,
+                isTyping: false,
+              }
+            : msg
+        ));
         
         // Generate TTS for AI response
         const audioUrl = await fetchTTS(aiData.text);
         
         // Update message with audio (remove loading state)
         setMessages(prev => prev.map(msg => 
-          (msg as any).id === messageId 
+          (msg as any).id === tempMessageId 
             ? { ...msg, audioUrl: audioUrl || undefined, isLoading: false }
             : msg
         ));
+      } else {
+        // Remove temporary message on error
+        setMessages(prev => prev.filter(msg => (msg as any).id !== tempMessageId));
       }
     } catch (error) {
       console.error('Error generating AI response:', error);
@@ -809,7 +824,8 @@ function App() {
               <div key={idx} className={`message ${msg.role}`}>
                 <div className="message-header">
                   <span className="role-badge">{msg.role === 'user' ? 'You' : 'AI'}</span>
-                  {msg.translation && (
+                  {/* Show translate button if we have translation OR if AI is typing (will have translation soon) */}
+                  {(msg.translation || (msg as any).isTyping) && (
                     <button 
                       className="translate-toggle"
                       onClick={() => {
@@ -817,18 +833,26 @@ function App() {
                           i === idx ? { ...m, showTranslation: !m.showTranslation } : m
                         ));
                       }}
+                      disabled={(msg as any).isTyping}
                     >
                       {msg.showTranslation ? '🇯🇵 Original' : '🇬🇧 Translate'}
                     </button>
                   )}
                 </div>
                 <div className="text">
-                  {msg.showTranslation && msg.translation 
-                    ? msg.translation 
-                    : (showFurigana && msg.withFurigana ? (
-                      <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
-                    ) : msg.text)
-                  }
+                  {(msg as any).isTyping ? (
+                    <div className="typing-indicator">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  ) : (
+                    msg.showTranslation && msg.translation 
+                      ? msg.translation 
+                      : (showFurigana && msg.withFurigana ? (
+                        <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
+                      ) : msg.text)
+                  )}
                 </div>
                 {(msg as any).isLoading && (
                   <div className="audio-loading">
@@ -903,67 +927,53 @@ function App() {
               </button>
             </div>
             
-            {/* Voice Recorder with VAD - overlay when waiting for AI */}
+            {/* Voice Recorder with VAD - disabled when waiting for AI */}
             {(() => {
               // Check if any AI message is currently loading (waiting for response)
               const isWaitingForAI = messages.some(m => m.role === 'assistant' && m.isLoading);
               
               return (
-                <div className="voice-recorder-wrapper">
-                  {/* Waiting overlay - shown when AI is responding */}
-                  {isWaitingForAI && (
-                    <div className="recorder-overlay">
-                      <div className="loading-typing">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                      </div>
-                      <p>AI is responding...</p>
-                    </div>
-                  )}
-                  
-                  <VoiceRecorder
-                    mode={recordingMode}
-                    isListening={isListening}
-                    disabled={isWaitingForAI}
-                    onStartListening={() => {
-                      setIsListening(true);
-                    }}
-                    onStopListening={() => {
-                      setIsListening(false);
-                    }}
-                    onRecordingComplete={async (audioBlob) => {
-                      // Upload the recorded audio
-                      const formData = new FormData();
-                      formData.append('audio', audioBlob, 'recording.webm');
-                      formData.append('session_id', session?.id.toString() || '');
-                      formData.append('target_language', language);
+                <VoiceRecorder
+                  mode={recordingMode}
+                  isListening={isListening}
+                  disabled={isWaitingForAI}
+                  onStartListening={() => {
+                    setIsListening(true);
+                  }}
+                  onStopListening={() => {
+                    setIsListening(false);
+                  }}
+                  onRecordingComplete={async (audioBlob) => {
+                    // Upload the recorded audio
+                    const formData = new FormData();
+                    formData.append('audio', audioBlob, 'recording.webm');
+                    formData.append('session_id', session?.id.toString() || '');
+                    formData.append('target_language', language);
+                    
+                    try {
+                      const response = await fetch(`${API_URL}/api/upload`, {
+                        method: 'POST',
+                        headers: {
+                          'X-Password': password,
+                        },
+                        body: formData,
+                      });
                       
-                      try {
-                        const response = await fetch(`${API_URL}/api/upload`, {
-                          method: 'POST',
-                          headers: {
-                            'X-Password': password,
-                          },
-                          body: formData,
-                        });
+                      if (response.ok) {
+                        const data = await response.json();
+                        const displayText = data.transcription || '[Your recording]';
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
                         
-                        if (response.ok) {
-                          const data = await response.json();
-                          const displayText = data.transcription || '[Your recording]';
-                          const audioUrl = URL.createObjectURL(audioBlob);
-                          setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
-                          
-                          if (data.transcription) {
-                            await generateAIResponse(data.transcription, language);
-                          }
+                        if (data.transcription) {
+                          await generateAIResponse(data.transcription, language);
                         }
-                      } catch (error) {
-                        console.error('Error uploading recording:', error);
                       }
-                    }}
-                  />
-                </div>
+                    } catch (error) {
+                      console.error('Error uploading recording:', error);
+                    }
+                  }}
+                />
               );
             })()}
           </div>
