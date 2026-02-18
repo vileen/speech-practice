@@ -51,7 +51,16 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
     audio.preload = 'auto'; // Preload audio for faster playback
     
     audio.addEventListener('loadedmetadata', () => {
-      setDuration(audio.duration);
+      if (isFinite(audio.duration) && !isNaN(audio.duration)) {
+        setDuration(audio.duration);
+      }
+    });
+    
+    // Also try to get duration when audio is ready to play
+    audio.addEventListener('canplay', () => {
+      if (isFinite(audio.duration) && !isNaN(audio.duration)) {
+        setDuration(audio.duration);
+      }
     });
     
     audio.addEventListener('ended', () => {
@@ -74,9 +83,12 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
           if (audioRef.current) {
             const current = audioRef.current.currentTime;
             const dur = audioRef.current.duration;
-            setCurrentTime(current);
-            setDuration(dur);
-            setProgress(dur ? (current / dur) * 100 : 0);
+            // Only update if duration is valid
+            if (isFinite(dur) && !isNaN(dur)) {
+              setCurrentTime(current);
+              setDuration(dur);
+              setProgress((current / dur) * 100);
+            }
             rafRef.current = requestAnimationFrame(updateProgress);
           }
         };
@@ -173,7 +185,7 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!progressBarRef.current || !audioRef.current || !duration) return;
+    if (!progressBarRef.current || !audioRef.current || !duration || !isFinite(duration)) return;
     
     const rect = progressBarRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -186,6 +198,7 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
   };
 
   const formatTime = (time: number) => {
+    if (!isFinite(time) || isNaN(time)) return '0:00';
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
