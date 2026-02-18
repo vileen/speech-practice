@@ -62,6 +62,24 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
     audio.addEventListener('pause', () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    });
+    
+    audio.addEventListener('play', () => {
+      // Restart progress animation when resuming
+      if (!rafRef.current) {
+        const updateProgress = () => {
+          if (audioRef.current) {
+            const current = audioRef.current.currentTime;
+            const dur = audioRef.current.duration;
+            setCurrentTime(current);
+            setDuration(dur);
+            setProgress(dur ? (current / dur) * 100 : 0);
+            rafRef.current = requestAnimationFrame(updateProgress);
+          }
+        };
+        rafRef.current = requestAnimationFrame(updateProgress);
       }
     });
     
@@ -74,7 +92,7 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [audioUrl]);
+  }, [audioUrl, isActive]);
 
   // Update volume when prop changes
   useEffect(() => {
