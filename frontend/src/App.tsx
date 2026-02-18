@@ -539,11 +539,6 @@ function App() {
     
     // Auto-play the phrase (will fetch new audio)
     playPhrase(randomPhrase.text, true);
-    
-    // Auto-start voice recording for new phrase (after a short delay)
-    setTimeout(() => {
-      setIsListening(true);
-    }, 500);
   };
 
   const playPhrase = async (text: string, forceNew: boolean = false) => {
@@ -929,47 +924,41 @@ function App() {
                 </button>
               </div>
 
-              {!phrasePlayed ? (
-                <div className="recorder-disabled">
-                  <p>👆 Click "Listen" first to hear the phrase</p>
-                </div>
-              ) : (
-                <VoiceRecorder
-                  key={`${currentPhrase}-${vadResetCounter}`}
-                  mode={recordingMode}
-                  isListening={isListening}
-                  onStartListening={() => {
-                    setIsListening(true);
-                  }}
-                  onStopListening={() => {
-                    setIsListening(false);
-                  }}
-                  onRecordingComplete={async (audioBlob) => {
-                    // Submit for pronunciation check
-                    const formData = new FormData();
-                    formData.append('audio', audioBlob, 'recording.webm');
-                    formData.append('target_text', currentPhrase);
-                    formData.append('language', language);
+              <VoiceRecorder
+                key={`${currentPhrase}-${vadResetCounter}`}
+                mode={recordingMode}
+                isListening={isListening}
+                onStartListening={() => {
+                  setIsListening(true);
+                }}
+                onStopListening={() => {
+                  setIsListening(false);
+                }}
+                onRecordingComplete={async (audioBlob) => {
+                  // Submit for pronunciation check
+                  const formData = new FormData();
+                  formData.append('audio', audioBlob, 'recording.webm');
+                  formData.append('target_text', currentPhrase);
+                  formData.append('language', language);
 
-                    try {
-                      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
-                        method: 'POST',
-                        headers: {
-                          'X-Password': password,
-                        },
-                        body: formData,
-                      });
+                  try {
+                    const response = await fetch(`${API_URL}/api/repeat-after-me`, {
+                      method: 'POST',
+                      headers: {
+                        'X-Password': password,
+                      },
+                      body: formData,
+                    });
 
-                      if (response.ok) {
-                        const result = await response.json();
-                        setPronunciationResult(result);
-                      }
-                    } catch (error) {
-                      console.error('Error checking pronunciation:', error);
+                    if (response.ok) {
+                      const result = await response.json();
+                      setPronunciationResult(result);
                     }
-                  }}
-                />
-              )}
+                  } catch (error) {
+                    console.error('Error checking pronunciation:', error);
+                  }
+                }}
+              />
             </div>
             
             <button className="next-btn" onClick={nextPhrase}>
