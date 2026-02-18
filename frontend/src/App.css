@@ -747,3 +747,60 @@ header h1 {
   padding: 20px 48px;
   font-size: 1.3rem;
 }
+
+/* Waiting for AI loader with animated dots */
+.recorder-waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #16213e;
+  border: 2px dashed #333;
+  border-radius: 12px;
+  color: #888;
+  min-height: 120px;
+}
+
+.recorder-waiting p {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+/* Animated typing dots */
+.loading-typing {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.loading-typing span {
+  width: 10px;
+  height: 10px;
+  background: #e94560;
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.loading-typing span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-typing span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-typing span:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes typingBounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
