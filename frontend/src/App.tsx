@@ -97,10 +97,14 @@ function App() {
     return 0.8;
   });
   
-  // Save volume to localStorage when it changes
+  // Save volume to localStorage when it changes and update currently playing audio
   useEffect(() => {
     localStorage.setItem('speechPracticeVolume', volume.toString());
-  }, [volume]);
+    // Update volume for currently playing audio
+    if (playingAudio?.audio) {
+      playingAudio.audio.volume = volume;
+    }
+  }, [volume, playingAudio]);
   
   // Lesson Mode - use URL hash for persistence
   const [isLessonMode, setIsLessonModeState] = useState(false);
@@ -903,8 +907,9 @@ function App() {
                             playingAudio.audio.pause();
                             playingAudio.audio.currentTime = 0;
                           }
-                          // Play new audio
+                          // Play new audio with global volume
                           const audio = new Audio(msg.audioUrl);
+                          audio.volume = volume;
                           audio.onended = () => setPlayingAudio(null);
                           audio.onpause = () => setPlayingAudio(null);
                           audio.play();
