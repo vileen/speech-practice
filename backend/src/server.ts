@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { pool } from './db/pool.js';
 import { generateSpeech, addFurigana, addFuriganaSync, saveFuriganaCache, toHiraganaForTTS } from './services/elevenlabs.js';
-import { getLessonIndex, getLesson, getRecentLessons, getLessonSystemPrompt, cacheFurigana } from './services/lessons.js';
+import { getLessonIndex, getLesson, getRecentLessons, getLessonSystemPrompt, cacheFurigana, getCachedFurigana } from './services/lessons.js';
 import { transcribeAudioDirect } from './services/whisper.js';
 import { generateChatResponse } from './services/chat.js';
 import { readFile } from 'fs/promises';
