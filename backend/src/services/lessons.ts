@@ -7,6 +7,7 @@ interface VocabItem {
   en: string;
   type?: string;
   tags: string[];
+  furigana?: string | null;
 }
 
 interface GrammarPoint {
@@ -105,6 +106,18 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
   
   const row = result.rows[0];
   let grammar = row.grammar || [];
+  let vocabulary = row.vocabulary || [];
+  
+  // Enrich vocabulary with cached furigana if requested
+  if (includeFurigana && vocabulary.length > 0) {
+    vocabulary = await Promise.all(vocabulary.map(async (v: VocabItem) => {
+      const cached = await getCachedFurigana(v.jp);
+      return {
+        ...v,
+        furigana: cached || null
+      };
+    }));
+  }
   
   // Enrich grammar examples with cached furigana if requested
   if (includeFurigana && grammar.length > 0) {
