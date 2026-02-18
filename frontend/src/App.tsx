@@ -762,13 +762,14 @@ function App() {
         setSession(sessionData);
         
         // Then load lesson context
+        const simpleMode = localStorage.getItem('simpleMode') === 'true';
         const response = await fetch(`${API_URL}/api/lessons/${lessonId}/start`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'X-Password': effectivePassword,
           },
-          body: JSON.stringify({ relaxed: true, session_id: sessionData.id }),
+          body: JSON.stringify({ relaxed: true, session_id: sessionData.id, simpleMode }),
         });
         
         if (response.ok) {

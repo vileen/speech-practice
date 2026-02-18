@@ -494,14 +494,14 @@ app.get('/api/lessons/:id', checkPassword, async (req, res) => {
 app.post('/api/lessons/:id/start', checkPassword, async (req, res) => {
   try {
     const { id } = req.params;
-    const { relaxed = true, session_id } = req.body;
+    const { relaxed = true, session_id, simpleMode = false } = req.body;
     
     const lesson = await getLesson(id);
     if (!lesson) {
       return res.status(404).json({ error: 'Lesson not found' });
     }
     
-    const systemPrompt = getLessonSystemPrompt(lesson, relaxed);
+    const systemPrompt = getLessonSystemPrompt(lesson, relaxed, simpleMode);
     
     // Store lesson context in session for chat
     if (session_id) {
