@@ -48,6 +48,7 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
   useEffect(() => {
     const audio = new Audio(audioUrl);
     audio.volume = volume;
+    audio.preload = 'auto'; // Preload audio for faster playback
     
     audio.addEventListener('loadedmetadata', () => {
       setDuration(audio.duration);
@@ -129,24 +130,34 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
   }, [isActive]);
 
   const handlePlayClick = async () => {
-    if (isActive && audioRef.current) {
+    if (!audioRef.current) {
+      console.error('Audio not initialized');
+      return;
+    }
+    
+    if (isActive) {
+      // Already active - toggle play/pause
       if (audioRef.current.paused) {
-        // Resume
-        await audioRef.current.play();
+        try {
+          await audioRef.current.play();
+        } catch (err) {
+          console.error('Failed to resume:', err);
+        }
       } else {
-        // Pause
         audioRef.current.pause();
       }
     } else {
-      // Play new - wait for audio to be ready
+      // Starting new playback
       onStopOthers();
-      if (audioRef.current) {
-        try {
-          await audioRef.current.play();
-          onPlay(audioRef.current);
-        } catch (err) {
-          console.error('Failed to play:', err);
+      try {
+        // Reset to beginning if at end
+        if (audioRef.current.currentTime >= audioRef.current.duration - 0.1) {
+          audioRef.current.currentTime = 0;
         }
+        await audioRef.current.play();
+        onPlay(audioRef.current);
+      } catch (err) {
+        console.error('Failed to play:', err);
       }
     }
   };
