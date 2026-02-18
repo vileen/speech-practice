@@ -259,6 +259,27 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     });
     
     selectedLesson.grammar.forEach(item => {
+      // Collect pattern text
+      if (!furiganaCacheRef.current[item.pattern]) textsToFetch.push(item.pattern);
+      // Collect explanation text (split by lines and filter for Japanese text)
+      item.explanation.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (!/[\u4e00-\u9faf]/.test(trimmed)) return; // Skip lines without kanji
+        if (furiganaCacheRef.current[trimmed]) return; // Skip already cached
+        
+        // Handle markdown table rows - extract cell contents
+        if (trimmed.startsWith('|')) {
+          const cells = trimmed.split('|').map(c => c.trim()).filter(c => c && !c.startsWith('-'));
+          cells.forEach(cell => {
+            if (/[\u4e00-\u9faf]/.test(cell) && !furiganaCacheRef.current[cell]) {
+              textsToFetch.push(cell);
+            }
+          });
+        } else {
+          textsToFetch.push(trimmed);
+        }
+      });
+      // Collect examples
       item.examples.forEach(ex => {
         if (!furiganaCacheRef.current[ex.jp]) textsToFetch.push(ex.jp);
       });
