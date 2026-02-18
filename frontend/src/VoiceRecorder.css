@@ -150,3 +150,15 @@
 .mode-toggle button:hover:not(.active) {
   color: #fff;
 }
+
+/* Disabled state */
+.record-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #333;
+}
+
+.record-btn.disabled:hover {
+  background: #333;
+  transform: none;
+}

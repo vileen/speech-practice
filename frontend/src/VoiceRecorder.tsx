@@ -483,14 +483,17 @@ export function VoiceRecorder({
       {/* Push to talk button - only show for push-to-talk mode */}
       {isPushToTalk && (
         <button
-          className={`record-btn ${isListening ? 'recording' : ''} ${isSpeaking ? 'speaking' : ''}`}
-          onMouseDown={startPushToTalk}
-          onMouseUp={stopRecording}
-          onMouseLeave={isListening ? stopRecording : undefined}
-          onTouchStart={startPushToTalk}
-          onTouchEnd={stopRecording}
+          className={`record-btn ${isListening ? 'recording' : ''} ${isSpeaking ? 'speaking' : ''} ${disabled ? 'disabled' : ''}`}
+          onMouseDown={disabled ? undefined : startPushToTalk}
+          onMouseUp={disabled ? undefined : stopRecording}
+          onMouseLeave={isListening && !disabled ? stopRecording : undefined}
+          onTouchStart={disabled ? undefined : startPushToTalk}
+          onTouchEnd={disabled ? undefined : stopRecording}
+          disabled={disabled}
         >
-          {isListening ? (
+          {disabled ? (
+            <>⏳ Wait...</>
+          ) : isListening ? (
             <>🔴 Recording...</>
           ) : (
             <>🎙️ Hold to Speak</>

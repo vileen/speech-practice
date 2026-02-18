@@ -88,7 +88,19 @@ function App() {
   // Repeat After Me - track if phrase has been played (for disabling recorder)
   const [phrasePlayed, setPhrasePlayed] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
-  const [volume, setVolume] = useState(1); // Volume 0-1
+  const [volume, setVolume] = useState(() => {
+    // Read from localStorage on initial load
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('speechPracticeVolume');
+      return saved ? parseFloat(saved) : 0.8; // Default 80%
+    }
+    return 0.8;
+  });
+  
+  // Save volume to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('speechPracticeVolume', volume.toString());
+  }, [volume]);
   
   // Lesson Mode - use URL hash for persistence
   const [isLessonMode, setIsLessonModeState] = useState(false);
@@ -130,7 +142,7 @@ function App() {
   };
   
   // Recording mode: 'push-to-talk' | 'voice-activated'
-  const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('voice-activated');
+  const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
   
   // Refs for audio recording are now handled by VoiceRecorder component
   const [isLoading, setIsLoading] = useState(true);
@@ -810,6 +822,19 @@ function App() {
             {activeLesson && (
               <span className="active-lesson">📚 {translateLessonTitle(activeLesson.title)}</span>
             )}
+            {/* Global volume control */}
+            <div className="global-volume">
+              <span>🔊</span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={volume}
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                title="Volume"
+              />
+            </div>
             <button className="mode-btn" onClick={startRepeatMode}>
               🎯 Practice Mode
             </button>
