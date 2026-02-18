@@ -43,6 +43,24 @@ export async function generateChatResponse(
     text = text.replace(/\s*TRANSLATION:.+$/, '').trim();
   }
   
+  // If no translation provided, generate one
+  if (!translation && text.length > 0) {
+    try {
+      const translationResponse = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: 'You are a translator. Translate the given Japanese text to English. Respond with ONLY the English translation, nothing else.' },
+          { role: 'user', content: text },
+        ],
+        temperature: 0.3,
+        max_tokens: 200,
+      });
+      translation = translationResponse.choices[0]?.message?.content?.trim();
+    } catch (e) {
+      console.error('Error generating translation:', e);
+    }
+  }
+  
   // Add furigana if not already present
   let textWithFurigana = text;
   if (!text.includes('<ruby>')) {
