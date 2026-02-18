@@ -120,32 +120,76 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
+// Fallback dictionary for proper nouns and words Jisho doesn't provide readings for
+const FALLBACK_READINGS: Record<string, string> = {
+  // Common surnames
+  '田中': 'たなか',
+  '山田': 'やまだ',
+  '鈴木': 'すずき',
+  '佐藤': 'さとう',
+  '伊藤': 'いとう',
+  '渡辺': 'わたなべ',
+  '高橋': 'たかはし',
+  '小林': 'こばやし',
+  '田中': 'たなか',
+  // Common words that might be missing
+  ' Penn': 'ペン',
+};
+
 // Fetch reading from Jisho API
 async function getReadingFromJisho(word: string): Promise<string | null> {
   await loadCache();
   
   // Check cache first
   if (furiganaCache.has(word)) {
+    console.log(`[Furigana] Cache hit for: ${word} = ${furiganaCache.get(word)}`);
     return furiganaCache.get(word)!;
   }
+  
+  // Check fallback dictionary
+  if (FALLBACK_READINGS[word]) {
+    console.log(`[Furigana] Fallback hit for: ${word} = ${FALLBACK_READINGS[word]}`);
+    furiganaCache.set(word, FALLBACK_READINGS[word]);
+    await saveCache();
+    return FALLBACK_READINGS[word];
+  }
 
+  console.log(`[Furigana] Fetching from Jisho: ${word}`);
   try {
     const response = await fetch(`https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(word)}`);
-    if (!response.ok) return null;
+    console.log(`[Furigana] Jisho response status: ${response.status}`);
+    
+    if (!response.ok) {
+      console.log(`[Furigana] Jisho request failed: ${response.status}`);
+      return null;
+    }
     
     const data = await response.json();
+    console.log(`[Furigana] Jisho results count: ${data.data?.length || 0}`);
+    
     if (data.data && data.data.length > 0) {
-      const firstResult = data.data[0];
-      const reading = firstResult.japanese?.[0]?.reading;
-      if (reading) {
-        furiganaCache.set(word, reading);
-        // Save immediately for new entries
-        await saveCache();
-        return reading;
+      // Try to find a result with a reading
+      for (const result of data.data) {
+        const japanese = result.japanese?.[0];
+        if (japanese) {
+          const resultWord = japanese.word;
+          const reading = japanese.reading;
+          
+          // Only use if the word matches exactly and has a reading
+          if (resultWord === word && reading) {
+            furiganaCache.set(word, reading);
+            await saveCache();
+            console.log(`[Furigana] Cached: ${word} = ${reading}`);
+            return reading;
+          }
+        }
       }
+      console.log(`[Furigana] No result with reading found for: ${word}`);
+    } else {
+      console.log(`[Furigana] No results for: ${word}`);
     }
   } catch (error) {
-    console.error('Error fetching from Jisho:', error);
+    console.error('[Furigana] Error fetching from Jisho:', error);
   }
   return null;
 }
@@ -158,8 +202,12 @@ export async function addFurigana(text: string): Promise<string> {
   const kanjiRegex = /[\u4e00-\u9faf]+/g;
   const matches = text.match(kanjiRegex) || [];
   
+  console.log(`[Furigana] Processing text: "${text}", found ${matches.length} kanji matches: [${matches.join(', ')}]`);
+  
   // Sort by length (longest first) to avoid partial matches
   const uniqueMatches = [...new Set(matches)].sort((a, b) => b.length - a.length);
+  
+  console.log(`[Furigana] Unique matches to process: [${uniqueMatches.join(', ')}]`);
   
   for (const kanjiWord of uniqueMatches) {
     const reading = await getReadingFromJisho(kanjiWord);
@@ -167,9 +215,13 @@ export async function addFurigana(text: string): Promise<string> {
     if (reading) {
       const ruby = `<ruby>${kanjiWord}<rt>${reading}</rt></ruby>`;
       result = result.replace(new RegExp(kanjiWord, 'g'), ruby);
+      console.log(`[Furigana] Replaced "${kanjiWord}" with "${ruby}"`);
+    } else {
+      console.log(`[Furigana] No reading found for: "${kanjiWord}"`);
     }
   }
   
+  console.log(`[Furigana] Result: "${result}"`);
   return result;
 }
 

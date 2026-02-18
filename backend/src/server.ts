@@ -408,13 +408,17 @@ app.post('/api/furigana', checkPassword, async (req, res) => {
     // Generate furigana
     const textWithFurigana = await addFurigana(text);
     
-    // Cache in database
-    await cacheFurigana(text, textWithFurigana);
+    // Only cache if furigana was actually added (contains <ruby> tags)
+    const hasFurigana = textWithFurigana.includes('<ruby>');
+    if (hasFurigana) {
+      await cacheFurigana(text, textWithFurigana);
+    }
     
     res.json({ 
       original: text,
       with_furigana: textWithFurigana,
-      cached: false
+      cached: false,
+      hasFurigana
     });
   } catch (error) {
     console.error('Error adding furigana:', error);
