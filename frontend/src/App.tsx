@@ -327,20 +327,31 @@ function App() {
     if (isPracticeHash(hash)) {
       const lessonId = getLessonIdFromHash(hash);
       if (lessonId) {
+        // Get password from localStorage (state is empty on refresh)
+        const savedPassword = localStorage.getItem('speech_practice_password') || '';
+        if (!savedPassword) return; // Can't restore without password
+        
         // Fetch lesson title first
         fetch(`${API_URL}/api/lessons/${lessonId}`, {
-          headers: { 'X-Password': password }
-        }).then(r => r.json()).then(data => {
+          headers: { 'X-Password': savedPassword }
+        }).then(r => {
+          if (!r.ok) throw new Error('Unauthorized');
+          return r.json();
+        }).then(data => {
           setActiveLesson({ id: lessonId, title: data.title || '' });
-          setTimeout(() => initializeLessonChat(lessonId), 100);
+          // Wait for auth to be set up
+          setTimeout(() => {
+            if (isAuthenticated) {
+              initializeLessonChat(lessonId);
+            }
+          }, 500);
         }).catch(() => {
-          // Fallback if fetch fails
-          setActiveLesson({ id: lessonId, title: '' });
-          setTimeout(() => initializeLessonChat(lessonId), 100);
+          // Redirect to login if unauthorized
+          window.location.hash = '';
         });
       }
     }
-  }, []);
+  }, [isAuthenticated]);
   
   // Listen for hash changes
   useEffect(() => {
@@ -670,12 +681,19 @@ function App() {
       // Update URL to indicate practice mode
       window.location.hash = `#/lessons/${lessonId}/practice`;
       
+      // Get password from localStorage if state is empty (refresh scenario)
+      const effectivePassword = password || localStorage.getItem('speech_practice_password') || '';
+      if (!effectivePassword) {
+        console.error('No password available');
+        return;
+      }
+      
       // First create a session
       const sessionResponse = await fetch(`${API_URL}/api/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': effectivePassword,
         },
         body: JSON.stringify({ language, voice_gender: gender }),
       });
@@ -689,7 +707,7 @@ function App() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Password': password,
+            'X-Password': effectivePassword,
           },
           body: JSON.stringify({ relaxed: true, session_id: sessionData.id }),
         });
