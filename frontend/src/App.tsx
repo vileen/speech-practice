@@ -357,8 +357,76 @@ function App() {
 
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
+    
+    // Handle /compact command
+    if (inputText.trim() === '/compact') {
+      compactSession();
+      setInputText('');
+      return;
+    }
+    
     generateTTS(inputText);
     setInputText('');
+  };
+  
+  // Compact session to save context
+  const compactSession = async () => {
+    if (!session) return;
+    
+    // Add system message
+    setMessages(prev => [...prev, {
+      role: 'assistant',
+      text: '📦 Compacting session...',
+      isCompacting: true,
+    }]);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/sessions/${session.id}/compact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Reload messages to show compacted state
+        const sessionResponse = await fetch(`${API_URL}/api/sessions/${session.id}`, {
+          headers: { 'X-Password': password },
+        });
+        
+        if (sessionResponse.ok) {
+          const sessionData = await sessionResponse.json();
+          setMessages(sessionData.messages.map((m: any) => ({
+            id: m.id,
+            role: m.role,
+            text: m.content,
+            withFurigana: m.content,
+            isCompacting: false,
+          })));
+        }
+        
+        // Show success notification
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          text: `✅ Session compacted!\nSummary: ${data.summary}\nMessages: ${data.messagesBefore} → ${data.messagesAfter}`,
+        }]);
+      } else {
+        const error = await response.json();
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          text: `❌ Compaction failed: ${error.error || 'Unknown error'}`,
+        }]);
+      }
+    } catch (error) {
+      console.error('Error compacting session:', error);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        text: '❌ Failed to compact session. Please try again.',
+      }]);
+    }
   };
 
   const generateAIResponse = async (userText: string, _lang: string) => {
@@ -753,6 +821,9 @@ function App() {
             )}
             <button className="mode-btn" onClick={startRepeatMode}>
               🎯 Practice Mode
+            </button>
+            <button className="compact-btn" onClick={compactSession} title="Compact session to save context">
+              📦 Compact
             </button>
             <button className="end-btn" onClick={() => {
               setSession(null);
