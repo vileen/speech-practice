@@ -406,13 +406,13 @@
 
 .example .jp {
   display: block;
-  font-size: 1.1rem;
-  margin-bottom: 4px;
+  font-size: 1.4rem;
+  margin-bottom: 6px;
   color: #fff;
 }
 
 .example .en {
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: #888;
 }
 
@@ -456,6 +456,6 @@ ruby {
 }
 
 rt {
-  font-size: 0.5em;
+  font-size: 0.75em;
   color: #aaa;
 }
