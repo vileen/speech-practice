@@ -69,7 +69,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     localStorage.setItem('showFurigana', showFurigana.toString());
   }, [showFurigana]);
 
-  // Simple mode toggle for AI language complexity
+  // Simple mode toggle for language complexity
   const [simpleMode, setSimpleMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('simpleMode');
@@ -460,7 +460,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
           </label>
           <label className="toggle-label">
             <input type="checkbox" checked={simpleMode} onChange={(e) => setSimpleMode(e.target.checked)} />
-            Simple AI Mode
+            Simple Mode
           </label>
         </div>
 

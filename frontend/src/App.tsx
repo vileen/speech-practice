@@ -1176,7 +1176,7 @@ function App() {
             {messages.map((msg, idx) => (
               <div key={idx} className={`message ${msg.role}`}>
                 <div className="message-header">
-                  <span className="role-badge">{msg.role === 'user' ? 'You' : 'AI'}</span>
+                  <span className="role-badge">{msg.role === 'user' ? 'You' : 'Teacher'}</span>
                   {/* Show translate button for all assistant messages */}
                   {msg.role === 'assistant' && !(msg as any).isTyping && (
                     <button 
@@ -1294,7 +1294,7 @@ function App() {
           {/* Help text for new users */}
           {messages.length <= 1 && (
             <div className="help-text">
-              💡 <strong>How to practice:</strong> {recordingMode === 'voice-activated' ? 'Just start speaking in Japanese!' : 'Hold 🎙️ to speak'} or type your message below. The AI will respond and correct your mistakes.
+              💡 <strong>How to practice:</strong> {recordingMode === 'voice-activated' ? 'Just start speaking in Japanese!' : 'Hold 🎙️ to speak'} or type your message below. The teacher will respond and correct your mistakes.
             </div>
           )}
 
