@@ -480,31 +480,27 @@ export function VoiceRecorder({
         </button>
       )}
       
-      {/* Push to talk button - only show for push-to-talk mode */}
+      {/* Push to talk button - toggle mode (click to start/stop) */}
       {isPushToTalk && (
         <button
           className={`record-btn ${isListening ? 'recording' : ''} ${isSpeaking ? 'speaking' : ''} ${disabled ? 'disabled' : ''}`}
-          onMouseDown={disabled ? undefined : startPushToTalk}
-          onMouseUp={disabled ? undefined : stopRecording}
-          onMouseLeave={isListening && !disabled ? stopRecording : undefined}
-          onTouchStart={disabled ? undefined : startPushToTalk}
-          onTouchEnd={disabled ? undefined : stopRecording}
+          onClick={disabled ? undefined : (isListening ? stopRecording : startPushToTalk)}
           disabled={disabled}
         >
           {disabled ? (
             <>⏳ Wait...</>
           ) : isListening ? (
-            <>🔴 Recording...</>
+            <>🔴 Stop Recording</>
           ) : (
-            <>🎙️ Hold to Speak</>
+            <>🎙️ Start Recording</>
           )}
         </button>
       )}
-      
+
       {/* Instructions */}
       <div className="instructions">
         {isPushToTalk ? (
-          <small>Hold the button while speaking</small>
+          <small>Click to start/stop recording</small>
         ) : (
           <small>Just start speaking - I'll detect your voice automatically</small>
         )}

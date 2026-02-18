@@ -19,8 +19,8 @@ export async function generateChatResponse(
   }
 
   const systemPrompt = lessonContext 
-    ? `${lessonContext}\n\nIMPORTANT: Always respond in Japanese (unless asked for translation). Use furigana for kanji in this format: <ruby>漢字<rt>かんじ</rt></ruby>. Also provide an English translation on a new line starting with "TRANSLATION:".`
-    : 'You are a helpful Japanese language practice partner. Respond in Japanese with furigana for kanji: <ruby>漢字<rt>かんじ</rt></ruby>. Also provide an English translation on a new line starting with "TRANSLATION:".';
+    ? `${lessonContext}\n\nIMPORTANT: Always respond in Japanese (unless asked for translation). Use furigana for kanji in this format: <ruby>漢字<rt>かんじ</rt></ruby>. Do NOT include English translations in your response - translations will be provided separately when requested.`
+    : 'You are a helpful Japanese language practice partner. Respond in Japanese with furigana for kanji: <ruby>漢字<rt>かんじ</rt></ruby>. Do NOT include English translations in your response - translations will be provided separately when requested.';
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
