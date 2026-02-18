@@ -486,6 +486,10 @@ header h1 {
 
 .phrase-controls {
   margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .play-btn.large {
@@ -496,6 +500,68 @@ header h1 {
 
 .play-btn.large:hover {
   background: #1a4a7a;
+}
+
+.translate-btn {
+  padding: 14px 24px;
+  font-size: 1rem;
+  background: #16213e;
+  border: 2px solid #333;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.translate-btn:hover {
+  background: #1a4a7a;
+  border-color: #0f3460;
+}
+
+.translation-display {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: rgba(233, 69, 96, 0.1);
+  border: 1px solid #e94560;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  background: #16213e;
+  border-radius: 8px;
+}
+
+.volume-control label {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.volume-control input[type="range"] {
+  flex: 1;
+  min-width: 100px;
+}
+
+.volume-control span {
+  font-size: 0.85rem;
+  color: #888;
+  min-width: 40px;
+  text-align: right;
+}
+
+.recorder-disabled {
+  padding: 2rem;
+  background: #16213e;
+  border: 2px dashed #333;
+  border-radius: 12px;
+  text-align: center;
+  color: #888;
 }
 
 /* Result Card */
