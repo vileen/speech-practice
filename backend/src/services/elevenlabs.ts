@@ -28,10 +28,26 @@ interface TTSOptions {
   gender: 'male' | 'female';
 }
 
+// Strip furigana/ruby tags from text for TTS
+function stripFurigana(text: string): string {
+  // Remove ruby tags and keep only the kanji (not the rt content)
+  // <ruby>犬<rt>いぬ</rt></ruby> -> 犬
+  let cleaned = text.replace(/<ruby>([^<]*)<rt>[^<]*<\/rt><\/ruby>/g, '$1');
+  
+  // Remove any remaining HTML tags
+  cleaned = cleaned.replace(/<[^>]*>/g, '');
+  
+  return cleaned;
+}
+
 export async function generateSpeech({ text, language, gender }: TTSOptions): Promise<Buffer> {
   if (!ELEVENLABS_API_KEY) {
     throw new Error('ELEVENLABS_API_KEY not set');
   }
+
+  // Clean text for TTS - remove furigana/ruby annotations
+  const cleanText = stripFurigana(text);
+  console.log(`[TTS] Original: "${text}" -> Clean: "${cleanText}"`);
 
   const voiceId = VOICES[language][gender];
   
@@ -45,7 +61,7 @@ export async function generateSpeech({ text, language, gender }: TTSOptions): Pr
         'xi-api-key': ELEVENLABS_API_KEY,
       },
       body: JSON.stringify({
-        text,
+        text: cleanText,
         model_id: 'eleven_multilingual_v2',
         voice_settings: {
           stability: 0.3,        // More variable, natural
