@@ -422,13 +422,13 @@
   color: #fff;
 }
 
-.phrases-list {
+.practice-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.phrase-item {
+.practice-item {
   display: flex;
   gap: 12px;
   padding: 12px;
@@ -438,14 +438,14 @@
   border: 1px solid #333;
 }
 
-.phrase-item .number {
+.practice-item .number {
   color: #e94560;
   font-size: 0.9rem;
   min-width: 24px;
   font-weight: bold;
 }
 
-.phrase-item .phrase {
+.practice-item .phrase {
   font-size: 1.1rem;
   color: #fff;
 }
