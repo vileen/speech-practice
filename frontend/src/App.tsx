@@ -903,11 +903,9 @@ function App() {
               </button>
             </div>
             
-            {/* Voice Recorder with VAD - only show when AI opener is ready */}
+            {/* Voice Recorder with VAD - blocked while waiting for any AI response */}
             {(() => {
-              // Check if we have a loaded assistant message (not loading)
-              const hasAIReady = messages.some(m => m.role === 'assistant' && !m.isLoading);
-              // Check if we're waiting for AI opener (loading state)
+              // Check if any AI message is currently loading (waiting for response)
               const isWaitingForAI = messages.some(m => m.role === 'assistant' && m.isLoading);
               
               if (isWaitingForAI) {
@@ -918,20 +916,7 @@ function App() {
                       <span></span>
                       <span></span>
                     </div>
-                    <p>AI is starting the conversation...</p>
-                  </div>
-                );
-              }
-              
-              if (!hasAIReady) {
-                return (
-                  <div className="recorder-waiting">
-                    <div className="loading-typing">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                    <p>Waiting for AI to start...</p>
+                    <p>AI is responding...</p>
                   </div>
                 );
               }
