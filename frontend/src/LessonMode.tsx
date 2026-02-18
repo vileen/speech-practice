@@ -324,14 +324,15 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     return text;
   };
 
-  // Render explanation with support for both markdown and HTML tables
+  // Render explanation with support for both markdown and HTML tables, and furigana
   const renderExplanationWithTables = (explanation: string) => {
     // Check if explanation contains HTML table
     if (explanation.includes('<table')) {
-      // Use dangerouslySetInnerHTML for HTML tables
+      // For HTML tables, we still need to render them as-is
+      // But we should also try to apply furigana to text content
       return <div className="grammar-explanation" dangerouslySetInnerHTML={{ __html: explanation }} />;
     }
-    
+
     // Parse markdown tables
     const lines = explanation.split('\n');
     const elements: JSX.Element[] = [];
@@ -340,7 +341,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
 
     const flushTable = () => {
       if (currentTable.length === 0) return;
-      
+
       // Filter out separator lines (|-----|)
       const dataRows = currentTable.filter(row => !row.trim().startsWith('|-'));
       if (dataRows.length === 0) {
@@ -356,7 +357,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
               return (
                 <tr key={rowIdx}>
                   {cells.map((cell, cellIdx) => (
-                    <td key={cellIdx}>{cell}</td>
+                    <td key={cellIdx}>{renderFurigana(cell)}</td>
                   ))}
                 </tr>
               );
@@ -374,7 +375,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
       } else {
         flushTable();
         if (trimmed) {
-          elements.push(<p key={`p-${i}`}>{line}</p>);
+          elements.push(<p key={`p-${i}`}>{renderFurigana(line)}</p>);
         } else {
           elements.push(<br key={`br-${i}`} />);
         }
@@ -482,7 +483,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
             <div className="grammar-tab">
               {selectedLesson.grammar.map((item, idx) => (
                 <div key={idx} className="grammar-card">
-                  <h3>{item.pattern}</h3>
+                  <h3>{renderFurigana(item.pattern)}</h3>
                   <div className="explanation">
                     {renderExplanationWithTables(item.explanation)}
                   </div>
