@@ -817,31 +817,34 @@ function App() {
       {session && (
         <main>
           <div className="session-info">
-            <span>🌍 {language === 'japanese' ? 'Japanese' : 'Italian'}</span>
-            <span>🎭 {gender === 'male' ? 'Male' : 'Female'} voice</span>
-            {activeLesson && (
-              <span className="active-lesson">📚 {translateLessonTitle(activeLesson.title)}</span>
-            )}
-            {/* Global volume control */}
-            <div className="global-volume">
-              <span>🔊</span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={volume}
-                onChange={(e) => setVolume(parseFloat(e.target.value))}
-                title="Volume"
-              />
+            <div className="session-left">
+              <span>🌍 {language === 'japanese' ? 'Japanese' : 'Italian'}</span>
+              <span>🎭 {gender === 'male' ? 'Male' : 'Female'}</span>
+              {activeLesson && (
+                <span className="active-lesson">📚 {translateLessonTitle(activeLesson.title)}</span>
+              )}
             </div>
-            <button className="mode-btn" onClick={startRepeatMode}>
-              🎯 Practice Mode
-            </button>
-            <button className="end-btn" onClick={() => {
-              setSession(null);
-              setActiveLesson(null);
-            }}>End Session</button>
+            <div className="session-right">
+              {/* Global volume control */}
+              <div className="global-volume" title={`Volume: ${Math.round(volume * 100)}%`}>
+                <span>{volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={volume}
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
+                />
+              </div>
+              <button className="mode-btn" onClick={startRepeatMode}>
+                🎯 Practice
+              </button>
+              <button className="end-btn" onClick={() => {
+                setSession(null);
+                setActiveLesson(null);
+              }}>End</button>
+            </div>
           </div>
 
           <div className="messages">
@@ -849,8 +852,8 @@ function App() {
               <div key={idx} className={`message ${msg.role}`}>
                 <div className="message-header">
                   <span className="role-badge">{msg.role === 'user' ? 'You' : 'AI'}</span>
-                  {/* Show translate button if we have translation OR if AI is typing (will have translation soon) */}
-                  {(msg.translation || (msg as any).isTyping) && (
+                  {/* Show translate button for all assistant messages */}
+                  {msg.role === 'assistant' && (
                     <button 
                       className="translate-toggle"
                       onClick={() => {
@@ -858,7 +861,7 @@ function App() {
                           i === idx ? { ...m, showTranslation: !m.showTranslation } : m
                         ));
                       }}
-                      disabled={(msg as any).isTyping}
+                      disabled={!msg.translation}
                     >
                       {msg.showTranslation ? '🇯🇵 Original' : '🇬🇧 Translate'}
                     </button>
