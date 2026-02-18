@@ -26,7 +26,7 @@ interface LessonDetail {
   grammar: Array<{
     pattern: string;
     explanation: string;
-    examples: Array<{jp: string; en: string}>;
+    examples: Array<{jp: string; en: string; furigana?: string | null}>;
   }>;
   practice_phrases: string[];
 }
@@ -151,7 +151,8 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/lessons/${id}`, {
+      // Always fetch with furigana included (cached in DB)
+      const response = await fetch(`${API_URL}/api/lessons/${id}?furigana=true`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
@@ -249,10 +250,15 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     });
   }, [selectedLesson, showFurigana]); // Intentionally NOT including fetchFurigana or cache
 
-  const renderFurigana = (text: string) => {
+  const renderFurigana = (text: string, preloadedFurigana?: string | null) => {
     if (!showFurigana) return text;
     
-    // If we have cached furigana, use it
+    // If we have preloaded furigana from DB, use it
+    if (preloadedFurigana) {
+      return <span dangerouslySetInnerHTML={{ __html: preloadedFurigana }} />;
+    }
+    
+    // If we have cached furigana in memory, use it
     const cached = furiganaCacheRef.current[text] || furiganaCache[text];
     if (cached) {
       return <span dangerouslySetInnerHTML={{ __html: cached }} />;
@@ -429,7 +435,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
                       <h4>Examples:</h4>
                       {item.examples.map((ex, exIdx) => (
                         <div key={exIdx} className="example">
-                          <span className="jp">{renderFurigana(ex.jp)}</span>
+                          <span className="jp">{renderFurigana(ex.jp, ex.furigana)}</span>
                           <span className="en">{ex.en}</span>
                         </div>
                       ))}
