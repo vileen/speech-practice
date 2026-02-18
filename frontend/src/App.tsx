@@ -115,17 +115,46 @@ function App() {
     return hash.startsWith('#/lessons');
   };
   
+  // Check if we're in practice mode (lesson chat)
+  const isPracticeHash = (hash: string): boolean => {
+    return hash.includes('/practice');
+  };
+  
+  // Parse lesson ID from hash
+  const getLessonIdFromHash = (hash: string): string | null => {
+    const match = hash.match(/#\/lessons\/([^\/]+)/);
+    return match ? match[1] : null;
+  };
+  
   // Read initial state from URL hash
   useEffect(() => {
     const hash = window.location.hash;
     setIsLessonModeState(isLessonHash(hash));
+    
+    // If in practice mode on refresh, restore the lesson
+    if (isPracticeHash(hash)) {
+      const lessonId = getLessonIdFromHash(hash);
+      if (lessonId) {
+        // Fetch lesson title first
+        fetch(`${API_URL}/api/lessons/${lessonId}`, {
+          headers: { 'X-Password': password }
+        }).then(r => r.json()).then(data => {
+          setActiveLesson({ id: lessonId, title: data.title || '' });
+          setTimeout(() => initializeLessonChat(lessonId), 100);
+        }).catch(() => {
+          // Fallback if fetch fails
+          setActiveLesson({ id: lessonId, title: '' });
+          setTimeout(() => initializeLessonChat(lessonId), 100);
+        });
+      }
+    }
   }, []);
   
   // Listen for hash changes
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
-      setIsLessonModeState(isLessonHash(hash));
+      setIsLessonModeState(isLessonHash(hash) && !isPracticeHash(hash));
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
@@ -451,6 +480,9 @@ function App() {
   // Initialize lesson chat with system prompt
   const initializeLessonChat = async (lessonId: string) => {
     try {
+      // Update URL to indicate practice mode
+      window.location.hash = `#/lessons/${lessonId}/practice`;
+      
       // First create a session
       const sessionResponse = await fetch(`${API_URL}/api/sessions`, {
         method: 'POST',
