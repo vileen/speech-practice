@@ -128,21 +128,25 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
     };
   }, [isActive]);
 
-  const handlePlayClick = () => {
+  const handlePlayClick = async () => {
     if (isActive && audioRef.current) {
       if (audioRef.current.paused) {
         // Resume
-        audioRef.current.play();
+        await audioRef.current.play();
       } else {
         // Pause
         audioRef.current.pause();
       }
     } else {
-      // Play new
+      // Play new - wait for audio to be ready
       onStopOthers();
       if (audioRef.current) {
-        audioRef.current.play();
-        onPlay(audioRef.current);
+        try {
+          await audioRef.current.play();
+          onPlay(audioRef.current);
+        } catch (err) {
+          console.error('Failed to play:', err);
+        }
       }
     }
   };
