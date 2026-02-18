@@ -247,6 +247,7 @@ CONVERSATION RULES:
 3. Use furigana in your responses for kanji: <ruby>漢字<rt>かんじ</rt></ruby>
 4. Ask follow-up questions to keep conversation flowing
 5. If the user makes mistakes, gently correct them
+6. ALWAYS provide an English translation on a new line starting with "TRANSLATION:" at the end of your response
 6. Keep the conversation focused on topics from the lesson
 `;
 
