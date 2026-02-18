@@ -609,6 +609,7 @@ app.post('/api/chat', checkPassword, async (req, res) => {
     res.json({
       text: aiResponse.text,
       text_with_furigana: aiResponse.textWithFurigana,
+      translation: aiResponse.translation,
     });
   } catch (error) {
     console.error('Error in chat:', error);
