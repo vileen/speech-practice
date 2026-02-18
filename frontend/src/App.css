@@ -814,3 +814,37 @@ header h1 {
     opacity: 1;
   }
 }
+
+/* Typing indicator inside message */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background: #e94560;
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0s;
+}
+
+/* Disabled translate button */
+.translate-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
