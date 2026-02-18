@@ -232,9 +232,15 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
         >
           <div 
             className="progress-fill"
-            style={{ width: `${progress}%` }}
+            style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
           />
-          {isActive && <div className="progress-handle" style={{ left: `${progress}%` }} />}
+          <div 
+            className="progress-handle" 
+            style={{ 
+              left: `${Math.max(0, Math.min(100, progress))}%`,
+              opacity: isActive ? 1 : 0.5
+            }} 
+          />
         </div>
         <div className="time-display">
           <span>{formatTime(currentTime)}</span>
