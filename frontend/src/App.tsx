@@ -70,7 +70,7 @@ function App() {
   const [gender, setGender] = useState<'male' | 'female'>('female');
   // Recording state managed by VoiceRecorder component
   const [session, setSession] = useState<Session | null>(null);
-  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean}>>([]);
+  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
   const [inputText, setInputText] = useState('');
   const [showFurigana, setShowFurigana] = useState(true);
   
@@ -873,14 +873,65 @@ function App() {
                   {msg.role === 'assistant' && (
                     <button 
                       className="translate-toggle"
-                      onClick={() => {
-                        setMessages(prev => prev.map((m, i) => 
-                          i === idx ? { ...m, showTranslation: !m.showTranslation } : m
-                        ));
+                      onClick={async () => {
+                        // If already showing translation, just toggle back
+                        if (msg.showTranslation && msg.translation) {
+                          setMessages(prev => prev.map((m, i) => 
+                            i === idx ? { ...m, showTranslation: false } : m
+                          ));
+                          return;
+                        }
+                        
+                        // If we already have translation, just show it
+                        if (msg.translation) {
+                          setMessages(prev => prev.map((m, i) => 
+                            i === idx ? { ...m, showTranslation: true } : m
+                          ));
+                          return;
+                        }
+                        
+                        // Otherwise fetch translation
+                        try {
+                          setMessages(prev => prev.map((m, i) => 
+                            i === idx ? { ...m, isTranslating: true } : m
+                          ));
+                          
+                          const response = await fetch(`${API_URL}/api/translate`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'X-Password': password,
+                            },
+                            body: JSON.stringify({ text: msg.text }),
+                          });
+                          
+                          if (response.ok) {
+                            const data = await response.json();
+                            setMessages(prev => prev.map((m, i) => 
+                              i === idx ? { 
+                                ...m, 
+                                translation: data.translation,
+                                showTranslation: true,
+                                isTranslating: false 
+                              } : m
+                            ));
+                          }
+                        } catch (error) {
+                          console.error('Error fetching translation:', error);
+                          setMessages(prev => prev.map((m, i) => 
+                            i === idx ? { ...m, isTranslating: false } : m
+                          ));
+                        }
                       }}
-                      disabled={!msg.translation}
+                      disabled={(msg as any).isTranslating}
                     >
-                      {msg.showTranslation ? '🇯🇵 Original' : '🇬🇧 Translate'}
+                      {(msg as any).isTranslating ? (
+                        '⏳...'
+                      ) : msg.showTranslation ? (
+                        '🇯🇵 Original'
+                      ) : (
+                        '🇬🇧 Translate'
+                      )}
                     </button>
                   )}
                 </div>
