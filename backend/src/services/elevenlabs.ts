@@ -185,33 +185,24 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
         }
       }
       
-      // Second try: the kanji appears at the start of a word with okurigana
-      // Extract just the kanji portion from result words
+      // Second try: find exact match including okurigana
+      // This ensures we get the right reading (kun'yomi vs on'yomi)
+      // e.g., "眠い" should use ねむい, not ねむる from "眠る"
       for (const result of data.data) {
         for (const japanese of (result.japanese || [])) {
           const resultWord = japanese.word;
-          const reading = japanese.reading;
+          const fullReading = japanese.reading;
           
-          if (resultWord && reading) {
-            // Check if result word starts with our kanji
-            // e.g., word="待", resultWord="待つ" -> use reading for "待" part
-            if (resultWord.startsWith(word)) {
-              // For words with okurigana, we need to extract just the kanji reading
-              // This is simplified - assumes reading length matches kanji count
-              const kanjiCount = word.length;
-              const readingForKanji = reading.substring(0, kanjiCount * 2); // Rough approximation
-              
-              // Better: check if reading has okurigana portion
-              // "まつ" for "待つ" - the okurigana "つ" is not in reading
-              // So reading "まつ" is just for the kanji "待"
-              if (resultWord.length > word.length) {
-                // Word has okurigana, reading is just for kanji
-                furiganaCache.set(word, reading);
-                await saveCache();
-                console.log(`[Furigana] Cached (okurigana): ${word} = ${reading} (from ${resultWord})`);
-                return reading;
-              }
-            }
+          // Check if this is an exact match for a word with okurigana
+          // e.g., original text "眠い" matches resultWord "眠い"
+          // We need the original text, not just the kanji
+          if (resultWord && fullReading && resultWord.includes(word)) {
+            // For now, store the full word-to-reading mapping
+            // This is safer than trying to extract partial readings
+            furiganaCache.set(word, fullReading);
+            await saveCache();
+            console.log(`[Furigana] Cached (partial match): ${word} = ${fullReading} (from ${resultWord})`);
+            return fullReading;
           }
         }
       }
@@ -242,19 +233,71 @@ export async function addFurigana(text: string): Promise<string> {
   console.log(`[Furigana] Unique matches to process: [${uniqueMatches.join(', ')}]`);
   
   for (const kanjiWord of uniqueMatches) {
-    const reading = await getReadingFromJisho(kanjiWord);
+    // First, try to find reading for the full word context (kanji + okurigana)
+    // This helps get the correct kun'yomi reading
+    const fullWordReading = await getReadingForFullWord(text, kanjiWord);
     
-    if (reading) {
-      const ruby = `<ruby>${kanjiWord}<rt>${reading}</rt></ruby>`;
+    if (fullWordReading) {
+      const ruby = `<ruby>${kanjiWord}<rt>${fullWordReading}</rt></ruby>`;
       result = result.replace(new RegExp(kanjiWord, 'g'), ruby);
-      console.log(`[Furigana] Replaced "${kanjiWord}" with "${ruby}"`);
+      console.log(`[Furigana] Replaced "${kanjiWord}" with "${ruby}" (from full word context)`);
     } else {
-      console.log(`[Furigana] No reading found for: "${kanjiWord}"`);
+      // Fallback: get reading just for the kanji
+      const reading = await getReadingFromJisho(kanjiWord);
+      
+      if (reading) {
+        const ruby = `<ruby>${kanjiWord}<rt>${reading}</rt></ruby>`;
+        result = result.replace(new RegExp(kanjiWord, 'g'), ruby);
+        console.log(`[Furigana] Replaced "${kanjiWord}" with "${ruby}"`);
+      } else {
+        console.log(`[Furigana] No reading found for: "${kanjiWord}"`);
+      }
     }
   }
   
   console.log(`[Furigana] Result: "${result}"`);
   return result;
+}
+
+// Try to get reading for kanji in context of full word (with okurigana)
+async function getReadingForFullWord(fullText: string, kanjiWord: string): Promise<string | null> {
+  // Find the kanji position in the full text
+  const kanjiIndex = fullText.indexOf(kanjiWord);
+  if (kanjiIndex === -1) return null;
+  
+  // Extract the word including okurigana (hiragana after kanji)
+  // Simple heuristic: take chars after kanji until we hit non-hiragana or end
+  let okurigana = '';
+  for (let i = kanjiIndex + kanjiWord.length; i < fullText.length; i++) {
+    const char = fullText[i];
+    // Check if hiragana (3040-309F)
+    if (/[\u3040-\u309F]/.test(char)) {
+      okurigana += char;
+    } else {
+      break;
+    }
+  }
+  
+  if (!okurigana) return null; // No okurigana, use regular lookup
+  
+  const fullWord = kanjiWord + okurigana;
+  console.log(`[Furigana] Looking up full word: "${fullWord}" for kanji "${kanjiWord}"`);
+  
+  // Try to get reading for the full word
+  const fullReading = await getReadingFromJisho(fullWord);
+  if (!fullReading) return null;
+  
+  // Extract just the kanji reading by removing okurigana portion from the end
+  // This is approximate but works for most cases
+  let kanjiReading = fullReading;
+  for (let i = okurigana.length - 1; i >= 0; i--) {
+    if (kanjiReading.endsWith(okurigana[i])) {
+      kanjiReading = kanjiReading.slice(0, -1);
+    }
+  }
+  
+  console.log(`[Furigana] Extracted kanji reading: "${kanjiReading}" from "${fullReading}"`);
+  return kanjiReading;
 }
 
 // Synchronous version for simple cases (uses only cached readings)
