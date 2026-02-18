@@ -132,6 +132,8 @@ const FALLBACK_READINGS: Record<string, string> = {
   '高橋': 'たかはし',
   '小林': 'こばやし',
   '田中': 'たなか',
+  // Kanji with context-dependent readings (override Jisho's default)
+  '願': 'ねが', // Usually がん, but ねが in 願う/お願いします
   // Common words that might be missing
   ' Penn': 'ペン',
 };
