@@ -305,6 +305,7 @@ function App() {
   // Lesson Mode - use URL hash for persistence
   const [isLessonMode, setIsLessonModeState] = useState(false);
   const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
+  const [isRestoringPractice, setIsRestoringPractice] = useState(false);
   
   // Check if hash is a lesson URL (either list or specific lesson)
   const isLessonHash = (hash: string): boolean => {
@@ -325,15 +326,20 @@ function App() {
   // Read initial state from URL hash
   useEffect(() => {
     const hash = window.location.hash;
-    setIsLessonModeState(isLessonHash(hash));
     
-    // If in practice mode on refresh, restore the lesson
+    // If in practice mode on refresh, don't show lesson list yet
     if (isPracticeHash(hash)) {
+      setIsRestoringPractice(true);
       const lessonId = getLessonIdFromHash(hash);
       if (lessonId) {
         // Get password from localStorage (state is empty on refresh)
         const savedPassword = localStorage.getItem('speech_practice_password') || '';
-        if (!savedPassword) return; // Can't restore without password
+        if (!savedPassword) {
+          // Can't restore without password, redirect to login
+          setIsRestoringPractice(false);
+          window.location.hash = '';
+          return;
+        }
         
         // Fetch lesson title first
         fetch(`${API_URL}/api/lessons/${lessonId}`, {
@@ -343,17 +349,37 @@ function App() {
           return r.json();
         }).then(data => {
           setActiveLesson({ id: lessonId, title: data.title || '' });
-          // Wait for auth to be set up
+          // Wait for auth to be set up, then restore chat
           setTimeout(() => {
             if (isAuthenticated) {
-              initializeLessonChat(lessonId);
+              initializeLessonChat(lessonId).then(() => {
+                setIsRestoringPractice(false);
+              });
+            } else {
+              // Wait for auth
+              const checkAuth = setInterval(() => {
+                if (isAuthenticated) {
+                  clearInterval(checkAuth);
+                  initializeLessonChat(lessonId).then(() => {
+                    setIsRestoringPractice(false);
+                  });
+                }
+              }, 100);
+              // Timeout after 5 seconds
+              setTimeout(() => clearInterval(checkAuth), 5000);
             }
-          }, 500);
+          }, 100);
         }).catch(() => {
           // Redirect to login if unauthorized
+          setIsRestoringPractice(false);
           window.location.hash = '';
         });
+      } else {
+        setIsRestoringPractice(false);
+        setIsLessonModeState(true);
       }
+    } else {
+      setIsLessonModeState(isLessonHash(hash));
     }
   }, [isAuthenticated]);
   
@@ -803,6 +829,23 @@ function App() {
             onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
           />
           <button onClick={handleLogin}>Enter</button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loader while restoring practice mode
+  if (isRestoringPractice) {
+    return (
+      <div className="login-container">
+        <h1>🎤 Speech Practice</h1>
+        <div className="loading">
+          <div className="loading-typing">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p>Restoring practice session...</p>
         </div>
       </div>
     );
