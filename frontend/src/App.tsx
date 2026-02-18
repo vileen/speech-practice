@@ -112,20 +112,30 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
 
   const handlePlayClick = () => {
     if (isActive && audioRef.current) {
-      // Stop
+      if (audioRef.current.paused) {
+        // Resume
+        audioRef.current.play();
+      } else {
+        // Pause
+        audioRef.current.pause();
+      }
+    } else {
+      // Play new
+      onStopOthers();
+      if (audioRef.current) {
+        audioRef.current.play();
+        onPlay(audioRef.current);
+      }
+    }
+  };
+
+  const handleStopClick = () => {
+    if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       onStop();
       setProgress(0);
       setCurrentTime(0);
-    } else {
-      // Play
-      onStopOthers();
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-        onPlay(audioRef.current);
-      }
     }
   };
 
@@ -148,14 +158,27 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  // Check if audio is currently playing (not just active)
+  const isPlaying = isActive && audioRef.current && !audioRef.current.paused;
+
   return (
     <div className="audio-player-with-progress">
       <button 
         className={`play-btn ${isActive ? 'playing' : ''}`}
         onClick={handlePlayClick}
+        title={isPlaying ? 'Pause' : isActive ? 'Resume' : 'Play'}
       >
-        {isActive ? '⏹️' : '▶️'}
+        {isPlaying ? '⏸️' : isActive ? '▶️' : '▶️'}
       </button>
+      {isActive && (
+        <button 
+          className="stop-btn"
+          onClick={handleStopClick}
+          title="Stop"
+        >
+          ⏹️
+        </button>
+      )}
       <div className="progress-container">
         <div 
           className="progress-bar"
