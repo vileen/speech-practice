@@ -960,25 +960,30 @@ header h1 {
   border-radius: 3px;
   cursor: pointer;
   position: relative;
+  overflow: visible;
 }
 
 .progress-fill {
   height: 100%;
   background: #e94560;
   border-radius: 3px;
-  transition: width 0.1s linear;
+  transition: width 0.05s linear;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .progress-handle {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   background: #fff;
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  margin-left: -6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .time-display {
