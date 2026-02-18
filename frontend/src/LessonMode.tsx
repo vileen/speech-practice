@@ -22,6 +22,7 @@ interface LessonDetail {
     reading: string;
     en: string;
     type?: string;
+    furigana?: string | null;
   }>;
   grammar: Array<{
     pattern: string;
@@ -412,7 +413,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
               <div className="vocab-grid">
                 {selectedLesson.vocabulary.map((item, idx) => (
                   <div key={idx} className="vocab-card">
-                    <div className="jp-word">{renderFurigana(item.jp)}</div>
+                    <div className="jp-word">{renderFurigana(item.jp, item.furigana)}</div>
                     <div className="reading">{item.reading}</div>
                     <div className="meaning">{item.en}</div>
                     {item.type && <span className="type-tag">{item.type}</span>}
