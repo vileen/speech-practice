@@ -55,7 +55,16 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   const [selectedLesson, setSelectedLessonState] = useState<LessonDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
-  const [showFurigana, setShowFurigana] = useState(false);
+  const [showFurigana, setShowFurigana] = useState(() => {
+    // Load from localStorage on init
+    const saved = localStorage.getItem('showFurigana');
+    return saved ? JSON.parse(saved) : false;
+  });
+  
+  // Save showFurigana to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('showFurigana', JSON.stringify(showFurigana));
+  }, [showFurigana]);
   
   // Furigana cache to avoid repeated API calls
   const [furiganaCache, setFuriganaCache] = useState<Record<string, string>>({});
