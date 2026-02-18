@@ -420,6 +420,16 @@ function App() {
   const generateAIResponse = async (userText: string, _lang: string) => {
     if (!session) return;
     
+    // Add temporary "AI is typing" message BEFORE the fetch
+    const tempMessageId = Date.now();
+    setMessages(prev => [...prev, {
+      id: tempMessageId,
+      role: 'assistant',
+      text: '',
+      isLoading: true,
+      isTyping: true,
+    }]);
+    
     try {
       const response = await fetch(`${API_URL}/api/chat`, {
         method: 'POST',
@@ -432,16 +442,6 @@ function App() {
           message: userText,
         }),
       });
-      
-      // Add temporary "AI is typing" message
-      const tempMessageId = Date.now();
-      setMessages(prev => [...prev, {
-        id: tempMessageId,
-        role: 'assistant',
-        text: '',
-        isLoading: true,
-        isTyping: true,
-      }]);
       
       if (response.ok) {
         const aiData = await response.json();
@@ -902,7 +902,7 @@ function App() {
                 <div className="message-header">
                   <span className="role-badge">{msg.role === 'user' ? 'You' : 'AI'}</span>
                   {/* Show translate button for all assistant messages */}
-                  {msg.role === 'assistant' && (
+                  {msg.role === 'assistant' && !(msg as any).isTyping && (
                     <button 
                       className="translate-toggle"
                       onClick={async () => {
