@@ -217,7 +217,7 @@ Practice phrases: ${lesson.practice_phrases.join(', ')}
 }
 
 // Get AI system prompt for lesson mode
-export function getLessonSystemPrompt(lesson: LessonData, relaxed: boolean = true): string {
+export function getLessonSystemPrompt(lesson: LessonData, relaxed: boolean = true, simpleMode: boolean = false): string {
   const vocabWords = lesson.vocabulary.map(v => v.jp);
   const grammarPatterns = lesson.grammar.map(g => g.pattern);
   
@@ -226,6 +226,17 @@ export function getLessonSystemPrompt(lesson: LessonData, relaxed: boolean = tru
     ? lesson.topics.join(', ')
     : lesson.title;
   
+  const simpleModeInstructions = simpleMode ? `
+SIMPLE MODE - Use Basic Japanese:
+- Use only JLPT N5/N4 level vocabulary
+- Keep sentences short (5-8 words max)
+- Use basic grammar patterns only (です/ます form)
+- Avoid complex particles (のに, けど, ながら, etc.)
+- Break down complex ideas into simple sentences
+- If you need to use a difficult word, explain it simply
+- Speak like you're talking to a beginner student
+` : '';
+  
   const basePrompt = `You are a Japanese language practice partner. You are helping the user practice Lesson: ${lesson.title}.
 
 KEY VOCABULARY TO USE (prioritize these words):
@@ -233,6 +244,7 @@ ${vocabWords.slice(0, 30).join(', ')}
 
 GRAMMAR PATTERNS TO PRACTICE:
 ${grammarPatterns.join('\n')}
+${simpleModeInstructions}
 
 START THE CONVERSATION:
 You MUST begin with a question in Japanese related to: ${starterTopics}
