@@ -376,6 +376,40 @@ export async function addFurigana(text: string): Promise<string> {
   }
   
   console.log(`[Furigana] Result: "${result}"`);
+  
+  // Post-processing: check if all kanji have furigana
+  // Find any remaining bare kanji (not wrapped in <ruby> tags)
+  // Remove all ruby tags temporarily to check what's left
+  const textWithoutRuby = result.replace(/<ruby>[^<]*<rt>[^<]*<\/rt><\/ruby>/g, '');
+  const kanjiRegex2 = /[\u4e00-\u9faf]/g;
+  const remainingKanji = textWithoutRuby.match(kanjiRegex2);
+  
+  if (remainingKanji && remainingKanji.length > 0) {
+    const uniqueRemaining = [...new Set(remainingKanji)];
+    console.log(`[Furigana] Post-processing: Found ${uniqueRemaining.length} unique kanji without furigana: [${uniqueRemaining.join(', ')}]`);
+    
+    // Try to get furigana for remaining kanji individually
+    for (const kanji of uniqueRemaining) {
+      // Check cache first
+      let reading = furiganaCache.get(kanji);
+      
+      if (!reading) {
+        // Fetch from Jisho
+        reading = await getReadingFromJisho(kanji);
+      }
+      
+      if (reading) {
+        const ruby = `<ruby>${kanji}<rt>${reading}</rt></ruby>`;
+        // Replace bare kanji that are not already inside ruby tags
+        // Simple approach: replace in the original result
+        result = result.replace(kanji, ruby);
+        console.log(`[Furigana] Post-process: Added "${ruby}" for "${kanji}"`);
+      } else {
+        console.log(`[Furigana] Post-process: Could not find reading for "${kanji}"`);
+      }
+    }
+  }
+  
   return result;
 }
 
