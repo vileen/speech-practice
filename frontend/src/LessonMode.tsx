@@ -54,7 +54,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   const [selectedLesson, setSelectedLessonState] = useState<LessonDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
-  const [showFurigana, setShowFurigana] = useState(true);
+  const [showFurigana, setShowFurigana] = useState(false);
   
   // Furigana cache to avoid repeated API calls
   const [furiganaCache, setFuriganaCache] = useState<Record<string, string>>({});
