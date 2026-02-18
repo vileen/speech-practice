@@ -950,7 +950,7 @@ function App() {
                       ) : msg.text)
                   )}
                 </div>
-                {(msg as any).isLoading && (
+                {(msg as any).isLoading && msg.text && (
                   <div className="audio-loading">
                     <span className="loading-dots">Generating audio</span>
                   </div>
