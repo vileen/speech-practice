@@ -72,9 +72,11 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   // Furigana cache to avoid repeated API calls
   const [furiganaCache, setFuriganaCache] = useState<Record<string, string>>({});
   const [furiganaLoading, setFuriganaLoading] = useState<Record<string, boolean>>({});
+  const [furiganaFailed, setFuriganaFailed] = useState<Record<string, boolean>>({});
   // Use refs to avoid dependency loops in useEffect
   const furiganaCacheRef = useRef<Record<string, string>>({});
   const furiganaLoadingRef = useRef<Record<string, boolean>>({});
+  const furiganaFailedRef = useRef<Record<string, boolean>>({});
   
   // Keep refs in sync with state
   useEffect(() => {
@@ -84,6 +86,10 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   useEffect(() => {
     furiganaLoadingRef.current = furiganaLoading;
   }, [furiganaLoading]);
+  
+  useEffect(() => {
+    furiganaFailedRef.current = furiganaFailed;
+  }, [furiganaFailed]);
   
   // Ref for scroll position
   const lessonsListRef = useRef<HTMLDivElement>(null);
@@ -222,9 +228,16 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
         furiganaCacheRef.current = { ...furiganaCacheRef.current, [text]: withFurigana };
         setFuriganaCache({ ...furiganaCacheRef.current });
         return withFurigana;
+      } else {
+        // Mark as failed
+        furiganaFailedRef.current = { ...furiganaFailedRef.current, [text]: true };
+        setFuriganaFailed({ ...furiganaFailedRef.current });
       }
     } catch (error) {
       console.error('Error fetching furigana:', error);
+      // Mark as failed
+      furiganaFailedRef.current = { ...furiganaFailedRef.current, [text]: true };
+      setFuriganaFailed({ ...furiganaFailedRef.current });
     } finally {
       furiganaLoadingRef.current = { ...furiganaLoadingRef.current, [text]: false };
       setFuriganaLoading({ ...furiganaLoadingRef.current });
@@ -275,6 +288,36 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
     const cached = furiganaCacheRef.current[text] || furiganaCache[text];
     if (cached) {
       return <span dangerouslySetInnerHTML={{ __html: cached }} />;
+    }
+    
+    // Check if fetch failed
+    const failed = furiganaFailedRef.current[text] || furiganaFailed[text];
+    if (failed) {
+      // Show "failed" in red above each kanji
+      const kanjiRegex = /[\u4e00-\u9faf]/g;
+      const parts: JSX.Element[] = [];
+      let lastIndex = 0;
+      let match;
+      
+      while ((match = kanjiRegex.exec(text)) !== null) {
+        // Add text before kanji
+        if (match.index > lastIndex) {
+          parts.push(<span key={`text-${lastIndex}`}>{text.slice(lastIndex, match.index)}</span>);
+        }
+        // Add kanji with "failed" above
+        parts.push(
+          <ruby key={`kanji-${match.index}`} className="furigana-failed">
+            {match[0]}<rt>failed</rt>
+          </ruby>
+        );
+        lastIndex = match.index + 1;
+      }
+      // Add remaining text
+      if (lastIndex < text.length) {
+        parts.push(<span key={`text-${lastIndex}`}>{text.slice(lastIndex)}</span>);
+      }
+      
+      return <span>{parts}</span>;
     }
     
     // Otherwise show plain text (it will be fetched)
