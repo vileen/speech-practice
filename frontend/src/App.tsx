@@ -70,7 +70,7 @@ function App() {
   const [gender, setGender] = useState<'male' | 'female'>('female');
   // Recording state managed by VoiceRecorder component
   const [session, setSession] = useState<Session | null>(null);
-  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean}>>([]);
+  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean}>>([]);
   const [inputText, setInputText] = useState('');
   const [showFurigana, setShowFurigana] = useState(true);
   
@@ -479,6 +479,16 @@ function App() {
           const data = await response.json();
           console.log('Lesson system prompt loaded:', data.system_prompt);
           
+          // Add placeholder message immediately
+          const messageId = Date.now();
+          setMessages([{
+            id: messageId,
+            role: 'assistant',
+            text: '',
+            isLoading: true,
+            isTyping: true,
+          }]);
+          
           // AI will start the conversation - send empty user message to trigger first response
           const aiResponse = await fetch(`${API_URL}/api/chat`, {
             method: 'POST',
@@ -495,14 +505,14 @@ function App() {
           if (aiResponse.ok) {
             const aiData = await aiResponse.json();
             
-            // Add AI message with loading state
-            const messageId = Date.now();
+            // Update placeholder with AI response
             setMessages([{
               id: messageId,
               role: 'assistant',
               text: aiData.text,
               withFurigana: aiData.text_with_furigana || aiData.text,
               translation: aiData.translation,
+              isTyping: false,
               isLoading: true,
             }]);
             
@@ -519,6 +529,9 @@ function App() {
               audioUrl: audioUrl || undefined,
               isLoading: false,
             }]);
+          } else {
+            // Remove placeholder on error
+            setMessages([]);
           }
         }
       }
