@@ -437,40 +437,6 @@ app.post('/api/furigana/save', checkPassword, async (req, res) => {
   }
 });
 
-// Clear specific entry from furigana cache
-app.post('/api/furigana/clear', checkPassword, async (req, res) => {
-  try {
-    const { text, clearMemory } = req.body;
-    if (!text) {
-      return res.status(400).json({ error: 'No text provided' });
-    }
-    await pool.query('DELETE FROM furigana_cache WHERE original_text = $1', [text]);
-    
-    // Also clear file cache if requested
-    if (clearMemory) {
-      try {
-        const { readFile, writeFile } = await import('fs/promises');
-        const { existsSync } = await import('fs');
-        const CACHE_FILE = './furigana-cache.json';
-        
-        if (existsSync(CACHE_FILE)) {
-          const data = await readFile(CACHE_FILE, 'utf-8');
-          const obj = JSON.parse(data);
-          delete obj[text];
-          await writeFile(CACHE_FILE, JSON.stringify(obj, null, 2), 'utf-8');
-        }
-      } catch (e) {
-        console.error('Error clearing file cache:', e);
-      }
-    }
-    
-    res.json({ status: 'cleared', text, clearMemory });
-  } catch (error) {
-    console.error('Error clearing cache:', error);
-    res.status(500).json({ error: 'Failed to clear cache' });
-  }
-});
-
 // LESSON MODE API
 
 // List all lessons
@@ -609,7 +575,6 @@ app.post('/api/chat', checkPassword, async (req, res) => {
     res.json({
       text: aiResponse.text,
       text_with_furigana: aiResponse.textWithFurigana,
-      translation: aiResponse.translation,
     });
   } catch (error) {
     console.error('Error in chat:', error);
@@ -625,17 +590,6 @@ app.use(express.static(staticPath));
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(join(staticPath, 'index.html'));
-  }
-});
-
-// Debug: List furigana cache
-app.get('/api/furigana/list', checkPassword, async (req, res) => {
-  try {
-    const result = await pool.query('SELECT original_text, furigana_html FROM furigana_cache ORDER BY original_text');
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error listing cache:', error);
-    res.status(500).json({ error: 'Failed to list cache' });
   }
 });
 
