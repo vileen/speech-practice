@@ -903,65 +903,67 @@ function App() {
               </button>
             </div>
             
-            {/* Voice Recorder with VAD - blocked while waiting for any AI response */}
+            {/* Voice Recorder with VAD - overlay when waiting for AI */}
             {(() => {
               // Check if any AI message is currently loading (waiting for response)
               const isWaitingForAI = messages.some(m => m.role === 'assistant' && m.isLoading);
               
-              if (isWaitingForAI) {
-                return (
-                  <div className="recorder-waiting">
-                    <div className="loading-typing">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                    <p>AI is responding...</p>
-                  </div>
-                );
-              }
-              
               return (
-                <VoiceRecorder
-                  mode={recordingMode}
-                  isListening={isListening}
-                  onStartListening={() => {
-                    setIsListening(true);
-                  }}
-                  onStopListening={() => {
-                    setIsListening(false);
-                  }}
-                  onRecordingComplete={async (audioBlob) => {
-                    // Upload the recorded audio
-                    const formData = new FormData();
-                    formData.append('audio', audioBlob, 'recording.webm');
-                    formData.append('session_id', session?.id.toString() || '');
-                    formData.append('target_language', language);
-                    
-                    try {
-                      const response = await fetch(`${API_URL}/api/upload`, {
-                        method: 'POST',
-                        headers: {
-                          'X-Password': password,
-                        },
-                        body: formData,
-                      });
+                <div className="voice-recorder-wrapper">
+                  {/* Waiting overlay - shown when AI is responding */}
+                  {isWaitingForAI && (
+                    <div className="recorder-overlay">
+                      <div className="loading-typing">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                      <p>AI is responding...</p>
+                    </div>
+                  )}
+                  
+                  <VoiceRecorder
+                    mode={recordingMode}
+                    isListening={isListening}
+                    disabled={isWaitingForAI}
+                    onStartListening={() => {
+                      setIsListening(true);
+                    }}
+                    onStopListening={() => {
+                      setIsListening(false);
+                    }}
+                    onRecordingComplete={async (audioBlob) => {
+                      // Upload the recorded audio
+                      const formData = new FormData();
+                      formData.append('audio', audioBlob, 'recording.webm');
+                      formData.append('session_id', session?.id.toString() || '');
+                      formData.append('target_language', language);
                       
-                      if (response.ok) {
-                        const data = await response.json();
-                        const displayText = data.transcription || '[Your recording]';
-                        const audioUrl = URL.createObjectURL(audioBlob);
-                        setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
+                      try {
+                        const response = await fetch(`${API_URL}/api/upload`, {
+                          method: 'POST',
+                          headers: {
+                            'X-Password': password,
+                          },
+                          body: formData,
+                        });
                         
-                        if (data.transcription) {
-                          await generateAIResponse(data.transcription, language);
+                        if (response.ok) {
+                          const data = await response.json();
+                          const displayText = data.transcription || '[Your recording]';
+                          const audioUrl = URL.createObjectURL(audioBlob);
+                          setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
+                          
+                          if (data.transcription) {
+                            await generateAIResponse(data.transcription, language);
+                          }
                         }
+                      } catch (error) {
+                        console.error('Error uploading recording:', error);
                       }
-                    } catch (error) {
-                      console.error('Error uploading recording:', error);
-                    }
-                  }}
-                />
+                    }}
+                  />
+                </div>
               );
             })()}
           </div>
