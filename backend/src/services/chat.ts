@@ -18,9 +18,11 @@ export async function generateChatResponse(
     throw new Error('OPENAI_API_KEY not set');
   }
 
+  const basePrompt = 'You are a helpful Japanese language practice partner. When the user makes grammar or vocabulary mistakes, gently correct them first by explaining what was wrong, then answer their question. Always respond in Japanese with furigana for kanji: <ruby>漢字<rt>かんじ</rt></ruby>. Do NOT include English translations in your response.';
+  
   const systemPrompt = lessonContext 
-    ? `${lessonContext}\n\nIMPORTANT: Always respond in Japanese (unless asked for translation). Use furigana for kanji in this format: <ruby>漢字<rt>かんじ</rt></ruby>. Do NOT include English translations in your response - translations will be provided separately when requested.`
-    : 'You are a helpful Japanese language practice partner. Respond in Japanese with furigana for kanji: <ruby>漢字<rt>かんじ</rt></ruby>. Do NOT include English translations in your response - translations will be provided separately when requested.';
+    ? `${lessonContext}\n\n${basePrompt}`
+    : basePrompt;
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
