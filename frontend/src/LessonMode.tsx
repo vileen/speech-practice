@@ -55,16 +55,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   const [selectedLesson, setSelectedLessonState] = useState<LessonDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
-  const [showFurigana, setShowFurigana] = useState(() => {
-    // Load from localStorage on init
-    const saved = localStorage.getItem('showFurigana');
-    return saved ? JSON.parse(saved) : false;
-  });
-  
-  // Save showFurigana to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem('showFurigana', JSON.stringify(showFurigana));
-  }, [showFurigana]);
+  const [showFurigana, setShowFurigana] = useState(false);
   
   // Furigana cache to avoid repeated API calls
   const [furiganaCache, setFuriganaCache] = useState<Record<string, string>>({});
@@ -458,9 +449,9 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
 
           {activeTab === 'practice' && (
             <div className="practice-tab">
-              <div className="phrases-list">
+              <div className="practice-list">
                 {selectedLesson.practice_phrases.map((phrase, idx) => (
-                  <div key={idx} className="phrase-item" style={{ background: idx % 2 === 0 ? '#1a1a2e' : '#16213e' }}>
+                  <div key={idx} className="practice-item">
                     <span className="number">{idx + 1}.</span>
                     <span className="phrase">{renderFurigana(phrase)}</span>
                   </div>
