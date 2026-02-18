@@ -48,7 +48,10 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
   useEffect(() => {
     const audio = new Audio(audioUrl);
     audio.volume = volume;
-    audio.preload = 'auto'; // Preload audio for faster playback
+    audio.preload = 'auto';
+    
+    // Track if audio is actually playing (not just isActive prop)
+    let isActuallyPlaying = false;
     
     audio.addEventListener('loadedmetadata', () => {
       if (isFinite(audio.duration) && !isNaN(audio.duration)) {
@@ -56,7 +59,6 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
       }
     });
     
-    // Also try to get duration when audio is ready to play
     audio.addEventListener('canplay', () => {
       if (isFinite(audio.duration) && !isNaN(audio.duration)) {
         setDuration(audio.duration);
@@ -64,12 +66,14 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
     });
     
     audio.addEventListener('ended', () => {
+      isActuallyPlaying = false;
       onStop();
       setProgress(0);
       setCurrentTime(0);
     });
     
     audio.addEventListener('pause', () => {
+      isActuallyPlaying = false;
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -77,35 +81,37 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
     });
     
     audio.addEventListener('play', () => {
-      // Restart progress animation when resuming
-      if (!rafRef.current) {
-        const updateProgress = () => {
-          if (audioRef.current) {
-            const current = audioRef.current.currentTime;
-            const dur = audioRef.current.duration;
-            // Only update if duration is valid
-            if (isFinite(dur) && !isNaN(dur)) {
-              setCurrentTime(current);
-              setDuration(dur);
-              setProgress((current / dur) * 100);
-            }
-            rafRef.current = requestAnimationFrame(updateProgress);
+      isActuallyPlaying = true;
+      // Start progress animation
+      const updateProgress = () => {
+        if (audioRef.current && isActuallyPlaying) {
+          const current = audioRef.current.currentTime;
+          const dur = audioRef.current.duration;
+          if (isFinite(dur) && !isNaN(dur) && dur > 0) {
+            setCurrentTime(current);
+            setDuration(dur);
+            setProgress((current / dur) * 100);
           }
-        };
-        rafRef.current = requestAnimationFrame(updateProgress);
+          rafRef.current = requestAnimationFrame(updateProgress);
+        }
+      };
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
       }
+      rafRef.current = requestAnimationFrame(updateProgress);
     });
     
     audioRef.current = audio;
     
     return () => {
+      isActuallyPlaying = false;
       audio.pause();
       audio.src = '';
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [audioUrl, isActive]);
+  }, [audioUrl]);
 
   // Update volume when prop changes
   useEffect(() => {
@@ -114,41 +120,16 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
     }
   }, [volume]);
 
-  // Start/stop animation frame for progress updates
-  useEffect(() => {
-    if (isActive && audioRef.current) {
-      const updateProgress = () => {
-        if (audioRef.current) {
-          const current = audioRef.current.currentTime;
-          const dur = audioRef.current.duration;
-          setCurrentTime(current);
-          setDuration(dur);
-          setProgress(dur ? (current / dur) * 100 : 0);
-          rafRef.current = requestAnimationFrame(updateProgress);
-        }
-      };
-      rafRef.current = requestAnimationFrame(updateProgress);
-    } else {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
-    }
-    
-    return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
-    };
-  }, [isActive]);
-
+  const isPlayingRef = useRef(false);
+  
   const handlePlayClick = async () => {
     if (!audioRef.current) {
       console.error('Audio not initialized');
       return;
     }
     
-    if (isActive) {
-      // Already active - toggle play/pause
+    if (isActive && isPlayingRef.current) {
+      // Already active and playing - toggle pause
       if (audioRef.current.paused) {
         try {
           await audioRef.current.play();
@@ -163,13 +144,15 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
       onStopOthers();
       try {
         // Reset to beginning if at end
-        if (audioRef.current.currentTime >= audioRef.current.duration - 0.1) {
+        if (audioRef.current.currentTime >= (audioRef.current.duration || 0) - 0.1) {
           audioRef.current.currentTime = 0;
         }
-        await audioRef.current.play();
+        isPlayingRef.current = true;
         onPlay(audioRef.current);
+        await audioRef.current.play();
       } catch (err) {
         console.error('Failed to play:', err);
+        isPlayingRef.current = false;
       }
     }
   };
@@ -204,17 +187,33 @@ function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers 
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // Check if audio is currently playing (not just active)
-  const isPlaying = isActive && audioRef.current && !audioRef.current.paused;
+  const [isLocallyPlaying, setIsLocallyPlaying] = useState(false);
+  
+  // Sync local playing state with actual audio state
+  useEffect(() => {
+    if (!audioRef.current) return;
+    
+    const updatePlayingState = () => {
+      setIsLocallyPlaying(!audioRef.current!.paused);
+    };
+    
+    audioRef.current.addEventListener('play', updatePlayingState);
+    audioRef.current.addEventListener('pause', updatePlayingState);
+    
+    return () => {
+      audioRef.current?.removeEventListener('play', updatePlayingState);
+      audioRef.current?.removeEventListener('pause', updatePlayingState);
+    };
+  }, [audioUrl]);
 
   return (
     <div className="audio-player-with-progress">
       <button 
         className={`play-btn ${isActive ? 'playing' : ''}`}
         onClick={handlePlayClick}
-        title={isPlaying ? 'Pause' : isActive ? 'Resume' : 'Play'}
+        title={isLocallyPlaying ? 'Pause' : 'Play'}
       >
-        {isPlaying ? '⏸️' : isActive ? '▶️' : '▶️'}
+        {isLocallyPlaying ? '⏸️' : '▶️'}
       </button>
       {isActive && (
         <button 
