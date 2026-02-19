@@ -1271,14 +1271,14 @@ function App() {
                   </button>
                 </div>
                 <small className="setup-hint">
-                  {voiceStyle === 'anime' 
-                    ? (gender === 'male' ? "Denji-like voice" : "Reze-like voice")
+                  {voiceStyle === 'anime'
+                    ? "Anime-style expressive voice"
                     : "Natural conversational voice"}
                 </small>
               </div>
             </div>
 
-            <button 
+            <button
               className="start-practice-btn"
               onClick={() => {
                 setShowPracticeSetup(false);
@@ -1372,14 +1372,14 @@ function App() {
                   </button>
                 </div>
                 <small className="setup-hint">
-                  {voiceStyle === 'anime' 
-                    ? (gender === 'male' ? "Denji-like voice" : "Reze-like voice")
+                  {voiceStyle === 'anime'
+                    ? "Anime-style expressive voice"
                     : "Natural conversational voice"}
                 </small>
               </div>
             </div>
 
-            <button 
+            <button
               className="start-practice-btn"
               onClick={startSession}
             >
@@ -1448,14 +1448,14 @@ function App() {
                   </button>
                 </div>
                 <small className="setup-hint">
-                  {voiceStyle === 'anime' 
-                    ? (gender === 'male' ? "Denji-like voice" : "Reze-like voice")
+                  {voiceStyle === 'anime'
+                    ? "Anime-style expressive voice"
                     : "Natural conversational voice"}
                 </small>
               </div>
             </div>
 
-            <button 
+            <button
               className="start-practice-btn"
               onClick={startRepeatMode}
               disabled={isCheckingPronunciation}
