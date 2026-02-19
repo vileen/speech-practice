@@ -992,3 +992,100 @@ header h1 {
   font-size: 0.75rem;
   color: #888;
 }
+
+/* Practice Setup Screen */
+.practice-setup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.practice-setup h2 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.setup-lesson-title {
+  font-size: 1.2rem;
+  color: #e94560;
+  margin-bottom: 40px;
+  font-weight: 500;
+}
+
+.setup-options {
+  background: #16213e;
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 24px 32px;
+  margin-bottom: 32px;
+  min-width: 300px;
+}
+
+.setup-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.setup-toggle input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: #e94560;
+  cursor: pointer;
+}
+
+.toggle-label {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #fff;
+  display: block;
+}
+
+.toggle-description {
+  font-size: 0.85rem;
+  color: #888;
+  display: block;
+  margin-top: 4px;
+}
+
+.start-practice-btn {
+  background: #e94560;
+  color: #fff;
+  border: none;
+  padding: 16px 48px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 16px;
+}
+
+.start-practice-btn:hover {
+  background: #c73e54;
+  transform: translateY(-2px);
+}
+
+.cancel-practice-btn {
+  background: transparent;
+  color: #888;
+  border: 2px solid #333;
+  padding: 12px 32px;
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cancel-practice-btn:hover {
+  border-color: #e94560;
+  color: #e94560;
+}

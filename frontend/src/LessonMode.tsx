@@ -68,19 +68,6 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   useEffect(() => {
     localStorage.setItem('showFurigana', showFurigana.toString());
   }, [showFurigana]);
-
-  // Simple mode toggle for language complexity
-  const [simpleMode, setSimpleMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('simpleMode');
-      return saved === 'true';
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    localStorage.setItem('simpleMode', simpleMode.toString());
-  }, [simpleMode]);
   
   // Furigana cache to avoid repeated API calls
   const [furiganaCache, setFuriganaCache] = useState<Record<string, string>>({});
@@ -453,14 +440,10 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
           <button className={activeTab === 'practice' ? 'active' : ''} onClick={() => setActiveTab('practice')}>Practice ({selectedLesson.practice_phrases.length})</button>
         </div>
 
-        <div className="toggles-row">
-          <label className="toggle-label">
+        <div className="furigana-toggle">
+          <label>
             <input type="checkbox" checked={showFurigana} onChange={(e) => setShowFurigana(e.target.checked)} />
             Show Furigana
-          </label>
-          <label className="toggle-label">
-            <input type="checkbox" checked={simpleMode} onChange={(e) => setSimpleMode(e.target.checked)} />
-            Simple Mode
           </label>
         </div>
 

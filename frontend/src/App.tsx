@@ -335,6 +335,20 @@ function App() {
   const [isLessonMode, setIsLessonModeState] = useState(false);
   const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
   const [isRestoringPractice, setIsRestoringPractice] = useState(false);
+  const [showPracticeSetup, setShowPracticeSetup] = useState(false);
+  
+  // Simple mode toggle for language complexity
+  const [simpleMode, setSimpleMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('simpleMode');
+      return saved === 'true';
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('simpleMode', simpleMode.toString());
+  }, [simpleMode]);
   
   // Check if hash is a lesson URL (either list or specific lesson)
   const isLessonHash = (hash: string): boolean => {
@@ -762,7 +776,6 @@ function App() {
         setSession(sessionData);
         
         // Then load lesson context
-        const simpleMode = localStorage.getItem('simpleMode') === 'true';
         const response = await fetch(`${API_URL}/api/lessons/${lessonId}/start`, {
           method: 'POST',
           headers: {
@@ -890,8 +903,7 @@ function App() {
         onStartLessonChat={(lessonId, lessonTitle) => {
           setIsLessonMode(false, true); // Keep hash when going to chat
           setActiveLesson({ id: lessonId, title: lessonTitle });
-          // Initialize lesson chat with system prompt
-          initializeLessonChat(lessonId);
+          setShowPracticeSetup(true);
         }}
       />
     );
@@ -1171,6 +1183,47 @@ function App() {
               }}>End</button>
             </div>
           </div>
+
+          {/* Practice Setup Screen - shown before starting lesson chat */}
+          {showPracticeSetup && activeLesson && (
+            <div className="practice-setup">
+              <h2>📚 Practice Setup</h2>
+              <p className="setup-lesson-title">{translateLessonTitle(activeLesson.title)}</p>
+              
+              <div className="setup-options">
+                <label className="setup-toggle">
+                  <input 
+                    type="checkbox" 
+                    checked={simpleMode} 
+                    onChange={(e) => setSimpleMode(e.target.checked)} 
+                  />
+                  <span className="toggle-label">Simple Mode</span>
+                  <span className="toggle-description">Use basic vocabulary and short sentences</span>
+                </label>
+              </div>
+
+              <button 
+                className="start-practice-btn"
+                onClick={() => {
+                  setShowPracticeSetup(false);
+                  initializeLessonChat(activeLesson.id);
+                }}
+              >
+                🚀 Start Practice
+              </button>
+              
+              <button 
+                className="cancel-practice-btn"
+                onClick={() => {
+                  setShowPracticeSetup(false);
+                  setActiveLesson(null);
+                  setIsLessonMode(true);
+                }}
+              >
+                ← Back to Lesson
+              </button>
+            </div>
+          )}
 
           <div className="messages">
             {messages.map((msg, idx) => (
