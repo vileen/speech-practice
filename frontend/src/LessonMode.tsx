@@ -192,6 +192,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
 
   const handleBackToList = () => {
     setSelectedLesson(null);
+    window.location.hash = '#/lessons';
   };
 
   // Fetch furigana from backend - uses refs to avoid dependency loops

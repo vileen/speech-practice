@@ -1174,12 +1174,22 @@ function App() {
                   onChange={(e) => setVolume(parseFloat(e.target.value))}
                 />
               </div>
+              {activeLesson && (
+                <button className="back-btn" onClick={() => {
+                  setActiveLesson(null);
+                  setIsLessonMode(true);
+                  window.location.hash = '#/lessons';
+                }}>
+                  ← Back
+                </button>
+              )}
               <button className="mode-btn" onClick={startRepeatMode}>
                 🎯 Practice
               </button>
               <button className="end-btn" onClick={() => {
                 setSession(null);
                 setActiveLesson(null);
+                window.location.hash = '';
               }}>End</button>
             </div>
           </div>
@@ -1218,9 +1228,10 @@ function App() {
                   setShowPracticeSetup(false);
                   setActiveLesson(null);
                   setIsLessonMode(true);
+                  window.location.hash = '#/lessons';
                 }}
               >
-                ← Back to Lesson
+                ← Back to Lessons
               </button>
             </div>
           )}
