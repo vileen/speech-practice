@@ -1096,6 +1096,57 @@ function App() {
     );
   }
 
+  // Practice Setup Screen - shown before starting lesson chat (outside session)
+  if (showPracticeSetup && activeLesson) {
+    return (
+      <div className="app">
+        <header>
+          <h1>🎤 Speech Practice</h1>
+        </header>
+        <main>
+          <div className="practice-setup">
+            <h2>📚 Practice Setup</h2>
+            <p className="setup-lesson-title">{translateLessonTitle(activeLesson.title)}</p>
+            
+            <div className="setup-options">
+              <label className="setup-toggle">
+                <input 
+                  type="checkbox" 
+                  checked={simpleMode} 
+                  onChange={(e) => setSimpleMode(e.target.checked)} 
+                />
+                <span className="toggle-label">Simple Mode</span>
+                <span className="toggle-description">Use basic vocabulary and short sentences</span>
+              </label>
+            </div>
+
+            <button 
+              className="start-practice-btn"
+              onClick={() => {
+                setShowPracticeSetup(false);
+                initializeLessonChat(activeLesson.id);
+              }}
+            >
+              🚀 Start Practice
+            </button>
+            
+            <button 
+              className="cancel-practice-btn"
+              onClick={() => {
+                setShowPracticeSetup(false);
+                setActiveLesson(null);
+                setIsLessonMode(true);
+                window.location.hash = '#/lessons';
+              }}
+            >
+              ← Back to Lessons
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <header>
@@ -1193,48 +1244,6 @@ function App() {
               }}>End</button>
             </div>
           </div>
-
-          {/* Practice Setup Screen - shown before starting lesson chat */}
-          {showPracticeSetup && activeLesson && (
-            <div className="practice-setup">
-              <h2>📚 Practice Setup</h2>
-              <p className="setup-lesson-title">{translateLessonTitle(activeLesson.title)}</p>
-              
-              <div className="setup-options">
-                <label className="setup-toggle">
-                  <input 
-                    type="checkbox" 
-                    checked={simpleMode} 
-                    onChange={(e) => setSimpleMode(e.target.checked)} 
-                  />
-                  <span className="toggle-label">Simple Mode</span>
-                  <span className="toggle-description">Use basic vocabulary and short sentences</span>
-                </label>
-              </div>
-
-              <button 
-                className="start-practice-btn"
-                onClick={() => {
-                  setShowPracticeSetup(false);
-                  initializeLessonChat(activeLesson.id);
-                }}
-              >
-                🚀 Start Practice
-              </button>
-              
-              <button 
-                className="cancel-practice-btn"
-                onClick={() => {
-                  setShowPracticeSetup(false);
-                  setActiveLesson(null);
-                  setIsLessonMode(true);
-                  window.location.hash = '#/lessons';
-                }}
-              >
-                ← Back to Lessons
-              </button>
-            </div>
-          )}
 
           <div className="messages">
             {messages.map((msg, idx) => (
