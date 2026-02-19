@@ -620,7 +620,9 @@ function App() {
   const fetchTTS = async (text: string, sessionData?: { language: string, voice_gender: string }): Promise<string | null> => {
     const activeSession = sessionData || session;
     if (!activeSession) return null;
-    
+
+    console.log('[TTS] Fetching with voiceStyle:', voiceStyle);
+
     try {
       const response = await fetch(`${API_URL}/api/tts`, {
         method: 'POST',
