@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Routes, Route, Link, useNavigate, useParams, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import { LessonMode } from './LessonMode.js';
 import './LessonMode.css';
@@ -288,674 +289,35 @@ const PRACTICE_PHRASES: Record<string, PracticePhrase[]> = {
   ],
 };
 
+// Main App wrapper with router
 function App() {
-  const [password, setPassword] = useState('');
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/chat/setup" element={<ChatSetup />} />
+      <Route path="/chat" element={<ChatSession />} />
+      <Route path="/repeat/setup" element={<RepeatSetup />} />
+      <Route path="/repeat" element={<RepeatMode />} />
+      <Route path="/lessons" element={<LessonList />} />
+      <Route path="/lessons/:id/setup" element={<LessonPracticeSetup />} />
+      <Route path="/lessons/:id/practice" element={<LessonPractice />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+// Helper component for authenticated routes
+function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
-  const [gender, setGender] = useState<'male' | 'female'>('female');
-  const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('voiceStyle') as 'normal' | 'anime' || 'normal';
-    }
-    return 'normal';
-  });
-  // Track hash for re-rendering on navigation
-  const [currentHash, setCurrentHash] = useState(() => typeof window !== 'undefined' ? window.location.hash : '');
-  // Recording state managed by VoiceRecorder component
-  const [session, setSession] = useState<Session | null>(null);
-  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
-  const [inputText, setInputText] = useState('');
-  const [showFurigana, setShowFurigana] = useState(true);
-  
-  // Repeat After Me mode
-  const [isRepeatMode, setIsRepeatMode] = useState(false);
-  const [currentPhrase, setCurrentPhrase] = useState('');
-  const [currentFurigana, setCurrentFurigana] = useState('');
-  const [currentTranslation, setCurrentTranslation] = useState('');
-  const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
-  const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
-  const [isCheckingPronunciation, setIsCheckingPronunciation] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [vadResetCounter, setVadResetCounter] = useState(0); // Force VAD reset on Next Phrase
-  const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null); // Track currently playing audio
-  
-  // Repeat After Me - track if phrase has been played (for disabling recorder)
-  const [phrasePlayed, setPhrasePlayed] = useState(false);
-  const [showTranslation, setShowTranslation] = useState(false);
-  const [volume, setVolume] = useState(() => {
-    // Read from localStorage on initial load
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('speechPracticeVolume');
-      return saved ? parseFloat(saved) : 0.8; // Default 80%
-    }
-    return 0.8;
-  });
-  
-  // Save volume to localStorage when it changes and update currently playing audio
-  useEffect(() => {
-    localStorage.setItem('speechPracticeVolume', volume.toString());
-    // Update volume for currently playing audio
-    if (playingAudio?.audio) {
-      playingAudio.audio.volume = volume;
-    }
-  }, [volume, playingAudio]);
-  
-  // Lesson Mode - use URL hash for persistence
-  const [isLessonMode, setIsLessonModeState] = useState(false);
-  const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
-  const [isRestoringPractice, setIsRestoringPractice] = useState(false);
-  const [showPracticeSetup, setShowPracticeSetup] = useState(false);
-  
-  // Simple mode toggle for language complexity
-  const [simpleMode, setSimpleMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('simpleMode');
-      return saved === 'true';
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    localStorage.setItem('simpleMode', simpleMode.toString());
-  }, [simpleMode]);
-
-  useEffect(() => {
-    localStorage.setItem('voiceStyle', voiceStyle);
-  }, [voiceStyle]);
-  
-  // Check if hash is a lesson URL (either list or specific lesson)
-  const isLessonHash = (hash: string): boolean => {
-    return hash.startsWith('#/lessons');
-  };
-  
-  // Check if we're in practice mode (lesson chat)
-  const isPracticeHash = (hash: string): boolean => {
-    return hash.includes('/practice');
-  };
-  
-  // Check if we're in practice setup mode (lesson practice setup only)
-  const isPracticeSetupHash = (hash: string): boolean => {
-    return hash.startsWith('#/lessons/') && hash.includes('/setup');
-  };
-  
-  // Check if we're in repeat after me mode
-  const isRepeatHash = (hash: string): boolean => {
-    return hash === '#/repeat';
-  };
-
-  // Check if we're in repeat setup mode
-  const isRepeatSetupHash = (hash: string): boolean => {
-    return hash === '#/repeat/setup';
-  };
-
-  // Check if we're in chat/session mode
-  const isChatHash = (hash: string): boolean => {
-    return hash === '#/chat';
-  };
-
-  // Check if we're in chat setup mode
-  const isChatSetupHash = (hash: string): boolean => {
-    return hash === '#/chat/setup';
-  };
-
-  // Helper to check current hash
-  const isChatSetup = isChatSetupHash(currentHash);
-  const isRepeatSetup = isRepeatSetupHash(currentHash);
-  
-  // Parse lesson ID from hash
-  const getLessonIdFromHash = (hash: string): string | null => {
-    const match = hash.match(/#\/lessons\/([^\/]+)/);
-    return match ? match[1] : null;
-  };
-  
-  // Read initial state from URL hash
-  useEffect(() => {
-    const hash = window.location.hash;
-    
-    // If in practice setup mode on refresh
-    if (isPracticeSetupHash(hash)) {
-      const lessonId = getLessonIdFromHash(hash);
-      if (lessonId) {
-        const savedPassword = localStorage.getItem('speech_practice_password') || '';
-        if (!savedPassword) {
-          window.location.hash = '';
-          return;
-        }
-        // Fetch lesson title and show setup
-        fetch(`${API_URL}/api/lessons/${lessonId}`, {
-          headers: { 'X-Password': savedPassword }
-        }).then(r => r.json()).then(data => {
-          setActiveLesson({ id: lessonId, title: data.title || '' });
-          setShowPracticeSetup(true);
-        }).catch(() => {
-          window.location.hash = '';
-        });
-      }
-      return;
-    }
-    
-    // If in practice mode on refresh, don't show lesson list yet
-    if (isPracticeHash(hash)) {
-      setIsRestoringPractice(true);
-      const lessonId = getLessonIdFromHash(hash);
-      if (lessonId) {
-        // Get password from localStorage (state is empty on refresh)
-        const savedPassword = localStorage.getItem('speech_practice_password') || '';
-        if (!savedPassword) {
-          // Can't restore without password, redirect to login
-          setIsRestoringPractice(false);
-          window.location.hash = '';
-          return;
-        }
-        
-        // Fetch lesson title first
-        fetch(`${API_URL}/api/lessons/${lessonId}`, {
-          headers: { 'X-Password': savedPassword }
-        }).then(r => {
-          if (!r.ok) throw new Error('Unauthorized');
-          return r.json();
-        }).then(data => {
-          setActiveLesson({ id: lessonId, title: data.title || '' });
-          // Wait for auth to be set up, then restore chat
-          setTimeout(() => {
-            if (isAuthenticated) {
-              initializeLessonChat(lessonId).then(() => {
-                setIsRestoringPractice(false);
-              });
-            } else {
-              // Wait for auth
-              const checkAuth = setInterval(() => {
-                if (isAuthenticated) {
-                  clearInterval(checkAuth);
-                  initializeLessonChat(lessonId).then(() => {
-                    setIsRestoringPractice(false);
-                  });
-                }
-              }, 100);
-              // Timeout after 5 seconds
-              setTimeout(() => clearInterval(checkAuth), 5000);
-            }
-          }, 100);
-        }).catch(() => {
-          // Redirect to login if unauthorized
-          setIsRestoringPractice(false);
-          window.location.hash = '';
-        });
-      } else {
-        setIsRestoringPractice(false);
-        setIsLessonModeState(true);
-      }
-    } else if (isRepeatHash(hash)) {
-      setIsRepeatMode(true);
-    } else if (isRepeatSetupHash(hash)) {
-      // Repeat setup - just render the setup screen
-      setIsRepeatMode(false);
-    } else if (isChatHash(hash)) {
-      // Chat mode - check if we can restore session
-      const savedPassword = localStorage.getItem('speech_practice_password') || '';
-      if (!savedPassword) {
-        window.location.hash = '';
-      }
-    } else if (isChatSetupHash(hash)) {
-      // Chat setup - just render the setup screen
-      // No special state needed
-    } else {
-      setIsLessonModeState(isLessonHash(hash));
-    }
-  }, [isAuthenticated]);
-  
-  // Listen for hash changes
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      setCurrentHash(hash); // Force re-render on hash change
-      setIsLessonModeState(isLessonHash(hash) && !isPracticeHash(hash) && !isPracticeSetupHash(hash));
-      setIsRepeatMode(isRepeatHash(hash));
-
-      // Handle navigation away from practice setup
-      if (!isPracticeSetupHash(hash) && !isPracticeHash(hash)) {
-        setShowPracticeSetup(false);
-        if (!isLessonHash(hash)) {
-          setActiveLesson(null);
-        }
-      }
-
-      // Handle navigation away from chat
-      if (!isChatHash(hash) && !isChatSetupHash(hash)) {
-        if (!isRestoringPractice) {
-          setSession(null);
-        }
-      }
-    };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-  
-  // Wrapper to update URL hash when entering/exiting lesson mode
-  const setIsLessonMode = (value: boolean, keepHash = false) => {
-    setIsLessonModeState(value);
-    if (value) {
-      // Only set default hash if not already on a lesson page
-      const currentHash = window.location.hash;
-      if (!isLessonHash(currentHash)) {
-        window.location.hash = '#/lessons';
-      }
-    } else if (!keepHash) {
-      window.location.hash = '';
-    }
-  };
-  
-  // Recording mode: 'push-to-talk' | 'voice-activated'
-  const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
-  
-  // Refs for audio recording are now handled by VoiceRecorder component
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load password from localStorage on mount and auto-login if exists
   useEffect(() => {
     const savedPassword = localStorage.getItem('speech_practice_password');
     if (savedPassword) {
-      setPassword(savedPassword);
       setIsAuthenticated(true);
     }
     setIsLoading(false);
   }, []);
-
-  // Spacebar shortcut for Next Phrase in Repeat After Me mode
-  useEffect(() => {
-    if (!isRepeatMode) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !e.repeat && !e.ctrlKey && !e.metaKey) {
-        // Don't trigger if user is typing in an input
-        if (document.activeElement?.tagName === 'INPUT') return;
-        // Don't trigger if checking pronunciation or loading
-        if (isCheckingPronunciation) return;
-
-        e.preventDefault();
-        nextPhrase();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isRepeatMode, isCheckingPronunciation]);
-
-  const handleLogin = async () => {
-    localStorage.setItem('speech_practice_password', password);
-    setIsAuthenticated(true);
-  };
-
-  const startSession = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/sessions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password': password,
-        },
-        body: JSON.stringify({ language, voice_gender: gender }),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setSession(data);
-        setMessages([]);
-        window.location.hash = '#/chat';
-      }
-    } catch (error) {
-      console.error('Error creating session:', error);
-    }
-  };
-
-  // Get furigana for text
-  const getFurigana = async (text: string): Promise<string> => {
-    try {
-      const response = await fetch(`${API_URL}/api/furigana`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password': password,
-        },
-        body: JSON.stringify({ text }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        return data.with_furigana;
-      }
-    } catch (error) {
-      console.error('Error getting furigana:', error);
-    }
-    return text;
-  };
-
-  // Fetch TTS and return audio URL without adding to messages
-  const fetchTTS = async (text: string, sessionData?: { language: string, voice_gender: string }): Promise<string | null> => {
-    const activeSession = sessionData || session;
-    if (!activeSession) return null;
-
-    console.log('[TTS] Fetching with voiceStyle:', voiceStyle);
-
-    try {
-      const response = await fetch(`${API_URL}/api/tts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password': password,
-        },
-        body: JSON.stringify({
-          text,
-          language: activeSession.language,
-          gender: activeSession.voice_gender,
-          voiceStyle,
-        }),
-      });
-      
-      if (response.ok) {
-        const blob = await response.blob();
-        return URL.createObjectURL(blob);
-      }
-    } catch (error) {
-      console.error('Error fetching TTS:', error);
-    }
-    return null;
-  };
-
-  const generateTTS = async (text: string) => {
-    if (!session) return;
-    
-    try {
-      const response = await fetch(`${API_URL}/api/tts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password': password,
-        },
-        body: JSON.stringify({
-          text,
-          language: session.language,
-          gender: session.voice_gender,
-          voiceStyle,
-        }),
-      });
-      
-      if (response.ok) {
-        const blob = await response.blob();
-        const audioUrl = URL.createObjectURL(blob);
-        
-        // Get furigana for display
-        const withFurigana = language === 'japanese' ? await getFurigana(text) : text;
-        
-        const translations: Record<string, Record<string, string>> = {
-          japanese: {
-            'はい、理解しました。続けてください。': 'Yes, I understand. Please continue.',
-          },
-          italian: {
-            'Sì, ho capito. Continua pure.': 'Yes, I understand. Please continue.',
-          },
-        };
-        const translation = translations[session.language]?.[text];
-        
-        setMessages(prev => [...prev, { 
-          role: 'assistant', 
-          text, 
-          audioUrl,
-          translation,
-          showTranslation: false,
-          withFurigana,
-        }]);
-      }
-    } catch (error) {
-      console.error('Error generating TTS:', error);
-    }
-  };
-
-  // Repeat After Me functions
-  const startRepeatMode = async () => {
-    if (isCheckingPronunciation) return; // Prevent double-clicks
-    setIsCheckingPronunciation(true);
-    window.location.hash = '#/repeat';
-    setIsRepeatMode(true);
-    setPronunciationResult(null);
-    await nextPhrase();
-    setIsCheckingPronunciation(false);
-  };
-
-  const nextPhrase = async () => {
-    const phrases = PRACTICE_PHRASES[language];
-    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-    
-    // Clear cached audio for new phrase
-    if (currentAudioUrl) {
-      URL.revokeObjectURL(currentAudioUrl);
-      setCurrentAudioUrl(null);
-    }
-    
-    setCurrentPhrase(randomPhrase.text);
-    setCurrentTranslation(randomPhrase.translation);
-    setPronunciationResult(null);
-    setShowTranslation(false);
-    setPhrasePlayed(false);
-    
-    // Reset all voice recorder states to force fresh initialization
-    setIsListening(false);
-    setVadResetCounter(c => c + 1); // Force VoiceRecorder full reset
-    
-    // Get furigana
-    const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase.text) : randomPhrase.text;
-    setCurrentFurigana(withFurigana);
-    
-    // Auto-play the phrase (will fetch new audio)
-    playPhrase(randomPhrase.text, true);
-  };
-
-  const playPhrase = async (text: string, forceNew: boolean = false) => {
-    try {
-      // Use cached audio if available and not forcing new
-      if (!forceNew && currentAudioUrl && text === currentPhrase) {
-        const audio = new Audio(currentAudioUrl);
-        audio.volume = volume;
-        audio.play();
-        setPhrasePlayed(true);
-        return;
-      }
-      
-      // Fetch new audio
-      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password': password,
-        },
-        body: JSON.stringify({
-          target_text: text,
-          language,
-          gender,
-          voiceStyle,
-        }),
-      });
-      
-      if (response.ok) {
-        const blob = await response.blob();
-        const audioUrl = URL.createObjectURL(blob);
-        setCurrentAudioUrl(audioUrl);
-        const audio = new Audio(audioUrl);
-        audio.volume = volume;
-        audio.play();
-        setPhrasePlayed(true);
-      }
-    } catch (error) {
-      console.error('Error playing phrase:', error);
-    }
-  };
-
-  const handleSendMessage = () => {
-    if (!inputText.trim()) return;
-    generateTTS(inputText);
-    setInputText('');
-  };
-
-  const generateAIResponse = async (userText: string, _lang: string) => {
-    if (!session) return;
-    
-    // Add temporary "AI is typing" message BEFORE the fetch
-    const tempMessageId = Date.now();
-    setMessages(prev => [...prev, {
-      id: tempMessageId,
-      role: 'assistant',
-      text: '',
-      isLoading: true,
-      isTyping: true,
-    }]);
-    
-    try {
-      const response = await fetch(`${API_URL}/api/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password': password,
-        },
-        body: JSON.stringify({
-          session_id: session.id,
-          message: userText,
-        }),
-      });
-      
-      if (response.ok) {
-        const aiData = await response.json();
-        
-        // Update the temporary message with actual content
-        setMessages(prev => prev.map(msg => 
-          (msg as any).id === tempMessageId 
-            ? { 
-                ...msg, 
-                text: aiData.text,
-                withFurigana: aiData.text_with_furigana || aiData.text,
-                translation: aiData.translation,
-                isTyping: false,
-              }
-            : msg
-        ));
-        
-        // Generate TTS for AI response
-        const audioUrl = await fetchTTS(aiData.text);
-        
-        // Update message with audio (remove loading state)
-        setMessages(prev => prev.map(msg => 
-          (msg as any).id === tempMessageId 
-            ? { ...msg, audioUrl: audioUrl || undefined, isLoading: false }
-            : msg
-        ));
-      } else {
-        // Remove temporary message on error
-        setMessages(prev => prev.filter(msg => (msg as any).id !== tempMessageId));
-      }
-    } catch (error) {
-      console.error('Error generating AI response:', error);
-    }
-  };
-
-  // Initialize lesson chat with system prompt
-  const initializeLessonChat = async (lessonId: string) => {
-    try {
-      // Update URL to indicate practice mode
-      window.location.hash = `#/lessons/${lessonId}/practice`;
-      
-      // Get password from localStorage if state is empty (refresh scenario)
-      const effectivePassword = password || localStorage.getItem('speech_practice_password') || '';
-      if (!effectivePassword) {
-        console.error('No password available');
-        return;
-      }
-      
-      // First create a session
-      const sessionResponse = await fetch(`${API_URL}/api/sessions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password': effectivePassword,
-        },
-        body: JSON.stringify({ language, voice_gender: gender }),
-      });
-      
-      if (sessionResponse.ok) {
-        const sessionData = await sessionResponse.json();
-        setSession(sessionData);
-        
-        // Then load lesson context
-        const response = await fetch(`${API_URL}/api/lessons/${lessonId}/start`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Password': effectivePassword,
-          },
-          body: JSON.stringify({ relaxed: true, session_id: sessionData.id, simpleMode }),
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Lesson system prompt loaded:', data.system_prompt);
-          
-          // Add placeholder message immediately
-          const messageId = Date.now();
-          setMessages([{
-            id: messageId,
-            role: 'assistant',
-            text: '',
-            isLoading: true,
-            isTyping: true,
-          }]);
-          
-          // AI will start the conversation - send empty user message to trigger first response
-          const aiResponse = await fetch(`${API_URL}/api/chat`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Password': password,
-            },
-            body: JSON.stringify({
-              session_id: sessionData.id,
-              message: '[START_CONVERSATION]', // Special trigger for AI to start
-            }),
-          });
-          
-          if (aiResponse.ok) {
-            const aiData = await aiResponse.json();
-            
-            // Update placeholder with AI response
-            setMessages([{
-              id: messageId,
-              role: 'assistant',
-              text: aiData.text,
-              withFurigana: aiData.text_with_furigana || aiData.text,
-              translation: aiData.translation,
-              isTyping: false,
-              isLoading: true,
-            }]);
-            
-            // Fetch TTS for AI's opening message (pass sessionData directly since setSession is async)
-            const audioUrl = await fetchTTS(aiData.text, sessionData);
-            
-            // Update message with audio (remove loading state)
-            setMessages([{
-              id: messageId,
-              role: 'assistant',
-              text: aiData.text,
-              withFurigana: aiData.text_with_furigana || aiData.text,
-              translation: aiData.translation,
-              audioUrl: audioUrl || undefined,
-              isLoading: false,
-            }]);
-          } else {
-            // Remove placeholder on error
-            setMessages([]);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error initializing lesson chat:', error);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -967,43 +329,119 @@ function App() {
   }
 
   if (!isAuthenticated) {
-    return (
-      <div className="login-container">
-        <h1>🎤 Speech Practice</h1>
-        <div className="login-form">
-          <input
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-          />
-          <button onClick={handleLogin}>Enter</button>
-        </div>
-      </div>
-    );
+    return <Login />;
   }
 
-  // Show loader while restoring practice mode
-  if (isRestoringPractice) {
-    return (
-      <div className="login-container">
-        <h1>🎤 Speech Practice</h1>
-        <div className="loading">
-          <div className="loading-typing">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <p>Restoring practice session...</p>
-        </div>
-      </div>
-    );
-  }
+  return <>{children}</>;
+}
 
-  // Chat Setup Screen - must be BEFORE mode checks
-  if (isChatSetup) {
-    return (
+// Login component
+function Login() {
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    localStorage.setItem('speech_practice_password', password);
+    // Reload to trigger auth check
+    window.location.reload();
+  };
+
+  return (
+    <div className="login-container">
+      <h1>🎤 Speech Practice</h1>
+      <div className="login-form">
+        <input
+          type="password"
+          placeholder="Enter password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+        />
+        <button onClick={handleLogin}>Enter</button>
+      </div>
+    </div>
+  );
+}
+
+// Home component
+function Home() {
+  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
+  const navigate = useNavigate();
+
+  return (
+    <AuthenticatedRoute>
+      <div className="app">
+        <header>
+          <h1>🎤 Speech Practice</h1>
+          <div className="setup">
+              <div className="language-select">
+                <button 
+                  className={language === 'japanese' ? 'active' : ''}
+                  onClick={() => setLanguage('japanese')}
+                >
+                  🇯🇵 Japanese
+                </button>
+                <button 
+                  className={language === 'italian' ? 'active' : ''}
+                  onClick={() => setLanguage('italian')}
+                >
+                  🇮🇹 Italian
+                </button>
+              </div>
+              
+              <button className="start-btn" onClick={() => navigate('/chat/setup')}>
+                💬 Start Chat
+              </button>
+              
+              {language === 'japanese' && (
+                <>
+                  <button className="repeat-mode-btn" onClick={() => navigate('/repeat/setup')}>
+                    🎯 Repeat After Me
+                  </button>
+                  
+                  <button className="lesson-mode-btn" onClick={() => navigate('/lessons')}>
+                    📚 Lesson Mode
+                  </button>
+                </>
+              )}
+            </div>
+        </header>
+      </div>
+    </AuthenticatedRoute>
+  );
+}
+
+// Chat Setup component
+function ChatSetup() {
+  const navigate = useNavigate();
+  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
+  const [gender, setGender] = useState<'male' | 'female'>('female');
+  const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>(() => {
+    return localStorage.getItem('voiceStyle') as 'normal' | 'anime' || 'normal';
+  });
+
+  const handleStartChat = async () => {
+    const password = localStorage.getItem('speech_practice_password') || '';
+    try {
+      const response = await fetch(`${API_URL}/api/sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({ language, voice_gender: gender }),
+      });
+      
+      if (response.ok) {
+        // Store session info in state or context
+        navigate('/chat', { state: { session: await response.json(), language, gender, voiceStyle } });
+      }
+    } catch (error) {
+      console.error('Error creating session:', error);
+    }
+  };
+
+  return (
+    <AuthenticatedRoute>
       <div className="app">
         <header>
           <h1>🎤 Speech Practice</h1>
@@ -1076,28 +514,570 @@ function App() {
 
             <button
               className="start-practice-btn"
-              onClick={startSession}
+              onClick={handleStartChat}
             >
               🚀 Start Chat
             </button>
 
-            <button
-              className="cancel-practice-btn"
-              onClick={() => {
-                window.location.hash = '';
-              }}
-            >
+            <Link to="/" className="cancel-practice-btn">
               ← Back to Home
-            </button>
+            </Link>
           </div>
         </main>
+      </div>
+    </AuthenticatedRoute>
+  );
+}
+
+// Chat Session component
+function ChatSession() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [password, setPassword] = useState('');
+  const [session, setSession] = useState<Session | null>(null);
+  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
+  const [gender, setGender] = useState<'male' | 'female'>('female');
+  const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
+  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
+  const [inputText, setInputText] = useState('');
+  const [showFurigana] = useState(true);
+  const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
+  const [isListening, setIsListening] = useState(false);
+  const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null);
+  const [volume, setVolume] = useState(() => {
+    const saved = localStorage.getItem('speechPracticeVolume');
+    return saved ? parseFloat(saved) : 0.8;
+  });
+  const [activeLesson] = useState<{id: string; title: string} | null>(null);
+  const [isLoadingSession, setIsLoadingSession] = useState(true);
+
+  // Load password and restore session from location state or localStorage
+  useEffect(() => {
+    const savedPassword = localStorage.getItem('speech_practice_password') || '';
+    setPassword(savedPassword);
+
+    // Try to get session from location state
+    if (location.state?.session) {
+      setSession(location.state.session);
+      setLanguage(location.state.language || 'japanese');
+      setGender(location.state.gender || 'female');
+      setVoiceStyle(location.state.voiceStyle || 'normal');
+      setIsLoadingSession(false);
+    } else {
+      // Try to restore from localStorage
+      const savedSession = localStorage.getItem('speech_practice_session');
+      if (savedSession) {
+        try {
+          const parsed = JSON.parse(savedSession);
+          setSession(parsed.session);
+          setLanguage(parsed.language || 'japanese');
+          setGender(parsed.gender || 'female');
+          setVoiceStyle(parsed.voiceStyle || 'normal');
+          
+          // Restore messages from localStorage
+          const savedMessages = localStorage.getItem('speech_practice_messages');
+          if (savedMessages) {
+            setMessages(JSON.parse(savedMessages));
+          } else {
+            // Fetch from server if not in localStorage
+            fetchSessionHistory(parsed.session.id, savedPassword);
+          }
+        } catch {
+          navigate('/chat/setup');
+        }
+      } else {
+        navigate('/chat/setup');
+      }
+      setIsLoadingSession(false);
+    }
+  }, [location.state, navigate]);
+  
+  // Fetch session history from server
+  const fetchSessionHistory = async (sessionId: number, password: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/sessions/${sessionId}`, {
+        headers: { 'X-Password': password },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // Convert server messages to frontend format
+        const loadedMessages = data.messages.map((m: any) => ({
+          id: m.id,
+          role: m.role,
+          text: m.content,
+          withFurigana: m.content,
+        }));
+        setMessages(loadedMessages);
+        // Save to localStorage for future restores
+        localStorage.setItem('speech_practice_messages', JSON.stringify(loadedMessages));
+      }
+    } catch (error) {
+      console.error('Error fetching session history:', error);
+    }
+  };
+
+  // Save session to localStorage when it changes
+  useEffect(() => {
+    if (session) {
+      localStorage.setItem('speech_practice_session', JSON.stringify({ session, language, gender, voiceStyle }));
+    }
+  }, [session, language, gender, voiceStyle]);
+
+  // Save messages to localStorage when they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('speech_practice_messages', JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Save volume to localStorage
+  useEffect(() => {
+    localStorage.setItem('speechPracticeVolume', volume.toString());
+    if (playingAudio?.audio) {
+      playingAudio.audio.volume = volume;
+    }
+  }, [volume, playingAudio]);
+
+  // Get furigana for text
+  const getFurigana = async (text: string): Promise<string> => {
+    try {
+      const response = await fetch(`${API_URL}/api/furigana`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({ text }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.with_furigana;
+      }
+    } catch (error) {
+      console.error('Error getting furigana:', error);
+    }
+    return text;
+  };
+
+  // Fetch TTS and return audio URL
+  const fetchTTS = async (text: string, sessionData?: { language: string, voice_gender: string }): Promise<string | null> => {
+    const activeSession = sessionData || session;
+    if (!activeSession) return null;
+
+    try {
+      const response = await fetch(`${API_URL}/api/tts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({
+          text,
+          language: activeSession.language,
+          gender: activeSession.voice_gender,
+          voiceStyle,
+        }),
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+      }
+    } catch (error) {
+      console.error('Error fetching TTS:', error);
+    }
+    return null;
+  };
+
+  const generateTTS = async (text: string) => {
+    if (!session) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/tts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({
+          text,
+          language: session.language,
+          gender: session.voice_gender,
+          voiceStyle,
+        }),
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+        
+        const withFurigana = language === 'japanese' ? await getFurigana(text) : text;
+        
+        const translations: Record<string, Record<string, string>> = {
+          japanese: {
+            'はい、理解しました。続けてください。': 'Yes, I understand. Please continue.',
+          },
+          italian: {
+            'Sì, ho capito. Continua pure.': 'Yes, I understand. Please continue.',
+          },
+        };
+        const translation = translations[session.language]?.[text];
+        
+        setMessages(prev => [...prev, { 
+          role: 'assistant', 
+          text, 
+          audioUrl,
+          translation,
+          showTranslation: false,
+          withFurigana,
+        }]);
+      }
+    } catch (error) {
+      console.error('Error generating TTS:', error);
+    }
+  };
+
+  const handleSendMessage = () => {
+    if (!inputText.trim()) return;
+    generateTTS(inputText);
+    setInputText('');
+  };
+
+  const generateAIResponse = async (userText: string, _lang: string) => {
+    if (!session) return;
+    
+    const tempMessageId = Date.now();
+    setMessages(prev => [...prev, {
+      id: tempMessageId,
+      role: 'assistant',
+      text: '',
+      isLoading: true,
+      isTyping: true,
+    }]);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({
+          session_id: session.id,
+          message: userText,
+        }),
+      });
+      
+      if (response.ok) {
+        const aiData = await response.json();
+        
+        setMessages(prev => prev.map(msg => 
+          (msg as any).id === tempMessageId 
+            ? { 
+                ...msg, 
+                text: aiData.text,
+                withFurigana: aiData.text_with_furigana || aiData.text,
+                translation: aiData.translation,
+                isTyping: false,
+              }
+            : msg
+        ));
+        
+        const audioUrl = await fetchTTS(aiData.text);
+        
+        setMessages(prev => prev.map(msg => 
+          (msg as any).id === tempMessageId 
+            ? { ...msg, audioUrl: audioUrl || undefined, isLoading: false }
+            : msg
+        ));
+      } else {
+        setMessages(prev => prev.filter(msg => (msg as any).id !== tempMessageId));
+      }
+    } catch (error) {
+      console.error('Error generating AI response:', error);
+    }
+  };
+
+  const handleEndSession = () => {
+    if (playingAudio?.audio) {
+      playingAudio.audio.pause();
+      playingAudio.audio.currentTime = 0;
+    }
+    setPlayingAudio(null);
+    localStorage.removeItem('speech_practice_session');
+    localStorage.removeItem('speech_practice_messages');
+    navigate('/');
+  };
+
+  if (isLoadingSession) {
+    return (
+      <div className="login-container">
+        <h1>🎤 Speech Practice</h1>
+        <p>Loading...</p>
       </div>
     );
   }
 
-  // Repeat After Me Setup Screen - must be BEFORE mode checks
-  if (isRepeatSetup) {
-    return (
+  return (
+    <AuthenticatedRoute>
+      <div className="app">
+        <header>
+          <h1>🎤 Speech Practice</h1>
+        </header>
+
+        {session && (
+          <main>
+            <div className="session-info">
+              <div className="session-left">
+                <span>🌍 {language === 'japanese' ? 'Japanese' : 'Italian'}</span>
+                <span>🎭 {gender === 'male' ? 'Male' : 'Female'}</span>
+                {activeLesson && (
+                  <span className="active-lesson">📚 {translateLessonTitle(activeLesson.title)}</span>
+                )}
+              </div>
+              <div className="session-right">
+                <div className="global-volume" title={`Volume: ${Math.round(volume * 100)}%`}>
+                  <span>{volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={volume}
+                    onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  />
+                </div>
+                {activeLesson && (
+                  <button className="back-btn" onClick={() => navigate('/lessons')}>
+                    ← Back
+                  </button>
+                )}
+                <button className="mode-btn" onClick={() => navigate('/repeat')}>
+                  🎯 Practice
+                </button>
+                <button className="end-btn" onClick={handleEndSession}>End</button>
+              </div>
+            </div>
+
+            <div className="messages">
+              {messages.map((msg, idx) => (
+                <div key={idx} className={`message ${msg.role}`}>
+                  <div className="message-header">
+                    <span className="role-badge">{msg.role === 'user' ? 'You' : 'Teacher'}</span>
+                    {msg.role === 'assistant' && !(msg as any).isTyping && (
+                      <button 
+                        className="translate-toggle"
+                        onClick={async () => {
+                          if (msg.showTranslation && msg.translation) {
+                            setMessages(prev => prev.map((m, i) => 
+                              i === idx ? { ...m, showTranslation: false } : m
+                            ));
+                            return;
+                          }
+                          
+                          if (msg.translation) {
+                            setMessages(prev => prev.map((m, i) => 
+                              i === idx ? { ...m, showTranslation: true } : m
+                            ));
+                            return;
+                          }
+                          
+                          try {
+                            setMessages(prev => prev.map((m, i) => 
+                              i === idx ? { ...m, isTranslating: true } : m
+                            ));
+                            
+                            const response = await fetch(`${API_URL}/api/translate`, {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                'X-Password': password,
+                              },
+                              body: JSON.stringify({ text: msg.text }),
+                            });
+                            
+                            if (response.ok) {
+                              const data = await response.json();
+                              setMessages(prev => prev.map((m, i) => 
+                                i === idx ? { 
+                                  ...m, 
+                                  translation: data.translation,
+                                  showTranslation: true,
+                                  isTranslating: false 
+                                } : m
+                              ));
+                            }
+                          } catch (error) {
+                            console.error('Error fetching translation:', error);
+                            setMessages(prev => prev.map((m, i) => 
+                              i === idx ? { ...m, isTranslating: false } : m
+                            ));
+                          }
+                        }}
+                        disabled={(msg as any).isTranslating}
+                      >
+                        {(msg as any).isTranslating ? (
+                          '⏳...'
+                        ) : msg.showTranslation ? (
+                          '🇯🇵 Original'
+                        ) : (
+                          '🇬🇧 Translate'
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  <div className="text">
+                    {(msg as any).isTyping ? (
+                      <div className="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="jp-text">
+                          {showFurigana && msg.withFurigana ? (
+                            <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
+                          ) : msg.text}
+                        </div>
+                        {msg.showTranslation && msg.translation && (
+                          <div className="translation-text">
+                            🇬🇧 {msg.translation}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  {(msg as any).isLoading && msg.text && (
+                    <div className="audio-loading">
+                      <span className="loading-dots">Generating audio</span>
+                    </div>
+                  )}
+                  {msg.audioUrl && (
+                    <AudioPlayer 
+                      audioUrl={msg.audioUrl}
+                      volume={volume}
+                      isActive={playingAudio?.id === idx}
+                      onPlay={(audio) => setPlayingAudio({ id: idx, audio })}
+                      onStop={() => setPlayingAudio(null)}
+                      onStopOthers={() => {
+                        if (playingAudio && playingAudio.id !== idx) {
+                          playingAudio.audio.pause();
+                          playingAudio.audio.currentTime = 0;
+                        }
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {messages.length <= 1 && (
+              <div className="help-text">
+                💡 <strong>How to practice:</strong> {recordingMode === 'voice-activated' ? 'Just start speaking in Japanese!' : 'Hold 🎙️ to speak'} or type your message below. The teacher will respond and correct your mistakes.
+              </div>
+            )}
+
+            <div className="input-area">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Type in Japanese or English..."
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              />
+              <button onClick={handleSendMessage}>Send</button>
+            </div>
+            
+            <div className="voice-recorder-section">
+              <div className="mode-toggle">
+                <button 
+                  className={recordingMode === 'voice-activated' ? 'active' : ''}
+                  onClick={() => setRecordingMode('voice-activated')}
+                >
+                  🎤 Voice Activated
+                </button>
+                <button 
+                  className={recordingMode === 'push-to-talk' ? 'active' : ''}
+                  onClick={() => setRecordingMode('push-to-talk')}
+                >
+                  🎙️ Push to Talk
+                </button>
+              </div>
+              
+              {(() => {
+                const isWaitingForAI = messages.some(m => m.role === 'assistant' && m.isLoading);
+                
+                return (
+                  <VoiceRecorder
+                    mode={recordingMode}
+                    isListening={isListening}
+                    disabled={isWaitingForAI}
+                    onStartListening={() => {
+                      setIsListening(true);
+                    }}
+                    onStopListening={() => {
+                      setIsListening(false);
+                    }}
+                    onRecordingComplete={async (audioBlob) => {
+                      const formData = new FormData();
+                      formData.append('audio', audioBlob, 'recording.webm');
+                      formData.append('session_id', session?.id.toString() || '');
+                      formData.append('target_language', language);
+                      
+                      try {
+                        const response = await fetch(`${API_URL}/api/upload`, {
+                          method: 'POST',
+                          headers: {
+                            'X-Password': password,
+                          },
+                          body: formData,
+                        });
+                        
+                        if (response.ok) {
+                          const data = await response.json();
+                          const displayText = data.transcription || '[Your recording]';
+                          const audioUrl = URL.createObjectURL(audioBlob);
+                          setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
+                          
+                          if (data.transcription) {
+                            await generateAIResponse(data.transcription, language);
+                          }
+                        }
+                      } catch (error) {
+                        console.error('Error uploading recording:', error);
+                      }
+                    }}
+                  />
+                );
+              })()}
+            </div>
+          </main>
+        )}
+      </div>
+    </AuthenticatedRoute>
+  );
+}
+
+// Repeat Setup component
+function RepeatSetup() {
+  const navigate = useNavigate();
+  const [gender, setGender] = useState<'male' | 'female'>('female');
+  const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>(() => {
+    return localStorage.getItem('voiceStyle') as 'normal' | 'anime' || 'normal';
+  });
+  const [isCheckingPronunciation, setIsCheckingPronunciation] = useState(false);
+
+  const handleStartPractice = async () => {
+    if (isCheckingPronunciation) return;
+    setIsCheckingPronunciation(true);
+    // Store settings in localStorage or state for RepeatMode to access
+    localStorage.setItem('repeatModeSettings', JSON.stringify({ gender, voiceStyle }));
+    navigate('/repeat');
+  };
+
+  return (
+    <AuthenticatedRoute>
       <div className="app">
         <header>
           <h1>🎤 Speech Practice</h1>
@@ -1152,64 +1132,193 @@ function App() {
 
             <button
               className="start-practice-btn"
-              onClick={startRepeatMode}
+              onClick={handleStartPractice}
               disabled={isCheckingPronunciation}
             >
               {isCheckingPronunciation ? '⏳ Loading...' : '🚀 Start Practice'}
             </button>
 
-            <button
-              className="cancel-practice-btn"
-              onClick={() => {
-                window.location.hash = '';
-              }}
-              disabled={isCheckingPronunciation}
-            >
+            <Link to="/" className="cancel-practice-btn">
               ← Back to Home
-            </button>
+            </Link>
           </div>
         </main>
       </div>
-    );
-  }
+    </AuthenticatedRoute>
+  );
+}
 
-  // Lesson Mode
-  if (isLessonMode) {
-    return (
-      <LessonMode
-        password={password}
-        onBack={() => setIsLessonMode(false)}
-        onStartLessonChat={(lessonId, lessonTitle) => {
-          setIsLessonMode(false, true);
-          setActiveLesson({ id: lessonId, title: lessonTitle });
-          setShowPracticeSetup(true);
-          window.location.hash = `#/lessons/${lessonId}/setup`;
-        }}
-      />
-    );
-  }
+// Repeat Mode component
+function RepeatMode() {
+  const navigate = useNavigate();
+  const [password, setPassword] = useState('');
+  const [language] = useState<'japanese' | 'italian'>('japanese');
+  const [gender, setGender] = useState<'male' | 'female'>('female');
+  const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
+  const [currentPhrase, setCurrentPhrase] = useState('');
+  const [currentFurigana, setCurrentFurigana] = useState('');
+  const [currentTranslation, setCurrentTranslation] = useState('');
+  const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
+  const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
+  const [isCheckingPronunciation, setIsCheckingPronunciation] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [vadResetCounter, setVadResetCounter] = useState(0);
+  const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null);
+  const [phrasePlayed, setPhrasePlayed] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [showFurigana, setShowFurigana] = useState(true);
+  const [volume, setVolume] = useState(() => {
+    const saved = localStorage.getItem('speechPracticeVolume');
+    return saved ? parseFloat(saved) : 0.8;
+  });
+  const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
 
-  // Repeat After Me Mode
-  if (isRepeatMode) {
-    return (
+  // Load settings and password on mount
+  useEffect(() => {
+    const savedPassword = localStorage.getItem('speech_practice_password') || '';
+    setPassword(savedPassword);
+    
+    const settings = localStorage.getItem('repeatModeSettings');
+    if (settings) {
+      try {
+        const parsed = JSON.parse(settings);
+        setGender(parsed.gender || 'female');
+        setVoiceStyle(parsed.voiceStyle || 'normal');
+      } catch {
+        // Use defaults
+      }
+    }
+    
+    // Load first phrase
+    nextPhrase();
+  }, []);
+
+  // Spacebar shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && !e.repeat && !e.ctrlKey && !e.metaKey) {
+        if (document.activeElement?.tagName === 'INPUT') return;
+        if (isCheckingPronunciation) return;
+
+        e.preventDefault();
+        nextPhrase();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isCheckingPronunciation, currentPhrase, currentAudioUrl]);
+
+  // Save volume
+  useEffect(() => {
+    localStorage.setItem('speechPracticeVolume', volume.toString());
+    if (playingAudio?.audio) {
+      playingAudio.audio.volume = volume;
+    }
+  }, [volume, playingAudio]);
+
+  // Get furigana for text
+  const getFurigana = async (text: string): Promise<string> => {
+    try {
+      const response = await fetch(`${API_URL}/api/furigana`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({ text }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.with_furigana;
+      }
+    } catch (error) {
+      console.error('Error getting furigana:', error);
+    }
+    return text;
+  };
+
+  const nextPhrase = async () => {
+    const phrases = PRACTICE_PHRASES[language];
+    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    
+    if (currentAudioUrl) {
+      URL.revokeObjectURL(currentAudioUrl);
+      setCurrentAudioUrl(null);
+    }
+    
+    setCurrentPhrase(randomPhrase.text);
+    setCurrentTranslation(randomPhrase.translation);
+    setPronunciationResult(null);
+    setShowTranslation(false);
+    setPhrasePlayed(false);
+    
+    setIsListening(false);
+    setVadResetCounter(c => c + 1);
+    
+    const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase.text) : randomPhrase.text;
+    setCurrentFurigana(withFurigana);
+    
+    playPhrase(randomPhrase.text, true);
+  };
+
+  const playPhrase = async (text: string, forceNew: boolean = false) => {
+    try {
+      if (!forceNew && currentAudioUrl && text === currentPhrase) {
+        const audio = new Audio(currentAudioUrl);
+        audio.volume = volume;
+        audio.play();
+        setPhrasePlayed(true);
+        return;
+      }
+      
+      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({
+          target_text: text,
+          language,
+          gender,
+          voiceStyle,
+        }),
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+        setCurrentAudioUrl(audioUrl);
+        const audio = new Audio(audioUrl);
+        audio.volume = volume;
+        audio.play();
+        setPhrasePlayed(true);
+      }
+    } catch (error) {
+      console.error('Error playing phrase:', error);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentAudioUrl) {
+      URL.revokeObjectURL(currentAudioUrl);
+    }
+    if (playingAudio?.audio) {
+      playingAudio.audio.pause();
+      playingAudio.audio.currentTime = 0;
+    }
+    setPlayingAudio(null);
+    navigate('/');
+  };
+
+  return (
+    <AuthenticatedRoute>
       <div className="app repeat-mode">
         <header>
           <h1>🎯 Repeat After Me</h1>
           <div className="mode-controls">
-            <button className="mode-btn" onClick={() => {
-              // Clean up cached audio when leaving
-              if (currentAudioUrl) {
-                URL.revokeObjectURL(currentAudioUrl);
-                setCurrentAudioUrl(null);
-              }
-              // Stop any playing audio
-              if (playingAudio?.audio) {
-                playingAudio.audio.pause();
-                playingAudio.audio.currentTime = 0;
-              }
-              setPlayingAudio(null);
-              window.location.hash = '';
-            }}>
+            <button className="mode-btn" onClick={handleBack}>
               ← Back to Home
             </button>
           </div>
@@ -1237,7 +1346,6 @@ function App() {
               </button>
             )}
             
-            {/* Translation display */}
             {showTranslation && currentTranslation && (
               <div className="translation-display">
                 🇬🇧 {currentTranslation}
@@ -1279,7 +1387,6 @@ function App() {
                 <span className="feedback">{pronunciationResult.feedback}</span>
               </div>
               
-              {/* Expected phrase with furigana and translation */}
               <div className="result-phrase-section">
                 <label>Target Phrase:</label>
                 <div 
@@ -1319,9 +1426,7 @@ function App() {
           )}
 
           <div className="repeat-controls">
-            {/* Voice Recorder with VAD for Repeat After Me */}
             <div className="voice-recorder-section" style={{ width: '100%', maxWidth: '400px' }}>
-              {/* Volume control */}
               <div className="volume-control">
                 <label>🔊 Volume:</label>
                 <input
@@ -1362,7 +1467,6 @@ function App() {
                 }}
                 onRecordingComplete={async (audioBlob) => {
                   setIsCheckingPronunciation(true);
-                  // Submit for pronunciation check
                   const formData = new FormData();
                   formData.append('audio', audioBlob, 'recording.webm');
                   formData.append('target_text', currentPhrase);
@@ -1397,12 +1501,80 @@ function App() {
           </div>
         </main>
       </div>
-    );
-  }
+    </AuthenticatedRoute>
+  );
+}
 
-  // Practice Setup Screen - shown before starting lesson chat (outside session)
-  if (showPracticeSetup && activeLesson) {
-    return (
+// Lesson List component
+function LessonList() {
+  const navigate = useNavigate();
+
+  const handleStartLessonChat = (lessonId: string, lessonTitle: string) => {
+    navigate(`/lessons/${lessonId}/setup`, { state: { lessonTitle } });
+  };
+
+  return (
+    <AuthenticatedRoute>
+      <LessonMode
+        password={localStorage.getItem('speech_practice_password') || ''}
+        onBack={() => navigate('/')}
+        onStartLessonChat={handleStartLessonChat}
+      />
+    </AuthenticatedRoute>
+  );
+}
+
+// Lesson Practice Setup component
+function LessonPracticeSetup() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [, setPassword] = useState('');
+  const [lessonTitle, setLessonTitle] = useState(location.state?.lessonTitle || '');
+  const [simpleMode, setSimpleMode] = useState(() => {
+    return localStorage.getItem('simpleMode') === 'true';
+  });
+  const [gender, setGender] = useState<'male' | 'female'>('female');
+  const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>(() => {
+    return localStorage.getItem('voiceStyle') as 'normal' | 'anime' || 'normal';
+  });
+
+  useEffect(() => {
+    const savedPassword = localStorage.getItem('speech_practice_password') || '';
+    setPassword(savedPassword);
+
+    // Fetch lesson title if not provided
+    if (!lessonTitle && id) {
+      fetch(`${API_URL}/api/lessons/${id}`, {
+        headers: { 'X-Password': savedPassword }
+      }).then(r => r.json()).then(data => {
+        setLessonTitle(data.title || '');
+      }).catch(() => {
+        navigate('/lessons');
+      });
+    }
+  }, [id, lessonTitle, navigate]);
+
+  const handleStartPractice = () => {
+    localStorage.setItem('simpleMode', simpleMode.toString());
+    localStorage.setItem('voiceStyle', voiceStyle);
+    // Store practice settings
+    localStorage.setItem('lessonPracticeSettings', JSON.stringify({
+      gender,
+      voiceStyle,
+      simpleMode,
+      lessonId: id,
+      lessonTitle
+    }));
+    navigate(`/lessons/${id}/practice`);
+  };
+
+  const handleBack = () => {
+    navigate('/lessons');
+  };
+
+  return (
+    <AuthenticatedRoute>
       <div className="app">
         <header>
           <h1>🎤 Speech Practice</h1>
@@ -1410,7 +1582,7 @@ function App() {
         <main>
           <div className="practice-setup">
             <h2>📚 Practice Setup</h2>
-            <p className="setup-lesson-title">{translateLessonTitle(activeLesson.title)}</p>
+            <p className="setup-lesson-title">{translateLessonTitle(lessonTitle)}</p>
             
             <div className="setup-options">
               <label className="setup-toggle">
@@ -1467,329 +1639,546 @@ function App() {
 
             <button
               className="start-practice-btn"
-              onClick={() => {
-                setShowPracticeSetup(false);
-                window.location.hash = `#/lessons/${activeLesson.id}/practice`;
-                initializeLessonChat(activeLesson.id);
-              }}
+              onClick={handleStartPractice}
             >
               🚀 Start Practice
             </button>
             
             <button 
               className="cancel-practice-btn"
-              onClick={() => {
-                setShowPracticeSetup(false);
-                setActiveLesson(null);
-                setIsLessonMode(true);
-                window.location.hash = '#/lessons';
-              }}
+              onClick={handleBack}
             >
               ← Back to Lessons
             </button>
           </div>
         </main>
       </div>
+    </AuthenticatedRoute>
+  );
+}
+
+// Lesson Practice component
+function LessonPractice() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [password, setPassword] = useState('');
+  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
+  const [gender, setGender] = useState<'male' | 'female'>('female');
+  const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
+  const [simpleMode, setSimpleMode] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
+  const [inputText, setInputText] = useState('');
+  const [showFurigana] = useState(true);
+  const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
+  const [isListening, setIsListening] = useState(false);
+  const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null);
+  const [volume, setVolume] = useState(() => {
+    const saved = localStorage.getItem('speechPracticeVolume');
+    return saved ? parseFloat(saved) : 0.8;
+  });
+  const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
+  const [isLoadingSession, setIsLoadingSession] = useState(true);
+
+  // Load settings and initialize
+  useEffect(() => {
+    const savedPassword = localStorage.getItem('speech_practice_password') || '';
+    setPassword(savedPassword);
+
+    const settings = localStorage.getItem('lessonPracticeSettings');
+    if (settings) {
+      try {
+        const parsed = JSON.parse(settings);
+        setGender(parsed.gender || 'female');
+        setVoiceStyle(parsed.voiceStyle || 'normal');
+        setSimpleMode(parsed.simpleMode || false);
+        setActiveLesson({ id: parsed.lessonId || id || '', title: parsed.lessonTitle || '' });
+      } catch {
+        // Use defaults
+        setActiveLesson({ id: id || '', title: '' });
+      }
+    } else {
+      setActiveLesson({ id: id || '', title: '' });
+    }
+
+    // Fetch lesson title if needed
+    if (id) {
+      fetch(`${API_URL}/api/lessons/${id}`, {
+        headers: { 'X-Password': savedPassword }
+      }).then(r => r.json()).then(lessonData => {
+        setActiveLesson(prev => prev ? { ...prev, title: lessonData.title || '' } : { id: id || '', title: lessonData.title || '' });
+        // Initialize lesson chat
+        initializeLessonChat(id, savedPassword, lessonData.title || '');
+      }).catch(() => {
+        navigate('/lessons');
+      });
+    }
+  }, [id, navigate]);
+
+  // Save volume
+  useEffect(() => {
+    localStorage.setItem('speechPracticeVolume', volume.toString());
+    if (playingAudio?.audio) {
+      playingAudio.audio.volume = volume;
+    }
+  }, [volume, playingAudio]);
+
+  // Fetch TTS and return audio URL
+  const fetchTTS = async (text: string, sessionData?: { language: string, voice_gender: string }): Promise<string | null> => {
+    const activeSession = sessionData || session;
+    if (!activeSession) return null;
+
+    try {
+      const response = await fetch(`${API_URL}/api/tts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({
+          text,
+          language: activeSession.language,
+          gender: activeSession.voice_gender,
+          voiceStyle,
+        }),
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+      }
+    } catch (error) {
+      console.error('Error fetching TTS:', error);
+    }
+    return null;
+  };
+
+  // Initialize lesson chat with system prompt
+  const initializeLessonChat = async (lessonId: string, effectivePassword: string, _lessonTitle: string) => {
+    try {
+      // Create a session
+      const sessionResponse = await fetch(`${API_URL}/api/sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': effectivePassword,
+        },
+        body: JSON.stringify({ language, voice_gender: gender }),
+      });
+      
+      if (sessionResponse.ok) {
+        const sessionData = await sessionResponse.json();
+        setSession(sessionData);
+        setLanguage(sessionData.language);
+        
+        // Load lesson context
+        const response = await fetch(`${API_URL}/api/lessons/${lessonId}/start`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Password': effectivePassword,
+          },
+          body: JSON.stringify({ relaxed: true, session_id: sessionData.id, simpleMode }),
+        });
+        
+        if (response.ok) {
+          await response.json();
+          
+          const messageId = Date.now();
+          setMessages([{
+            id: messageId,
+            role: 'assistant',
+            text: '',
+            isLoading: true,
+            isTyping: true,
+          }]);
+          
+          const aiResponse = await fetch(`${API_URL}/api/chat`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Password': password || effectivePassword,
+            },
+            body: JSON.stringify({
+              session_id: sessionData.id,
+              message: '[START_CONVERSATION]',
+            }),
+          });
+          
+          if (aiResponse.ok) {
+            const aiData = await aiResponse.json();
+            
+            setMessages([{
+              id: messageId,
+              role: 'assistant',
+              text: aiData.text,
+              withFurigana: aiData.text_with_furigana || aiData.text,
+              translation: aiData.translation,
+              isTyping: false,
+              isLoading: true,
+            }]);
+            
+            const audioUrl = await fetchTTS(aiData.text, sessionData);
+            
+            setMessages([{
+              id: messageId,
+              role: 'assistant',
+              text: aiData.text,
+              withFurigana: aiData.text_with_furigana || aiData.text,
+              translation: aiData.translation,
+              audioUrl: audioUrl || undefined,
+              isLoading: false,
+            }]);
+          } else {
+            setMessages([]);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing lesson chat:', error);
+    } finally {
+      setIsLoadingSession(false);
+    }
+  };
+
+  const generateAIResponse = async (userText: string, _lang: string) => {
+    if (!session) return;
+    
+    const tempMessageId = Date.now();
+    setMessages(prev => [...prev, {
+      id: tempMessageId,
+      role: 'assistant',
+      text: '',
+      isLoading: true,
+      isTyping: true,
+    }]);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password,
+        },
+        body: JSON.stringify({
+          session_id: session.id,
+          message: userText,
+        }),
+      });
+      
+      if (response.ok) {
+        const aiData = await response.json();
+        
+        setMessages(prev => prev.map(msg => 
+          (msg as any).id === tempMessageId 
+            ? { 
+                ...msg, 
+                text: aiData.text,
+                withFurigana: aiData.text_with_furigana || aiData.text,
+                translation: aiData.translation,
+                isTyping: false,
+              }
+            : msg
+        ));
+        
+        const audioUrl = await fetchTTS(aiData.text);
+        
+        setMessages(prev => prev.map(msg => 
+          (msg as any).id === tempMessageId 
+            ? { ...msg, audioUrl: audioUrl || undefined, isLoading: false }
+            : msg
+        ));
+      } else {
+        setMessages(prev => prev.filter(msg => (msg as any).id !== tempMessageId));
+      }
+    } catch (error) {
+      console.error('Error generating AI response:', error);
+    }
+  };
+
+  const handleSendMessage = () => {
+    if (!inputText.trim() || !session) return;
+    
+    const tempMessageId = Date.now();
+    setMessages(prev => [...prev, {
+      id: tempMessageId,
+      role: 'user',
+      text: inputText,
+    }]);
+    
+    generateAIResponse(inputText, language);
+    setInputText('');
+  };
+
+  const handleBack = () => {
+    if (playingAudio?.audio) {
+      playingAudio.audio.pause();
+      playingAudio.audio.currentTime = 0;
+    }
+    setPlayingAudio(null);
+    navigate('/lessons');
+  };
+
+  const handleEndSession = () => {
+    if (playingAudio?.audio) {
+      playingAudio.audio.pause();
+      playingAudio.audio.currentTime = 0;
+    }
+    setPlayingAudio(null);
+    localStorage.removeItem('speech_practice_session');
+    localStorage.removeItem('speech_practice_messages');
+    navigate('/');
+  };
+
+  if (isLoadingSession) {
+    return (
+      <div className="login-container">
+        <h1>🎤 Speech Practice</h1>
+        <div className="loading">
+          <div className="loading-typing">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p>Restoring practice session...</p>
+        </div>
+      </div>
     );
   }
 
-  // Main home screen
   return (
-    <div className="app">
-      <header>
-        <h1>🎤 Speech Practice</h1>
-        {!session && (
-          <div className="setup">
-            <div className="language-select">
-              <button 
-                className={language === 'japanese' ? 'active' : ''}
-                onClick={() => setLanguage('japanese')}
-              >
-                🇯🇵 Japanese
-              </button>
-              <button 
-                className={language === 'italian' ? 'active' : ''}
-                onClick={() => setLanguage('italian')}
-              >
-                🇮🇹 Italian
-              </button>
-            </div>
-            
-            <button className="start-btn" onClick={() => window.location.hash = '#/chat/setup'}>
-              💬 Start Chat
-            </button>
-            
-            {language === 'japanese' && (
-              <>
-                <button className="repeat-mode-btn" onClick={() => window.location.hash = '#/repeat/setup'}>
-                  🎯 Repeat After Me
-                </button>
-                
-                <button className="lesson-mode-btn" onClick={() => setIsLessonMode(true)}>
-                  📚 Lesson Mode
-                </button>
-              </>
-            )}
-          </div>
-        )}
-      </header>
+    <AuthenticatedRoute>
+      <div className="app">
+        <header>
+          <h1>🎤 Speech Practice</h1>
+        </header>
 
-      {session && (
-        <main>
-          <div className="session-info">
-            <div className="session-left">
-              <span>🌍 {language === 'japanese' ? 'Japanese' : 'Italian'}</span>
-              <span>🎭 {gender === 'male' ? 'Male' : 'Female'}</span>
-              {activeLesson && (
-                <span className="active-lesson">📚 {translateLessonTitle(activeLesson.title)}</span>
-              )}
-            </div>
-            <div className="session-right">
-              {/* Global volume control */}
-              <div className="global-volume" title={`Volume: ${Math.round(volume * 100)}%`}>
-                <span>{volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={volume}
-                  onChange={(e) => setVolume(parseFloat(e.target.value))}
-                />
+        {session && (
+          <main>
+            <div className="session-info">
+              <div className="session-left">
+                <span>🌍 {language === 'japanese' ? 'Japanese' : 'Italian'}</span>
+                <span>🎭 {gender === 'male' ? 'Male' : 'Female'}</span>
+                {activeLesson && (
+                  <span className="active-lesson">📚 {translateLessonTitle(activeLesson.title)}</span>
+                )}
               </div>
-              {activeLesson && (
-                <button className="back-btn" onClick={() => {
-                  setActiveLesson(null);
-                  setIsLessonMode(true);
-                  window.location.hash = '#/lessons';
-                }}>
+              <div className="session-right">
+                <div className="global-volume" title={`Volume: ${Math.round(volume * 100)}%`}>
+                  <span>{volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={volume}
+                    onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  />
+                </div>
+                <button className="back-btn" onClick={handleBack}>
                   ← Back
                 </button>
-              )}
-              <button className="mode-btn" onClick={startRepeatMode}>
-                🎯 Practice
-              </button>
-              <button className="end-btn" onClick={() => {
-                // Stop any playing audio
-                if (playingAudio?.audio) {
-                  playingAudio.audio.pause();
-                  playingAudio.audio.currentTime = 0;
-                }
-                setPlayingAudio(null);
-                setSession(null);
-                setActiveLesson(null);
-                window.location.hash = '';
-              }}>End</button>
+                <button className="end-btn" onClick={handleEndSession}>End</button>
+              </div>
             </div>
-          </div>
 
-          <div className="messages">
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`message ${msg.role}`}>
-                <div className="message-header">
-                  <span className="role-badge">{msg.role === 'user' ? 'You' : 'Teacher'}</span>
-                  {/* Show translate button for all assistant messages */}
-                  {msg.role === 'assistant' && !(msg as any).isTyping && (
-                    <button 
-                      className="translate-toggle"
-                      onClick={async () => {
-                        // If already showing translation, just toggle back
-                        if (msg.showTranslation && msg.translation) {
-                          setMessages(prev => prev.map((m, i) => 
-                            i === idx ? { ...m, showTranslation: false } : m
-                          ));
-                          return;
-                        }
-                        
-                        // If we already have translation, just show it
-                        if (msg.translation) {
-                          setMessages(prev => prev.map((m, i) => 
-                            i === idx ? { ...m, showTranslation: true } : m
-                          ));
-                          return;
-                        }
-                        
-                        // Otherwise fetch translation
-                        try {
-                          setMessages(prev => prev.map((m, i) => 
-                            i === idx ? { ...m, isTranslating: true } : m
-                          ));
-                          
-                          const response = await fetch(`${API_URL}/api/translate`, {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                              'X-Password': password,
-                            },
-                            body: JSON.stringify({ text: msg.text }),
-                          });
-                          
-                          if (response.ok) {
-                            const data = await response.json();
+            <div className="messages">
+              {messages.map((msg, idx) => (
+                <div key={idx} className={`message ${msg.role}`}>
+                  <div className="message-header">
+                    <span className="role-badge">{msg.role === 'user' ? 'You' : 'Teacher'}</span>
+                    {msg.role === 'assistant' && !(msg as any).isTyping && (
+                      <button 
+                        className="translate-toggle"
+                        onClick={async () => {
+                          if (msg.showTranslation && msg.translation) {
                             setMessages(prev => prev.map((m, i) => 
-                              i === idx ? { 
-                                ...m, 
-                                translation: data.translation,
-                                showTranslation: true,
-                                isTranslating: false 
-                              } : m
+                              i === idx ? { ...m, showTranslation: false } : m
+                            ));
+                            return;
+                          }
+                          
+                          if (msg.translation) {
+                            setMessages(prev => prev.map((m, i) => 
+                              i === idx ? { ...m, showTranslation: true } : m
+                            ));
+                            return;
+                          }
+                          
+                          try {
+                            setMessages(prev => prev.map((m, i) => 
+                              i === idx ? { ...m, isTranslating: true } : m
+                            ));
+                            
+                            const response = await fetch(`${API_URL}/api/translate`, {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                'X-Password': password,
+                              },
+                              body: JSON.stringify({ text: msg.text }),
+                            });
+                            
+                            if (response.ok) {
+                              const data = await response.json();
+                              setMessages(prev => prev.map((m, i) => 
+                                i === idx ? { 
+                                  ...m, 
+                                  translation: data.translation,
+                                  showTranslation: true,
+                                  isTranslating: false 
+                                } : m
+                              ));
+                            }
+                          } catch (error) {
+                            console.error('Error fetching translation:', error);
+                            setMessages(prev => prev.map((m, i) => 
+                              i === idx ? { ...m, isTranslating: false } : m
                             ));
                           }
-                        } catch (error) {
-                          console.error('Error fetching translation:', error);
-                          setMessages(prev => prev.map((m, i) => 
-                            i === idx ? { ...m, isTranslating: false } : m
-                          ));
+                        }}
+                        disabled={(msg as any).isTranslating}
+                      >
+                        {(msg as any).isTranslating ? (
+                          '⏳...'
+                        ) : msg.showTranslation ? (
+                          '🇯🇵 Original'
+                        ) : (
+                          '🇬🇧 Translate'
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  <div className="text">
+                    {(msg as any).isTyping ? (
+                      <div className="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="jp-text">
+                          {showFurigana && msg.withFurigana ? (
+                            <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
+                          ) : msg.text}
+                        </div>
+                        {msg.showTranslation && msg.translation && (
+                          <div className="translation-text">
+                            🇬🇧 {msg.translation}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  {(msg as any).isLoading && msg.text && (
+                    <div className="audio-loading">
+                      <span className="loading-dots">Generating audio</span>
+                    </div>
+                  )}
+                  {msg.audioUrl && (
+                    <AudioPlayer 
+                      audioUrl={msg.audioUrl}
+                      volume={volume}
+                      isActive={playingAudio?.id === idx}
+                      onPlay={(audio) => setPlayingAudio({ id: idx, audio })}
+                      onStop={() => setPlayingAudio(null)}
+                      onStopOthers={() => {
+                        if (playingAudio && playingAudio.id !== idx) {
+                          playingAudio.audio.pause();
+                          playingAudio.audio.currentTime = 0;
                         }
                       }}
-                      disabled={(msg as any).isTranslating}
-                    >
-                      {(msg as any).isTranslating ? (
-                        '⏳...'
-                      ) : msg.showTranslation ? (
-                        '🇯🇵 Original'
-                      ) : (
-                        '🇬🇧 Translate'
-                      )}
-                    </button>
+                    />
                   )}
                 </div>
-                <div className="text">
-                  {(msg as any).isTyping ? (
-                    <div className="typing-indicator">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Japanese text (always shown) */}
-                      <div className="jp-text">
-                        {showFurigana && msg.withFurigana ? (
-                          <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
-                        ) : msg.text}
-                      </div>
-                      {/* Translation shown below when toggled */}
-                      {msg.showTranslation && msg.translation && (
-                        <div className="translation-text">
-                          🇬🇧 {msg.translation}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-                {(msg as any).isLoading && msg.text && (
-                  <div className="audio-loading">
-                    <span className="loading-dots">Generating audio</span>
-                  </div>
-                )}
-                {msg.audioUrl && (
-                  <AudioPlayer 
-                    audioUrl={msg.audioUrl}
-                    volume={volume}
-                    isActive={playingAudio?.id === idx}
-                    onPlay={(audio) => setPlayingAudio({ id: idx, audio })}
-                    onStop={() => setPlayingAudio(null)}
-                    onStopOthers={() => {
-                      if (playingAudio && playingAudio.id !== idx) {
-                        playingAudio.audio.pause();
-                        playingAudio.audio.currentTime = 0;
+              ))}
+            </div>
+
+            {messages.length <= 1 && (
+              <div className="help-text">
+                💡 <strong>How to practice:</strong> {recordingMode === 'voice-activated' ? 'Just start speaking in Japanese!' : 'Hold 🎙️ to speak'} or type your message below. The teacher will respond and correct your mistakes.
+              </div>
+            )}
+
+            <div className="input-area">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Type in Japanese or English..."
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              />
+              <button onClick={handleSendMessage}>Send</button>
+            </div>
+            
+            <div className="voice-recorder-section">
+              <div className="mode-toggle">
+                <button 
+                  className={recordingMode === 'voice-activated' ? 'active' : ''}
+                  onClick={() => setRecordingMode('voice-activated')}
+                >
+                  🎤 Voice Activated
+                </button>
+                <button 
+                  className={recordingMode === 'push-to-talk' ? 'active' : ''}
+                  onClick={() => setRecordingMode('push-to-talk')}
+                >
+                  🎙️ Push to Talk
+                </button>
+              </div>
+              
+              {(() => {
+                const isWaitingForAI = messages.some(m => m.role === 'assistant' && m.isLoading);
+                
+                return (
+                  <VoiceRecorder
+                    mode={recordingMode}
+                    isListening={isListening}
+                    disabled={isWaitingForAI}
+                    onStartListening={() => {
+                      setIsListening(true);
+                    }}
+                    onStopListening={() => {
+                      setIsListening(false);
+                    }}
+                    onRecordingComplete={async (audioBlob) => {
+                      const formData = new FormData();
+                      formData.append('audio', audioBlob, 'recording.webm');
+                      formData.append('session_id', session?.id.toString() || '');
+                      formData.append('target_language', language);
+                      
+                      try {
+                        const response = await fetch(`${API_URL}/api/upload`, {
+                          method: 'POST',
+                          headers: {
+                            'X-Password': password,
+                          },
+                          body: formData,
+                        });
+                        
+                        if (response.ok) {
+                          const data = await response.json();
+                          const displayText = data.transcription || '[Your recording]';
+                          const audioUrl = URL.createObjectURL(audioBlob);
+                          setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
+                          
+                          if (data.transcription) {
+                            await generateAIResponse(data.transcription, language);
+                          }
+                        }
+                      } catch (error) {
+                        console.error('Error uploading recording:', error);
                       }
                     }}
                   />
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Help text for new users */}
-          {messages.length <= 1 && (
-            <div className="help-text">
-              💡 <strong>How to practice:</strong> {recordingMode === 'voice-activated' ? 'Just start speaking in Japanese!' : 'Hold 🎙️ to speak'} or type your message below. The teacher will respond and correct your mistakes.
+                );
+              })()}
             </div>
-          )}
-
-          <div className="input-area">
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Type in Japanese or English..."
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            />
-            <button onClick={handleSendMessage}>Send</button>
-          </div>
-          
-          <div className="voice-recorder-section">
-            {/* Recording mode toggle */}
-            <div className="mode-toggle">
-              <button 
-                className={recordingMode === 'voice-activated' ? 'active' : ''}
-                onClick={() => setRecordingMode('voice-activated')}
-              >
-                🎤 Voice Activated
-              </button>
-              <button 
-                className={recordingMode === 'push-to-talk' ? 'active' : ''}
-                onClick={() => setRecordingMode('push-to-talk')}
-              >
-                🎙️ Push to Talk
-              </button>
-            </div>
-            
-            {/* Voice Recorder with VAD - disabled when waiting for AI */}
-            {(() => {
-              // Check if any AI message is currently loading (waiting for response)
-              const isWaitingForAI = messages.some(m => m.role === 'assistant' && m.isLoading);
-              
-              return (
-                <VoiceRecorder
-                  mode={recordingMode}
-                  isListening={isListening}
-                  disabled={isWaitingForAI}
-                  onStartListening={() => {
-                    setIsListening(true);
-                  }}
-                  onStopListening={() => {
-                    setIsListening(false);
-                  }}
-                  onRecordingComplete={async (audioBlob) => {
-                    // Upload the recorded audio
-                    const formData = new FormData();
-                    formData.append('audio', audioBlob, 'recording.webm');
-                    formData.append('session_id', session?.id.toString() || '');
-                    formData.append('target_language', language);
-                    
-                    try {
-                      const response = await fetch(`${API_URL}/api/upload`, {
-                        method: 'POST',
-                        headers: {
-                          'X-Password': password,
-                        },
-                        body: formData,
-                      });
-                      
-                      if (response.ok) {
-                        const data = await response.json();
-                        const displayText = data.transcription || '[Your recording]';
-                        const audioUrl = URL.createObjectURL(audioBlob);
-                        setMessages(prev => [...prev, { role: 'user', text: displayText, audioUrl }]);
-                        
-                        if (data.transcription) {
-                          await generateAIResponse(data.transcription, language);
-                        }
-                      }
-                    } catch (error) {
-                      console.error('Error uploading recording:', error);
-                    }
-                  }}
-                />
-              );
-            })()}
-          </div>
-        </main>
-      )}
-    </div>
+          </main>
+        )}
+      </div>
+    </AuthenticatedRoute>
   );
 }
 
