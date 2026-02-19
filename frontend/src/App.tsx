@@ -360,6 +360,11 @@ function App() {
     return hash.includes('/practice');
   };
   
+  // Check if we're in practice setup mode
+  const isPracticeSetupHash = (hash: string): boolean => {
+    return hash.includes('/setup');
+  };
+  
   // Parse lesson ID from hash
   const getLessonIdFromHash = (hash: string): string | null => {
     const match = hash.match(/#\/lessons\/([^\/]+)/);
@@ -369,6 +374,28 @@ function App() {
   // Read initial state from URL hash
   useEffect(() => {
     const hash = window.location.hash;
+    
+    // If in practice setup mode on refresh
+    if (isPracticeSetupHash(hash)) {
+      const lessonId = getLessonIdFromHash(hash);
+      if (lessonId) {
+        const savedPassword = localStorage.getItem('speech_practice_password') || '';
+        if (!savedPassword) {
+          window.location.hash = '';
+          return;
+        }
+        // Fetch lesson title and show setup
+        fetch(`${API_URL}/api/lessons/${lessonId}`, {
+          headers: { 'X-Password': savedPassword }
+        }).then(r => r.json()).then(data => {
+          setActiveLesson({ id: lessonId, title: data.title || '' });
+          setShowPracticeSetup(true);
+        }).catch(() => {
+          window.location.hash = '';
+        });
+      }
+      return;
+    }
     
     // If in practice mode on refresh, don't show lesson list yet
     if (isPracticeHash(hash)) {
@@ -430,7 +457,15 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
-      setIsLessonModeState(isLessonHash(hash) && !isPracticeHash(hash));
+      setIsLessonModeState(isLessonHash(hash) && !isPracticeHash(hash) && !isPracticeSetupHash(hash));
+      
+      // Handle navigation away from practice setup
+      if (!isPracticeSetupHash(hash) && !isPracticeHash(hash)) {
+        setShowPracticeSetup(false);
+        if (!isLessonHash(hash)) {
+          setActiveLesson(null);
+        }
+      }
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
@@ -901,9 +936,10 @@ function App() {
         password={password}
         onBack={() => setIsLessonMode(false)}
         onStartLessonChat={(lessonId, lessonTitle) => {
-          setIsLessonMode(false, true); // Keep hash when going to chat
+          setIsLessonMode(false, true);
           setActiveLesson({ id: lessonId, title: lessonTitle });
           setShowPracticeSetup(true);
+          window.location.hash = `#/lessons/${lessonId}/setup`;
         }}
       />
     );
@@ -1124,6 +1160,7 @@ function App() {
               className="start-practice-btn"
               onClick={() => {
                 setShowPracticeSetup(false);
+                window.location.hash = `#/lessons/${activeLesson.id}/practice`;
                 initializeLessonChat(activeLesson.id);
               }}
             >
