@@ -28,7 +28,7 @@ const PASSWORD = process.env.ACCESS_PASSWORD || 'default123';
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://vileen.github.io'],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://vileen.github.io', 'https://eds-grow-delivered-spending.trycloudflare.com'],
   credentials: true,
 }));
 app.use(express.json());
