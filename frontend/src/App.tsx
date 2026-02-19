@@ -24,13 +24,8 @@ interface PronunciationResult {
 }
 
 // API URL - use env var or default to GitHub Pages path
-// Use relative API path when served from same origin, otherwise use env var
-const API_URL = import.meta.env.VITE_API_URL 
-  ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
-  : '';  // Empty string = same origin (when backend serves frontend)
-
-// Helper to build API URLs
-const apiUrl = (path: string) => API_URL ? `${API_URL}${path}` : path;
+// API URL - use env var or default to Cloudflare backend
+const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
 
 // Practice phrases for "Repeat After Me" mode
 // Audio Player Component with progress bar
@@ -428,7 +423,7 @@ function ChatSetup() {
   const handleStartChat = async () => {
     const password = localStorage.getItem('speech_practice_password') || '';
     try {
-      const response = await fetch(`${apiUrl('/api/')}sessions`, {
+      const response = await fetch(`${API_URL}/api/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -601,7 +596,7 @@ function ChatSession() {
   // Fetch session history from server
   const fetchSessionHistory = async (sessionId: number, password: string) => {
     try {
-      const response = await fetch(`${apiUrl('/api/')}sessions/${sessionId}`, {
+      const response = await fetch(`${API_URL}/api/sessions/${sessionId}`, {
         headers: { 'X-Password': password },
       });
       if (response.ok) {
@@ -647,7 +642,7 @@ function ChatSession() {
   // Get furigana for text
   const getFurigana = async (text: string): Promise<string> => {
     try {
-      const response = await fetch(`${apiUrl('/api/')}furigana`, {
+      const response = await fetch(`${API_URL}/api/furigana`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -671,7 +666,7 @@ function ChatSession() {
     if (!activeSession) return null;
 
     try {
-      const response = await fetch(`${apiUrl('/api/')}tts`, {
+      const response = await fetch(`${API_URL}/api/tts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -699,7 +694,7 @@ function ChatSession() {
     if (!session) return;
     
     try {
-      const response = await fetch(`${apiUrl('/api/')}tts`, {
+      const response = await fetch(`${API_URL}/api/tts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -762,7 +757,7 @@ function ChatSession() {
     }]);
     
     try {
-      const response = await fetch(`${apiUrl('/api/')}chat`, {
+      const response = await fetch(`${API_URL}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -893,7 +888,7 @@ function ChatSession() {
                               i === idx ? { ...m, isTranslating: true } : m
                             ));
                             
-                            const response = await fetch(`${apiUrl('/api/')}translate`, {
+                            const response = await fetch(`${API_URL}/api/translate`, {
                               method: 'POST',
                               headers: {
                                 'Content-Type': 'application/json',
@@ -1032,7 +1027,7 @@ function ChatSession() {
                       formData.append('target_language', language);
                       
                       try {
-                        const response = await fetch(`${apiUrl('/api/')}upload`, {
+                        const response = await fetch(`${API_URL}/api/upload`, {
                           method: 'POST',
                           headers: {
                             'X-Password': password,
@@ -1226,7 +1221,7 @@ function RepeatMode() {
   // Get furigana for text
   const getFurigana = async (text: string): Promise<string> => {
     try {
-      const response = await fetch(`${apiUrl('/api/')}furigana`, {
+      const response = await fetch(`${API_URL}/api/furigana`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1278,7 +1273,7 @@ function RepeatMode() {
         return;
       }
       
-      const response = await fetch(`${apiUrl('/api/')}repeat-after-me`, {
+      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1479,7 +1474,7 @@ function RepeatMode() {
                   formData.append('language', language);
 
                   try {
-                    const response = await fetch(`${apiUrl('/api/')}repeat-after-me`, {
+                    const response = await fetch(`${API_URL}/api/repeat-after-me`, {
                       method: 'POST',
                       headers: {
                         'X-Password': password,
@@ -1554,7 +1549,7 @@ function LessonPracticeSetup() {
 
     // Fetch lesson title if not provided
     if (!lessonTitle && id) {
-      fetch(`${apiUrl('/api/')}lessons/${id}`, {
+      fetch(`${API_URL}/api/lessons/${id}`, {
         headers: { 'X-Password': savedPassword }
       }).then(r => r.json()).then(data => {
         setLessonTitle(data.title || '');
@@ -1712,7 +1707,7 @@ function LessonPractice() {
 
     // Fetch lesson title if needed
     if (id) {
-      fetch(`${apiUrl('/api/')}lessons/${id}`, {
+      fetch(`${API_URL}/api/lessons/${id}`, {
         headers: { 'X-Password': savedPassword }
       }).then(r => r.json()).then(lessonData => {
         setActiveLesson(prev => prev ? { ...prev, title: lessonData.title || '' } : { id: id || '', title: lessonData.title || '' });
@@ -1738,7 +1733,7 @@ function LessonPractice() {
     if (!activeSession) return null;
 
     try {
-      const response = await fetch(`${apiUrl('/api/')}tts`, {
+      const response = await fetch(`${API_URL}/api/tts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1766,7 +1761,7 @@ function LessonPractice() {
   const initializeLessonChat = async (lessonId: string, effectivePassword: string, _lessonTitle: string) => {
     try {
       // Create a session
-      const sessionResponse = await fetch(`${apiUrl('/api/')}sessions`, {
+      const sessionResponse = await fetch(`${API_URL}/api/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1781,7 +1776,7 @@ function LessonPractice() {
         setLanguage(sessionData.language);
         
         // Load lesson context
-        const response = await fetch(`${apiUrl('/api/')}lessons/${lessonId}/start`, {
+        const response = await fetch(`${API_URL}/api/lessons/${lessonId}/start`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1802,7 +1797,7 @@ function LessonPractice() {
             isTyping: true,
           }]);
           
-          const aiResponse = await fetch(`${apiUrl('/api/')}chat`, {
+          const aiResponse = await fetch(`${API_URL}/api/chat`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -1863,7 +1858,7 @@ function LessonPractice() {
     }]);
     
     try {
-      const response = await fetch(`${apiUrl('/api/')}chat`, {
+      const response = await fetch(`${API_URL}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -2019,7 +2014,7 @@ function LessonPractice() {
                               i === idx ? { ...m, isTranslating: true } : m
                             ));
                             
-                            const response = await fetch(`${apiUrl('/api/')}translate`, {
+                            const response = await fetch(`${API_URL}/api/translate`, {
                               method: 'POST',
                               headers: {
                                 'Content-Type': 'application/json',
@@ -2158,7 +2153,7 @@ function LessonPractice() {
                       formData.append('target_language', language);
                       
                       try {
-                        const response = await fetch(`${apiUrl('/api/')}upload`, {
+                        const response = await fetch(`${API_URL}/api/upload`, {
                           method: 'POST',
                           headers: {
                             'X-Password': password,
