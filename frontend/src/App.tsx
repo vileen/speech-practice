@@ -366,6 +366,16 @@ function App() {
     return hash.includes('/setup');
   };
   
+  // Check if we're in repeat after me mode
+  const isRepeatHash = (hash: string): boolean => {
+    return hash === '#/repeat';
+  };
+  
+  // Check if we're in chat/session mode
+  const isChatHash = (hash: string): boolean => {
+    return hash === '#/chat';
+  };
+  
   // Parse lesson ID from hash
   const getLessonIdFromHash = (hash: string): string | null => {
     const match = hash.match(/#\/lessons\/([^\/]+)/);
@@ -449,6 +459,14 @@ function App() {
         setIsRestoringPractice(false);
         setIsLessonModeState(true);
       }
+    } else if (isRepeatHash(hash)) {
+      setIsRepeatMode(true);
+    } else if (isChatHash(hash)) {
+      // Chat mode - check if we can restore session
+      const savedPassword = localStorage.getItem('speech_practice_password') || '';
+      if (!savedPassword) {
+        window.location.hash = '';
+      }
     } else {
       setIsLessonModeState(isLessonHash(hash));
     }
@@ -459,12 +477,20 @@ function App() {
     const handleHashChange = () => {
       const hash = window.location.hash;
       setIsLessonModeState(isLessonHash(hash) && !isPracticeHash(hash) && !isPracticeSetupHash(hash));
+      setIsRepeatMode(isRepeatHash(hash));
       
       // Handle navigation away from practice setup
       if (!isPracticeSetupHash(hash) && !isPracticeHash(hash)) {
         setShowPracticeSetup(false);
         if (!isLessonHash(hash)) {
           setActiveLesson(null);
+        }
+      }
+      
+      // Handle navigation away from chat
+      if (!isChatHash(hash) && !isPracticeHash(hash)) {
+        if (!isRestoringPractice) {
+          setSession(null);
         }
       }
     };
@@ -540,6 +566,7 @@ function App() {
         const data = await response.json();
         setSession(data);
         setMessages([]);
+        window.location.hash = '#/chat';
       }
     } catch (error) {
       console.error('Error creating session:', error);
@@ -646,6 +673,7 @@ function App() {
 
   // Repeat After Me functions
   const startRepeatMode = () => {
+    window.location.hash = '#/repeat';
     setIsRepeatMode(true);
     setPronunciationResult(null);
     nextPhrase();
@@ -959,9 +987,9 @@ function App() {
                 URL.revokeObjectURL(currentAudioUrl);
                 setCurrentAudioUrl(null);
               }
-              setIsRepeatMode(false);
+              window.location.hash = '';
             }}>
-              ← Back to Chat
+              ← Back to Home
             </button>
           </div>
         </header>
@@ -1169,6 +1197,24 @@ function App() {
                 <span className="toggle-label">Simple Mode</span>
                 <span className="toggle-description">Use basic vocabulary and short sentences</span>
               </label>
+              
+              <div className="setup-section">
+                <span className="setup-section-label">Voice</span>
+                <div className="setup-voice-select">
+                  <button 
+                    className={gender === 'male' ? 'active' : ''} 
+                    onClick={() => setGender('male')}
+                  >
+                    ♂️ Male
+                  </button>
+                  <button 
+                    className={gender === 'female' ? 'active' : ''} 
+                    onClick={() => setGender('female')}
+                  >
+                    ♀️ Female
+                  </button>
+                </div>
+              </div>
             </div>
 
             <button 

@@ -1090,6 +1090,49 @@ header h1 {
   color: #e94560;
 }
 
+/* Setup section styling */
+.setup-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #333;
+}
+
+.setup-section-label {
+  display: block;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+.setup-voice-select {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.setup-voice-select button {
+  padding: 10px 20px;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background: #16213e;
+  color: #aaa;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.setup-voice-select button:hover {
+  border-color: #555;
+  color: #fff;
+}
+
+.setup-voice-select button.active {
+  border-color: #e94560;
+  background: rgba(233, 69, 96, 0.1);
+  color: #fff;
+}
+
 /* ============================================
    RESPONSIVE STYLES - iPhone 15 Pro & Mobile
    ============================================ */
