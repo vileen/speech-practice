@@ -5,9 +5,19 @@
   <title>Speech Practice</title>
   <script>
     // Single Page Apps for GitHub Pages
-    // Store the path in sessionStorage and redirect to index
-    sessionStorage.redirect = location.href;
-    location.href = '/speech-practice/';
+    // MIT License
+    // https://github.com/rafgraph/spa-github-pages
+    // This script takes the current URL and converts the path and query
+    // string into just a query string, and then redirects the browser
+    // to the new URL with only a query string and hash fragment.
+    var l = window.location;
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      '/speech-practice/?/' +
+      l.pathname.slice(17).replace(/&/g, '~and~') +
+      (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+      l.hash
+    );
   </script>
 </head>
 <body>

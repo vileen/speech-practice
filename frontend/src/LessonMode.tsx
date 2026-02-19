@@ -32,13 +32,7 @@ interface LessonDetail {
   practice_phrases: string[];
 }
 
-// Use relative API path when served from same origin, otherwise use env var
-const API_URL = import.meta.env.VITE_API_URL 
-  ? import.meta.env.VITE_API_URL.replace(/\/$/, '')
-  : '';  // Empty string = same origin (when backend serves frontend)
-
-// Helper to build API URLs
-const apiUrl = (path: string) => API_URL ? `${API_URL}${path}` : path;
+const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
 
 // Format date to YYYY-MM-DD
 function formatDate(dateString: string): string {
@@ -126,7 +120,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
 
   const loadLessons = async () => {
     try {
-      const response = await fetch(`${apiUrl('/api/')}lessons`, {
+      const response = await fetch(`${API_URL}/api/lessons`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
@@ -150,7 +144,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     setLoading(true);
     try {
       // Always fetch with furigana included (cached in DB)
-      const response = await fetch(`${apiUrl('/api/')}lessons/${id}?furigana=true`, {
+      const response = await fetch(`${API_URL}/api/lessons/${id}?furigana=true`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
@@ -196,7 +190,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     setFuriganaLoading({ ...furiganaLoadingRef.current });
     
     try {
-      const response = await fetch(`${apiUrl('/api/')}furigana`, {
+      const response = await fetch(`${API_URL}/api/furigana`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
