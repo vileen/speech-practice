@@ -27,6 +27,9 @@ interface PronunciationResult {
 // API URL - use env var or default to Cloudflare backend
 const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
 
+// Helper to get password from localStorage
+const getPassword = () => localStorage.getItem('speech_practice_password') || '';
+
 // Practice phrases for "Repeat After Me" mode
 // Audio Player Component with progress bar
 interface AudioPlayerProps {
@@ -421,13 +424,12 @@ function ChatSetup() {
   });
 
   const handleStartChat = async () => {
-    const password = localStorage.getItem('speech_practice_password') || '';
     try {
       const response = await fetch(`${API_URL}/api/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': getPassword(),
         },
         body: JSON.stringify({ language, voice_gender: gender }),
       });
@@ -646,7 +648,7 @@ function ChatSession() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': getPassword(),
         },
         body: JSON.stringify({ text }),
       });
@@ -665,12 +667,16 @@ function ChatSession() {
     const activeSession = sessionData || session;
     if (!activeSession) return null;
 
+    // Get password from localStorage directly to avoid race condition
+    const effectivePassword = password || localStorage.getItem('speech_practice_password') || '';
+    if (!effectivePassword) return null;
+
     try {
       const response = await fetch(`${API_URL}/api/tts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': effectivePassword,
         },
         body: JSON.stringify({
           text,
@@ -693,12 +699,16 @@ function ChatSession() {
   const generateTTS = async (text: string) => {
     if (!session) return;
     
+    // Get password from localStorage directly to avoid race condition
+    const effectivePassword = password || localStorage.getItem('speech_practice_password') || '';
+    if (!effectivePassword) return;
+    
     try {
       const response = await fetch(`${API_URL}/api/tts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': effectivePassword,
         },
         body: JSON.stringify({
           text,
@@ -761,7 +771,7 @@ function ChatSession() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': getPassword(),
         },
         body: JSON.stringify({
           session_id: session.id,
@@ -892,7 +902,7 @@ function ChatSession() {
                               method: 'POST',
                               headers: {
                                 'Content-Type': 'application/json',
-                                'X-Password': password,
+                                'X-Password': getPassword(),
                               },
                               body: JSON.stringify({ text: msg.text }),
                             });
@@ -1030,7 +1040,7 @@ function ChatSession() {
                         const response = await fetch(`${API_URL}/api/upload`, {
                           method: 'POST',
                           headers: {
-                            'X-Password': password,
+                            'X-Password': getPassword(),
                           },
                           body: formData,
                         });
@@ -1152,7 +1162,6 @@ function RepeatSetup() {
 // Repeat Mode component
 function RepeatMode() {
   const navigate = useNavigate();
-  const [password, setPassword] = useState('');
   const [language] = useState<'japanese' | 'italian'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
   const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
@@ -1174,11 +1183,8 @@ function RepeatMode() {
   });
   const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
 
-  // Load settings and password on mount
+  // Load settings on mount
   useEffect(() => {
-    const savedPassword = localStorage.getItem('speech_practice_password') || '';
-    setPassword(savedPassword);
-    
     const settings = localStorage.getItem('repeatModeSettings');
     if (settings) {
       try {
@@ -1225,7 +1231,7 @@ function RepeatMode() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': getPassword(),
         },
         body: JSON.stringify({ text }),
       });
@@ -1277,7 +1283,7 @@ function RepeatMode() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': getPassword(),
         },
         body: JSON.stringify({
           target_text: text,
@@ -1477,7 +1483,7 @@ function RepeatMode() {
                     const response = await fetch(`${API_URL}/api/repeat-after-me`, {
                       method: 'POST',
                       headers: {
-                        'X-Password': password,
+                        'X-Password': getPassword(),
                       },
                       body: formData,
                     });
@@ -1732,12 +1738,16 @@ function LessonPractice() {
     const activeSession = sessionData || session;
     if (!activeSession) return null;
 
+    // Get password from localStorage directly to avoid race condition
+    const effectivePassword = password || localStorage.getItem('speech_practice_password') || '';
+    if (!effectivePassword) return null;
+
     try {
       const response = await fetch(`${API_URL}/api/tts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': effectivePassword,
         },
         body: JSON.stringify({
           text,
@@ -1862,7 +1872,7 @@ function LessonPractice() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': password,
+          'X-Password': getPassword(),
         },
         body: JSON.stringify({
           session_id: session.id,
@@ -2018,7 +2028,7 @@ function LessonPractice() {
                               method: 'POST',
                               headers: {
                                 'Content-Type': 'application/json',
-                                'X-Password': password,
+                                'X-Password': getPassword(),
                               },
                               body: JSON.stringify({ text: msg.text }),
                             });
@@ -2156,7 +2166,7 @@ function LessonPractice() {
                         const response = await fetch(`${API_URL}/api/upload`, {
                           method: 'POST',
                           headers: {
-                            'X-Password': password,
+                            'X-Password': getPassword(),
                           },
                           body: formData,
                         });
