@@ -306,6 +306,7 @@ function App() {
   const [currentTranslation, setCurrentTranslation] = useState('');
   const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
   const [pronunciationResult, setPronunciationResult] = useState<PronunciationResult | null>(null);
+  const [isCheckingPronunciation, setIsCheckingPronunciation] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [vadResetCounter, setVadResetCounter] = useState(0); // Force VAD reset on Next Phrase
   const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null); // Track currently playing audio
@@ -1007,6 +1008,17 @@ function App() {
             </div>
           </div>
 
+          {isCheckingPronunciation && (
+            <div className="checking-pronunciation">
+              <div className="loading-typing">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <p>Checking pronunciation...</p>
+            </div>
+          )}
+
           {pronunciationResult && (
             <div className={`result-card score-${pronunciationResult.score}`}>
               <div className="score-display">
@@ -1096,6 +1108,7 @@ function App() {
                   setIsListening(false);
                 }}
                 onRecordingComplete={async (audioBlob) => {
+                  setIsCheckingPronunciation(true);
                   // Submit for pronunciation check
                   const formData = new FormData();
                   formData.append('audio', audioBlob, 'recording.webm');
@@ -1117,6 +1130,8 @@ function App() {
                     }
                   } catch (error) {
                     console.error('Error checking pronunciation:', error);
+                  } finally {
+                    setIsCheckingPronunciation(false);
                   }
                 }}
               />
