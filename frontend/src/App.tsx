@@ -380,10 +380,20 @@ function App() {
   const isRepeatHash = (hash: string): boolean => {
     return hash === '#/repeat';
   };
-  
+
+  // Check if we're in repeat setup mode
+  const isRepeatSetupHash = (hash: string): boolean => {
+    return hash === '#/repeat/setup';
+  };
+
   // Check if we're in chat/session mode
   const isChatHash = (hash: string): boolean => {
     return hash === '#/chat';
+  };
+
+  // Check if we're in chat setup mode
+  const isChatSetupHash = (hash: string): boolean => {
+    return hash === '#/chat/setup';
   };
   
   // Parse lesson ID from hash
@@ -488,7 +498,7 @@ function App() {
       const hash = window.location.hash;
       setIsLessonModeState(isLessonHash(hash) && !isPracticeHash(hash) && !isPracticeSetupHash(hash));
       setIsRepeatMode(isRepeatHash(hash));
-      
+
       // Handle navigation away from practice setup
       if (!isPracticeSetupHash(hash) && !isPracticeHash(hash)) {
         setShowPracticeSetup(false);
@@ -496,9 +506,9 @@ function App() {
           setActiveLesson(null);
         }
       }
-      
+
       // Handle navigation away from chat
-      if (!isChatHash(hash) && !isPracticeHash(hash)) {
+      if (!isChatHash(hash) && !isChatSetupHash(hash)) {
         if (!isRestoringPractice) {
           setSession(null);
         }
@@ -541,20 +551,22 @@ function App() {
   // Spacebar shortcut for Next Phrase in Repeat After Me mode
   useEffect(() => {
     if (!isRepeatMode) return;
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && !e.repeat && !e.ctrlKey && !e.metaKey) {
         // Don't trigger if user is typing in an input
         if (document.activeElement?.tagName === 'INPUT') return;
-        
+        // Don't trigger if checking pronunciation or loading
+        if (isCheckingPronunciation) return;
+
         e.preventDefault();
         nextPhrase();
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isRepeatMode]);
+  }, [isRepeatMode, isCheckingPronunciation]);
 
   const handleLogin = async () => {
     localStorage.setItem('speech_practice_password', password);
@@ -684,11 +696,14 @@ function App() {
   };
 
   // Repeat After Me functions
-  const startRepeatMode = () => {
+  const startRepeatMode = async () => {
+    if (isCheckingPronunciation) return; // Prevent double-clicks
+    setIsCheckingPronunciation(true);
     window.location.hash = '#/repeat';
     setIsRepeatMode(true);
     setPronunciationResult(null);
-    nextPhrase();
+    await nextPhrase();
+    setIsCheckingPronunciation(false);
   };
 
   const nextPhrase = async () => {
@@ -1043,7 +1058,11 @@ function App() {
             )}
             
             <div className="phrase-controls">
-              <button className="play-btn large" onClick={() => playPhrase(currentPhrase)}>
+              <button 
+                className="play-btn large" 
+                onClick={() => playPhrase(currentPhrase)}
+                disabled={isCheckingPronunciation || !currentPhrase}
+              >
                 🔊 {phrasePlayed ? 'Listen Again' : 'Listen'}
               </button>
               <button 
@@ -1055,14 +1074,14 @@ function App() {
             </div>
           </div>
 
-          {isCheckingPronunciation && (
+          {(isCheckingPronunciation || !currentPhrase) && (
             <div className="checking-pronunciation">
               <div className="loading-typing">
                 <span></span>
                 <span></span>
                 <span></span>
               </div>
-              <p>Checking pronunciation...</p>
+              <p>{isCheckingPronunciation ? 'Checking pronunciation...' : 'Loading phrase...'}</p>
             </div>
           )}
 
@@ -1184,7 +1203,7 @@ function App() {
               />
             </div>
             
-            <button className="next-btn" onClick={nextPhrase}>
+            <button className="next-btn" onClick={nextPhrase} disabled={isCheckingPronunciation}>
               <div>Next Phrase →</div>
               <small className="shortcut-hint">(space)</small>
             </button>
@@ -1287,6 +1306,178 @@ function App() {
     );
   }
 
+  // Chat Setup Screen
+  if (isChatSetupHash(window.location.hash)) {
+    return (
+      <div className="app">
+        <header>
+          <h1>🎤 Speech Practice</h1>
+        </header>
+        <main>
+          <div className="practice-setup">
+            <h2>💬 Chat Setup</h2>
+            <p className="setup-lesson-title">Configure your chat session</p>
+            
+            <div className="setup-options">
+              <div className="setup-section">
+                <span className="setup-section-label">Language</span>
+                <div className="setup-voice-select">
+                  <button 
+                    className={language === 'japanese' ? 'active' : ''} 
+                    onClick={() => setLanguage('japanese')}
+                  >
+                    🇯🇵 Japanese
+                  </button>
+                  <button 
+                    className={language === 'italian' ? 'active' : ''} 
+                    onClick={() => setLanguage('italian')}
+                  >
+                    🇮🇹 Italian
+                  </button>
+                </div>
+              </div>
+
+              <div className="setup-section">
+                <span className="setup-section-label">Voice</span>
+                <div className="setup-voice-select">
+                  <button 
+                    className={gender === 'male' ? 'active' : ''} 
+                    onClick={() => setGender('male')}
+                  >
+                    ♂️ Male
+                  </button>
+                  <button 
+                    className={gender === 'female' ? 'active' : ''} 
+                    onClick={() => setGender('female')}
+                  >
+                    ♀️ Female
+                  </button>
+                </div>
+              </div>
+              
+              <div className="setup-section">
+                <span className="setup-section-label">Voice Style</span>
+                <div className="setup-voice-select">
+                  <button 
+                    className={voiceStyle === 'normal' ? 'active' : ''} 
+                    onClick={() => setVoiceStyle('normal')}
+                  >
+                    🎙️ Normal
+                  </button>
+                  <button 
+                    className={voiceStyle === 'anime' ? 'active' : ''} 
+                    onClick={() => setVoiceStyle('anime')}
+                  >
+                    ✨ Anime
+                  </button>
+                </div>
+                <small className="setup-hint">
+                  {voiceStyle === 'anime' 
+                    ? (gender === 'male' ? "Denji-like voice" : "Reze-like voice")
+                    : "Natural conversational voice"}
+                </small>
+              </div>
+            </div>
+
+            <button 
+              className="start-practice-btn"
+              onClick={startSession}
+            >
+              🚀 Start Chat
+            </button>
+            
+            <button 
+              className="cancel-practice-btn"
+              onClick={() => {
+                window.location.hash = '';
+              }}
+            >
+              ← Back to Home
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Repeat After Me Setup Screen
+  if (isRepeatSetupHash(window.location.hash)) {
+    return (
+      <div className="app">
+        <header>
+          <h1>🎤 Speech Practice</h1>
+        </header>
+        <main>
+          <div className="practice-setup">
+            <h2>🎯 Repeat After Me Setup</h2>
+            <p className="setup-lesson-title">Practice pronunciation</p>
+            
+            <div className="setup-options">
+              <div className="setup-section">
+                <span className="setup-section-label">Voice</span>
+                <div className="setup-voice-select">
+                  <button 
+                    className={gender === 'male' ? 'active' : ''} 
+                    onClick={() => setGender('male')}
+                  >
+                    ♂️ Male
+                  </button>
+                  <button 
+                    className={gender === 'female' ? 'active' : ''} 
+                    onClick={() => setGender('female')}
+                  >
+                    ♀️ Female
+                  </button>
+                </div>
+              </div>
+              
+              <div className="setup-section">
+                <span className="setup-section-label">Voice Style</span>
+                <div className="setup-voice-select">
+                  <button 
+                    className={voiceStyle === 'normal' ? 'active' : ''} 
+                    onClick={() => setVoiceStyle('normal')}
+                  >
+                    🎙️ Normal
+                  </button>
+                  <button 
+                    className={voiceStyle === 'anime' ? 'active' : ''} 
+                    onClick={() => setVoiceStyle('anime')}
+                  >
+                    ✨ Anime
+                  </button>
+                </div>
+                <small className="setup-hint">
+                  {voiceStyle === 'anime' 
+                    ? (gender === 'male' ? "Denji-like voice" : "Reze-like voice")
+                    : "Natural conversational voice"}
+                </small>
+              </div>
+            </div>
+
+            <button 
+              className="start-practice-btn"
+              onClick={startRepeatMode}
+              disabled={isCheckingPronunciation}
+            >
+              {isCheckingPronunciation ? '⏳ Loading...' : '🚀 Start Practice'}
+            </button>
+            
+            <button 
+              className="cancel-practice-btn"
+              onClick={() => {
+                window.location.hash = '';
+              }}
+              disabled={isCheckingPronunciation}
+            >
+              ← Back to Home
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <header>
@@ -1308,28 +1499,13 @@ function App() {
               </button>
             </div>
             
-            <div className="gender-select">
-              <button 
-                className={gender === 'male' ? 'active' : ''}
-                onClick={() => setGender('male')}
-              >
-                ♂️ Male Voice
-              </button>
-              <button 
-                className={gender === 'female' ? 'active' : ''}
-                onClick={() => setGender('female')}
-              >
-                ♀️ Female Voice
-              </button>
-            </div>
-            
-            <button className="start-btn" onClick={startSession}>
-              Start Session
+            <button className="start-btn" onClick={() => window.location.hash = '#/chat/setup'}>
+              💬 Start Chat
             </button>
             
             {language === 'japanese' && (
               <>
-                <button className="repeat-mode-btn" onClick={startRepeatMode}>
+                <button className="repeat-mode-btn" onClick={() => window.location.hash = '#/repeat/setup'}>
                   🎯 Repeat After Me
                 </button>
                 
