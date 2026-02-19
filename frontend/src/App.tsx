@@ -303,6 +303,7 @@ function App() {
       <Route path="/repeat/setup" element={<RepeatSetup />} />
       <Route path="/repeat" element={<RepeatMode />} />
       <Route path="/lessons" element={<LessonList />} />
+      <Route path="/lessons/:id" element={<LessonDetail />} />
       <Route path="/lessons/:id/setup" element={<LessonPracticeSetup />} />
       <Route path="/lessons/:id/practice" element={<LessonPractice />} />
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -1515,7 +1516,6 @@ function RepeatMode() {
 // Lesson List component
 function LessonList() {
   const navigate = useNavigate();
-  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
 
   const handleStartLessonChat = (lessonId: string, lessonTitle: string) => {
     navigate(`/lessons/${lessonId}/setup`, { state: { lessonTitle } });
@@ -1527,8 +1527,36 @@ function LessonList() {
         password={localStorage.getItem('speech_practice_password') || ''}
         onBack={() => navigate('/')}
         onStartLessonChat={handleStartLessonChat}
-        selectedLessonId={selectedLessonId || undefined}
-        onSelectLesson={setSelectedLessonId}
+        selectedLessonId={undefined}
+        onSelectLesson={(id) => {
+          if (id) navigate(`/lessons/${id}`);
+        }}
+      />
+    </AuthenticatedRoute>
+  );
+}
+
+// Lesson Detail component
+function LessonDetail() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  const handleStartLessonChat = (lessonId: string, lessonTitle: string) => {
+    navigate(`/lessons/${lessonId}/setup`, { state: { lessonTitle } });
+  };
+
+  return (
+    <AuthenticatedRoute>
+      <LessonMode
+        password={localStorage.getItem('speech_practice_password') || ''}
+        onBack={() => navigate('/lessons')}
+        onStartLessonChat={handleStartLessonChat}
+        selectedLessonId={id}
+        onSelectLesson={(selectedId) => {
+          if (selectedId && selectedId !== id) {
+            navigate(`/lessons/${selectedId}`);
+          }
+        }}
       />
     </AuthenticatedRoute>
   );
