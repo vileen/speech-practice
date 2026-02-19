@@ -293,6 +293,12 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
+  const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('voiceStyle') as 'normal' | 'anime' || 'normal';
+    }
+    return 'normal';
+  });
   // Recording state managed by VoiceRecorder component
   const [session, setSession] = useState<Session | null>(null);
   const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
@@ -350,6 +356,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('simpleMode', simpleMode.toString());
   }, [simpleMode]);
+
+  useEffect(() => {
+    localStorage.setItem('voiceStyle', voiceStyle);
+  }, [voiceStyle]);
   
   // Check if hash is a lesson URL (either list or specific lesson)
   const isLessonHash = (hash: string): boolean => {
@@ -610,6 +620,7 @@ function App() {
           text,
           language: activeSession.language,
           gender: activeSession.voice_gender,
+          voiceStyle,
         }),
       });
       
@@ -637,6 +648,7 @@ function App() {
           text,
           language: session.language,
           gender: session.voice_gender,
+          voiceStyle,
         }),
       });
       
@@ -729,6 +741,7 @@ function App() {
           target_text: text,
           language,
           gender,
+          voiceStyle,
         }),
       });
       
@@ -987,6 +1000,12 @@ function App() {
                 URL.revokeObjectURL(currentAudioUrl);
                 setCurrentAudioUrl(null);
               }
+              // Stop any playing audio
+              if (playingAudio?.audio) {
+                playingAudio.audio.pause();
+                playingAudio.audio.currentTime = 0;
+              }
+              setPlayingAudio(null);
               window.location.hash = '';
             }}>
               ← Back to Home
@@ -1215,6 +1234,29 @@ function App() {
                   </button>
                 </div>
               </div>
+              
+              <div className="setup-section">
+                <span className="setup-section-label">Voice Style</span>
+                <div className="setup-voice-select">
+                  <button 
+                    className={voiceStyle === 'normal' ? 'active' : ''} 
+                    onClick={() => setVoiceStyle('normal')}
+                  >
+                    🎙️ Normal
+                  </button>
+                  <button 
+                    className={voiceStyle === 'anime' ? 'active' : ''} 
+                    onClick={() => setVoiceStyle('anime')}
+                  >
+                    ✨ Anime
+                  </button>
+                </div>
+                <small className="setup-hint">
+                  {voiceStyle === 'anime' 
+                    ? (gender === 'male' ? "Denji-like voice" : "Reze-like voice")
+                    : "Natural conversational voice"}
+                </small>
+              </div>
             </div>
 
             <button 
@@ -1336,6 +1378,12 @@ function App() {
                 🎯 Practice
               </button>
               <button className="end-btn" onClick={() => {
+                // Stop any playing audio
+                if (playingAudio?.audio) {
+                  playingAudio.audio.pause();
+                  playingAudio.audio.currentTime = 0;
+                }
+                setPlayingAudio(null);
                 setSession(null);
                 setActiveLesson(null);
                 window.location.hash = '';

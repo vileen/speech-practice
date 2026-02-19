@@ -83,8 +83,8 @@ app.post('/api/sessions', checkPassword, async (req, res) => {
 // Generate TTS
 app.post('/api/tts', checkPassword, async (req, res) => {
   try {
-    const { text, language, gender } = req.body;
-    const audioBuffer = await generateSpeech({ text, language, gender });
+    const { text, language, gender, voiceStyle } = req.body;
+    const audioBuffer = await generateSpeech({ text, language, gender, voiceStyle });
     
     const filename = `tts_${Date.now()}.mp3`;
     const filepath = join(audioStoragePath, filename);
@@ -188,7 +188,7 @@ app.get('/api/sessions', checkPassword, async (req, res) => {
 // Repeat After Me - Practice mode with pronunciation checking
 app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (req, res) => {
   try {
-    const { target_text, language, gender } = req.body;
+    const { target_text, language, gender, voiceStyle } = req.body;
     
     if (!target_text) {
       return res.status(400).json({ error: 'No target text provided' });
@@ -203,10 +203,11 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
         console.log(`TTS: "${target_text}" -> "${ttsText}"`);
       }
       
-      const audioBuffer = await generateSpeech({ 
-        text: ttsText, 
-        language: language || 'japanese', 
-        gender: gender || 'female'
+      const audioBuffer = await generateSpeech({
+        text: ttsText,
+        language: language || 'japanese',
+        gender: gender || 'female',
+        voiceStyle: voiceStyle || 'normal'
       });
       
       // Add furigana for display (async with Jisho API)

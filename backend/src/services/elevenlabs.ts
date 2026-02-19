@@ -13,12 +13,24 @@ const CACHE_FILE = './furigana-cache.json';
 // Get valid IDs from: https://api.elevenlabs.io/v1/voices
 const VOICES = {
   japanese: {
-    male: 'pNInz6obpgDQGcFmaJgB',     // Adam - Multilingual v2
-    female: 'XB0fDUnXU5powFXDhCwa',   // Japanese female - young, natural
+    normal: {
+      male: 'pNInz6obpgDQGcFmaJgB',     // Adam - Multilingual v2
+      female: 'XB0fDUnXU5powFXDhCwa',   // Japanese female - young, natural
+    },
+    anime: {
+      male: 'IKne3meq5aSn9XLyUdCD',     // Josh - energetic, young (Denji-like)
+      female: 'ThT5KcBeYPX3keUQqHPh',   // Dorothy - energetic, expressive (Reze-like)
+    },
   },
   italian: {
-    male: 'TX3AEvVoIzMeN6vkV4Ch',     // Italian male
-    female: 'XrExE9yKIg1WjnnlVkGX',   // Italian female
+    normal: {
+      male: 'TX3AEvVoIzMeN6vkV4Ch',     // Italian male
+      female: 'XrExE9yKIg1WjnnlVkGX',   // Italian female
+    },
+    anime: {
+      male: 'IKne3meq5aSn9XLyUdCD',     // Josh - energetic
+      female: 'ThT5KcBeYPX3keUQqHPh',   // Dorothy - expressive
+    },
   },
 };
 
@@ -26,6 +38,7 @@ interface TTSOptions {
   text: string;
   language: 'japanese' | 'italian';
   gender: 'male' | 'female';
+  voiceStyle?: 'normal' | 'anime';
 }
 
 // Strip furigana/ruby tags from text for TTS
@@ -125,23 +138,23 @@ function japaneseToRomaji(text: string): string {
   return romaji;
 }
 
-export async function generateSpeech({ text, language, gender }: TTSOptions): Promise<Buffer> {
+export async function generateSpeech({ text, language, gender, voiceStyle = 'normal' }: TTSOptions): Promise<Buffer> {
   if (!ELEVENLABS_API_KEY) {
     throw new Error('ELEVENLABS_API_KEY not set');
   }
 
   // Clean text for TTS - remove furigana/ruby annotations
   let cleanText = stripFurigana(text);
-  
+
   // For Japanese, convert to romaji for better TTS pronunciation
   // This fixes particle pronunciation (は as wa, へ as e)
   if (language === 'japanese') {
     cleanText = japaneseToRomaji(cleanText);
   }
-  
-  console.log(`[TTS] Original: "${text}" -> Clean: "${cleanText}"`);
 
-  const voiceId = VOICES[language][gender];
+  console.log(`[TTS] Original: "${text}" -> Clean: "${cleanText}" -> Style: ${voiceStyle}`);
+
+  const voiceId = VOICES[language][voiceStyle][gender];
   
   const response = await fetch(
     `${ELEVENLABS_BASE_URL}/text-to-speech/${voiceId}`,
