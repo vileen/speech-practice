@@ -23,7 +23,7 @@ interface PronunciationResult {
 }
 
 // API URL - use env var or default to GitHub Pages path
-const API_URL = 'https://trunk-sticks-connect-currency.trycloudflare.com';
+const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
 
 // Practice phrases for "Repeat After Me" mode
 // Audio Player Component with progress bar
