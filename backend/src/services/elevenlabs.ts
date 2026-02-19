@@ -11,15 +11,19 @@ const CACHE_FILE = './furigana-cache.json';
 
 // Voice IDs - ElevenLabs Multilingual v2 voices
 // Get valid IDs from: https://api.elevenlabs.io/v1/voices
-const VOICES = {
+type VoiceStyle = 'normal' | 'anime';
+type Gender = 'male' | 'female';
+type Language = 'japanese' | 'italian';
+
+const VOICES: Record<Language, Record<VoiceStyle, Record<Gender, string>>> = {
   japanese: {
     normal: {
       male: 'pNInz6obpgDQGcFmaJgB',     // Adam - Multilingual v2
-      female: 'XB0fDUnXU5powFXDhCwa',   // Japanese female - young, natural
+      female: 'XB0fDUnXU5powFXDhCwa',   // Bella - warm, professional
     },
     anime: {
-      male: 'IKne3meq5aSn9XLyUdCD',     // Josh - energetic, young (Denji-like)
-      female: 'ThT5KcBeYPX3keUQqHPh',   // Dorothy - energetic, expressive (Reze-like)
+      male: 'IKne3meq5aSn9XLyUdCD',     // Charlie - energetic, hyped
+      female: 'cgSgspJ2msm6clMCkdW9',   // Jessica - cute, playful, expressive
     },
   },
   italian: {
@@ -28,8 +32,8 @@ const VOICES = {
       female: 'XrExE9yKIg1WjnnlVkGX',   // Italian female
     },
     anime: {
-      male: 'IKne3meq5aSn9XLyUdCD',     // Josh - energetic
-      female: 'ThT5KcBeYPX3keUQqHPh',   // Dorothy - expressive
+      male: 'IKne3meq5aSn9XLyUdCD',     // Charlie - energetic
+      female: 'cgSgspJ2msm6clMCkdW9',   // Jessica - cute, expressive
     },
   },
 };
@@ -101,7 +105,7 @@ function japaneseToRomaji(text: string): string {
     '木曜日': 'mokuyoubi', '金曜日': 'kinyoubi', '土曜日': 'doyoubi', '日曜日': 'nichiyoubi',
     '私': 'watashi', '私たち': 'watashitachi',
     '日本': 'nihon', '日本語': 'nihongo',
-    '英語': 'eigo', '英語': 'eigo',
+    '英語': 'eigo',
     '漢字': 'kanji', 'ひらがな': 'hiragana', 'カタカナ': 'katakana',
     '人': 'hito', '人々': 'hitobito',
     '大きい': 'ookii', '小さい': 'chiisai',
@@ -155,7 +159,18 @@ export async function generateSpeech({ text, language, gender, voiceStyle = 'nor
   console.log(`[TTS] Original: "${text}" -> Clean: "${cleanText}" -> Style: ${voiceStyle}`);
 
   const voiceId = VOICES[language][voiceStyle][gender];
-  
+
+  // Anime mode = more expressive settings
+  const isAnime = voiceStyle === 'anime';
+  const voiceSettings = {
+    stability: isAnime ? 0.25 : 0.3,        // More variable for anime
+    similarity_boost: isAnime ? 0.85 : 0.7, // Higher expressiveness for anime
+    style: isAnime ? 0.7 : 0.4,             // Much higher style boost for anime
+    use_speaker_boost: isAnime,              // Extra clarity for anime
+  };
+
+  console.log(`[TTS] Using voice ${voiceId} with settings:`, voiceSettings);
+
   const response = await fetch(
     `${ELEVENLABS_BASE_URL}/text-to-speech/${voiceId}`,
     {
@@ -168,11 +183,7 @@ export async function generateSpeech({ text, language, gender, voiceStyle = 'nor
       body: JSON.stringify({
         text: cleanText,
         model_id: 'eleven_multilingual_v2',
-        voice_settings: {
-          stability: 0.3,        // More variable, natural
-          similarity_boost: 0.7, // More expressive
-          style: 0.4,            // Slight style boost for casual tone
-        },
+        voice_settings: voiceSettings,
       }),
     }
   );
@@ -186,11 +197,12 @@ export async function generateSpeech({ text, language, gender, voiceStyle = 'nor
   return Buffer.from(arrayBuffer);
 }
 
-export function getVoiceInfo(language: 'japanese' | 'italian', gender: 'male' | 'female') {
+export function getVoiceInfo(language: Language, gender: Gender, voiceStyle: VoiceStyle = 'normal') {
   return {
-    voiceId: VOICES[language][gender],
+    voiceId: VOICES[language][voiceStyle][gender],
     language,
     gender,
+    voiceStyle,
   };
 }
 
@@ -252,7 +264,6 @@ const FALLBACK_READINGS: Record<string, string> = {
   '渡辺': 'わたなべ',
   '高橋': 'たかはし',
   '小林': 'こばやし',
-  '田中': 'たなか',
   // Common words that might be missing
   ' Penn': 'ペン',
 };
@@ -500,7 +511,7 @@ export async function addFurigana(text: string): Promise<string> {
       
       if (!reading) {
         // Fetch from Jisho
-        reading = await getReadingFromJisho(kanji);
+        reading = (await getReadingFromJisho(kanji)) ?? undefined;
       }
       
       if (reading) {
@@ -558,7 +569,7 @@ export async function toHiraganaForTTS(text: string): Promise<string> {
     
     // If not in cache, try to fetch
     if (!reading) {
-      reading = await getReadingFromJisho(kanjiWord);
+      reading = (await getReadingFromJisho(kanjiWord)) ?? undefined;
     }
     
     if (reading) {
