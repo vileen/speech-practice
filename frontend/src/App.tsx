@@ -1508,6 +1508,7 @@ function RepeatMode() {
 // Lesson List component
 function LessonList() {
   const navigate = useNavigate();
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
 
   const handleStartLessonChat = (lessonId: string, lessonTitle: string) => {
     navigate(`/lessons/${lessonId}/setup`, { state: { lessonTitle } });
@@ -1519,6 +1520,8 @@ function LessonList() {
         password={localStorage.getItem('speech_practice_password') || ''}
         onBack={() => navigate('/')}
         onStartLessonChat={handleStartLessonChat}
+        selectedLessonId={selectedLessonId || undefined}
+        onSelectLesson={setSelectedLessonId}
       />
     </AuthenticatedRoute>
   );
