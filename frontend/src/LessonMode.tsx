@@ -48,9 +48,11 @@ interface LessonModeProps {
   password: string;
   onBack: () => void;
   onStartLessonChat: (lessonId: string, lessonTitle: string) => void;
+  selectedLessonId?: string;
+  onSelectLesson: (lessonId: string | null) => void;
 }
 
-export function LessonMode({ password, onBack, onStartLessonChat }: LessonModeProps) {
+export function LessonMode({ password, onBack, onStartLessonChat, selectedLessonId, onSelectLesson }: LessonModeProps) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selectedLesson, setSelectedLessonState] = useState<LessonDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,20 +97,14 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   const lessonsListRef = useRef<HTMLDivElement>(null);
   const scrollPositionRef = useRef<number>(0);
 
-  // Parse URL hash to get lesson ID
-  const getLessonIdFromUrl = (): string | null => {
-    const hash = window.location.hash;
-    const match = hash.match(/#\/lessons\/(.+)/);
-    return match ? match[1] : null;
-  };
-
-  // Update URL when selecting a lesson
-  const setSelectedLesson = (lesson: LessonDetail | null) => {
-    setSelectedLessonState(lesson);
-    if (lesson) {
-      window.location.hash = `#/lessons/${lesson.id}`;
-    } else {
-      window.location.hash = '#/lessons';
+  // Handle selected lesson changes from props
+  useEffect(() => {
+    if (selectedLessonId && lessons.length > 0) {
+      // Load lesson when prop changes
+      loadLessonDetail(selectedLessonId, false);
+    } else if (!selectedLessonId) {
+      // Go back to list when prop is null/undefined
+      setSelectedLessonState(null);
       // Restore scroll position when going back
       setTimeout(() => {
         if (lessonsListRef.current) {
@@ -116,24 +112,7 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
         }
       }, 0);
     }
-  };
-
-  // Listen for URL changes (back/forward buttons)
-  useEffect(() => {
-    const handleHashChange = () => {
-      const lessonId = getLessonIdFromUrl();
-      if (lessonId && lessons.length > 0) {
-        // Load lesson if URL has ID
-        loadLessonDetail(lessonId, false);
-      } else if (!lessonId) {
-        // Go back to list if no ID in URL
-        setSelectedLessonState(null);
-      }
-    };
-    
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [lessons]);
+  }, [selectedLessonId, lessons]);
 
   useEffect(() => {
     loadLessons();
@@ -149,12 +128,6 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
         // Sort by date descending (most recent first)
         const sorted = data.lessons.sort((a: Lesson, b: Lesson) => b.order - a.order);
         setLessons(sorted);
-        
-        // Check if URL has a lesson ID and load it
-        const lessonId = getLessonIdFromUrl();
-        if (lessonId) {
-          await loadLessonDetail(lessonId, false);
-        }
       }
     } catch (error) {
       console.error('Error loading lessons:', error);
@@ -176,8 +149,12 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
       });
       if (response.ok) {
         const data = await response.json();
-        setSelectedLesson(data);  // This updates URL and state
+        setSelectedLessonState(data);
         setActiveTab('overview');
+        // Notify parent of selection change (only for user clicks, not prop-driven loads)
+        if (saveScroll) {
+          onSelectLesson(id);
+        }
       }
     } catch (error) {
       console.error('Error loading lesson:', error);
@@ -191,8 +168,8 @@ export function LessonMode({ password, onBack, onStartLessonChat }: LessonModePr
   };
 
   const handleBackToList = () => {
-    setSelectedLesson(null);
-    window.location.hash = '#/lessons';
+    setSelectedLessonState(null);
+    onSelectLesson(null);
   };
 
   // Fetch furigana from backend - uses refs to avoid dependency loops
