@@ -371,9 +371,9 @@ function App() {
     return hash.includes('/practice');
   };
   
-  // Check if we're in practice setup mode
+  // Check if we're in practice setup mode (lesson practice setup only)
   const isPracticeSetupHash = (hash: string): boolean => {
-    return hash.includes('/setup');
+    return hash.startsWith('#/lessons/') && hash.includes('/setup');
   };
   
   // Check if we're in repeat after me mode
@@ -481,12 +481,18 @@ function App() {
       }
     } else if (isRepeatHash(hash)) {
       setIsRepeatMode(true);
+    } else if (isRepeatSetupHash(hash)) {
+      // Repeat setup - just render the setup screen
+      setIsRepeatMode(false);
     } else if (isChatHash(hash)) {
       // Chat mode - check if we can restore session
       const savedPassword = localStorage.getItem('speech_practice_password') || '';
       if (!savedPassword) {
         window.location.hash = '';
       }
+    } else if (isChatSetupHash(hash)) {
+      // Chat setup - just render the setup screen
+      // No special state needed
     } else {
       setIsLessonModeState(isLessonHash(hash));
     }
