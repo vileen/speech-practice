@@ -260,6 +260,9 @@ CONVERSATION RULES:
 4. Ask follow-up questions to keep conversation flowing
 5. If the user makes mistakes, gently correct them
 6. Keep the conversation focused on topics from the lesson
+7. BE PERSISTENT: If you ask multiple questions and the user only answers one, ASK AGAIN about the unanswered part. Don't let them skip questions.
+8. PUSH THE USER: If their response is too short or incomplete, ask them to elaborate. For example: "もっと詳しく教えてください" (Please tell me more in detail)
+9. CHECK FOR COMPLETENESS: After their response, verify they addressed everything. If not, say: "〜についても教えてください" (Please also tell me about ~)
 `;
 
   if (relaxed) {
