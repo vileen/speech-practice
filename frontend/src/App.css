@@ -1089,3 +1089,264 @@ header h1 {
   border-color: #e94560;
   color: #e94560;
 }
+
+/* ============================================
+   RESPONSIVE STYLES - iPhone 15 Pro & Mobile
+   ============================================ */
+
+/* iPhone 15 Pro: 393px width in portrait */
+@media (max-width: 480px) {
+  .app {
+    padding: 12px;
+    max-width: 100%;
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Login screen */
+  .login-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .login-form {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+
+  /* Language/Gender selection */
+  .language-select,
+  .gender-select {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .language-select button,
+  .gender-select button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  /* Session info bar */
+  .session-info {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .session-left,
+  .session-right {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Messages */
+  .messages {
+    height: calc(100vh - 280px);
+    min-height: 300px;
+  }
+
+  .message {
+    max-width: 90%;
+    padding: 12px;
+  }
+
+  .message-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .role-badge {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+
+  /* Input area */
+  .input-area {
+    padding: 12px;
+  }
+
+  .input-area input {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px;
+  }
+
+  /* Practice setup screen */
+  .practice-setup {
+    padding: 20px 16px;
+    min-height: 70vh;
+  }
+
+  .practice-setup h2 {
+    font-size: 1.5rem;
+  }
+
+  .setup-lesson-title {
+    font-size: 1rem;
+  }
+
+  .setup-options {
+    min-width: auto;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .start-practice-btn {
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    width: 100%;
+  }
+
+  .cancel-practice-btn {
+    width: 100%;
+  }
+
+  /* Lesson mode */
+  .lesson-mode {
+    padding: 12px;
+  }
+
+  .lesson-header {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .lesson-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .lesson-tabs {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .lesson-tabs button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .vocab-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grammar-card {
+    padding: 16px;
+  }
+
+  .lesson-card {
+    padding: 12px 16px;
+  }
+
+  .lesson-card-header {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .lesson-card-stats {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Mode controls */
+  .mode-controls {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .mode-btn {
+    width: 100%;
+    padding: 12px;
+  }
+
+  /* Audio player */
+  .audio-player {
+    width: 100%;
+  }
+
+  .audio-controls {
+    flex-wrap: wrap;
+  }
+
+  /* Voice recorder */
+  .voice-recorder {
+    padding: 12px;
+  }
+
+  .record-btn {
+    width: 60px;
+    height: 60px;
+  }
+
+  .record-btn::before {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Repeat mode */
+  .repeat-mode .target-text {
+    font-size: 1.5rem;
+  }
+
+  .score-display {
+    font-size: 2.5rem;
+  }
+
+  /* Furigana toggle */
+  .furigana-toggle {
+    margin-bottom: 12px;
+  }
+
+  /* Quick start button */
+  .big-button {
+    padding: 16px 24px;
+    font-size: 1rem;
+  }
+}
+
+/* Smaller phones */
+@media (max-width: 375px) {
+  .messages {
+    height: calc(100vh - 260px);
+  }
+
+  .practice-setup h2 {
+    font-size: 1.3rem;
+  }
+
+  .setup-options {
+    padding: 16px;
+  }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .messages {
+    height: calc(100vh - 200px);
+  }
+
+  .practice-setup {
+    min-height: auto;
+    padding: 16px;
+  }
+}
+
+/* Safe area for iPhone notch/Dynamic Island */
+@supports (padding: max(0px)) {
+  .app {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
