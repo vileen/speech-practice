@@ -45,9 +45,11 @@ export async function generateChatResponse(
     text = text.replace(/\s*TRANSLATION:.+$/, '').trim();
   }
   
-  // Add furigana if not already present
+  // Always ensure furigana is properly added - AI sometimes formats it incorrectly
+  // Process the text to ensure all kanji have proper <ruby> tags
   let textWithFurigana = text;
-  if (!text.includes('<ruby>')) {
+  const kanjiRegex = /[\u4e00-\u9faf]/;
+  if (kanjiRegex.test(text)) {
     textWithFurigana = await addFurigana(text);
   }
   
