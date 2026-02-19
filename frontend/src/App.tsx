@@ -299,6 +299,8 @@ function App() {
     }
     return 'normal';
   });
+  // Track hash for re-rendering on navigation
+  const [currentHash, setCurrentHash] = useState(() => typeof window !== 'undefined' ? window.location.hash : '');
   // Recording state managed by VoiceRecorder component
   const [session, setSession] = useState<Session | null>(null);
   const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
@@ -395,6 +397,10 @@ function App() {
   const isChatSetupHash = (hash: string): boolean => {
     return hash === '#/chat/setup';
   };
+
+  // Helper to check current hash
+  const isChatSetup = isChatSetupHash(currentHash);
+  const isRepeatSetup = isRepeatSetupHash(currentHash);
   
   // Parse lesson ID from hash
   const getLessonIdFromHash = (hash: string): string | null => {
@@ -502,6 +508,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
+      setCurrentHash(hash); // Force re-render on hash change
       setIsLessonModeState(isLessonHash(hash) && !isPracticeHash(hash) && !isPracticeSetupHash(hash));
       setIsRepeatMode(isRepeatHash(hash));
 
@@ -995,7 +1002,7 @@ function App() {
   }
 
   // Chat Setup Screen - must be BEFORE mode checks
-  if (isChatSetupHash(window.location.hash)) {
+  if (isChatSetup) {
     return (
       <div className="app">
         <header>
@@ -1089,7 +1096,7 @@ function App() {
   }
 
   // Repeat After Me Setup Screen - must be BEFORE mode checks
-  if (isRepeatSetupHash(window.location.hash)) {
+  if (isRepeatSetup) {
     return (
       <div className="app">
         <header>
