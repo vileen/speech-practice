@@ -40,13 +40,105 @@ function stripFurigana(text: string): string {
   return cleaned;
 }
 
+// Simple Japanese to romaji conversion for TTS
+// This helps ElevenLabs pronounce particles correctly (は as wa, へ as e, etc.)
+function japaneseToRomaji(text: string): string {
+  // Basic hiragana/katakana to romaji mapping
+  const kanaToRomaji: Record<string, string> = {
+    // Hiragana
+    'あ': 'a', 'い': 'i', 'う': 'u', 'え': 'e', 'お': 'o',
+    'か': 'ka', 'き': 'ki', 'く': 'ku', 'け': 'ke', 'こ': 'ko',
+    'さ': 'sa', 'し': 'shi', 'す': 'su', 'せ': 'se', 'そ': 'so',
+    'た': 'ta', 'ち': 'chi', 'つ': 'tsu', 'て': 'te', 'と': 'to',
+    'な': 'na', 'に': 'ni', 'ぬ': 'nu', 'ね': 'ne', 'の': 'no',
+    'は': 'ha', 'ひ': 'hi', 'ふ': 'fu', 'へ': 'he', 'ほ': 'ho',
+    'ま': 'ma', 'み': 'mi', 'む': 'mu', 'め': 'me', 'も': 'mo',
+    'や': 'ya', 'ゆ': 'yu', 'よ': 'yo',
+    'ら': 'ra', 'り': 'ri', 'る': 'ru', 'れ': 're', 'ろ': 'ro',
+    'わ': 'wa', 'を': 'wo', 'ん': 'n',
+    'が': 'ga', 'ぎ': 'gi', 'ぐ': 'gu', 'げ': 'ge', 'ご': 'go',
+    'ざ': 'za', 'じ': 'ji', 'ず': 'zu', 'ぜ': 'ze', 'ぞ': 'zo',
+    'だ': 'da', 'ぢ': 'ji', 'づ': 'zu', 'で': 'de', 'ど': 'do',
+    'ば': 'ba', 'び': 'bi', 'ぶ': 'bu', 'べ': 'be', 'ぼ': 'bo',
+    'ぱ': 'pa', 'ぴ': 'pi', 'ぷ': 'pu', 'ぺ': 'pe', 'ぽ': 'po',
+    'ゃ': 'ya', 'ゅ': 'yu', 'ょ': 'yo', 'っ': 'tsu',
+    // Katakana
+    'ア': 'a', 'イ': 'i', 'ウ': 'u', 'エ': 'e', 'オ': 'o',
+    'カ': 'ka', 'キ': 'ki', 'ク': 'ku', 'ケ': 'ke', 'コ': 'ko',
+    'サ': 'sa', 'シ': 'shi', 'ス': 'su', 'セ': 'se', 'ソ': 'so',
+    'タ': 'ta', 'チ': 'chi', 'ツ': 'tsu', 'テ': 'te', 'ト': 'to',
+    'ナ': 'na', 'ニ': 'ni', 'ヌ': 'nu', 'ネ': 'ne', 'ノ': 'no',
+    'ハ': 'ha', 'ヒ': 'hi', 'フ': 'fu', 'ヘ': 'he', 'ホ': 'ho',
+    'マ': 'ma', 'ミ': 'mi', 'ム': 'mu', 'メ': 'me', 'モ': 'mo',
+    'ヤ': 'ya', 'ユ': 'yu', 'ヨ': 'yo',
+    'ラ': 'ra', 'リ': 'ri', 'ル': 'ru', 'レ': 're', 'ロ': 'ro',
+    'ワ': 'wa', 'ヲ': 'wo', 'ン': 'n',
+    'ガ': 'ga', 'ギ': 'gi', 'グ': 'gu', 'ゲ': 'ge', 'ゴ': 'go',
+    'ザ': 'za', 'ジ': 'ji', 'ズ': 'zu', 'ゼ': 'ze', 'ゾ': 'zo',
+    'ダ': 'da', 'ヂ': 'ji', 'ヅ': 'zu', 'デ': 'de', 'ド': 'do',
+    'バ': 'ba', 'ビ': 'bi', 'ブ': 'bu', 'ベ': 'be', 'ボ': 'bo',
+    'パ': 'pa', 'ピ': 'pi', 'プ': 'pu', 'ペ': 'pe', 'ポ': 'po',
+    'ャ': 'ya', 'ュ': 'yu', 'ョ': 'yo', 'ッ': 'tsu',
+  };
+  
+  // Common kanji readings for basic phrases
+  const commonKanji: Record<string, string> = {
+    '明日': 'ashita', '今日': 'kyou', '昨日': 'kinou',
+    '火曜日': 'kayoubi', '月曜日': 'getsuyoubi', '水曜日': 'suiyoubi',
+    '木曜日': 'mokuyoubi', '金曜日': 'kinyoubi', '土曜日': 'doyoubi', '日曜日': 'nichiyoubi',
+    '私': 'watashi', '私たち': 'watashitachi',
+    '日本': 'nihon', '日本語': 'nihongo',
+    '英語': 'eigo', '英語': 'eigo',
+    '漢字': 'kanji', 'ひらがな': 'hiragana', 'カタカナ': 'katakana',
+    '人': 'hito', '人々': 'hitobito',
+    '大きい': 'ookii', '小さい': 'chiisai',
+    '新しい': 'atarashii', '古い': 'furui',
+    '良い': 'yoi', '悪い': 'warui',
+    '多い': 'ooi', '少ない': 'sukunai',
+    '長い': 'nagai', '短い': 'mijikai',
+    '高い': 'takai', '安い': 'yasui',
+    '近い': 'chikai', '遠い': 'tooi',
+    '忙しい': 'isogashii', '楽しい': 'tanoshii',
+    '難しい': 'muzukashii', '易しい': 'yasashii',
+  };
+  
+  let result = text;
+  
+  // Replace common kanji first
+  for (const [kanji, romaji] of Object.entries(commonKanji)) {
+    result = result.split(kanji).join(romaji);
+  }
+  
+  // Convert kana to romaji
+  let romaji = '';
+  for (const char of result) {
+    romaji += kanaToRomaji[char] || char;
+  }
+  
+  // Post-processing for particle pronunciation
+  // は as particle = wa, へ as particle = e
+  romaji = romaji.replace(/ wa /g, ' wa '); // already correct
+  romaji = romaji.replace(/^ha /, 'wa '); // は at start of phrase as particle
+  romaji = romaji.replace(/ ha /g, ' wa '); // は as particle in middle
+  romaji = romaji.replace(/ he /g, ' e '); // へ as particle
+  
+  return romaji;
+}
+
 export async function generateSpeech({ text, language, gender }: TTSOptions): Promise<Buffer> {
   if (!ELEVENLABS_API_KEY) {
     throw new Error('ELEVENLABS_API_KEY not set');
   }
 
   // Clean text for TTS - remove furigana/ruby annotations
-  const cleanText = stripFurigana(text);
+  let cleanText = stripFurigana(text);
+  
+  // For Japanese, convert to romaji for better TTS pronunciation
+  // This fixes particle pronunciation (は as wa, へ as e)
+  if (language === 'japanese') {
+    cleanText = japaneseToRomaji(cleanText);
+  }
+  
   console.log(`[TTS] Original: "${text}" -> Clean: "${cleanText}"`);
 
   const voiceId = VOICES[language][gender];
