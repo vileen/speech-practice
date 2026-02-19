@@ -32,7 +32,7 @@ interface LessonDetail {
   practice_phrases: string[];
 }
 
-const API_URL = 'https://eds-grow-delivered-spending.trycloudflare.com'.replace(/\/$/, '');
+const API_URL = 'https://trunk-sticks-connect-currency.trycloudflare.com';
 
 // Format date to YYYY-MM-DD
 function formatDate(dateString: string): string {
