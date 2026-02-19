@@ -487,3 +487,194 @@ ruby.furigana-failed rt {
   color: #e94560;
   font-weight: bold;
 }
+
+/* ============================================
+   RESPONSIVE STYLES - iPhone 15 Pro & Mobile
+   ============================================ */
+
+@media (max-width: 480px) {
+  .lesson-mode {
+    padding: 12px;
+  }
+
+  .lesson-header {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-header h2 {
+    font-size: 1.2rem;
+    order: -1;
+  }
+
+  .back-btn,
+  .start-chat-btn {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  .lesson-tabs {
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-tabs button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    flex: 1;
+    min-width: 80px;
+  }
+
+  .furigana-toggle {
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+  }
+
+  .lesson-content {
+    padding: 12px;
+  }
+
+  /* Overview tab */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+
+  .info-card {
+    padding: 16px;
+  }
+
+  .quick-start {
+    padding: 20px;
+  }
+
+  .big-button {
+    padding: 16px 24px;
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  /* Vocab tab */
+  .vocab-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .vocab-card {
+    padding: 16px;
+  }
+
+  .jp-word {
+    font-size: 1.5rem;
+  }
+
+  .reading {
+    font-size: 0.9rem;
+  }
+
+  /* Grammar tab */
+  .grammar-card {
+    padding: 16px;
+  }
+
+  .grammar-card h3 {
+    font-size: 1.3rem;
+  }
+
+  .grammar-table {
+    font-size: 0.85rem;
+  }
+
+  .grammar-table td {
+    padding: 8px;
+  }
+
+  /* Practice tab */
+  .practice-list {
+    gap: 12px;
+  }
+
+  .practice-item {
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  /* Lessons list */
+  .lessons-list {
+    gap: 10px;
+    max-height: calc(100vh - 180px);
+  }
+
+  .lesson-card {
+    padding: 12px 16px;
+  }
+
+  .lesson-card-header {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .lesson-date {
+    font-size: 0.8rem;
+  }
+
+  .lesson-title {
+    font-size: 1rem;
+  }
+
+  .lesson-card-stats {
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .lesson-topics {
+    font-size: 0.75rem;
+  }
+}
+
+/* Smaller phones */
+@media (max-width: 375px) {
+  .lesson-tabs button {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
+
+  .vocab-card {
+    padding: 12px;
+  }
+
+  .jp-word {
+    font-size: 1.3rem;
+  }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .lessons-list {
+    max-height: calc(100vh - 140px);
+  }
+}
+
+/* Safe area for iPhone notch/Dynamic Island */
+@supports (padding: max(0px)) {
+  .lesson-mode {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
