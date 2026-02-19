@@ -162,3 +162,65 @@
   background: #333;
   transform: none;
 }
+
+/* ============================================
+   RESPONSIVE STYLES - iPhone 15 Pro & Mobile
+   ============================================ */
+
+@media (max-width: 480px) {
+  .voice-recorder {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .record-btn {
+    width: 60px;
+    height: 60px;
+  }
+
+  .record-btn::before {
+    width: 24px;
+    height: 24px;
+  }
+
+  .recording .record-btn::before {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+  }
+
+  .status {
+    font-size: 0.85rem;
+  }
+
+  .timer {
+    font-size: 1.2rem;
+  }
+
+  .transcription {
+    padding: 12px;
+    min-height: 60px;
+    font-size: 0.9rem;
+  }
+
+  .mode-toggle {
+    gap: 8px;
+  }
+
+  .mode-toggle button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .record-btn {
+    width: 56px;
+    height: 56px;
+  }
+
+  .record-btn::before {
+    width: 22px;
+    height: 22px;
+  }
+}
