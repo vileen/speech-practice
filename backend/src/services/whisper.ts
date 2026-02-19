@@ -15,11 +15,14 @@ export async function transcribeAudio({ audioFilePath, language }: Transcription
     throw new Error('OPENAI_API_KEY not set');
   }
 
+  const fileBlob = await fetch(audioFilePath).then(r => r.blob());
+  // @ts-ignore - Type compatibility issue with OpenAI SDK
+  const file = await openai.files.create({
+    file: fileBlob as any,
+    purpose: 'assistants',
+  });
   const response = await openai.audio.transcriptions.create({
-    file: await openai.files.create({
-      file: await fetch(audioFilePath).then(r => r.blob()),
-      purpose: 'assistants',
-    }),
+    file: file as any,
     model: 'whisper-1',
     language: language,
   });
@@ -34,6 +37,7 @@ export async function transcribeAudioDirect(audioBuffer: Buffer, language?: stri
   }
 
   const formData = new FormData();
+  // @ts-ignore - Buffer to Blob conversion
   const blob = new Blob([audioBuffer], { type: 'audio/mpeg' });
   formData.append('file', blob, 'audio.mp3');
   formData.append('model', 'whisper-1');
