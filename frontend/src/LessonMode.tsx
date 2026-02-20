@@ -29,7 +29,7 @@ interface LessonDetail {
     explanation: string;
     examples: Array<{jp: string; en: string; furigana?: string | null}>;
   }>;
-  practice_phrases: string[];
+  practice_phrases: Array<{jp: string; en: string}>;
 }
 
 const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
@@ -265,7 +265,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     });
     
     selectedLesson.practice_phrases.forEach(phrase => {
-      if (!furiganaCacheRef.current[phrase]) textsToFetch.push(phrase);
+      if (!furiganaCacheRef.current[phrase.jp]) textsToFetch.push(phrase.jp);
     });
     
     // Fetch furigana for all texts (with small delays to avoid overwhelming the API)
@@ -509,7 +509,10 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
                 {selectedLesson.practice_phrases.map((phrase, idx) => (
                   <div key={idx} className="practice-item">
                     <span className="number">{idx + 1}.</span>
-                    <span className="phrase">{renderFurigana(phrase)}</span>
+                    <div className="phrase-content">
+                      <span className="phrase-jp">{renderFurigana(phrase.jp)}</span>
+                      <span className="phrase-en">{phrase.en}</span>
+                    </div>
                   </div>
                 ))}
               </div>

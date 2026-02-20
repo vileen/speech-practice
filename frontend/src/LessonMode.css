@@ -499,6 +499,24 @@
   color: #fff;
 }
 
+.practice-item .phrase-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.practice-item .phrase-jp {
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.practice-item .phrase-en {
+  font-size: 0.9rem;
+  color: #888;
+  font-style: italic;
+}
+
 /* Furigana */
 ruby {
   ruby-align: center;
