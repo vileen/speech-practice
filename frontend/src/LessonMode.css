@@ -46,6 +46,33 @@
   transition: all 0.3s;
 }
 
+.sort-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.sort-controls button {
+  background: #16213e;
+  border: 2px solid #333;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s;
+}
+
+.sort-controls button:hover {
+  background: #1a4a7a;
+  border-color: #0f3460;
+}
+
+.sort-controls button.active {
+  background: #e94560;
+  border-color: #e94560;
+  color: #fff;
+}
+
 .start-chat-btn:hover {
   background: #c73e54;
 }

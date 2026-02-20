@@ -56,6 +56,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selectedLesson, setSelectedLessonState] = useState<LessonDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
   const [showFurigana, setShowFurigana] = useState(() => {
     // Read from localStorage on initial load
@@ -519,15 +520,36 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     );
   }
 
+  // Sort lessons based on selected order
+  const sortedLessons = [...lessons].sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+  });
+
   return (
     <div className="lesson-mode">
       <div className="lesson-header">
         <button className="back-btn" onClick={onBack}>← Back</button>
         <h2>📚 Lessons</h2>
+        <div className="sort-controls">
+          <button 
+            className={sortOrder === 'newest' ? 'active' : ''}
+            onClick={() => setSortOrder('newest')}
+          >
+            Newest
+          </button>
+          <button 
+            className={sortOrder === 'oldest' ? 'active' : ''}
+            onClick={() => setSortOrder('oldest')}
+          >
+            Oldest
+          </button>
+        </div>
       </div>
       
       <div className="lessons-list" ref={lessonsListRef}>
-        {lessons.map(lesson => (
+        {sortedLessons.map(lesson => (
           <div 
             key={lesson.id} 
             className="lesson-card"
