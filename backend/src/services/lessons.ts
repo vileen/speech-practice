@@ -20,6 +20,12 @@ interface GrammarPoint {
   }>;
 }
 
+interface PracticePhrase {
+  jp: string;
+  en: string;
+  order?: number;
+}
+
 interface LessonData {
   id: string;
   date: string;
@@ -28,7 +34,7 @@ interface LessonData {
   topics: string[];
   vocabulary: VocabItem[];
   grammar: GrammarPoint[];
-  practice_phrases: string[];
+  practice_phrases: PracticePhrase[];
 }
 
 interface LessonIndex {
