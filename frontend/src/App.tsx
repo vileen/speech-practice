@@ -1555,6 +1555,8 @@ function LessonDetail() {
         onSelectLesson={(selectedId) => {
           if (selectedId && selectedId !== id) {
             navigate(`/lessons/${selectedId}`);
+          } else if (!selectedId) {
+            navigate('/lessons');
           }
         }}
       />
