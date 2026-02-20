@@ -72,12 +72,38 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     localStorage.setItem('showFurigana', showFurigana.toString());
   }, [showFurigana]);
   
-  // Furigana cache to avoid repeated API calls
-  const [furiganaCache, setFuriganaCache] = useState<Record<string, string>>({});
+  // Furigana cache version for invalidation
+  const FURIGANA_CACHE_VERSION = '1';
+  
+  // Load furigana cache from localStorage on init
+  const loadFuriganaCacheFromStorage = (): Record<string, { furigana: string; timestamp: number; version: string }> => {
+    if (typeof window === 'undefined') return {};
+    try {
+      const saved = localStorage.getItem('furiganaCache');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Check version - invalidate if different
+        const cachedVersion = localStorage.getItem('furiganaCacheVersion');
+        if (cachedVersion !== FURIGANA_CACHE_VERSION) {
+          localStorage.removeItem('furiganaCache');
+          localStorage.setItem('furiganaCacheVersion', FURIGANA_CACHE_VERSION);
+          return {};
+        }
+        return parsed;
+      }
+    } catch (e) {
+      console.error('Error loading furigana cache:', e);
+    }
+    return {};
+  };
+  
+  // Furigana cache with localStorage persistence
+  const [furiganaCache, setFuriganaCache] = useState<Record<string, { furigana: string; timestamp: number; version: string }>>(loadFuriganaCacheFromStorage());
   const [furiganaLoading, setFuriganaLoading] = useState<Record<string, boolean>>({});
   const [furiganaFailed, setFuriganaFailed] = useState<Record<string, boolean>>({});
+  
   // Use refs to avoid dependency loops in useEffect
-  const furiganaCacheRef = useRef<Record<string, string>>({});
+  const furiganaCacheRef = useRef<Record<string, { furigana: string; timestamp: number; version: string }>>({});
   const furiganaLoadingRef = useRef<Record<string, boolean>>({});
   const furiganaFailedRef = useRef<Record<string, boolean>>({});
   
@@ -93,6 +119,14 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   useEffect(() => {
     furiganaFailedRef.current = furiganaFailed;
   }, [furiganaFailed]);
+  
+  // Save furigana cache to localStorage when it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('furiganaCache', JSON.stringify(furiganaCache));
+      localStorage.setItem('furiganaCacheVersion', FURIGANA_CACHE_VERSION);
+    }
+  }, [furiganaCache]);
   
   // Ref for scroll position
   const lessonsListRef = useRef<HTMLDivElement>(null);
@@ -175,10 +209,10 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
 
   // Fetch furigana from backend - uses refs to avoid dependency loops
   const fetchFurigana = useCallback(async (text: string): Promise<string> => {
-    // Check cache using ref to avoid dependency loop
+    // Check cache using ref to avoid dependency loop - new structure with metadata
     const cached = furiganaCacheRef.current[text];
-    if (cached) {
-      return cached;
+    if (cached && cached.furigana) {
+      return cached.furigana;
     }
     
     // Skip if already loading
@@ -203,8 +237,15 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
       if (response.ok) {
         const data = await response.json();
         const withFurigana = data.with_furigana;
-        // Cache the result
-        furiganaCacheRef.current = { ...furiganaCacheRef.current, [text]: withFurigana };
+        // Cache the result with metadata for versioning/invalidation
+        furiganaCacheRef.current = { 
+          ...furiganaCacheRef.current, 
+          [text]: { 
+            furigana: withFurigana, 
+            timestamp: Date.now(), 
+            version: FURIGANA_CACHE_VERSION 
+          } 
+        };
         setFuriganaCache({ ...furiganaCacheRef.current });
         return withFurigana;
       } else {
@@ -284,10 +325,10 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
       return <span dangerouslySetInnerHTML={{ __html: preloadedFurigana }} />;
     }
     
-    // If we have cached furigana in memory, use it
+    // If we have cached furigana in memory, use it (new structure with metadata)
     const cached = furiganaCacheRef.current[text] || furiganaCache[text];
-    if (cached) {
-      return <span dangerouslySetInnerHTML={{ __html: cached }} />;
+    if (cached && cached.furigana) {
+      return <span dangerouslySetInnerHTML={{ __html: cached.furigana }} />;
     }
     
     // Check if fetch failed
