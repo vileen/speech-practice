@@ -1,0 +1,75 @@
+{
+  "id": "2026-02-23",
+  "date": "2026-02-23",
+  "title": "Katakana Loan Words, TE-form and Asking Permission",
+  "order": 27,
+  "topics": ["Katakana", "Loan Words", "TE-form", "Asking Permission", "Gairaigo"],
+  "vocabulary": [
+    {"jp": "リモート", "reading": "rimōto", "en": "remote (control), remote work", "type": "noun", "tags": ["katakana", "loan-word"]},
+    {"jp": "パソコン", "reading": "pasokon", "en": "PC, personal computer", "type": "noun", "tags": ["katakana", "loan-word"]},
+    {"jp": "ドライヤー", "reading": "doraiyā", "en": "hair dryer", "type": "noun", "tags": ["katakana", "loan-word"]},
+    {"jp": "モフモフ", "reading": "mofumofu", "en": "fluffy (onomatopoeia)", "type": "adjective", "tags": ["katakana", "onomatopoeia"]},
+    {"jp": "エアコン", "reading": "eakon", "en": "air conditioner", "type": "noun", "tags": ["katakana", "loan-word"]},
+    {"jp": "サンドイッチ", "reading": "sandoicchi", "en": "sandwich", "type": "noun", "tags": ["katakana", "loan-word", "food"]},
+    {"jp": "テレビ", "reading": "tere bi", "en": "TV, television", "type": "noun", "tags": ["katakana", "loan-word"]},
+    {"jp": "ドラマ", "reading": "dorama", "en": "drama (TV series)", "type": "noun", "tags": ["katakana", "loan-word"]},
+    {"jp": "トマト", "reading": "tomato", "en": "tomato", "type": "noun", "tags": ["katakana", "food"]},
+    {"jp": "チーズ", "reading": "chīzu", "en": "cheese", "type": "noun", "tags": ["katakana", "loan-word", "food"]},
+    {"jp": "ソフト", "reading": "sofuto", "en": "soft (cream)", "type": "noun", "tags": ["katakana", "loan-word", "food"]},
+    {"jp": "ドリンク", "reading": "dorinku", "en": "drink", "type": "noun", "tags": ["katakana", "loan-word"]},
+    {"jp": "コンビニ", "reading": "konbini", "en": "convenience store", "type": "noun", "tags": ["katakana", "loan-word", "place"]},
+    {"jp": "スナック", "reading": "sunakku", "en": "snack", "type": "noun", "tags": ["katakana", "loan-word", "food"]},
+    {"jp": "ペンギン", "reading": "pengin", "en": "penguin", "type": "noun", "tags": ["katakana", "loan-word", "animal"]},
+    {"jp": "動物", "reading": "dōbutsu", "en": "animal", "type": "noun", "tags": ["kanji", "vocabulary"]},
+    {"jp": "髪", "reading": "kami", "en": "hair", "type": "noun", "tags": ["kanji", "body"]},
+    {"jp": "濡れる", "reading": "nureru", "en": "to get wet", "type": "verb", "tags": ["verb", "intranstive"]},
+    {"jp": "乾かす", "reading": "kawakasu", "en": "to dry (something)", "type": "verb", "tags": ["verb", "transitive"]},
+    {"jp": "付ける", "reading": "tsukeru", "en": "to turn on, attach", "type": "verb", "tags": ["verb", "ru-verb"]},
+    {"jp": "消す", "reading": "kesu", "en": "to turn off, erase", "type": "verb", "tags": ["verb", "u-verb"]},
+    {"jp": "部屋", "reading": "heya", "en": "room", "type": "noun", "tags": ["kanji", "place"]},
+    {"jp": "寒い", "reading": "samui", "en": "cold (weather)", "type": "adjective", "tags": ["i-adjective", "weather"]},
+    {"jp": "暑い", "reading": "atsui", "en": "hot (weather)", "type": "adjective", "tags": ["i-adjective", "weather"]}
+  ],
+  "grammar": [
+    {
+      "pattern": "〜てもいいですか",
+      "explanation": "Asking for permission - May I...?",
+      "examples": [
+        {"jp": "ここで写真を撮ってもいいですか？", "en": "May I take photos here?"},
+        {"jp": "水を飲んでもいいですか？", "en": "May I drink water?"},
+        {"jp": "テレビを見てもいいですか？", "en": "May I watch TV?"}
+      ]
+    },
+    {
+      "pattern": "TE-form",
+      "explanation": "Verb conjugation for connecting actions and asking permission",
+      "examples": [
+        {"jp": "食べて", "en": "eat (TE-form)"},
+        {"jp": "書いて", "en": "write (TE-form)"},
+        {"jp": "泳いで", "en": "swim (TE-form)"},
+        {"jp": "待って", "en": "wait (TE-form)"}
+      ]
+    },
+    {
+      "pattern": "〜で (means/method)",
+      "explanation": "Using particle DE to indicate means or method",
+      "examples": [
+        {"jp": "ドライヤーで髪を乾かす", "en": "To dry hair with a dryer"},
+        {"jp": "パソコンで仕事をする", "en": "To work on a computer"},
+        {"jp": "リモコンでテレビを消す", "en": "To turn off TV with remote"}
+      ]
+    }
+  ],
+  "practice_phrases": [
+    {"jp": "リモコンでテレビを消してください。", "en": "Please turn off the TV with the remote."},
+    {"jp": "パソコンで仕事をしています。", "en": "I'm working on the computer."},
+    {"jp": "髪が濡れています。ドライヤーで乾かします。", "en": "My hair is wet. I'll dry it with a dryer."},
+    {"jp": "ここで写真を撮ってもいいですか？", "en": "May I take photos here?"},
+    {"jp": "部屋が暑いです。エアコンを付けてもいいですか？", "en": "The room is hot. May I turn on the air conditioner?"},
+    {"jp": "サンドイッチを食べてもいいですか？", "en": "May I eat a sandwich?"},
+    {"jp": "このパソコンを使ってもいいですか？", "en": "May I use this computer?"},
+    {"jp": "コンビニで何を買いますか？", "en": "What will you buy at the convenience store?"},
+    {"jp": "このドリンクはとても甘いです。", "en": "This drink is very sweet."},
+    {"jp": "ペンギンはモフモフです。", "en": "Penguins are fluffy."}
+  ]
+}
