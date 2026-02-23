@@ -400,6 +400,34 @@ const PARTICLES = new Set(['は', 'が', 'を', 'に', 'で', 'から', 'まで'
 // Common okurigana patterns for adjectives and verbs
 const OKURIGANA_PATTERNS = ['くない', 'くて', 'く', 'すぎる', 'すぎ', 'かった', 'かっ', 'い', 'しい', 'ちゃう', 'ちゃ', 'なさい', 'なさ', 'ない', 'たい', 'た', 'て', 'ば', 'べ', 'む', 'る', 'う', 'く', 'す', 'つ', 'ぬ', 'ふ', 'ゆ', 'ぐ', 'ず', 'づ', 'ぶ', 'ぷ', 'れ', 'せ', 'め'];
 
+// Convert hiragana to romaji for comparison
+function hiraganaToRomaji(hiragana: string): string {
+  const map: Record<string, string> = {
+    'あ': 'a', 'い': 'i', 'う': 'u', 'え': 'e', 'お': 'o',
+    'か': 'ka', 'き': 'ki', 'く': 'ku', 'け': 'ke', 'こ': 'ko',
+    'さ': 'sa', 'し': 'shi', 'す': 'su', 'せ': 'se', 'そ': 'so',
+    'た': 'ta', 'ち': 'chi', 'つ': 'tsu', 'て': 'te', 'と': 'to',
+    'な': 'na', 'に': 'ni', 'ぬ': 'nu', 'ね': 'ne', 'の': 'no',
+    'は': 'ha', 'ひ': 'hi', 'ふ': 'fu', 'へ': 'he', 'ほ': 'ho',
+    'ま': 'ma', 'み': 'mi', 'む': 'mu', 'め': 'me', 'も': 'mo',
+    'や': 'ya', 'ゆ': 'yu', 'よ': 'yo',
+    'ら': 'ra', 'り': 'ri', 'る': 'ru', 'れ': 're', 'ろ': 'ro',
+    'わ': 'wa', 'を': 'wo', 'ん': 'n',
+    'が': 'ga', 'ぎ': 'gi', 'ぐ': 'gu', 'げ': 'ge', 'ご': 'go',
+    'ざ': 'za', 'じ': 'ji', 'ず': 'zu', 'ぜ': 'ze', 'ぞ': 'zo',
+    'だ': 'da', 'ぢ': 'ji', 'づ': 'zu', 'で': 'de', 'ど': 'do',
+    'ば': 'ba', 'び': 'bi', 'ぶ': 'bu', 'べ': 'be', 'ぼ': 'bo',
+    'ぱ': 'pa', 'ぴ': 'pi', 'ぷ': 'pu', 'ぺ': 'pe', 'ぽ': 'po',
+    'ゃ': 'ya', 'ゅ': 'yu', 'ょ': 'yo', 'っ': 'tsu',
+  };
+  
+  let result = '';
+  for (const char of hiragana) {
+    result += map[char] || char;
+  }
+  return result;
+}
+
 // Try to get reading for kanji in context of full word (with okurigana)
 // This gives correct kun'yomi reading (e.g., 暑い -> あつ not しょ)
 async function getReadingForFullWord(fullText: string, kanjiWord: string): Promise<string | null> {
@@ -436,15 +464,16 @@ async function getReadingForFullWord(fullText: string, kanjiWord: string): Promi
     
     const fullReading = await getReadingFromJisho(fullWord);
     if (fullReading) {
+      // Convert okurigana to romaji for comparison
+      const okuriganaRomaji = hiraganaToRomaji(testOkurigana);
+      
       // Extract just the kanji reading by removing okurigana portion from the end
       let kanjiReading = fullReading;
-      for (let i = testOkurigana.length - 1; i >= 0; i--) {
-        if (kanjiReading.endsWith(testOkurigana[i])) {
-          kanjiReading = kanjiReading.slice(0, -1);
-        }
+      if (kanjiReading.endsWith(okuriganaRomaji)) {
+        kanjiReading = kanjiReading.slice(0, -okuriganaRomaji.length);
       }
       
-      console.log(`[Furigana] Extracted kanji reading: "${kanjiReading}" from "${fullReading}"`);
+      console.log(`[Furigana] Extracted kanji reading: "${kanjiReading}" from "${fullReading}" (removed "${okuriganaRomaji}")`);
       return kanjiReading;
     }
     

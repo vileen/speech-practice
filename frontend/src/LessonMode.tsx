@@ -73,7 +73,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   }, [showFurigana]);
   
   // Furigana cache version for invalidation
-  const FURIGANA_CACHE_VERSION = '1';
+  const FURIGANA_CACHE_VERSION = '2';
   
   // Load furigana cache from localStorage on init
   const loadFuriganaCacheFromStorage = (): Record<string, { furigana: string; timestamp: number; version: string }> => {
