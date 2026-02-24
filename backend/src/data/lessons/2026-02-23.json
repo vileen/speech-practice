@@ -44,7 +44,17 @@
     {"jp": "寝る", "reading": "neru", "en": "to sleep", "type": "verb", "tags": ["verb", "ru-verb"]},
     {"jp": "悪い", "reading": "warui", "en": "bad", "type": "adjective", "tags": ["i-adjective"]},
     {"jp": "ここ", "reading": "koko", "en": "here", "type": "location", "tags": []},
-    {"jp": "コーヒー", "reading": "kōhī", "en": "coffee", "type": "noun", "tags": ["katakana", "loan-word", "drink"]}
+    {"jp": "コーヒー", "reading": "kōhī", "en": "coffee", "type": "noun", "tags": ["katakana", "loan-word", "drink"]},
+    {"jp": "止める", "reading": "tomeru", "en": "to stop (something)", "type": "verb", "tags": ["verb", "ru-verb"]},
+    {"jp": "止まる", "reading": "tomaru", "en": "to stop (itself)", "type": "verb", "tags": ["verb", "u-verb"]},
+    {"jp": "中", "reading": "chū", "en": "middle, center", "type": "noun", "tags": ["kanji"]},
+    {"jp": "中止", "reading": "chūshi", "en": "cancellation", "type": "noun", "tags": ["kanji"]},
+    {"jp": "中止する", "reading": "chūshi suru", "en": "to cancel", "type": "verb", "tags": ["verb", "irregular"]},
+    {"jp": "禁止", "reading": "kinshi", "en": "prohibition", "type": "noun", "tags": ["kanji"]},
+    {"jp": "禁止する", "reading": "kinshi suru", "en": "to prohibit", "type": "verb", "tags": ["verb", "irregular"]},
+    {"jp": "お酒", "reading": "osake", "en": "alcohol, sake", "type": "noun", "tags": ["kanji", "drink"]},
+    {"jp": "連れてくる", "reading": "surete kuru", "en": "to bring (someone)", "type": "expression", "tags": []},
+    {"jp": "雨", "reading": "ame", "en": "rain", "type": "noun", "tags": ["kanji", "weather"]}
   ],
   "grammar": [
     {
