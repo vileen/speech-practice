@@ -28,7 +28,23 @@
     {"jp": "消す", "reading": "kesu", "en": "to turn off, erase", "type": "verb", "tags": ["verb", "u-verb"]},
     {"jp": "部屋", "reading": "heya", "en": "room", "type": "noun", "tags": ["kanji", "place"]},
     {"jp": "寒い", "reading": "samui", "en": "cold (weather)", "type": "adjective", "tags": ["i-adjective", "weather"]},
-    {"jp": "暑い", "reading": "atsui", "en": "hot (weather)", "type": "adjective", "tags": ["i-adjective", "weather"]}
+    {"jp": "暑い", "reading": "atsui", "en": "hot (weather)", "type": "adjective", "tags": ["i-adjective", "weather"]},
+    {"jp": "博物館", "reading": "hakubutsukan", "en": "museum", "type": "noun", "tags": ["kanji", "place"]},
+    {"jp": "撮る", "reading": "toru", "en": "to take (a photo)", "type": "verb", "tags": ["verb", "u-verb"]},
+    {"jp": "触る", "reading": "sawaru", "en": "to touch", "type": "verb", "tags": ["verb", "u-verb"]},
+    {"jp": "絵", "reading": "e", "en": "picture, painting", "type": "noun", "tags": ["kanji"]},
+    {"jp": "この", "reading": "kono", "en": "this (prefix)", "type": "demonstrative", "tags": []},
+    {"jp": "お菓子", "reading": "okashi", "en": "sweets, snacks", "type": "noun", "tags": ["kanji", "food"]},
+    {"jp": "お風呂", "reading": "ofuro", "en": "bath", "type": "noun", "tags": ["kanji", "place"]},
+    {"jp": "入る", "reading": "hairu", "en": "to enter", "type": "verb", "tags": ["verb", "u-verb"]},
+    {"jp": "吸う", "reading": "suu", "en": "to smoke, inhale", "type": "verb", "tags": ["verb", "u-verb"]},
+    {"jp": "飛行機", "reading": "hikouki", "en": "airplane", "type": "noun", "tags": ["kanji", "transport"]},
+    {"jp": "タバコ", "reading": "tabako", "en": "tobacco, cigarettes", "type": "noun", "tags": ["katakana", "loan-word"]},
+    {"jp": "クラス", "reading": "kurasu", "en": "class", "type": "noun", "tags": ["katakana", "loan-word"]},
+    {"jp": "寝る", "reading": "neru", "en": "to sleep", "type": "verb", "tags": ["verb", "ru-verb"]},
+    {"jp": "悪い", "reading": "warui", "en": "bad", "type": "adjective", "tags": ["i-adjective"]},
+    {"jp": "ここ", "reading": "koko", "en": "here", "type": "location", "tags": []},
+    {"jp": "コーヒー", "reading": "kōhī", "en": "coffee", "type": "noun", "tags": ["katakana", "loan-word", "drink"]}
   ],
   "grammar": [
     {
