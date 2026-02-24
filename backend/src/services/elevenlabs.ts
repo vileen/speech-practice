@@ -253,49 +253,8 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-// Fallback dictionary for proper nouns and words Jisho doesn't provide readings for
-const FALLBACK_READINGS: Record<string, string> = {
-  // Common surnames
-  '田中': 'たなか',
-  '山田': 'やまだ',
-  '鈴木': 'すずき',
-  '佐藤': 'さとう',
-  '伊藤': 'いとう',
-  '渡辺': 'わたなべ',
-  '高橋': 'たかはし',
-  '小林': 'こばやし',
-  // Common words that might be missing
-  ' Penn': 'ペン',
-  // Individual kanji that Jisho struggles with
-  '泳': 'およ', // 泳ぐ = oyogu
-  '待': 'ま', // 待つ = matsu
-  '洗': 'あら', // 洗う = arau
-  '撮': 'と', // 撮る = toru
-  '消': 'け', // 消す = kesu
-  '乾': 'かわ', // 乾く = kawaku
-  '付': 'つ', // 付ける = tsukeru
-  '濡': 'ぬ', // 濡れる = nureru
-  '髪': 'かみ', // 髪 = kami
-  '動': 'どう', // 動物 = doubutsu
-  '物': 'ぶつ', // 動物 = doubutsu
-  '寒': 'さむ', // 寒い = samui
-  '暑': 'あつ', // 暑い = atsui
-  '写': 'しゃ', // 写真 = shashin
-  '真': 'しん', // 写真 = shashin
-  '電': 'でん', // 電気 = denki
-  '気': 'き', // 電気 = denki
-  '起': 'お', // 起こす = okosu
-  '話': 'はな', // 話す = hanasu
-  '飲': 'の', // 飲む = nomu
-  '座': 'すわ', // 座る = suwaru
-  '見': 'み', // 見る = miru
-  '食': 'た', // 食べる = taberu
-  '書': 'か', // 書く = kaku
-  '遊': 'あそ', // 遊ぶ = asobu
-  '買': 'か', // 買う = kau
-  '行': 'い', // 行く = iku
-  '来': 'き', // 来る = kuru
-};
+// No fallback dictionary - we rely on Jisho API and proper logic
+// Individual kanji should be handled by improving the lookup logic
 
 // Helper function to fetch from Jisho with retry logic for 429 rate limit
 async function fetchFromJisho(word: string): Promise<Response | null> {
