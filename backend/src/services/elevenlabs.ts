@@ -266,6 +266,35 @@ const FALLBACK_READINGS: Record<string, string> = {
   '小林': 'こばやし',
   // Common words that might be missing
   ' Penn': 'ペン',
+  // Individual kanji that Jisho struggles with
+  '泳': 'およ', // 泳ぐ = oyogu
+  '待': 'ま', // 待つ = matsu
+  '洗': 'あら', // 洗う = arau
+  '撮': 'と', // 撮る = toru
+  '消': 'け', // 消す = kesu
+  '乾': 'かわ', // 乾く = kawaku
+  '付': 'つ', // 付ける = tsukeru
+  '濡': 'ぬ', // 濡れる = nureru
+  '髪': 'かみ', // 髪 = kami
+  '動': 'どう', // 動物 = doubutsu
+  '物': 'ぶつ', // 動物 = doubutsu
+  '寒': 'さむ', // 寒い = samui
+  '暑': 'あつ', // 暑い = atsui
+  '写': 'しゃ', // 写真 = shashin
+  '真': 'しん', // 写真 = shashin
+  '電': 'でん', // 電気 = denki
+  '気': 'き', // 電気 = denki
+  '起': 'お', // 起こす = okosu
+  '話': 'はな', // 話す = hanasu
+  '飲': 'の', // 飲む = nomu
+  '座': 'すわ', // 座る = suwaru
+  '見': 'み', // 見る = miru
+  '食': 'た', // 食べる = taberu
+  '書': 'か', // 書く = kaku
+  '遊': 'あそ', // 遊ぶ = asobu
+  '買': 'か', // 買う = kau
+  '行': 'い', // 行く = iku
+  '来': 'き', // 来る = kuru
 };
 
 // Helper function to fetch from Jisho with retry logic for 429 rate limit
