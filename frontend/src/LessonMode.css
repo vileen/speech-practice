@@ -347,10 +347,11 @@
   color: #fff;
 }
 
-.vocab-card .reading {
+.vocab-card .romaji {
   font-size: 0.85rem;
   color: #888;
   margin-bottom: 8px;
+  font-style: italic;
 }
 
 .vocab-card .meaning {
@@ -626,7 +627,7 @@ ruby.furigana-failed rt {
     font-size: 1.5rem;
   }
 
-  .reading {
+  .romaji {
     font-size: 0.9rem;
   }
 
