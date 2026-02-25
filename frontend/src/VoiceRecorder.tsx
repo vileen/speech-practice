@@ -412,7 +412,15 @@ export function VoiceRecorder({
       return () => clearTimeout(retryTimer);
     }
   }, [initError, mode, isProcessing, startVAD]);
-  
+
+  // Stop recording when switching modes or when disabled
+  useEffect(() => {
+    if (isListening && (disabled || mode === 'push-to-talk')) {
+      // Stop current recording when disabled or switched to push-to-talk
+      stopRecording();
+    }
+  }, [mode, disabled, isListening, stopRecording]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
