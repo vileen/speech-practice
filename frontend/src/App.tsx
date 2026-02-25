@@ -1301,10 +1301,14 @@ function RepeatMode() {
     setIsListening(false);
     setVadResetCounter(c => c + 1);
 
-    const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase.text) : randomPhrase.text;
-    setCurrentFurigana(withFurigana);
+    try {
+      const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase.text) : randomPhrase.text;
+      setCurrentFurigana(withFurigana);
 
-    await playPhrase(randomPhrase.text, true);
+      await playPhrase(randomPhrase.text, true);
+    } finally {
+      setIsAudioLoading(false);
+    }
   };
 
   const playPhrase = async (text: string, forceNew: boolean = false) => {
