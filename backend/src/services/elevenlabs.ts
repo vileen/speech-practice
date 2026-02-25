@@ -7,7 +7,7 @@ config({ path: resolve(process.cwd(), '.env.local') });
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_BASE_URL = 'https://api.elevenlabs.io/v1';
-const CACHE_FILE = './furigana-cache.json';
+const CACHE_FILE = './data/furigana-cache.json';
 
 // Voice IDs - ElevenLabs Multilingual v2 voices
 // Get valid IDs from: https://api.elevenlabs.io/v1/voices
