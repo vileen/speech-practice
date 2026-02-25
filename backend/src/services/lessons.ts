@@ -24,6 +24,7 @@ interface PracticePhrase {
   jp: string;
   en: string;
   romaji?: string;
+  furigana?: string | null;
   order?: number;
 }
 
@@ -218,7 +219,7 @@ function generateRomaji(text: string): string {
       const char = segment[i];
       const nextChar = segment[i + 1];
       
-      // Skip kanji - they won't be converted
+      // Skip kanji - they won't be converted but don't break flow
       const isKanji = /[\u4e00-\u9faf]/.test(char);
       if (isKanji) {
         i++;
@@ -320,12 +321,22 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
     }));
   }
   
-  // Generate romaji for practice phrases
+  // Enrich practice phrases with furigana and romaji
   let practice_phrases = row.practice_phrases || [];
   if (practice_phrases.length > 0) {
-    practice_phrases = practice_phrases.map((p: PracticePhrase) => ({
-      ...p,
-      romaji: generateRomaji(p.jp)
+    practice_phrases = await Promise.all(practice_phrases.map(async (p: PracticePhrase) => {
+      // Try to get furigana from cache
+      const cachedFurigana = includeFurigana ? await getCachedFurigana(p.jp) : null;
+      
+      // If we have furigana, we could potentially extract reading, but for now just use it
+      // Generate romaji from the Japanese text
+      const romaji = generateRomaji(p.jp);
+      
+      return {
+        ...p,
+        furigana: cachedFurigana || null,
+        romaji: romaji
+      };
     }));
   }
   
