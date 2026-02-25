@@ -1285,25 +1285,26 @@ function RepeatMode() {
   const nextPhrase = async () => {
     const phrases = PRACTICE_PHRASES[language];
     const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-    
+
     if (currentAudioUrl) {
       URL.revokeObjectURL(currentAudioUrl);
       setCurrentAudioUrl(null);
     }
-    
+
+    setIsAudioLoading(true);
     setCurrentPhrase(randomPhrase.text);
     setCurrentTranslation(randomPhrase.translation);
     setPronunciationResult(null);
     setShowTranslation(false);
     setPhrasePlayed(false);
-    
+
     setIsListening(false);
     setVadResetCounter(c => c + 1);
-    
+
     const withFurigana = language === 'japanese' ? await getFurigana(randomPhrase.text) : randomPhrase.text;
     setCurrentFurigana(withFurigana);
-    
-    playPhrase(randomPhrase.text, true);
+
+    await playPhrase(randomPhrase.text, true);
   };
 
   const playPhrase = async (text: string, forceNew: boolean = false) => {
