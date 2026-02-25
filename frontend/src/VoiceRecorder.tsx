@@ -39,6 +39,8 @@ export function VoiceRecorder({
   const silenceDebounceRef = useRef<number | null>(null);
   const speakingDebounceRef = useRef<number | null>(null);
   const lastSpeakingTimeRef = useRef<number>(0);
+  const prevModeRef = useRef(mode);
+  const prevDisabledRef = useRef(disabled);
   
   // Start VAD monitoring
   const startVAD = useCallback(async () => {
@@ -415,10 +417,18 @@ export function VoiceRecorder({
 
   // Stop recording when switching modes or when disabled
   useEffect(() => {
-    if (isListening && (disabled || mode === 'push-to-talk')) {
-      // Stop current recording when disabled or switched to push-to-talk
+    // Only stop if mode changed from voice-activated to push-to-talk
+    const modeChangedToPushToTalk = prevModeRef.current === 'voice-activated' && mode === 'push-to-talk';
+    // Or if disabled changed from false to true
+    const disabledChangedToTrue = !prevDisabledRef.current && disabled;
+
+    if (isListening && (modeChangedToPushToTalk || disabledChangedToTrue)) {
       stopRecording();
     }
+
+    // Update refs for next render
+    prevModeRef.current = mode;
+    prevDisabledRef.current = disabled;
   }, [mode, disabled, isListening, stopRecording]);
 
   // Cleanup on unmount
