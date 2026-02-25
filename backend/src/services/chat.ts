@@ -64,7 +64,7 @@ Your job is to PUSH the user to practice more, not just accept minimal answers.`
   }
 
   // Generate romaji using furigana HTML for correct kanji readings
-  const romaji = generateRomaji(text, textWithFurigana);
+  const romaji = await generateRomaji(text, textWithFurigana);
 
   return {
     text,

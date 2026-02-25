@@ -14,7 +14,7 @@ interface GrammarPoint {
   pattern: string;
   explanation: string;
   examples: Array<{
-    jp: string; 
+    jp: string;
     en: string;
     furigana?: string | null;
   }>;
@@ -60,7 +60,7 @@ export async function getLessonIndex(): Promise<LessonIndex> {
     'jsonb_array_length(grammar) as grammarCount ' +
     'FROM lessons ORDER BY order_num DESC'
   );
-  
+
   return {
     count: result.rows.length,
     lessons: result.rows.map(row => ({
@@ -81,11 +81,11 @@ export async function getCachedFurigana(text: string): Promise<string | null> {
     'SELECT furigana_html FROM furigana_cache WHERE original_text = $1',
     [text]
   );
-  
+
   if (result.rows.length === 0) {
     return null;
   }
-  
+
   return result.rows[0].furigana_html;
 }
 
@@ -104,11 +104,11 @@ export async function cacheFurigana(text: string, furiganaHtml: string): Promise
 // Example: jp="安い", reading="やす" -> "<ruby>安<rt>やす</rt></ruby>い"
 function generateFuriganaFromReading(jp: string, reading: string | null | undefined): string | null {
   if (!reading || !jp) return null;
-  
+
   // Check if word has kanji
   const kanjiRegex = /[\u4e00-\u9faf]/;
   if (!kanjiRegex.test(jp)) return null; // Pure hiragana/katakana - no furigana needed
-  
+
   // Find the kanji portion (everything until first hiragana)
   let kanjiEnd = 0;
   for (let i = 0; i < jp.length; i++) {
@@ -121,18 +121,18 @@ function generateFuriganaFromReading(jp: string, reading: string | null | undefi
       break;
     }
   }
-  
+
   const kanjiPart = jp.substring(0, kanjiEnd);
   const okurigana = jp.substring(kanjiEnd);
-  
+
   if (kanjiPart.length === 0) return null;
-  
+
   // Generate ruby HTML
   return `<ruby>${kanjiPart}<rt>${reading}</rt></ruby>${okurigana}`;
 }
 
 // Simple romaji generator for practice phrases
-export function generateRomaji(text: string, furiganaHtml?: string | null): string {
+export async function generateRomaji(text: string, furiganaHtml?: string | null): Promise<string> {
   if (!text) return '';
 
   // Basic hiragana/katakana to romaji mapping
@@ -173,10 +173,22 @@ export function generateRomaji(text: string, furiganaHtml?: string | null): stri
     'ャ': 'ya', 'ュ': 'yu', 'ョ': 'yo', 'ッ': '',
   };
 
+  // If no furigana provided, generate it
+  let furigana = furiganaHtml;
+  if (!furigana) {
+    // Check if text has kanji
+    const hasKanji = /[\u4e00-\u9faf]/.test(text);
+    if (hasKanji) {
+      // Import dynamically to avoid circular dependency
+      const { addFurigana } = await import('./elevenlabs.js');
+      furigana = await addFurigana(text);
+    }
+  }
+
   // If we have furigana HTML, extract readings and convert to romaji
-  if (furiganaHtml) {
+  if (furigana) {
     // Extract readings from <rt> tags and replace kanji with readings
-    let romajiFromFurigana = furiganaHtml;
+    let romajiFromFurigana = furigana;
 
     // Replace <ruby>漢字<rt>かんじ</rt></ruby> with かんじ
     romajiFromFurigana = romajiFromFurigana.replace(/<ruby>[^<]*<rt>([^<]*)<\/rt><\/ruby>/g, '$1');
@@ -247,42 +259,22 @@ export function generateRomaji(text: string, furiganaHtml?: string | null): stri
       i++;
     }
 
+    // Fix particle readings
+    romaji = romaji.replace(/\bha\b/g, 'wa');  // は as particle = wa
+    romaji = romaji.replace(/\bhe\b/g, 'e');   // へ as particle = e
+
     return romaji.trim();
   }
 
-  // Fallback: convert text directly (kanji will be skipped)
-  // Add spaces after particles
-  const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ', '、', '。'];
-  let withSpaces = '';
-  for (let i = 0; i < text.length; i++) {
-    withSpaces += text[i];
-    if (i < text.length - 1 && particles.includes(text[i])) {
-      withSpaces += ' ';
-    }
-  }
-
+  // No kanji - convert kana directly
   let romaji = '';
   let i = 0;
 
-  while (i < withSpaces.length) {
-    const char = withSpaces[i];
-    const nextChar = withSpaces[i + 1];
+  while (i < text.length) {
+    const char = text[i];
+    const nextChar = text[i + 1];
 
-    // Preserve spaces
-    if (char === ' ') {
-      romaji += ' ';
-      i++;
-      continue;
-    }
-
-    // Skip kanji - they won't be converted
-    const isKanji = /[\u4e00-\u9faf]/.test(char);
-    if (isKanji) {
-      i++;
-      continue;
-    }
-
-    // Check for small tsu (sokuon) - doubles the next consonant
+    // Check for small tsu (sokuon)
     if (char === 'っ' || char === 'ッ') {
       if (nextChar && kanaToRomaji[nextChar]) {
         romaji += kanaToRomaji[nextChar][0];
@@ -291,18 +283,16 @@ export function generateRomaji(text: string, furiganaHtml?: string | null): stri
       continue;
     }
 
-    // Check for compound sounds (small ya, yu, yo)
-    if (i + 1 < withSpaces.length) {
-      if (['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
-        if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
-          romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
-          i += 2;
-          continue;
-        }
+    // Check for compound sounds
+    if (i + 1 < text.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ヨ'].includes(nextChar)) {
+      if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
+        romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
+        i += 2;
+        continue;
       }
     }
 
-    // Handle long vowels (ー)
+    // Handle long vowels
     if (char === 'ー' || char === '〜') {
       if (romaji.length > 0) {
         const lastVowel = romaji[romaji.length - 1];
@@ -322,10 +312,6 @@ export function generateRomaji(text: string, furiganaHtml?: string | null): stri
     i++;
   }
 
-  // Fix particle readings in romaji
-  romaji = romaji.replace(/\bha\b/g, 'wa');  // は as particle = wa
-  romaji = romaji.replace(/\bhe\b/g, 'e');   // へ as particle = e
-
   return romaji.trim();
 }
 
@@ -336,15 +322,15 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
     'FROM lessons WHERE id = $1',
     [id]
   );
-  
+
   if (result.rows.length === 0) {
     return null;
   }
-  
+
   const row = result.rows[0];
   let grammar = row.grammar || [];
   let vocabulary = row.vocabulary || [];
-  
+
   // Enrich vocabulary with furigana generated from reading field
   if (includeFurigana && vocabulary.length > 0) {
     vocabulary = vocabulary.map((v: VocabItem) => {
@@ -356,12 +342,12 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
       };
     });
   }
-  
+
   // Enrich grammar examples with cached furigana if requested
   if (includeFurigana && grammar.length > 0) {
     grammar = await Promise.all(grammar.map(async (g: GrammarPoint) => {
       if (!g.examples || g.examples.length === 0) return g;
-      
+
       const enrichedExamples = await Promise.all(g.examples.map(async (ex) => {
         const cached = await getCachedFurigana(ex.jp);
         return {
@@ -369,14 +355,14 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
           furigana: cached || null
         };
       }));
-      
+
       return {
         ...g,
         examples: enrichedExamples
       };
     }));
   }
-  
+
   // Enrich practice phrases with furigana and romaji
   let practice_phrases = row.practice_phrases || [];
   if (practice_phrases.length > 0) {
@@ -385,7 +371,7 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
       const cachedFurigana = includeFurigana ? await getCachedFurigana(p.jp) : null;
 
       // Generate romaji using furigana if available (for correct kanji readings)
-      const romaji = generateRomaji(p.jp, cachedFurigana);
+      const romaji = await generateRomaji(p.jp, cachedFurigana);
 
       return {
         ...p,
@@ -394,7 +380,7 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
       };
     }));
   }
-  
+
   return {
     id: row.id,
     date: row.date,
@@ -414,7 +400,7 @@ export async function getRecentLessons(count: number = 3): Promise<LessonData[]>
     'FROM lessons ORDER BY order_num DESC LIMIT $1',
     [count]
   );
-  
+
   return result.rows.map(row => ({
     id: row.id,
     date: row.date,
@@ -463,7 +449,7 @@ export async function deleteLesson(id: string): Promise<void> {
 export function getLessonContext(lesson: LessonData): string {
   const vocabList = lesson.vocabulary.slice(0, 20).map(v => `${v.jp} (${v.reading}) = ${v.en}`).join(', ');
   const grammarList = lesson.grammar.map(g => g.pattern).join(', ');
-  
+
   return `
 Lesson: ${lesson.title}
 Key vocabulary: ${vocabList}
@@ -476,12 +462,12 @@ Practice phrases: ${lesson.practice_phrases.join(', ')}
 export function getLessonSystemPrompt(lesson: LessonData, relaxed: boolean = true, simpleMode: boolean = false): string {
   const vocabWords = lesson.vocabulary.map(v => v.jp);
   const grammarPatterns = lesson.grammar.map(g => g.pattern);
-  
+
   // Generate a conversation starter based on lesson content
-  const starterTopics = lesson.topics.length > 0 
+  const starterTopics = lesson.topics.length > 0
     ? lesson.topics.join(', ')
     : lesson.title;
-  
+
   const simpleModeInstructions = simpleMode ? `
 SIMPLE MODE - Use Basic Japanese:
 - Use only JLPT N5/N4 level vocabulary
@@ -492,7 +478,7 @@ SIMPLE MODE - Use Basic Japanese:
 - If you need to use a difficult word, explain it simply
 - Speak like you're talking to a beginner student
 ` : '';
-  
+
   const basePrompt = `You are a Japanese language practice partner. You are helping the user practice Lesson: ${lesson.title}.
 
 KEY VOCABULARY TO USE (prioritize these words):
@@ -529,7 +515,7 @@ RELAXED MODE:
 - Encourage natural conversation while keeping lesson words prominent
 `;
   }
-  
+
   return basePrompt + `
 STRICT MODE:
 - Use ONLY vocabulary from the lesson list
@@ -542,7 +528,7 @@ export async function findLesson(query: string): Promise<LessonData | null> {
   // Try exact match first
   let lesson = await getLesson(query);
   if (lesson) return lesson;
-  
+
   // Try partial date match
   const result = await pool.query(
     'SELECT id FROM lessons WHERE id LIKE $1 LIMIT 1',
@@ -551,7 +537,7 @@ export async function findLesson(query: string): Promise<LessonData | null> {
   if (result.rows.length > 0) {
     return getLesson(result.rows[0].id);
   }
-  
+
   // Try title match
   const titleResult = await pool.query(
     'SELECT id FROM lessons WHERE title ILIKE $1 LIMIT 1',
@@ -560,6 +546,6 @@ export async function findLesson(query: string): Promise<LessonData | null> {
   if (titleResult.rows.length > 0) {
     return getLesson(titleResult.rows[0].id);
   }
-  
+
   return null;
 }
