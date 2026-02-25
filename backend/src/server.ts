@@ -588,6 +588,7 @@ app.post('/api/chat', checkPassword, async (req, res) => {
     res.json({
       text: aiResponse.text,
       text_with_furigana: aiResponse.textWithFurigana,
+      romaji: aiResponse.romaji,
       // Note: translation is not included by default to save tokens
       // Use /api/translate endpoint to get translation on demand
     });
