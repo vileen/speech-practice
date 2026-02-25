@@ -132,9 +132,9 @@ function generateFuriganaFromReading(jp: string, reading: string | null | undefi
 }
 
 // Simple romaji generator for practice phrases
-export function generateRomaji(text: string): string {
+export function generateRomaji(text: string, furiganaHtml?: string | null): string {
   if (!text) return '';
-  
+
   // Basic hiragana/katakana to romaji mapping
   const kanaToRomaji: Record<string, string> = {
     // Hiragana
@@ -172,82 +172,44 @@ export function generateRomaji(text: string): string {
     'パ': 'pa', 'ピ': 'pi', 'プ': 'pu', 'ペ': 'pe', 'ポ': 'po',
     'ャ': 'ya', 'ュ': 'yu', 'ョ': 'yo', 'ッ': '',
   };
-  
-  // Simple word segmentation: split by spaces, keep particles attached
-  const segments: string[] = [];
-  let current = '';
-  
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    
-    // Space = word boundary (preserve the space)
-    if (/\s/.test(char)) {
-      if (current) {
-        segments.push(current);
-        current = '';
-      }
-      segments.push(' ');
-      continue;
-    }
-    
-    // Punctuation = separate token
-    if (/[。、！？\.,!?]/.test(char)) {
-      if (current) {
-        segments.push(current);
-        current = '';
-      }
-      segments.push(char);
-      continue;
-    }
-    
-    current += char;
-  }
-  
-  if (current) {
-    segments.push(current);
-  }
-  
-  // Convert each segment to romaji
-  const romajiSegments = segments.map(segment => {
-    if (segment === ' ') return ' ';
-    if (/[。、！？\.,!?]/.test(segment)) return segment;
-    
+
+  // If we have furigana HTML, extract readings and convert to romaji
+  if (furiganaHtml) {
+    // Extract readings from <rt> tags and replace kanji with readings
+    let romajiFromFurigana = furiganaHtml;
+
+    // Replace <ruby>漢字<rt>かんじ</rt></ruby> with かんじ
+    romajiFromFurigana = romajiFromFurigana.replace(/<ruby>[^<]*<rt>([^<]*)<\/rt><\/ruby>/g, '$1');
+
+    // Remove any remaining HTML tags
+    romajiFromFurigana = romajiFromFurigana.replace(/<[^>]*>/g, '');
+
+    // Now convert the hiragana to romaji
     let romaji = '';
     let i = 0;
-    
-    while (i < segment.length) {
-      const char = segment[i];
-      const nextChar = segment[i + 1];
-      
-      // Skip kanji - they won't be converted but don't break flow
-      const isKanji = /[\u4e00-\u9faf]/.test(char);
-      if (isKanji) {
-        i++;
-        continue;
-      }
-      
-      // Check for small tsu (sokuon) - doubles the next consonant
+    while (i < romajiFromFurigana.length) {
+      const char = romajiFromFurigana[i];
+      const nextChar = romajiFromFurigana[i + 1];
+
+      // Check for small tsu (sokuon)
       if (char === 'っ' || char === 'ッ') {
         if (nextChar && kanaToRomaji[nextChar]) {
-          const nextRomaji = kanaToRomaji[nextChar];
-          romaji += nextRomaji[0];
+          romaji += kanaToRomaji[nextChar][0];
         }
         i++;
         continue;
       }
-      
-      // Check for compound sounds (small ya, yu, yo)
-      if (i + 1 < segment.length) {
-        if (['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
-          if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
-            romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
-            i += 2;
-            continue;
-          }
+
+      // Check for compound sounds
+      if (i + 1 < romajiFromFurigana.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
+        if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
+          romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
+          i += 2;
+          continue;
         }
       }
-      
-      // Handle long vowels (ー)
+
+      // Handle long vowels
       if (char === 'ー' || char === '〜') {
         if (romaji.length > 0) {
           const lastVowel = romaji[romaji.length - 1];
@@ -258,19 +220,74 @@ export function generateRomaji(text: string): string {
         i++;
         continue;
       }
-      
+
       // Convert character
       if (kanaToRomaji[char]) {
         romaji += kanaToRomaji[char];
       }
-      
+
       i++;
     }
-    
+
     return romaji;
-  });
-  
-  return romajiSegments.join('');
+  }
+
+  // Fallback: convert text directly (kanji will be skipped)
+  let romaji = '';
+  let i = 0;
+
+  while (i < text.length) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    // Skip kanji - they won't be converted
+    const isKanji = /[\u4e00-\u9faf]/.test(char);
+    if (isKanji) {
+      i++;
+      continue;
+    }
+
+    // Check for small tsu (sokuon) - doubles the next consonant
+    if (char === 'っ' || char === 'ッ') {
+      if (nextChar && kanaToRomaji[nextChar]) {
+        romaji += kanaToRomaji[nextChar][0];
+      }
+      i++;
+      continue;
+    }
+
+    // Check for compound sounds (small ya, yu, yo)
+    if (i + 1 < text.length) {
+      if (['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
+        if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
+          romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
+          i += 2;
+          continue;
+        }
+      }
+    }
+
+    // Handle long vowels (ー)
+    if (char === 'ー' || char === '〜') {
+      if (romaji.length > 0) {
+        const lastVowel = romaji[romaji.length - 1];
+        if ('aeiou'.includes(lastVowel)) {
+          romaji += lastVowel;
+        }
+      }
+      i++;
+      continue;
+    }
+
+    // Convert character
+    if (kanaToRomaji[char]) {
+      romaji += kanaToRomaji[char];
+    }
+
+    i++;
+  }
+
+  return romaji;
 }
 
 // Get specific lesson with enriched grammar examples (includes furigana)
@@ -327,11 +344,10 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
     practice_phrases = await Promise.all(practice_phrases.map(async (p: PracticePhrase) => {
       // Try to get furigana from cache
       const cachedFurigana = includeFurigana ? await getCachedFurigana(p.jp) : null;
-      
-      // If we have furigana, we could potentially extract reading, but for now just use it
-      // Generate romaji from the Japanese text
-      const romaji = generateRomaji(p.jp);
-      
+
+      // Generate romaji using furigana if available (for correct kanji readings)
+      const romaji = generateRomaji(p.jp, cachedFurigana);
+
       return {
         ...p,
         furigana: cachedFurigana || null,
