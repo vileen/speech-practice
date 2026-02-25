@@ -8,6 +8,11 @@ import './VoiceRecorder.css';
 import { translateLessonTitle } from './translations.js';
 import { HighlightedText } from './HighlightedText.js';
 import './HighlightedText.css';
+// TODO: Use new components and hooks to reduce code duplication
+// import { JapanesePhrase } from './components/JapanesePhrase.js';
+// import { useFurigana } from './hooks/useFurigana.js';
+// import { useAudioPlayer } from './hooks/useAudioPlayer.js';
+// import { usePronunciationCheck } from './hooks/usePronunciationCheck.js';
 
 // Types
 interface Session {

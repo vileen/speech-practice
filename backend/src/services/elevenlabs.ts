@@ -450,16 +450,14 @@ async function getReadingForFullWord(fullText: string, kanjiWord: string): Promi
     
     const fullReading = await getReadingFromJisho(fullWord);
     if (fullReading) {
-      // Convert okurigana to romaji for comparison
-      const okuriganaRomaji = hiraganaToRomaji(testOkurigana);
-      
+      // Jisho returns hiragana reading, okurigana is also hiragana
       // Extract just the kanji reading by removing okurigana portion from the end
       let kanjiReading = fullReading;
-      if (kanjiReading.endsWith(okuriganaRomaji)) {
-        kanjiReading = kanjiReading.slice(0, -okuriganaRomaji.length);
+      if (kanjiReading.endsWith(testOkurigana)) {
+        kanjiReading = kanjiReading.slice(0, -testOkurigana.length);
       }
-      
-      console.log(`[Furigana] Extracted kanji reading: "${kanjiReading}" from "${fullReading}" (removed "${okuriganaRomaji}")`);
+
+      console.log(`[Furigana] Extracted kanji reading: "${kanjiReading}" from "${fullReading}" (removed "${testOkurigana}")`);
       return kanjiReading;
     }
     
