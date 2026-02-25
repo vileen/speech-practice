@@ -23,6 +23,7 @@ interface GrammarPoint {
 interface PracticePhrase {
   jp: string;
   en: string;
+  romaji?: string;
   order?: number;
 }
 
@@ -129,6 +130,101 @@ function generateFuriganaFromReading(jp: string, reading: string | null | undefi
   return `<ruby>${kanjiPart}<rt>${reading}</rt></ruby>${okurigana}`;
 }
 
+// Simple romaji generator for practice phrases
+function generateRomaji(text: string): string {
+  if (!text) return '';
+  
+  // Basic hiragana/katakana to romaji mapping
+  const kanaToRomaji: Record<string, string> = {
+    // Hiragana
+    'あ': 'a', 'い': 'i', 'う': 'u', 'え': 'e', 'お': 'o',
+    'か': 'ka', 'き': 'ki', 'く': 'ku', 'け': 'ke', 'こ': 'ko',
+    'さ': 'sa', 'し': 'shi', 'す': 'su', 'せ': 'se', 'そ': 'so',
+    'た': 'ta', 'ち': 'chi', 'つ': 'tsu', 'て': 'te', 'と': 'to',
+    'な': 'na', 'に': 'ni', 'ぬ': 'nu', 'ね': 'ne', 'の': 'no',
+    'は': 'ha', 'ひ': 'hi', 'ふ': 'fu', 'へ': 'he', 'ほ': 'ho',
+    'ま': 'ma', 'み': 'mi', 'む': 'mu', 'め': 'me', 'も': 'mo',
+    'や': 'ya', 'ゆ': 'yu', 'よ': 'yo',
+    'ら': 'ra', 'り': 'ri', 'る': 'ru', 'れ': 're', 'ろ': 'ro',
+    'わ': 'wa', 'を': 'wo', 'ん': 'n',
+    'が': 'ga', 'ぎ': 'gi', 'ぐ': 'gu', 'げ': 'ge', 'ご': 'go',
+    'ざ': 'za', 'じ': 'ji', 'ず': 'zu', 'ぜ': 'ze', 'ぞ': 'zo',
+    'だ': 'da', 'ぢ': 'ji', 'づ': 'zu', 'で': 'de', 'ど': 'do',
+    'ば': 'ba', 'び': 'bi', 'ぶ': 'bu', 'べ': 'be', 'ぼ': 'bo',
+    'ぱ': 'pa', 'ぴ': 'pi', 'ぷ': 'pu', 'ぺ': 'pe', 'ぽ': 'po',
+    'ゃ': 'ya', 'ゅ': 'yu', 'ょ': 'yo', 'っ': '',
+    // Katakana
+    'ア': 'a', 'イ': 'i', 'ウ': 'u', 'エ': 'e', 'オ': 'o',
+    'カ': 'ka', 'キ': 'ki', 'ク': 'ku', 'ケ': 'ke', 'コ': 'ko',
+    'サ': 'sa', 'シ': 'shi', 'ス': 'su', 'セ': 'se', 'ソ': 'so',
+    'タ': 'ta', 'チ': 'chi', 'ツ': 'tsu', 'テ': 'te', 'ト': 'to',
+    'ナ': 'na', 'ニ': 'ni', 'ヌ': 'nu', 'ネ': 'ne', 'ノ': 'no',
+    'ハ': 'ha', 'ヒ': 'hi', 'フ': 'fu', 'ヘ': 'he', 'ホ': 'ho',
+    'マ': 'ma', 'ミ': 'mi', 'ム': 'mu', 'メ': 'me', 'モ': 'mo',
+    'ヤ': 'ya', 'ユ': 'yu', 'ヨ': 'yo',
+    'ラ': 'ra', 'リ': 'ri', 'ル': 'ru', 'レ': 're', 'ロ': 'ro',
+    'ワ': 'wa', 'ヲ': 'wo', 'ン': 'n',
+    'ガ': 'ga', 'ギ': 'gi', 'グ': 'gu', 'ゲ': 'ge', 'ゴ': 'go',
+    'ザ': 'za', 'ジ': 'ji', 'ズ': 'zu', 'ゼ': 'ze', 'ゾ': 'zo',
+    'ダ': 'da', 'ヂ': 'ji', 'ヅ': 'zu', 'デ': 'de', 'ド': 'do',
+    'バ': 'ba', 'ビ': 'bi', 'ブ': 'bu', 'ベ': 'be', 'ボ': 'bo',
+    'パ': 'pa', 'ピ': 'pi', 'プ': 'pu', 'ペ': 'pe', 'ポ': 'po',
+    'ャ': 'ya', 'ュ': 'yu', 'ョ': 'yo', 'ッ': '',
+  };
+  
+  let romaji = '';
+  let i = 0;
+  
+  while (i < text.length) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+    
+    // Check for small tsu (sokuon) - doubles the next consonant
+    if (char === 'っ' || char === 'ッ') {
+      if (nextChar && kanaToRomaji[nextChar]) {
+        const nextRomaji = kanaToRomaji[nextChar];
+        romaji += nextRomaji[0]; // Add first consonant only
+      }
+      i++;
+      continue;
+    }
+    
+    // Check for compound sounds (small ya, yu, yo)
+    if (i + 1 < text.length) {
+      const compound = char + nextChar;
+      if (['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
+        if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
+          romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
+          i += 2;
+          continue;
+        }
+      }
+    }
+    
+    // Handle long vowels (ー)
+    if (char === 'ー' || char === '〜') {
+      if (romaji.length > 0) {
+        const lastVowel = romaji[romaji.length - 1];
+        if ('aeiou'.includes(lastVowel)) {
+          romaji += lastVowel;
+        }
+      }
+      i++;
+      continue;
+    }
+    
+    // Convert character
+    if (kanaToRomaji[char]) {
+      romaji += kanaToRomaji[char];
+    }
+    // Skip kanji - they won't be converted
+    
+    i++;
+  }
+  
+  return romaji;
+}
+
 // Get specific lesson with enriched grammar examples (includes furigana)
 export async function getLesson(id: string, includeFurigana: boolean = false): Promise<LessonData | null> {
   const result = await pool.query(
@@ -177,6 +273,15 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
     }));
   }
   
+  // Generate romaji for practice phrases
+  let practice_phrases = row.practice_phrases || [];
+  if (practice_phrases.length > 0) {
+    practice_phrases = practice_phrases.map((p: PracticePhrase) => ({
+      ...p,
+      romaji: generateRomaji(p.jp)
+    }));
+  }
+  
   return {
     id: row.id,
     date: row.date,
@@ -185,7 +290,7 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
     topics: row.topics || [],
     vocabulary: vocabulary,
     grammar: grammar,
-    practice_phrases: row.practice_phrases || []
+    practice_phrases: practice_phrases
   };
 }
 
