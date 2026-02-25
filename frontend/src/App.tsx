@@ -1247,7 +1247,7 @@ function RepeatMode() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && !e.repeat && !e.ctrlKey && !e.metaKey) {
         if (document.activeElement?.tagName === 'INPUT') return;
-        if (isCheckingPronunciation) return;
+        if (isCheckingPronunciation || isAudioLoading) return;
 
         e.preventDefault();
         nextPhrase();
@@ -1256,7 +1256,7 @@ function RepeatMode() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isCheckingPronunciation, currentPhrase, currentAudioUrl]);
+  }, [isCheckingPronunciation, isAudioLoading, currentPhrase, currentAudioUrl]);
 
   // Save volume
   useEffect(() => {
