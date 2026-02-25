@@ -525,6 +525,12 @@
   font-style: italic;
 }
 
+.practice-item .phrase-romaji {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
 /* Furigana */
 ruby {
   ruby-align: center;

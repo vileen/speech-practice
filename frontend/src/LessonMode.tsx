@@ -31,7 +31,7 @@ interface LessonDetail {
     romaji?: string;
     examples: Array<{jp: string; en: string; furigana?: string | null}>;
   }>;
-  practice_phrases: Array<{jp: string; en: string}>;
+  practice_phrases: Array<{jp: string; en: string; romaji?: string}>;
 }
 
 const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
@@ -589,6 +589,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
                     <span className="number">{idx + 1}.</span>
                     <div className="phrase-content">
                       <span className="phrase-jp">{renderFurigana(phrase.jp)}</span>
+                      {phrase.romaji && <span className="phrase-romaji">{phrase.romaji}</span>}
                       <span className="phrase-en">{phrase.en}</span>
                     </div>
                   </div>
