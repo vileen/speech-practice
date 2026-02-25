@@ -6,6 +6,8 @@ import './LessonMode.css';
 import { VoiceRecorder } from './VoiceRecorder.js';
 import './VoiceRecorder.css';
 import { translateLessonTitle } from './translations.js';
+import { HighlightedText } from './HighlightedText.js';
+import './HighlightedText.css';
 
 interface Session {
   id: number;
@@ -950,7 +952,13 @@ function ChatSession() {
                         <div className="jp-text">
                           {showFurigana && msg.withFurigana ? (
                             <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
-                          ) : msg.text}
+                          ) : (
+                            <HighlightedText 
+                              text={msg.text}
+                              audioElement={playingAudio?.id === idx ? playingAudio.audio : null}
+                              isPlaying={playingAudio?.id === idx}
+                            />
+                          )}
                         </div>
                         {msg.showTranslation && msg.translation && (
                           <div className="translation-text">
@@ -960,7 +968,7 @@ function ChatSession() {
                       </>
                     )}
                   </div>
-                  {(msg as any).isLoading && msg.text && (
+                  {(msg as any).isLoading && (
                     <div className="audio-loading">
                       <span className="loading-dots">Generating audio</span>
                     </div>
@@ -1984,7 +1992,7 @@ function LessonPractice() {
             <span></span>
             <span></span>
           </div>
-          <p>Restoring practice session...</p>
+          <p>Loading practice session...</p>
         </div>
       </div>
     );
@@ -2105,7 +2113,13 @@ function LessonPractice() {
                         <div className="jp-text">
                           {showFurigana && msg.withFurigana ? (
                             <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
-                          ) : msg.text}
+                          ) : (
+                            <HighlightedText 
+                              text={msg.text}
+                              audioElement={playingAudio?.id === idx ? playingAudio.audio : null}
+                              isPlaying={playingAudio?.id === idx}
+                            />
+                          )}
                         </div>
                         {msg.showTranslation && msg.translation && (
                           <div className="translation-text">
@@ -2115,7 +2129,7 @@ function LessonPractice() {
                       </>
                     )}
                   </div>
-                  {(msg as any).isLoading && msg.text && (
+                  {(msg as any).isLoading && (
                     <div className="audio-loading">
                       <span className="loading-dots">Generating audio</span>
                     </div>

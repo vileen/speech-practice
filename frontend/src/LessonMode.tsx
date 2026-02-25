@@ -28,6 +28,7 @@ interface LessonDetail {
   grammar: Array<{
     pattern: string;
     explanation: string;
+    romaji?: string;
     examples: Array<{jp: string; en: string; furigana?: string | null}>;
   }>;
   practice_phrases: Array<{jp: string; en: string}>;
@@ -74,7 +75,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   }, [showFurigana]);
   
   // Furigana cache version for invalidation
-  const FURIGANA_CACHE_VERSION = '2';
+  const FURIGANA_CACHE_VERSION = '3';
   
   // Load furigana cache from localStorage on init
   const loadFuriganaCacheFromStorage = (): Record<string, { furigana: string; timestamp: number; version: string }> => {
@@ -526,6 +527,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
               {selectedLesson.grammar.map((item, idx) => (
                 <div key={idx} className="grammar-card">
                   <h3>{renderFurigana(item.pattern)}</h3>
+                  {item.romaji && <div className="romaji">{item.romaji}</div>}
                   <div className="explanation">
                     {renderExplanationWithTables(item.explanation)}
                   </div>

@@ -384,6 +384,13 @@
   margin-bottom: 8px;
 }
 
+.grammar-card .romaji {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
 .grammar-card .explanation {
   color: #ccc;
   margin-bottom: 16px;

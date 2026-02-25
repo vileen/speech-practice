@@ -98,6 +98,37 @@ export async function cacheFurigana(text: string, furiganaHtml: string): Promise
   );
 }
 
+// Generate furigana HTML from reading field
+// Example: jp="安い", reading="やす" -> "<ruby>安<rt>やす</rt></ruby>い"
+function generateFuriganaFromReading(jp: string, reading: string | null | undefined): string | null {
+  if (!reading || !jp) return null;
+  
+  // Check if word has kanji
+  const kanjiRegex = /[\u4e00-\u9faf]/;
+  if (!kanjiRegex.test(jp)) return null; // Pure hiragana/katakana - no furigana needed
+  
+  // Find the kanji portion (everything until first hiragana)
+  let kanjiEnd = 0;
+  for (let i = 0; i < jp.length; i++) {
+    const char = jp[i];
+    // Kanji range
+    if (/[\u4e00-\u9faf]/.test(char)) {
+      kanjiEnd = i + 1;
+    } else if (/[ぁ-ん]/.test(char)) {
+      // Hiragana found - this is okurigana, stop here
+      break;
+    }
+  }
+  
+  const kanjiPart = jp.substring(0, kanjiEnd);
+  const okurigana = jp.substring(kanjiEnd);
+  
+  if (kanjiPart.length === 0) return null;
+  
+  // Generate ruby HTML
+  return `<ruby>${kanjiPart}<rt>${reading}</rt></ruby>${okurigana}`;
+}
+
 // Get specific lesson with enriched grammar examples (includes furigana)
 export async function getLesson(id: string, includeFurigana: boolean = false): Promise<LessonData | null> {
   const result = await pool.query(
@@ -114,15 +145,16 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
   let grammar = row.grammar || [];
   let vocabulary = row.vocabulary || [];
   
-  // Enrich vocabulary with cached furigana if requested
+  // Enrich vocabulary with furigana generated from reading field
   if (includeFurigana && vocabulary.length > 0) {
-    vocabulary = await Promise.all(vocabulary.map(async (v: VocabItem) => {
-      const cached = await getCachedFurigana(v.jp);
+    vocabulary = vocabulary.map((v: VocabItem) => {
+      // Generate furigana from reading field instead of cache
+      const furigana = generateFuriganaFromReading(v.jp, v.reading);
       return {
         ...v,
-        furigana: cached || null
+        furigana: furigana || null
       };
-    }));
+    });
   }
   
   // Enrich grammar examples with cached furigana if requested
@@ -151,7 +183,7 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
     title: row.title,
     order: row.order,
     topics: row.topics || [],
-    vocabulary: row.vocabulary || [],
+    vocabulary: vocabulary,
     grammar: grammar,
     practice_phrases: row.practice_phrases || []
   };
