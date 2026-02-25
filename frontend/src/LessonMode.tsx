@@ -319,15 +319,49 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     });
   }, [selectedLesson, showFurigana]); // Intentionally NOT including fetchFurigana or cache
 
-  const renderFurigana = (text: string, preloadedFurigana?: string | null) => {
-    if (!showFurigana) return text;
+  // Generate furigana HTML from reading field
+  // Example: text="安い", reading="やす" -> "<ruby>安<rt>やす</rt></ruby>い"
+  const generateFuriganaFromReading = (text: string, reading: string | null | undefined): string | null => {
+    if (!reading || !text) return null;
     
-    // If we have preloaded furigana from DB, use it
-    if (preloadedFurigana) {
-      return <span dangerouslySetInnerHTML={{ __html: preloadedFurigana }} />;
+    // Check if text has kanji
+    const kanjiRegex = /[\u4e00-\u9faf]/;
+    if (!kanjiRegex.test(text)) return null; // Pure hiragana/katakana - no furigana needed
+    
+    // Find the kanji portion (everything until first hiragana)
+    let kanjiEnd = 0;
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      // Kanji range
+      if (kanjiRegex.test(char)) {
+        kanjiEnd = i + 1;
+      } else if (/[ぁ-ん]/.test(char)) {
+        // Hiragana found - this is okurigana, stop here
+        break;
+      }
     }
     
-    // If we have cached furigana in memory, use it (new structure with metadata)
+    const kanjiPart = text.substring(0, kanjiEnd);
+    const okurigana = text.substring(kanjiEnd);
+    
+    if (kanjiPart.length === 0) return null;
+    
+    // Generate ruby HTML
+    return `<ruby>${kanjiPart}<rt>${reading}</rt></ruby>${okurigana}`;
+  };
+
+  const renderFurigana = (text: string, reading?: string | null) => {
+    if (!showFurigana) return text;
+    
+    // Generate furigana from reading field (new approach - future-proof!)
+    if (reading) {
+      const furiganaHtml = generateFuriganaFromReading(text, reading);
+      if (furiganaHtml) {
+        return <span dangerouslySetInnerHTML={{ __html: furiganaHtml }} />;
+      }
+    }
+    
+    // Fallback: If we have cached furigana in memory, use it (legacy support)
     const cached = furiganaCacheRef.current[text] || furiganaCache[text];
     if (cached && cached.furigana) {
       return <span dangerouslySetInnerHTML={{ __html: cached.furigana }} />;
@@ -363,7 +397,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
       return <span>{parts}</span>;
     }
     
-    // Otherwise show plain text (it will be fetched)
+    // Otherwise show plain text
     return text;
   };
 
@@ -512,7 +546,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
               <div className="vocab-grid">
                 {selectedLesson.vocabulary.map((item, idx) => (
                   <div key={idx} className="vocab-card">
-                    <div className="jp-word">{renderFurigana(item.jp, item.furigana)}</div>
+                    <div className="jp-word">{renderFurigana(item.jp, item.reading)}</div>
                     <div className="romaji">{item.romaji}</div>
                     <div className="meaning">{item.en}</div>
                     {item.type && <span className="type-tag">{item.type}</span>}

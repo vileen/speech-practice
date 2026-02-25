@@ -950,14 +950,16 @@ function ChatSession() {
                     ) : (
                       <>
                         <div className="jp-text">
-                          {showFurigana && msg.withFurigana ? (
+                          {showFurigana && msg.withFurigana && !playingAudio?.audio ? (
                             <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
-                          ) : (
+                          ) : playingAudio?.audio ? (
                             <HighlightedText 
                               text={msg.text}
                               audioElement={playingAudio?.id === idx ? playingAudio.audio : null}
                               isPlaying={playingAudio?.id === idx}
                             />
+                          ) : (
+                            msg.text
                           )}
                         </div>
                         {msg.showTranslation && msg.translation && (
@@ -2111,14 +2113,16 @@ function LessonPractice() {
                     ) : (
                       <>
                         <div className="jp-text">
-                          {showFurigana && msg.withFurigana ? (
+                          {showFurigana && msg.withFurigana && !playingAudio?.audio ? (
                             <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
-                          ) : (
+                          ) : playingAudio?.audio ? (
                             <HighlightedText 
                               text={msg.text}
                               audioElement={playingAudio?.id === idx ? playingAudio.audio : null}
                               isPlaying={playingAudio?.id === idx}
                             />
+                          ) : (
+                            msg.text
                           )}
                         </div>
                         {msg.showTranslation && msg.translation && (
