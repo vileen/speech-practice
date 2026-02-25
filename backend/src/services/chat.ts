@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import { addFurigana } from './elevenlabs.js';
-import { generateRomaji } from './lessons.js';
+import { generateRomaji } from './romaji.js';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
