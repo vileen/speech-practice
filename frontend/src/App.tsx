@@ -1489,7 +1489,7 @@ function RepeatMode() {
                   step="0.1"
                   value={volume}
                   onChange={(e) => setVolume(parseFloat(e.target.value))}
-                  disabled={isCheckingPronunciation}
+                  disabled={isCheckingPronunciation || isAudioLoading}
                 />
                 <span>{Math.round(volume * 100)}%</span>
               </div>
@@ -1498,14 +1498,14 @@ function RepeatMode() {
                 <button
                   className={recordingMode === 'voice-activated' ? 'active' : ''}
                   onClick={() => setRecordingMode('voice-activated')}
-                  disabled={isCheckingPronunciation || !currentPhrase}
+                  disabled={isCheckingPronunciation || isAudioLoading || !currentPhrase}
                 >
                   🎤 Voice Activated
                 </button>
                 <button
                   className={recordingMode === 'push-to-talk' ? 'active' : ''}
                   onClick={() => setRecordingMode('push-to-talk')}
-                  disabled={isCheckingPronunciation || !currentPhrase}
+                  disabled={isCheckingPronunciation || isAudioLoading || !currentPhrase}
                 >
                   🎙️ Push to Talk
                 </button>
@@ -1514,7 +1514,7 @@ function RepeatMode() {
               <VoiceRecorder
                 key={vadResetCounter}
                 mode={recordingMode}
-                disabled={isCheckingPronunciation || !currentPhrase}
+                disabled={isCheckingPronunciation || isAudioLoading || !currentPhrase}
                 isListening={isListening}
                 onStartListening={() => {
                   setIsListening(true);
