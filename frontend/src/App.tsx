@@ -9,6 +9,7 @@ import { translateLessonTitle } from './translations.js';
 import { HighlightedText } from './HighlightedText.js';
 import './HighlightedText.css';
 
+// Types
 interface Session {
   id: number;
   language: string;
@@ -25,7 +26,6 @@ interface PronunciationResult {
   errors?: string[];
 }
 
-// API URL - use env var or default to GitHub Pages path
 // API URL - use env var or default to Cloudflare backend
 const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
 
