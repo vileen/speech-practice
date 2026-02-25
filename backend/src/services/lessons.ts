@@ -196,15 +196,16 @@ export async function generateRomaji(text: string, furiganaHtml?: string | null)
     // Remove any remaining HTML tags
     hiraganaText = hiraganaText.replace(/<[^>]*>/g, '');
 
-    // Add spaces after particles in hiragana (before conversion)
+    // Add spaces BEFORE particles in hiragana (not after) to separate words properly
+    // This ensures "pasokonwo" becomes "pasokon wo" not "pasokonw o"
     const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ'];
     let hiraganaWithSpaces = '';
     for (let i = 0; i < hiraganaText.length; i++) {
-      hiraganaWithSpaces += hiraganaText[i];
-      // Add space after particle (but not if next char is already space or it's the end)
-      if (particles.includes(hiraganaText[i]) && i < hiraganaText.length - 1 && hiraganaText[i + 1] !== ' ') {
+      // Add space BEFORE particle (if not at start and previous isn't already space)
+      if (particles.includes(hiraganaText[i]) && i > 0 && hiraganaText[i - 1] !== ' ') {
         hiraganaWithSpaces += ' ';
       }
+      hiraganaWithSpaces += hiraganaText[i];
     }
 
     // Now convert the hiragana (with spaces) to romaji
@@ -270,14 +271,15 @@ export async function generateRomaji(text: string, furiganaHtml?: string | null)
     return fixedWords.join(' ').trim();
   }
 
-  // No kanji - convert kana directly but still add spaces after particles
+  // No kanji - convert kana directly but still add spaces before particles
   const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ'];
   let hiraganaWithSpaces = '';
   for (let i = 0; i < text.length; i++) {
-    hiraganaWithSpaces += text[i];
-    if (particles.includes(text[i]) && i < text.length - 1 && text[i + 1] !== ' ') {
+    // Add space BEFORE particle (if not at start and previous isn't already space)
+    if (particles.includes(text[i]) && i > 0 && text[i - 1] !== ' ') {
       hiraganaWithSpaces += ' ';
     }
+    hiraganaWithSpaces += text[i];
   }
 
   let romaji = '';
