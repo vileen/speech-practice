@@ -196,8 +196,8 @@ export async function generateRomaji(text: string, furiganaHtml?: string | null)
     // Remove any remaining HTML tags
     hiraganaText = hiraganaText.replace(/<[^>]*>/g, '');
 
-    // Add spaces BEFORE particles in hiragana (not after) to separate words properly
-    // This ensures "pasokonwo" becomes "pasokon wo" not "pasokonw o"
+    // Add spaces around particles in hiragana to separate words properly
+    // "saikineakonwo" -> "saikin eakon wo"
     const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ'];
     let hiraganaWithSpaces = '';
     for (let i = 0; i < hiraganaText.length; i++) {
@@ -206,6 +206,10 @@ export async function generateRomaji(text: string, furiganaHtml?: string | null)
         hiraganaWithSpaces += ' ';
       }
       hiraganaWithSpaces += hiraganaText[i];
+      // Add space AFTER particle (if not at end and next isn't already space and next isn't another particle)
+      if (particles.includes(hiraganaText[i]) && i < hiraganaText.length - 1 && hiraganaText[i + 1] !== ' ' && !particles.includes(hiraganaText[i + 1])) {
+        hiraganaWithSpaces += ' ';
+      }
     }
 
     // Now convert the hiragana (with spaces) to romaji
@@ -271,7 +275,7 @@ export async function generateRomaji(text: string, furiganaHtml?: string | null)
     return fixedWords.join(' ').trim();
   }
 
-  // No kanji - convert kana directly but still add spaces before particles
+  // No kanji - convert kana directly but still add spaces around particles
   const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ'];
   let hiraganaWithSpaces = '';
   for (let i = 0; i < text.length; i++) {
@@ -280,6 +284,10 @@ export async function generateRomaji(text: string, furiganaHtml?: string | null)
       hiraganaWithSpaces += ' ';
     }
     hiraganaWithSpaces += text[i];
+    // Add space AFTER particle (if not at end and next isn't already space and next isn't another particle)
+    if (particles.includes(text[i]) && i < text.length - 1 && text[i + 1] !== ' ' && !particles.includes(text[i + 1])) {
+      hiraganaWithSpaces += ' ';
+    }
   }
 
   let romaji = '';
