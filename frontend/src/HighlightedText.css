@@ -1,0 +1,26 @@
+.highlighted-text {
+  display: inline;
+  line-height: 1.8;
+}
+
+.text-segment {
+  display: inline;
+  padding: 2px 1px;
+  border-radius: 3px;
+  transition: background-color 0.1s ease;
+}
+
+.text-segment.highlighted {
+  background-color: rgba(233, 69, 96, 0.4);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* For dark theme compatibility */
+.message.assistant .text-segment.highlighted {
+  background-color: rgba(233, 69, 96, 0.5);
+}
+
+.message.user .text-segment.highlighted {
+  background-color: rgba(15, 52, 96, 0.7);
+}
