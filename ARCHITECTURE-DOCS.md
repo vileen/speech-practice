@@ -96,6 +96,52 @@ DATABASE_URL=postgresql://localhost:5432/speech_practice
 ### Dlaczego aplikacja działa "wszędzie"?
 Ponieważ frontend jest na GitHub Pages (dostępny globalnie), a backend jest na Twoim komputerze z Cloudflare Tunnel (też dostępny globalnie).
 
+### Deployment Frontend (WAŻNE!)
+**NIE używaj `npm run deploy` ani `gh-pages`!**
+
+Poprawny proces deploymentu:
+1. Zrób zmiany w kodzie
+2. `git add -A`
+3. `git commit -m "opis zmian"`
+4. `git push origin main`
+5. GitHub Actions automatycznie zbuduje i wdroży zmiany na GitHub Pages
+
+Konfiguracja GitHub Actions: `.github/workflows/deploy-frontend.yml`
+
+---
+
+## 📋 Struktura Danych Vocabulary
+
+### Format JSON w Bazie Danych
+```json
+{
+  "jp": "パソコン",
+  "reading": "ぱそこん",
+  "romaji": "pasokon",
+  "en": "PC (personal computer)",
+  "type": "noun"
+}
+```
+
+### Pola:
+| Pole | Opis | Przykład |
+|------|------|----------|
+| `jp` | Japoński (kanji/katakana/hiragana) | `パソコン` |
+| `reading` | Hiragana/furigana | `ぱそこん` |
+| `romaji` | Romaji (latinka) | `pasokon` |
+| `en` | Angielskie tłumaczenie | `PC (personal computer)` |
+| `type` | Typ gramatyczny | `noun`, `verb`, `i-adjective`, `na-adjective`, `expression` |
+
+### Wyświetlanie w Kartach (Frontend)
+Karty słownictwa wyświetlają 3 wiersze:
+1. **Japoński** (`jp`) - duża czcionka
+2. **Romaji** (`romaji`) - kursywa, szary kolor
+3. **Angielskie tłumaczenie** (`en`)
+
+Pliki do edycji:
+- `frontend/src/LessonMode.tsx` - logika wyświetlania
+- `frontend/src/LessonMode.css` - stylowanie kart
+
 ---
 
 ## 🛠️ Komendy
@@ -149,7 +195,19 @@ npm run db:init
 
 ## 🔧 TODO (Zalecane)
 
+- [ ] Dokończyć poprawę vocabulary dla pozostałych 13 lekcji (2025-10-01 do 2025-11-03)
+- [ ] Sprawdzić i poprawić grammar dla wszystkich lekcji
+- [ ] Sprawdzić i poprawić practice_phrases dla wszystkich lekcji
 - [ ] Uruchomić lokalnie PostgreSQL
 - [ ] Wyeksportować wszystkie lekcje z produkcji do JSON (backup)
-- [ ] Naprawić endpoint furigana
 - [ ] Zautomatyzować backup bazy danych
+
+---
+
+## ✅ Zrobione (2026-02-25)
+
+- [x] Naprawiono endpoint furigana (brakowało definicji FALLBACK_READINGS)
+- [x] Zaktualizowano 13 lekcji (vocabulary skrócone do 6-14 słów, poprawiony format)
+- [x] Dodano wyświetlanie romaji w kartach słownictwa
+- [x] Uporządkowano strukturę plików w Obsidian
+- [x] Utworzono dokumentację architektury
