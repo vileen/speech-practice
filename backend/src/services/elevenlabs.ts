@@ -134,10 +134,16 @@ function japaneseToRomaji(text: string): string {
   
   // Post-processing for particle pronunciation
   // は as particle = wa, へ as particle = e
-  romaji = romaji.replace(/ wa /g, ' wa '); // already correct
-  romaji = romaji.replace(/^ha /, 'wa '); // は at start of phrase as particle
-  romaji = romaji.replace(/ ha /g, ' wa '); // は as particle in middle
-  romaji = romaji.replace(/ he /g, ' e '); // へ as particle
+  // Add spaces around particles first to ensure patterns match
+  romaji = romaji.replace(/(ha)([^a-z])/g, ' $1 $2'); // add spaces around ha
+  romaji = romaji.replace(/(he)([^a-z])/g, ' $1 $2'); // add spaces around he
+  
+  // Now fix particle pronunciations
+  romaji = romaji.replace(/ ha /g, ' wa '); // は as particle = wa
+  romaji = romaji.replace(/ he /g, ' e ');  // へ as particle = e
+  
+  // Clean up multiple spaces
+  romaji = romaji.replace(/\s+/g, ' ').trim();
   
   return romaji;
 }

@@ -1218,6 +1218,7 @@ function RepeatMode() {
     return saved ? parseFloat(saved) : 0.8;
   });
   const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
 
   // Load settings on mount
   useEffect(() => {
@@ -1314,7 +1315,9 @@ function RepeatMode() {
         setPhrasePlayed(true);
         return;
       }
-      
+
+      setIsAudioLoading(true);
+
       const response = await fetch(`${API_URL}/api/repeat-after-me`, {
         method: 'POST',
         headers: {
@@ -1328,7 +1331,7 @@ function RepeatMode() {
           voiceStyle,
         }),
       });
-      
+
       if (response.ok) {
         const blob = await response.blob();
         const audioUrl = URL.createObjectURL(blob);
@@ -1340,6 +1343,8 @@ function RepeatMode() {
       }
     } catch (error) {
       console.error('Error playing phrase:', error);
+    } finally {
+      setIsAudioLoading(false);
     }
   };
 
@@ -1396,12 +1401,12 @@ function RepeatMode() {
             )}
             
             <div className="phrase-controls">
-              <button 
-                className="play-btn large" 
+              <button
+                className="play-btn large"
                 onClick={() => playPhrase(currentPhrase)}
-                disabled={isCheckingPronunciation || !currentPhrase}
+                disabled={isCheckingPronunciation || !currentPhrase || isAudioLoading}
               >
-                🔊 {phrasePlayed ? 'Listen Again' : 'Listen'}
+                🔊 {isAudioLoading ? 'Loading...' : phrasePlayed ? 'Listen Again' : 'Listen'}
               </button>
               <button 
                 className="translate-btn"
@@ -1479,20 +1484,23 @@ function RepeatMode() {
                   step="0.1"
                   value={volume}
                   onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  disabled={isCheckingPronunciation || isAudioLoading}
                 />
                 <span>{Math.round(volume * 100)}%</span>
               </div>
-              
+
               <div className="mode-toggle">
                 <button
                   className={recordingMode === 'voice-activated' ? 'active' : ''}
                   onClick={() => setRecordingMode('voice-activated')}
+                  disabled={isCheckingPronunciation || isAudioLoading || !currentPhrase}
                 >
                   🎤 Voice Activated
                 </button>
                 <button
                   className={recordingMode === 'push-to-talk' ? 'active' : ''}
                   onClick={() => setRecordingMode('push-to-talk')}
+                  disabled={isCheckingPronunciation || isAudioLoading || !currentPhrase}
                 >
                   🎙️ Push to Talk
                 </button>
@@ -1501,6 +1509,7 @@ function RepeatMode() {
               <VoiceRecorder
                 key={`${currentPhrase}-${vadResetCounter}`}
                 mode={recordingMode}
+                disabled={isCheckingPronunciation || isAudioLoading || !currentPhrase}
                 isListening={isListening}
                 onStartListening={() => {
                   setIsListening(true);
