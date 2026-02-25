@@ -172,60 +172,51 @@ function generateRomaji(text: string): string {
     'ャ': 'ya', 'ュ': 'yu', 'ョ': 'yo', 'ッ': '',
   };
   
-  // Particles that should be separated
-  const particles = new Set(['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ']);
-  
-  // Split text into words (simple approach: split by spaces and detect particles)
-  const words: string[] = [];
-  let currentWord = '';
+  // Simple word segmentation: split by spaces, keep particles attached
+  const segments: string[] = [];
+  let current = '';
   
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
-    const nextChar = text[i + 1];
     
-    // Space = word boundary
+    // Space = word boundary (preserve the space)
     if (/\s/.test(char)) {
-      if (currentWord) {
-        words.push(currentWord);
-        currentWord = '';
+      if (current) {
+        segments.push(current);
+        current = '';
       }
+      segments.push(' ');
       continue;
     }
     
     // Punctuation = separate token
     if (/[。、！？\.,!?]/.test(char)) {
-      if (currentWord) {
-        words.push(currentWord);
-        currentWord = '';
+      if (current) {
+        segments.push(current);
+        current = '';
       }
-      words.push(char);
+      segments.push(char);
       continue;
     }
     
-    // Particle = word boundary (if not at start)
-    if (particles.has(char) && currentWord.length > 0) {
-      words.push(currentWord);
-      currentWord = char;
-      continue;
-    }
-    
-    currentWord += char;
+    current += char;
   }
   
-  if (currentWord) {
-    words.push(currentWord);
+  if (current) {
+    segments.push(current);
   }
   
-  // Convert each word to romaji
-  const romajiWords = words.map(word => {
-    if (/[。、！？\.,!?]/.test(word)) return word;
+  // Convert each segment to romaji
+  const romajiSegments = segments.map(segment => {
+    if (segment === ' ') return ' ';
+    if (/[。、！？\.,!?]/.test(segment)) return segment;
     
     let romaji = '';
     let i = 0;
     
-    while (i < word.length) {
-      const char = word[i];
-      const nextChar = word[i + 1];
+    while (i < segment.length) {
+      const char = segment[i];
+      const nextChar = segment[i + 1];
       
       // Skip kanji - they won't be converted
       const isKanji = /[\u4e00-\u9faf]/.test(char);
@@ -245,7 +236,7 @@ function generateRomaji(text: string): string {
       }
       
       // Check for compound sounds (small ya, yu, yo)
-      if (i + 1 < word.length) {
+      if (i + 1 < segment.length) {
         if (['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
           if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
             romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
@@ -278,7 +269,7 @@ function generateRomaji(text: string): string {
     return romaji;
   });
   
-  return romajiWords.join(' ');
+  return romajiSegments.join('');
 }
 
 // Get specific lesson with enriched grammar examples (includes furigana)
