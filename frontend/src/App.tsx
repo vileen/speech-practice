@@ -544,7 +544,7 @@ function ChatSession() {
   const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
   const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
-  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
+  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, romaji?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
   const [inputText, setInputText] = useState('');
   const [showFurigana] = useState(true);
   const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
@@ -791,6 +791,7 @@ function ChatSession() {
                 ...msg, 
                 text: aiData.text,
                 withFurigana: aiData.text_with_furigana || aiData.text,
+                romaji: aiData.romaji,
                 translation: aiData.translation,
                 isTyping: false,
               }
@@ -962,6 +963,11 @@ function ChatSession() {
                             msg.text
                           )}
                         </div>
+                        {msg.romaji && (
+                          <div className="romaji-text" style={{fontStyle: 'italic', color: '#666', fontSize: '0.9em', marginTop: '4px'}}>
+                            {msg.romaji}
+                          </div>
+                        )}
                         {msg.showTranslation && msg.translation && (
                           <div className="translation-text">
                             🇬🇧 {msg.translation}
@@ -1717,7 +1723,7 @@ function LessonPractice() {
   const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
   const [simpleMode, setSimpleMode] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
-  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
+  const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, romaji?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
   const [inputText, setInputText] = useState('');
   const [showFurigana] = useState(true);
   const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
@@ -1867,6 +1873,7 @@ function LessonPractice() {
               role: 'assistant',
               text: aiData.text,
               withFurigana: aiData.text_with_furigana || aiData.text,
+              romaji: aiData.romaji,
               translation: aiData.translation,
               isTyping: false,
               isLoading: true,
@@ -1879,6 +1886,7 @@ function LessonPractice() {
               role: 'assistant',
               text: aiData.text,
               withFurigana: aiData.text_with_furigana || aiData.text,
+              romaji: aiData.romaji,
               translation: aiData.translation,
               audioUrl: audioUrl || undefined,
               isLoading: false,
@@ -1929,6 +1937,7 @@ function LessonPractice() {
                 ...msg, 
                 text: aiData.text,
                 withFurigana: aiData.text_with_furigana || aiData.text,
+                romaji: aiData.romaji,
                 translation: aiData.translation,
                 isTyping: false,
               }
@@ -2125,6 +2134,11 @@ function LessonPractice() {
                             msg.text
                           )}
                         </div>
+                        {msg.romaji && (
+                          <div className="romaji-text" style={{fontStyle: 'italic', color: '#666', fontSize: '0.9em', marginTop: '4px'}}>
+                            {msg.romaji}
+                          </div>
+                        )}
                         {msg.showTranslation && msg.translation && (
                           <div className="translation-text">
                             🇬🇧 {msg.translation}

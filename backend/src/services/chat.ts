@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { addFurigana } from './elevenlabs.js';
+import { generateRomaji } from './lessons.js';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -13,7 +14,7 @@ export interface ChatMessage {
 export async function generateChatResponse(
   messages: ChatMessage[],
   lessonContext?: string
-): Promise<{ text: string; textWithFurigana: string; translation?: string }> {
+): Promise<{ text: string; textWithFurigana: string; romaji?: string; translation?: string }> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY not set');
   }
@@ -62,9 +63,13 @@ Your job is to PUSH the user to practice more, not just accept minimal answers.`
     textWithFurigana = await addFurigana(text);
   }
   
+  // Generate romaji from the Japanese text
+  const romaji = generateRomaji(text);
+  
   return {
     text,
     textWithFurigana,
+    romaji,
     translation,
   };
 }

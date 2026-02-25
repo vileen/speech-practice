@@ -132,7 +132,7 @@ function generateFuriganaFromReading(jp: string, reading: string | null | undefi
 }
 
 // Simple romaji generator for practice phrases
-function generateRomaji(text: string): string {
+export function generateRomaji(text: string): string {
   if (!text) return '';
   
   // Basic hiragana/katakana to romaji mapping
