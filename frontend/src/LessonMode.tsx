@@ -583,16 +583,6 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
 
           {activeTab === 'practice' && (
             <div className="practice-tab">
-              <div className="tab-header">
- <label className="furigana-toggle">
-                  <input
-                    type="checkbox"
-                    checked={showFurigana}
-                    onChange={(e) => setShowFurigana(e.target.checked)}
-                  />
-                  <span>Show Furigana</span>
-                </label>
-              </div>
               <div className="practice-list">
                 {selectedLesson.practice_phrases.map((phrase, idx) => (
                   <div key={idx} className="practice-item">
