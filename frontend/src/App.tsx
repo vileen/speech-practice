@@ -1744,7 +1744,10 @@ function LessonPractice() {
   const [session, setSession] = useState<Session | null>(null);
   const [messages, setMessages] = useState<Array<{id?: number, role: string, text: string, audioUrl?: string, showTranslation?: boolean, translation?: string, withFurigana?: string, romaji?: string, isLoading?: boolean, isTyping?: boolean, isTranslating?: boolean}>>([]);
   const [inputText, setInputText] = useState('');
-  const [showFurigana] = useState(true);
+  const [showFurigana, setShowFurigana] = useState(() => {
+    const saved = localStorage.getItem('speechPracticeShowFurigana');
+    return saved ? saved === 'true' : true;
+  });
   const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
   const [isListening, setIsListening] = useState(false);
   const [playingAudio, setPlayingAudio] = useState<{id: number, audio: HTMLAudioElement} | null>(null);
@@ -1754,6 +1757,11 @@ function LessonPractice() {
   });
   const [activeLesson, setActiveLesson] = useState<{id: string; title: string} | null>(null);
   const [isLoadingSession, setIsLoadingSession] = useState(true);
+
+  // Save furigana preference to localStorage
+  useEffect(() => {
+    localStorage.setItem('speechPracticeShowFurigana', showFurigana.toString());
+  }, [showFurigana]);
 
   // Load settings and initialize
   useEffect(() => {
@@ -2046,6 +2054,16 @@ function LessonPractice() {
                 )}
               </div>
               <div className="session-right">
+                {language === 'japanese' && (
+                  <label className="furigana-toggle" style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.9em'}}>
+                    <input
+                      type="checkbox"
+                      checked={showFurigana}
+                      onChange={(e) => setShowFurigana(e.target.checked)}
+                    />
+                    <span>🈳 Furigana</span>
+                  </label>
+                )}
                 <div className="global-volume" title={`Volume: ${Math.round(volume * 100)}%`}>
                   <span>{volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}</span>
                   <input
