@@ -1556,7 +1556,7 @@ function RepeatMode() {
               />
             </div>
             
-            <button className="next-btn" onClick={nextPhrase} disabled={isCheckingPronunciation}>
+            <button className="next-btn" onClick={nextPhrase} disabled={isCheckingPronunciation || isAudioLoading}>
               <div>Next Phrase →</div>
               <small className="shortcut-hint">(space)</small>
             </button>
