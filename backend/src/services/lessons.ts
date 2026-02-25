@@ -184,12 +184,30 @@ export function generateRomaji(text: string, furiganaHtml?: string | null): stri
     // Remove any remaining HTML tags
     romajiFromFurigana = romajiFromFurigana.replace(/<[^>]*>/g, '');
 
+    // Add spaces after common particles and punctuation
+    const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ', '、', '。'];
+    let withSpaces = '';
+    for (let i = 0; i < romajiFromFurigana.length; i++) {
+      withSpaces += romajiFromFurigana[i];
+      // Add space after particle (but not if it's the last character)
+      if (i < romajiFromFurigana.length - 1 && particles.includes(romajiFromFurigana[i])) {
+        withSpaces += ' ';
+      }
+    }
+
     // Now convert the hiragana to romaji
     let romaji = '';
     let i = 0;
-    while (i < romajiFromFurigana.length) {
-      const char = romajiFromFurigana[i];
-      const nextChar = romajiFromFurigana[i + 1];
+    while (i < withSpaces.length) {
+      const char = withSpaces[i];
+      const nextChar = withSpaces[i + 1];
+
+      // Preserve spaces
+      if (char === ' ') {
+        romaji += ' ';
+        i++;
+        continue;
+      }
 
       // Check for small tsu (sokuon)
       if (char === 'っ' || char === 'ッ') {
@@ -201,7 +219,7 @@ export function generateRomaji(text: string, furiganaHtml?: string | null): stri
       }
 
       // Check for compound sounds
-      if (i + 1 < romajiFromFurigana.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
+      if (i + 1 < withSpaces.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
         if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
           romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
           i += 2;
@@ -229,16 +247,33 @@ export function generateRomaji(text: string, furiganaHtml?: string | null): stri
       i++;
     }
 
-    return romaji;
+    return romaji.trim();
   }
 
   // Fallback: convert text directly (kanji will be skipped)
+  // Add spaces after particles
+  const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ', '、', '。'];
+  let withSpaces = '';
+  for (let i = 0; i < text.length; i++) {
+    withSpaces += text[i];
+    if (i < text.length - 1 && particles.includes(text[i])) {
+      withSpaces += ' ';
+    }
+  }
+
   let romaji = '';
   let i = 0;
 
-  while (i < text.length) {
-    const char = text[i];
-    const nextChar = text[i + 1];
+  while (i < withSpaces.length) {
+    const char = withSpaces[i];
+    const nextChar = withSpaces[i + 1];
+
+    // Preserve spaces
+    if (char === ' ') {
+      romaji += ' ';
+      i++;
+      continue;
+    }
 
     // Skip kanji - they won't be converted
     const isKanji = /[\u4e00-\u9faf]/.test(char);
@@ -257,7 +292,7 @@ export function generateRomaji(text: string, furiganaHtml?: string | null): stri
     }
 
     // Check for compound sounds (small ya, yu, yo)
-    if (i + 1 < text.length) {
+    if (i + 1 < withSpaces.length) {
       if (['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
         if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
           romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
@@ -287,7 +322,11 @@ export function generateRomaji(text: string, furiganaHtml?: string | null): stri
     i++;
   }
 
-  return romaji;
+  // Fix particle readings in romaji
+  romaji = romaji.replace(/\bha\b/g, 'wa');  // は as particle = wa
+  romaji = romaji.replace(/\bhe\b/g, 'e');   // へ as particle = e
+
+  return romaji.trim();
 }
 
 // Get specific lesson with enriched grammar examples (includes furigana)
