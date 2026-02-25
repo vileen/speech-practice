@@ -172,57 +172,113 @@ function generateRomaji(text: string): string {
     'ャ': 'ya', 'ュ': 'yu', 'ョ': 'yo', 'ッ': '',
   };
   
-  let romaji = '';
-  let i = 0;
+  // Particles that should be separated
+  const particles = new Set(['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ']);
   
-  while (i < text.length) {
+  // Split text into words (simple approach: split by spaces and detect particles)
+  const words: string[] = [];
+  let currentWord = '';
+  
+  for (let i = 0; i < text.length; i++) {
     const char = text[i];
     const nextChar = text[i + 1];
     
-    // Check for small tsu (sokuon) - doubles the next consonant
-    if (char === 'っ' || char === 'ッ') {
-      if (nextChar && kanaToRomaji[nextChar]) {
-        const nextRomaji = kanaToRomaji[nextChar];
-        romaji += nextRomaji[0]; // Add first consonant only
+    // Space = word boundary
+    if (/\s/.test(char)) {
+      if (currentWord) {
+        words.push(currentWord);
+        currentWord = '';
       }
-      i++;
       continue;
     }
     
-    // Check for compound sounds (small ya, yu, yo)
-    if (i + 1 < text.length) {
-      const compound = char + nextChar;
-      if (['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
-        if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
-          romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
-          i += 2;
-          continue;
-        }
+    // Punctuation = separate token
+    if (/[。、！？\.,!?]/.test(char)) {
+      if (currentWord) {
+        words.push(currentWord);
+        currentWord = '';
       }
-    }
-    
-    // Handle long vowels (ー)
-    if (char === 'ー' || char === '〜') {
-      if (romaji.length > 0) {
-        const lastVowel = romaji[romaji.length - 1];
-        if ('aeiou'.includes(lastVowel)) {
-          romaji += lastVowel;
-        }
-      }
-      i++;
+      words.push(char);
       continue;
     }
     
-    // Convert character
-    if (kanaToRomaji[char]) {
-      romaji += kanaToRomaji[char];
+    // Particle = word boundary (if not at start)
+    if (particles.has(char) && currentWord.length > 0) {
+      words.push(currentWord);
+      currentWord = char;
+      continue;
     }
-    // Skip kanji - they won't be converted
     
-    i++;
+    currentWord += char;
   }
   
-  return romaji;
+  if (currentWord) {
+    words.push(currentWord);
+  }
+  
+  // Convert each word to romaji
+  const romajiWords = words.map(word => {
+    if (/[。、！？\.,!?]/.test(word)) return word;
+    
+    let romaji = '';
+    let i = 0;
+    
+    while (i < word.length) {
+      const char = word[i];
+      const nextChar = word[i + 1];
+      
+      // Skip kanji - they won't be converted
+      const isKanji = /[\u4e00-\u9faf]/.test(char);
+      if (isKanji) {
+        i++;
+        continue;
+      }
+      
+      // Check for small tsu (sokuon) - doubles the next consonant
+      if (char === 'っ' || char === 'ッ') {
+        if (nextChar && kanaToRomaji[nextChar]) {
+          const nextRomaji = kanaToRomaji[nextChar];
+          romaji += nextRomaji[0];
+        }
+        i++;
+        continue;
+      }
+      
+      // Check for compound sounds (small ya, yu, yo)
+      if (i + 1 < word.length) {
+        if (['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(nextChar)) {
+          if (kanaToRomaji[char] && kanaToRomaji[nextChar]) {
+            romaji += kanaToRomaji[char].slice(0, -1) + kanaToRomaji[nextChar];
+            i += 2;
+            continue;
+          }
+        }
+      }
+      
+      // Handle long vowels (ー)
+      if (char === 'ー' || char === '〜') {
+        if (romaji.length > 0) {
+          const lastVowel = romaji[romaji.length - 1];
+          if ('aeiou'.includes(lastVowel)) {
+            romaji += lastVowel;
+          }
+        }
+        i++;
+        continue;
+      }
+      
+      // Convert character
+      if (kanaToRomaji[char]) {
+        romaji += kanaToRomaji[char];
+      }
+      
+      i++;
+    }
+    
+    return romaji;
+  });
+  
+  return romajiWords.join(' ');
 }
 
 // Get specific lesson with enriched grammar examples (includes furigana)
