@@ -302,14 +302,6 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
     console.log(`[Furigana] Cache hit for: ${word} = ${furiganaCache.get(word)}`);
     return furiganaCache.get(word)!;
   }
-  
-  // Check fallback dictionary
-  if (FALLBACK_READINGS[word]) {
-    console.log(`[Furigana] Fallback hit for: ${word} = ${FALLBACK_READINGS[word]}`);
-    furiganaCache.set(word, FALLBACK_READINGS[word]);
-    await saveCache();
-    return FALLBACK_READINGS[word];
-  }
 
   console.log(`[Furigana] Fetching from Jisho: ${word}`);
   const response = await fetchFromJisho(word);
