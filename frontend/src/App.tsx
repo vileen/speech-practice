@@ -1316,18 +1316,17 @@ function RepeatMode() {
     }
   };
 
-  const playPhrase = async (text: string, forceNew: boolean = false) => {
+  const playPhrase = async (text: string, forceNew: boolean = false): Promise<void> => {
     try {
       if (!forceNew && currentAudioUrl && text === currentPhrase) {
         const audio = new Audio(currentAudioUrl);
         audio.volume = volume;
-        audio.play();
+        await audio.play();
         setPhrasePlayed(true);
         return;
       }
 
-      setIsAudioLoading(true);
-
+      // Note: isAudioLoading is managed by the caller (nextPhrase)
       const response = await fetch(`${API_URL}/api/repeat-after-me`, {
         method: 'POST',
         headers: {
@@ -1348,13 +1347,12 @@ function RepeatMode() {
         setCurrentAudioUrl(audioUrl);
         const audio = new Audio(audioUrl);
         audio.volume = volume;
-        audio.play();
+        await audio.play();
         setPhrasePlayed(true);
       }
     } catch (error) {
       console.error('Error playing phrase:', error);
-    } finally {
-      setIsAudioLoading(false);
+      throw error; // Re-throw so caller knows there was an error
     }
   };
 
