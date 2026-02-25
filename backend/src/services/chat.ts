@@ -62,10 +62,10 @@ Your job is to PUSH the user to practice more, not just accept minimal answers.`
   if (kanjiRegex.test(text)) {
     textWithFurigana = await addFurigana(text);
   }
-  
-  // Generate romaji from the Japanese text
-  const romaji = generateRomaji(text);
-  
+
+  // Generate romaji using furigana HTML for correct kanji readings
+  const romaji = generateRomaji(text, textWithFurigana);
+
   return {
     text,
     textWithFurigana,
