@@ -521,8 +521,19 @@ header h1 {
   justify-content: center;
 }
 
-.phrase-display .plain-text {
-  font-size: 2rem;
+.phrase-display .plain-text,
+.phrase-jp {
+  font-size: 2.5rem;
+  font-weight: 500;
+}
+
+.transcription-comparison {
+  font-size: 1.1rem;
+}
+
+.transcription-comparison .expected,
+.transcription-comparison .heard {
+  font-size: 1.2rem;
 }
 
 .phrase-controls {
