@@ -42,10 +42,10 @@ export async function generateSpeech({
 
   try {
     const mp3Response = await openai.audio.speech.create({
-      model: 'tts-1',  // or 'tts-1-hd' for higher quality
+      model: 'tts-1-hd',  // Higher quality model
       voice: VOICES[voice],
       input: text,
-      speed: speed,
+      speed: 0.8,  // Slower for learning
     });
 
     const arrayBuffer = await mp3Response.arrayBuffer();
