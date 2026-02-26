@@ -65,10 +65,11 @@ export function RepeatMode() {
 
   // Auto-play audio when phrase changes
   useEffect(() => {
-    if (currentPhrase && !audioUrl) {
+    if (currentPhrase && !audioUrl && !isFetchingAudio) {
       fetchAndPlayAudio();
     }
-  }, [currentPhrase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPhrase, audioUrl]);
 
   // Save volume
   useEffect(() => {
@@ -93,10 +94,11 @@ export function RepeatMode() {
 
   const nextPhrase = useCallback(() => {
     if (phrases.length === 0) return;
-    
+
     const nextIndex = (phraseIndex + 1) % phrases.length;
     setPhraseIndex(nextIndex);
     setCurrentPhrase(phrases[nextIndex]);
+    setAudioUrl(null); // Reset audio URL so new audio is fetched
     setIsListening(false);
     setVadResetCounter(c => c + 1);
     clear();
