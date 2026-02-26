@@ -1,6 +1,7 @@
 # Speech Practice App - Dokumentacja Architektury
 
 ## Data utworzenia: 2026-02-25
+## Ostatnia aktualizacja: 2026-02-26
 
 ---
 
@@ -17,8 +18,8 @@
 │                          │      │                              │
 │  URL:                    │      │  Local: localhost:3001       │
 │  https://vileen.github.io│◄────►│  Public: Cloudflare Tunnel   │
-│  /speech-practice/       │      │  https://eds-grow-delivered  │
-│                          │      │  -spending.trycloudflare.com │
+│  /speech-practice/       │      │  https://trunk-sticks-connect│
+│                          │      │  -currency.trycloudflare.com │
 └──────────────────────────┘      └──────────────┬───────────────┘
                                                   │
                                                   ▼
@@ -30,54 +31,63 @@
                                     │  Tables: lessons,        │
                                     │  sessions, messages,     │
                                     │  furigana_cache          │
-                                    └──────────────────────────┘
+└───────────────────────────────────┴──────────────────────────┘
 ```
 
 ---
 
-## 📁 Lokalizacja Plików
+## 📁 Struktura Projektu
 
-### Projekt Lokalny
+### Backend (`backend/`)
 ```
-~/Projects/speech-practice/
-├── backend/
-│   ├── src/
-│   │   ├── db/
-│   │   │   ├── pool.ts              # Konfiguracja połączenia PG
-│   │   │   ├── schema.sql           # Struktura tabel
-│   │   │   └── migrations/          # Migracje bazy
-│   │   ├── services/
-│   │   │   └── lessons.ts           # Logika lekcji (PostgreSQL)
-│   │   └── data/
-│   │       └── lessons/
-│   │           └── 2026-02-23.json  # TYLKO 1 lekcja lokalnie!
-│   ├── scripts/                     # Skrypty naprawcze
-│   │   ├── scan-lessons.ts          # Skanowanie bazy
-│   │   ├── dump-lesson.ts           # Eksport lekcji
-│   │   └── fix-*.ts                 # Skrypty naprawcze
-│   └── .env.local                   # Konfiguracja lokalna
-├── frontend/
-│   ├── .env.production              # VITE_API_URL=tunnel CF
-│   └── src/
-├── docs/                            # GitHub Pages build
-└── README.md
-```
-
-### Baza Danych PostgreSQL
-
-**Połączenie lokalne:**
-```
-DATABASE_URL=postgresql://localhost:5432/speech_practice
+backend/
+├── src/
+│   ├── db/                    # Baza danych
+│   │   ├── pool.ts
+│   │   ├── init.ts
+│   │   └── migrations/
+│   ├── routes/                # API routes
+│   ├── services/              # Logika biznesowa
+│   │   ├── lessons.ts         # Lekcje (PostgreSQL)
+│   │   ├── chat.ts            # AI chat (OpenAI)
+│   │   ├── elevenlabs.ts      # TTS (ElevenLabs)
+│   │   ├── whisper.ts         # Speech-to-text (OpenAI)
+│   │   └── romaji.ts          # Konwersja JP -> romaji
+│   ├── server.ts              # Główny serwer Express
+│   └── data/                  # Dane JSON (runtime)
+│       ├── furigana-cache.json
+│       └── backups/
+├── scripts/                   # Skrypty jednorazowe
+│   ├── one-time/              # Migracje, fixy
+│   └── test-*.ts              # Testy
+└── data/                      # Pliki danych (runtime)
+    ├── furigana-cache.json
+    ├── all-lessons-detailed.json
+    └── backups/
 ```
 
-**Tabele:**
-| Tabela | Opis |
-|--------|------|
-| `lessons` | 27 lekcji (vocabulary, grammar, practice_phrases) |
-| `sessions` | Sesje użytkowników |
-| `messages` | Historia wiadomości |
-| `user_recordings` | Nagrania użytkowników |
-| `furigana_cache` | Cache furigana (zmniejsza API calls) |
+### Frontend (`frontend/src/`)
+```
+frontend/src/
+├── components/                # React komponenty
+│   ├── RepeatMode.tsx         # Tryb Repeat After Me
+│   ├── JapanesePhrase.tsx     # Wyświetlanie JP + furigana + romaji
+│   ├── FuriganaText.tsx       # Tekst z furigana
+│   ├── RomajiText.tsx         # Romaji
+│   └── VoiceRecorder.tsx      # Nagrywanie głosu
+├── hooks/                     # Custom React hooks
+│   ├── useFurigana.ts         # Fetch furigana z API
+│   ├── useAudioPlayer.ts      # Odtwarzanie audio
+│   └── usePronunciationCheck.ts  # Sprawdzanie wymowy
+├── test/                      # Testy (Vitest)
+│   ├── components/
+│   ├── hooks/
+│   └── utils/
+├── App.tsx                    # Główna aplikacja
+├── LessonMode.tsx             # Tryb lekcji
+├── VoiceRecorder.tsx          # Nagrywanie (root level)
+└── translations.ts            # Tłumaczenia
+```
 
 ---
 
@@ -85,7 +95,7 @@ DATABASE_URL=postgresql://localhost:5432/speech_practice
 
 ### Gdzie są przechowywane lekcje?
 - ✅ **PRODUKCJA**: Wszystkie 27 lekcji w PostgreSQL (dostępne przez API)
-- ⚠️ **LOKALNIE**: Tylko 1 lekcja (2026-02-23.json) - reszta wymaga importu
+- ✅ **LOKALNIE**: Dane z PostgreSQL (nie ma JSONów w src/data/)
 
 ### Jak działa deployment?
 1. **Frontend** deployowany na GitHub Pages (statyczne pliki)
@@ -93,33 +103,55 @@ DATABASE_URL=postgresql://localhost:5432/speech_practice
 3. **Cloudflare Tunnel** tworzy publiczny URL do lokalnego backendu
 4. **Frontend** łączy się z backendem przez ten tunnel
 
-### Dlaczego aplikacja działa "wszędzie"?
-Ponieważ frontend jest na GitHub Pages (dostępny globalnie), a backend jest na Twoim komputerze z Cloudflare Tunnel (też dostępny globalnie).
-
-### Deployment Frontend (WAŻNE!)
+### Deployment Frontend
 **NIE używaj `npm run deploy` ani `gh-pages`!**
 
-Poprawny proces deploymentu:
+Poprawny proces:
 1. Zrób zmiany w kodzie
 2. `git add -A`
 3. `git commit -m "opis zmian"`
 4. `git push origin main`
-5. GitHub Actions automatycznie zbuduje i wdroży zmiany na GitHub Pages
-
-Konfiguracja GitHub Actions: `.github/workflows/deploy-frontend.yml`
+5. GitHub Actions automatycznie zbuduje i wdroży
 
 ---
 
-## 📋 Struktura Danych Vocabulary
+## 🧪 Testy
 
-### Format JSON w Bazie Danych
+### Backend Tests
+```bash
+cd backend
+npx tsx scripts/test-voice-recorder-logic.ts
+npx tsx scripts/test-repeat-mode-loading.ts
+```
+
+### Frontend Tests
+```bash
+cd frontend
+npm test              # Vitest (unit tests)
+npm run build         # TypeScript check
+```
+
+### Pre-push Hook
+Wszystkie testy uruchamiają się automatycznie przed każdym push:
+- VoiceRecorder logic tests
+- Repeat Mode loading tests
+- Frontend unit tests (Vitest)
+- Backend build
+- Frontend build
+
+---
+
+## 📋 Struktura Danych
+
+### Vocabulary (PostgreSQL)
 ```json
 {
   "jp": "パソコン",
   "reading": "ぱそこん",
   "romaji": "pasokon",
   "en": "PC (personal computer)",
-  "type": "noun"
+  "type": "noun",
+  "furigana": null
 }
 ```
 
@@ -127,20 +159,27 @@ Konfiguracja GitHub Actions: `.github/workflows/deploy-frontend.yml`
 | Pole | Opis | Przykład |
 |------|------|----------|
 | `jp` | Japoński (kanji/katakana/hiragana) | `パソコン` |
-| `reading` | Hiragana/furigana | `ぱそこん` |
-| `romaji` | Romaji (latinka) | `pasokon` |
-| `en` | Angielskie tłumaczenie | `PC (personal computer)` |
+| `reading` | Czytanie kanji (bez okurigana!) | `ぱそこん` |
+| `romaji` | Romaji (generowane automatycznie) | `pasokon` |
+| `en` | Angielskie tłumaczenie | `PC` |
 | `type` | Typ gramatyczny | `noun`, `verb`, `i-adjective`, `na-adjective`, `expression` |
+| `furigana` | HTML z ruby tags (opcjonalne) | `<ruby>...` |
 
-### Wyświetlanie w Kartach (Frontend)
-Karty słownictwa wyświetlają 3 wiersze:
-1. **Japoński** (`jp`) - duża czcionka
-2. **Romaji** (`romaji`) - kursywa, szary kolor
-3. **Angielskie tłumaczenie** (`en`)
-
-Pliki do edycji:
-- `frontend/src/LessonMode.tsx` - logika wyświetlania
-- `frontend/src/LessonMode.css` - stylowanie kart
+### Grammar (PostgreSQL)
+```json
+{
+  "pattern": "〜てもいいです",
+  "explanation": "Asking for permission",
+  "romaji": "temo ii desu",
+  "examples": [
+    {
+      "jp": "写真を撮ってもいいですか",
+      "en": "May I take a photo?",
+      "furigana": "<ruby>写<rt>しゃ</rt></ruby>..."
+    }
+  ]
+}
+```
 
 ---
 
@@ -152,62 +191,52 @@ Pliki do edycji:
 cd ~/Projects/speech-practice/backend
 npm run dev
 
-# Terminal 2 - Frontend
-cd ~/Projects/speech-practice/frontend
-npm run dev
-
-# Terminal 3 - Cloudflare Tunnel (do publicznego dostępu)
+# Terminal 2 - Cloudflare Tunnel (do publicznego dostępu)
 cloudflared tunnel run speech-practice
+
+# Frontend jest na GitHub Pages (nie trzeba uruchamiać lokalnie)
 ```
 
 ### Skrypty przydatne
 ```bash
-# Skanowanie lekcji w bazie
+# Backend
 cd backend
-npx tsx scripts/scan-lessons.ts
+npx tsx scripts/scan-lessons.ts      # Skanowanie lekcji
+npx tsx scripts/dump-lesson.ts 2025-10-01  # Eksport lekcji
+npm run db:init                       # Inicjalizacja bazy
 
-# Eksport lekcji do JSON
-npx tsx scripts/dump-lesson.ts 2025-10-01
-
-# Inicjalizacja bazy
-npm run db:init
+# Frontend
+cd frontend
+npm test                              # Uruchom testy
+npm run build                         # Sprawdź TypeScript
 ```
 
 ---
 
-## 📊 Stan Danych (2026-02-25)
+## 📊 Stan Danych (2026-02-26)
 
 | Lokalizacja | Liczba lekcji | Status |
 |-------------|---------------|--------|
 | PostgreSQL (produkcja) | 27 | ✅ Kompletne |
-| JSON w `backend/src/data/lessons/` | 1 | ⚠️ Tylko 2026-02-23 |
-| Markdown w Obsidian | 27 | ✅ Kopie zapasowe |
+| Obsidian Vault | 27 | ✅ Dokumentacja |
 
 ---
 
-## ⚠️ Uwagi i Problemy Znane
+## ✅ Zrobione (2026-02-26)
 
-1. **Furigana API** (`https://trunk-sticks-connect-currency.trycloudflare.com/api/furigana`) zwraca 500 - wymaga naprawy
-2. **Lokalna baza PostgreSQL** nie jest uruchomiona (brak `psql` i `pg_isready`)
-3. **Brak backupu** bazy PostgreSQL w formacie JSON/SQL
+- [x] Refactoring backend: wydzielenie romaji.ts
+- [x] Refactoring frontend: wydzielenie komponentów i hooków
+- [x] Dodanie testów (Vitest dla frontendu)
+- [x] Fix: okurigana w furigana (好き → す, nie すき)
+- [x] Fix: particle pronunciation (は → wa, nie ha)
+- [x] Fix: loading states w RepeatMode
+- [x] Pre-push hook z testami
+- [x] Organizacja plików: runtime vs skrypty
 
 ---
 
-## 🔧 TODO (Zalecane)
+## 🔧 TODO
 
-- [ ] Dokończyć poprawę vocabulary dla pozostałych 13 lekcji (2025-10-01 do 2025-11-03)
-- [ ] Sprawdzić i poprawić grammar dla wszystkich lekcji
-- [ ] Sprawdzić i poprawić practice_phrases dla wszystkich lekcji
-- [ ] Uruchomić lokalnie PostgreSQL
-- [ ] Wyeksportować wszystkie lekcje z produkcji do JSON (backup)
+- [ ] Dodać więcej testów (frontend hooks, komponenty)
+- [ ] Dodać testy E2E (Playwright/Cypress)
 - [ ] Zautomatyzować backup bazy danych
-
----
-
-## ✅ Zrobione (2026-02-25)
-
-- [x] Naprawiono endpoint furigana (brakowało definicji FALLBACK_READINGS)
-- [x] Zaktualizowano 13 lekcji (vocabulary skrócone do 6-14 słów, poprawiony format)
-- [x] Dodano wyświetlanie romaji w kartach słownictwa
-- [x] Uporządkowano strukturę plików w Obsidian
-- [x] Utworzono dokumentację architektury
