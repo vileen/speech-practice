@@ -110,14 +110,20 @@ export function RepeatMode() {
 
   // Fetch audio from API
   const fetchAndPlayAudio = useCallback(async () => {
-    if (!currentPhrase) return;
+    console.log('[RepeatMode] fetchAndPlayAudio called, currentPhrase:', currentPhrase?.text);
+    if (!currentPhrase) {
+      console.log('[RepeatMode] fetchAndPlayAudio early return - no currentPhrase');
+      return;
+    }
 
     // If we already have audio URL, just play it
     if (audioUrl) {
+      console.log('[RepeatMode] Using cached audio URL:', audioUrl);
       play(audioUrl);
       return;
     }
 
+    console.log('[RepeatMode] Fetching audio from API...');
     setIsFetchingAudio(true);
     try {
       const response = await fetch(`${API_URL}/api/repeat-after-me`, {
@@ -136,12 +142,15 @@ export function RepeatMode() {
 
       if (response.ok) {
         const blob = await response.blob();
+        console.log('[RepeatMode] Audio fetched, blob size:', blob.size);
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
         play(url);
+      } else {
+        console.error('[RepeatMode] API error:', response.status, response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching audio:', error);
+      console.error('[RepeatMode] Error fetching audio:', error);
     } finally {
       setIsFetchingAudio(false);
     }
