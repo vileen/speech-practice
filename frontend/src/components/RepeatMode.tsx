@@ -32,6 +32,8 @@ export function RepeatMode() {
     return saved ? parseFloat(saved) : 0.8;
   });
 
+  console.log('[RepeatMode] render, currentPhrase:', currentPhrase?.text);
+  
   const { furigana, isLoading: isFuriganaLoading } = useFurigana(
     currentPhrase?.text || '',
     language === 'japanese'
