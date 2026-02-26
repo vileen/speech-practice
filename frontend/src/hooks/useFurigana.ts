@@ -15,15 +15,10 @@ export function useFurigana(text: string, enabled: boolean = true): UseFuriganaR
   const [error, setError] = useState<string | null>(null);
 
   const fetchFurigana = useCallback(async () => {
-    console.log('[useFurigana] fetchFurigana called, text:', text, 'enabled:', enabled);
-    if (!text || !enabled) {
-      console.log('[useFurigana] early return - no text or disabled');
-      return;
-    }
+    if (!text || !enabled) return;
     
     // Check if text has kanji
     const hasKanji = /[\u4e00-\u9faf]/.test(text);
-    console.log('[useFurigana] hasKanji:', hasKanji);
     if (!hasKanji) {
       setFurigana(null);
       return;

@@ -64,8 +64,8 @@ export const JapanesePhrase: React.FC<JapanesePhraseProps> = ({
 
       {/* English translation */}
       {showTranslation && translation && (
-        <div className="phrase-en">
-          {translation}
+        <div className="translation-display">
+          🇬🇧 {translation}
         </div>
       )}
     </div>

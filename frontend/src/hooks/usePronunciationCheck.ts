@@ -35,7 +35,7 @@ export function usePronunciationCheck(): UsePronunciationCheckResult {
       formData.append('target_text', targetText);
       formData.append('language', language);
 
-      const response = await fetch(`${API_URL}/api/pronunciation`, {
+      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
         method: 'POST',
         headers: {
           'X-Password': password,
