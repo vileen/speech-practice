@@ -44,7 +44,7 @@ export function RepeatMode() {
 
   const isLoading = isFuriganaLoading || isFetchingAudio;
 
-  // Load settings on mount
+  // Load settings and first phrase on mount
   useEffect(() => {
     const settings = localStorage.getItem('repeatModeSettings');
     if (settings) {
@@ -55,6 +55,11 @@ export function RepeatMode() {
       } catch {
         // Use defaults
       }
+    }
+    
+    // Load first phrase
+    if (phrases.length > 0) {
+      setCurrentPhrase(phrases[0]);
     }
   }, []);
 
