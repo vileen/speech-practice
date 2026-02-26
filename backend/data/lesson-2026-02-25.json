@@ -1,0 +1,186 @@
+{
+  "id": "2026-02-25",
+  "date": "2026-02-25",
+  "title": "Internet, Hotel, Days of the Week and Kanji",
+  "topics": ["internet vocabulary", "hotel", "days of the week", "kanji review"],
+  "vocabulary": [
+    {
+      "jp": "ネット",
+      "reading": "ねっと",
+      "romaji": "netto",
+      "en": "internet",
+      "type": "noun"
+    },
+    {
+      "jp": "ホテル",
+      "reading": "ほてる",
+      "romaji": "hoteru",
+      "en": "hotel",
+      "type": "noun"
+    },
+    {
+      "jp": "見つける",
+      "reading": "み",
+      "romaji": "mitsukeru",
+      "en": "to find",
+      "type": "verb"
+    },
+    {
+      "jp": "火曜日",
+      "reading": "か",
+      "romaji": "kayōbi",
+      "en": "Tuesday",
+      "type": "noun"
+    },
+    {
+      "jp": "木曜日",
+      "reading": "もく",
+      "romaji": "mokuyōbi",
+      "en": "Thursday",
+      "type": "noun"
+    },
+    {
+      "jp": "日曜日",
+      "reading": "にち",
+      "romaji": "nichiyōbi",
+      "en": "Sunday",
+      "type": "noun"
+    },
+    {
+      "jp": "授業",
+      "reading": "じゅぎょう",
+      "romaji": "jugyō",
+      "en": "lesson/class",
+      "type": "noun"
+    },
+    {
+      "jp": "ビル",
+      "reading": "びる",
+      "romaji": "biru",
+      "en": "building",
+      "type": "noun"
+    },
+    {
+      "jp": "レストラン",
+      "reading": "れすとらん",
+      "romaji": "resutoran",
+      "en": "restaurant",
+      "type": "noun"
+    },
+    {
+      "jp": "日本語",
+      "reading": "にほん",
+      "romaji": "nihongo",
+      "en": "Japanese language",
+      "type": "noun"
+    },
+    {
+      "jp": "英語",
+      "reading": "えい",
+      "romaji": "eigo",
+      "en": "English",
+      "type": "noun"
+    },
+    {
+      "jp": "火",
+      "reading": "か",
+      "romaji": "hi/ka",
+      "en": "fire",
+      "type": "noun"
+    },
+    {
+      "jp": "木",
+      "reading": "もく",
+      "romaji": "ki/moku",
+      "en": "tree/wood",
+      "type": "noun"
+    },
+    {
+      "jp": "日",
+      "reading": "にち",
+      "romaji": "hi/nichi",
+      "en": "day/sun",
+      "type": "noun"
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "〜曜日",
+      "romaji": "yōbi",
+      "explanation": "Days of the week suffix. Pattern: [element] + ようび",
+      "examples": [
+        {
+          "jp": "火曜日",
+          "en": "Tuesday (fire day)",
+          "furigana": "<ruby>火<rt>か</rt></ruby><ruby>曜日<rt>ようび</rt></ruby>"
+        },
+        {
+          "jp": "木曜日",
+          "en": "Thursday (wood day)",
+          "furigana": "<ruby>木<rt>もく</rt></ruby><ruby>曜日<rt>ようび</rt></ruby>"
+        },
+        {
+          "jp": "日曜日",
+          "en": "Sunday (sun day)",
+          "furigana": "<ruby>日<rt>にち</rt></ruby><ruby>曜日<rt>ようび</rt></ruby>"
+        }
+      ]
+    },
+    {
+      "pattern": "〜語",
+      "romaji": "go",
+      "explanation": "Language suffix. Pattern: [country] + ご",
+      "examples": [
+        {
+          "jp": "日本語",
+          "en": "Japanese language",
+          "furigana": "<ruby>日本<rt>にほん</rt></ruby><ruby>語<rt>ご</rt></ruby>"
+        },
+        {
+          "jp": "英語",
+          "en": "English",
+          "furigana": "<ruby>英<rt>えい</rt></ruby><ruby>語<rt>ご</rt></ruby>"
+        }
+      ]
+    },
+    {
+      "pattern": "〜があります",
+      "romaji": "ga arimasu",
+      "explanation": "Existence/possession. 'There is ~' or 'I have ~'",
+      "examples": [
+        {
+          "jp": "授業があります",
+          "en": "I have a class / There is a class",
+          "furigana": "<ruby>授業<rt>じゅぎょう</rt></ruby>があります"
+        }
+      ]
+    }
+  ],
+  "practice_phrases": [
+    {
+      "jp": "ホテルを見つけた",
+      "en": "I found a hotel",
+      "furigana": "ホテルを<ruby>見<rt>み</rt></ruby>つけた"
+    },
+    {
+      "jp": "火曜日と木曜日",
+      "en": "Tuesday and Thursday",
+      "furigana": "<ruby>火<rt>か</rt></ruby><ruby>曜日<rt>ようび</rt></ruby>と<ruby>木<rt>もく</rt></ruby><ruby>曜日<rt>ようび</rt></ruby>"
+    },
+    {
+      "jp": "日本語を勉強する",
+      "en": "I study Japanese",
+      "furigana": "<ruby>日本<rt>にほん</rt></ruby><ruby>語<rt>ご</rt></ruby>を<ruby>勉強<rt>べんきょう</rt></ruby>する"
+    },
+    {
+      "jp": "授業があります",
+      "en": "I have a class",
+      "furigana": "<ruby>授業<rt>じゅぎょう</rt></ruby>があります"
+    },
+    {
+      "jp": "レストランはビルの中",
+      "en": "The restaurant is inside the building",
+      "furigana": "レストランはビルの<ruby>中<rt>なか</rt></ruby>"
+    }
+  ]
+}
