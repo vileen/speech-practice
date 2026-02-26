@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { RepeatMode } from '../../components/RepeatMode';
 
 // Mock fetch
@@ -41,7 +42,11 @@ describe('RepeatMode API calls', () => {
         json: async () => ({ with_furigana: '<ruby>今日<rt>きょう</rt></ruby>は' }),
       });
 
-    render(<RepeatMode />);
+    render(
+      <MemoryRouter>
+        <RepeatMode />
+      </MemoryRouter>
+    );
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
@@ -65,7 +70,11 @@ describe('RepeatMode API calls', () => {
         blob: async () => new Blob(['audio']),
       });
 
-    render(<RepeatMode />);
+    render(
+      <MemoryRouter>
+        <RepeatMode />
+      </MemoryRouter>
+    );
 
     // Wait for initial load
     await waitFor(() => {
@@ -94,7 +103,11 @@ describe('RepeatMode API calls', () => {
         json: async () => ({ with_furigana: '<ruby>今日<rt>きょう</rt></ruby>は' }),
       });
 
-    render(<RepeatMode />);
+    render(
+      <MemoryRouter>
+        <RepeatMode />
+      </MemoryRouter>
+    );
 
     await waitFor(() => {
       expect(screen.getByText(/Listen/i)).toBeInTheDocument();
