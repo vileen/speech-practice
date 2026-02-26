@@ -117,9 +117,13 @@ Każdy wzorzec powinien mieć:
   - ❌ Źle: `Lesson-2026-02-25 - Tytuł.md`  
   - ✅ Dobrze: `Lesson-2026-02-25---Internet-Hotel-Days-of-the-Week.md`
 - [ ] Użyć template: `~/clawd/TEMPLATE-LEKCJI.md`
-- [ ] Wypełnić sekcję "Notatki z lekcji" (szczegółowe, 500+ linii)
+- [ ] Wypełnić sekcję "Notatki z lekcji" (~100-200 linii)
+  - [ ] **Kluczowe momenty** - 8-10 najważniejszych fragmentów z czasem [MM:SS]
+  - [ ] Link do pełnej transkrypcji: `[[Lesson-YYYY-MM-DD-Transcription]]`
 - [ ] **Fun Moments** - wyciągnąć z transkrypcji dowcipy, śmieszne momenty
-- [ ] **Pełna transkrypcja** z timestampami co 30-60 sekund
+- [ ] **Pełna transkrypcja** w OSOBNYM pliku: `Transcriptions/Lesson-YYYY-MM-DD-Transcription.md`
+  - [ ] Timestampy co 30-60 sekund
+  - [ ] Podział na sekcje tematyczne
 - [ ] Dodać własne przykłady do sekcji "Moje przykłady"
 - [ ] Dodać wnioski i spostrzeżenia
 - [ ] Sprawdzić czy formatowanie Markdown jest poprawne
