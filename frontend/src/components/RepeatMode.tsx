@@ -32,8 +32,6 @@ export function RepeatMode() {
     return saved ? parseFloat(saved) : 0.8;
   });
 
-  console.log('[RepeatMode] render, currentPhrase:', currentPhrase?.text);
-  
   const { furigana, isLoading: isFuriganaLoading } = useFurigana(
     currentPhrase?.text || '',
     language === 'japanese'
@@ -46,7 +44,7 @@ export function RepeatMode() {
 
   const isLoading = isFuriganaLoading || isFetchingAudio;
 
-  // Load settings and first phrase on mount
+  // Load settings and first phrase on mount, then auto-play audio
   useEffect(() => {
     const settings = localStorage.getItem('repeatModeSettings');
     if (settings) {
@@ -59,11 +57,18 @@ export function RepeatMode() {
       }
     }
     
-    // Load first phrase
+    // Load first phrase and auto-play
     if (phrases.length > 0) {
       setCurrentPhrase(phrases[0]);
     }
   }, []);
+
+  // Auto-play audio when phrase changes
+  useEffect(() => {
+    if (currentPhrase && !audioUrl) {
+      fetchAndPlayAudio();
+    }
+  }, [currentPhrase]);
 
   // Save volume
   useEffect(() => {
@@ -110,20 +115,14 @@ export function RepeatMode() {
 
   // Fetch audio from API
   const fetchAndPlayAudio = useCallback(async () => {
-    console.log('[RepeatMode] fetchAndPlayAudio called, currentPhrase:', currentPhrase?.text);
-    if (!currentPhrase) {
-      console.log('[RepeatMode] fetchAndPlayAudio early return - no currentPhrase');
-      return;
-    }
+    if (!currentPhrase) return;
 
     // If we already have audio URL, just play it
     if (audioUrl) {
-      console.log('[RepeatMode] Using cached audio URL:', audioUrl);
       play(audioUrl);
       return;
     }
 
-    console.log('[RepeatMode] Fetching audio from API...');
     setIsFetchingAudio(true);
     try {
       const response = await fetch(`${API_URL}/api/repeat-after-me`, {
@@ -142,15 +141,12 @@ export function RepeatMode() {
 
       if (response.ok) {
         const blob = await response.blob();
-        console.log('[RepeatMode] Audio fetched, blob size:', blob.size);
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
         play(url);
-      } else {
-        console.error('[RepeatMode] API error:', response.status, response.statusText);
       }
     } catch (error) {
-      console.error('[RepeatMode] Error fetching audio:', error);
+      console.error('Error fetching audio:', error);
     } finally {
       setIsFetchingAudio(false);
     }
