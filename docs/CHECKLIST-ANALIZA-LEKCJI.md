@@ -9,6 +9,9 @@ Gdy użytkownik mówi "wrzucam nową lekcję do analizy" → szukaj nowego pliku
 - [ ] Wygenerować transkrypcję audio (Whisper/ElevenLabs)
 - [ ] Rozpoznać japońskie słowa (kanji/kana)
 - [ ] Rozpoznać polskie tłumaczenia
+- [ ] Zapisać transkrypcję w: `Skills/Japanese/Transcriptions/Lesson-YYYY-MM-DD-Transcription.md`
+- [ ] Format transkrypcji: sekcje z czasem ([00:00]), wypowiedzi oznaczone > i **[czas]**
+- [ ] Wzorzec: `Lesson-2026-02-19-Transcription.md`
 
 ---
 
@@ -104,20 +107,37 @@ Każdy wzorzec powinien mieć:
 
 ---
 
-## 6. NOTATKA W OBSIDIAN (po analizie)
-- [ ] Utworzyć notatkę w Obsidian Vault (`Skills/Japanese/Japanese Lessons/`)
+## 6. NOTATKA W OBSIDIAN (po analizie) ⚠️ WAŻNE!
+
+**LOKALIZACJA VAULT:** `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Main/`
+
+- [ ] Utworzyć notatkę w: `Skills/Japanese/Japanese Lessons/`
+- [ ] **NAZWA PLIKU:** `Lesson-YYYY-MM-DD---Tytuł-z-myślnikami.md` ⬅️ FORMAT!
+  - ❌ Źle: `2026-02-25 - Tytuł lekcji.md`
+  - ❌ Źle: `Lesson-2026-02-25 - Tytuł.md`  
+  - ✅ Dobrze: `Lesson-2026-02-25---Internet-Hotel-Days-of-the-Week.md`
 - [ ] Użyć template: `~/clawd/TEMPLATE-LEKCJI.md`
-- [ ] Wypełnić sekcję "Notatki z lekcji"
+- [ ] Wypełnić sekcję "Notatki z lekcji" (szczegółowe, 500+ linii)
+- [ ] **Fun Moments** - wyciągnąć z transkrypcji dowcipy, śmieszne momenty
+- [ ] **Pełna transkrypcja** z timestampami co 30-60 sekund
 - [ ] Dodać własne przykłady do sekcji "Moje przykłady"
 - [ ] Dodać wnioski i spostrzeżenia
 - [ ] Sprawdzić czy formatowanie Markdown jest poprawne
-- [ ] Linki do poprzedniej/następnej lekcji
+- [ ] Dodać linki do poprzedniej/następnej lekcji
+- [ ] Dodać link do transkrypcji: `[[Lesson-YYYY-MM-DD-Transcription]]`
+- [ ] **ZWERYFIKOWAĆ** że notatka jest w iCloud (nie w ~/Documents!)
 
 ### Struktura notatki:
 ```
-Skills/Japanese/Japanese Lessons/
-└── YYYY-MM-DD - [Tytuł lekcji].md
+~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Main/
+└── Skills/Japanese/Japanese Lessons/
+    └── Lesson-YYYY-MM-DD---Tytuł-z-myślnikami.md
 ```
+
+**⚠️ PRZYPOMNIENIE:** 
+- Vault jest w iCloud, nie w ~/Documents/ObsidianVault/!
+- Nazwa pliku MUSI mieć format: `Lesson-YYYY-MM-DD---Tytuł.md` (trzy myślniki!)
+- Sprawdź istniejące pliki jako wzorzec!
 
 ---
 
