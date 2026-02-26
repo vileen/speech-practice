@@ -94,8 +94,7 @@ app.post('/api/tts', checkPassword, async (req, res) => {
       console.log('[TTS] Using OpenAI TTS for Japanese');
       audioBuffer = await generateOpenAITTS({ 
         text, 
-        voice: gender === 'female' ? 'nova' : 'echo',
-        speed: 0.9  // Slightly slower for learning
+        voice: gender === 'female' ? 'nova' : 'echo'
       });
     } else {
       console.log('[TTS] Using ElevenLabs TTS for', language);
@@ -219,8 +218,7 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
         console.log(`[Repeat After Me] Using OpenAI TTS for: "${target_text}"`);
         audioBuffer = await generateOpenAITTS({
           text: target_text,
-          voice: gender === 'female' ? 'nova' : 'echo',
-          speed: 0.9
+          voice: gender === 'female' ? 'nova' : 'echo'
         });
       } else {
         // For other languages, use ElevenLabs
