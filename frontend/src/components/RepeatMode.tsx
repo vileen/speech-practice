@@ -7,6 +7,12 @@ import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { usePronunciationCheck } from '../hooks/usePronunciationCheck';
 import { PRACTICE_PHRASES } from '../App';
 
+const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
+
+function getPassword(): string {
+  return localStorage.getItem('speech_practice_password') || '';
+}
+
 export function RepeatMode() {
   const navigate = useNavigate();
   const language = 'japanese';
@@ -31,10 +37,12 @@ export function RepeatMode() {
     language === 'japanese'
   );
 
-  const { play: _play, isPlaying: _isPlaying } = useAudioPlayer(volume);
-  const { result: _pronunciationResult, isChecking, check, clear } = usePronunciationCheck();
+  const { play, isPlaying } = useAudioPlayer(volume);
+  const { result: pronunciationResult, isChecking, check, clear } = usePronunciationCheck();
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isFetchingAudio, setIsFetchingAudio] = useState(false);
 
-  const isLoading = isFuriganaLoading;
+  const isLoading = isFuriganaLoading || isFetchingAudio;
 
   // Load settings on mount
   useEffect(() => {
@@ -93,6 +101,45 @@ export function RepeatMode() {
     navigate('/');
   };
 
+  // Fetch audio from API
+  const fetchAndPlayAudio = useCallback(async () => {
+    if (!currentPhrase) return;
+
+    // If we already have audio URL, just play it
+    if (audioUrl) {
+      play(audioUrl);
+      return;
+    }
+
+    setIsFetchingAudio(true);
+    try {
+      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': getPassword(),
+        },
+        body: JSON.stringify({
+          target_text: currentPhrase.text,
+          language,
+          gender: _gender,
+          voiceStyle: _voiceStyle,
+        }),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setAudioUrl(url);
+        play(url);
+      }
+    } catch (error) {
+      console.error('Error fetching audio:', error);
+    } finally {
+      setIsFetchingAudio(false);
+    }
+  }, [currentPhrase, audioUrl, play, _gender, _voiceStyle, language]);
+
   // Initialize first phrase
   useEffect(() => {
     if (phrases.length > 0 && !currentPhrase) {
@@ -138,10 +185,10 @@ export function RepeatMode() {
           <div className="phrase-controls">
             <button
               className="play-btn large"
-              onClick={() => {}}
-              disabled={isLoading}
+              onClick={fetchAndPlayAudio}
+              disabled={isLoading || !currentPhrase}
             >
-              🔊 {isLoading ? 'Loading...' : 'Listen'}
+              🔊 {isLoading ? 'Loading...' : isPlaying ? 'Playing...' : 'Listen'}
             </button>
             <button
               className="translate-btn"
@@ -150,6 +197,48 @@ export function RepeatMode() {
               {showTranslation ? '🙈 Hide Translation' : '🇬🇧 Show Translation'}
             </button>
           </div>
+
+          {isChecking && (
+            <div className="checking-pronunciation">
+              <div className="loading-typing">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <p>Checking pronunciation...</p>
+            </div>
+          )}
+
+          {pronunciationResult && (
+            <div className={`result-card score-${pronunciationResult.score}`}>
+              <div className="score-display">
+                <span className="score-number">{pronunciationResult.score}%</span>
+                <span className="feedback">{pronunciationResult.feedback}</span>
+              </div>
+              
+              <div className="transcription-comparison">
+                <div className="expected">
+                  <label>Expected:</label>
+                  <span>{pronunciationResult.target_text}</span>
+                </div>
+                <div className="heard">
+                  <label>Heard:</label>
+                  <span>{pronunciationResult.transcription || '(nothing)'}</span>
+                </div>
+              </div>
+              
+              {pronunciationResult.errors && pronunciationResult.errors.length > 0 && (
+                <div className="errors-section">
+                  <label>💡 What to improve:</label>
+                  <ul>
+                    {pronunciationResult.errors.map((error: string, idx: number) => (
+                      <li key={idx}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="repeat-controls">
