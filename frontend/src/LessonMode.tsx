@@ -36,11 +36,14 @@ interface LessonDetail {
 
 const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
 
-// Format date to YYYY-MM-DD
+// Format date to YYYY-MM-DD (local timezone)
 function formatDate(dateString: string): string {
   try {
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   } catch {
     return dateString;
   }
