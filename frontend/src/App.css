@@ -623,6 +623,7 @@ header h1 {
   padding: 1.5rem;
   width: 100%;
   border: 2px solid #333;
+  margin-top: 1.5rem;
 }
 
 .result-card.score-100 {
