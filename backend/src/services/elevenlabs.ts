@@ -60,6 +60,47 @@ function stripFurigana(text: string): string {
 // Simple Japanese to romaji conversion for TTS
 // This helps ElevenLabs pronounce particles correctly (は as wa, へ as e, etc.)
 function japaneseToRomaji(text: string): string {
+  // Hiragana that can be particles with different readings
+  const PARTICLE_HA = 'は';  // ha -> wa
+  const PARTICLE_HE = 'へ';  // he -> e
+  const PARTICLE_WO = 'を';  // wo -> o
+  
+  // First pass: identify and mark particles in the original Japanese text
+  // A particle is a standalone hiragana character between words
+  let markedText = '';
+  
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const prevChar = i > 0 ? text[i - 1] : null;
+    const nextChar = i < text.length - 1 ? text[i + 1] : null;
+    
+    // Check if this is a particle character
+    if (char === PARTICLE_HA || char === PARTICLE_HE || char === PARTICLE_WO) {
+      // Check if it's standalone (between words)
+      // Previous should be a word character (kanji/kana), next should be space/word boundary
+      const prevIsWord = prevChar && /[\u4e00-\u9faf\u3040-\u309f\u30a0-\u30ff]/.test(prevChar);
+      const nextIsBoundary = !nextChar || nextChar === ' ' || /[\u4e00-\u9faf\u3040-\u309f\u30a0-\u30ff]/.test(nextChar);
+      
+      // Also check it's not part of a longer hiragana word
+      // If surrounded by hiragana on both sides, it's likely part of a word
+      const prevIsHiragana = prevChar && /[\u3040-\u309f]/.test(prevChar);
+      const nextIsHiragana = nextChar && /[\u3040-\u309f]/.test(nextChar);
+      const isStandalone = !(prevIsHiragana && nextIsHiragana);
+      
+      if (prevIsWord && isStandalone) {
+        // Mark as particle with special prefix
+        if (char === PARTICLE_HA) markedText += '【HA】';
+        else if (char === PARTICLE_HE) markedText += '【HE】';
+        else if (char === PARTICLE_WO) markedText += '【WO】';
+      } else {
+        markedText += char;
+      }
+    } else {
+      markedText += char;
+    }
+  }
+  
+  // Now convert to romaji with marked particles
   // Basic hiragana/katakana to romaji mapping
   const kanaToRomaji: Record<string, string> = {
     // Hiragana
@@ -119,7 +160,7 @@ function japaneseToRomaji(text: string): string {
     '難しい': 'muzukashii', '易しい': 'yasashii',
   };
   
-  let result = text;
+  let result = markedText;
   
   // Replace common kanji first
   for (const [kanji, romaji] of Object.entries(commonKanji)) {
@@ -132,54 +173,13 @@ function japaneseToRomaji(text: string): string {
     romaji += kanaToRomaji[char] || char;
   }
   
-  // Post-processing for particle pronunciation
-  // Handle Japanese particles that have different readings when used as particles:
-  // は (ha) as topic marker = wa
-  // へ (he) as direction marker = e
-  // を (wo) as object marker = o
+  // Replace marked particles with correct romaji
+  romaji = romaji.replace(/【HA】/g, ' wa ');
+  romaji = romaji.replace(/【HE】/g, ' e ');
+  romaji = romaji.replace(/【WO】/g, ' o ');
   
-  // Pattern: word boundary + particle at end of phrase or before space/punctuation
-  // We need to identify particles vs normal syllables
-  
-  // Split into words/tokens and process each
-  const tokens = romaji.split(/(\s+)/);
-  const processed = tokens.map((token, index) => {
-    const trimmed = token.trim();
-    
-    // Check if this looks like a standalone particle
-    // Particles are typically: ha, he, wo, ga, ka, ni, de, to, mo, no
-    // But we only need to fix the ones with different pronunciation: ha->wa, he->e, wo->o
-    
-    if (trimmed === 'ha') {
-      // Check if it's likely a particle (between words or at end)
-      const prevToken = tokens[index - 2]; // -2 because -1 is the space
-      const nextToken = tokens[index + 2]; // +2 because +1 is the space
-      
-      // If previous token exists and looks like a word, and next is space/end/punctuation
-      // then it's likely a particle
-      if (prevToken && prevToken.trim()) {
-        return 'wa';
-      }
-    }
-    
-    if (trimmed === 'he') {
-      const prevToken = tokens[index - 2];
-      if (prevToken && prevToken.trim()) {
-        return 'e';
-      }
-    }
-    
-    if (trimmed === 'wo') {
-      const prevToken = tokens[index - 2];
-      if (prevToken && prevToken.trim()) {
-        return 'o';
-      }
-    }
-    
-    return token;
-  });
-  
-  romaji = processed.join('').replace(/\s+/g, ' ').trim();
+  // Clean up multiple spaces
+  romaji = romaji.replace(/\s+/g, ' ').trim();
   
   return romaji;
 }
