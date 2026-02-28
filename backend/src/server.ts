@@ -8,7 +8,6 @@ import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { pool } from './db/pool.js';
 import { generateSpeech as generateElevenLabsSpeech, addFurigana, addFuriganaSync, saveFuriganaCache, toHiraganaForTTS } from './services/elevenlabs.js';
-import { generateSpeech as generateOpenAITTS } from './services/openai-tts.js';
 import { getLessonIndex, getLesson, getRecentLessons, getLessonSystemPrompt, cacheFurigana, getCachedFurigana } from './services/lessons.js';
 import { transcribeAudioDirect } from './services/whisper.js';
 import { generateChatResponse } from './services/chat.js';
@@ -88,18 +87,10 @@ app.post('/api/tts', checkPassword, async (req, res) => {
     
     let audioBuffer: Buffer;
     
-    // Use OpenAI TTS for Japanese (better particle pronunciation)
-    // Use ElevenLabs for other languages
-    if (language === 'japanese') {
-      console.log('[TTS] Using OpenAI TTS for Japanese');
-      audioBuffer = await generateOpenAITTS({ 
-        text, 
-        voice: gender === 'female' ? 'nova' : 'echo'
-      });
-    } else {
-      console.log('[TTS] Using ElevenLabs TTS for', language);
-      audioBuffer = await generateElevenLabsSpeech({ text, language, gender, voiceStyle });
-    }
+    // Use ElevenLabs TTS for all languages
+    // Japanese uses romaji conversion for proper particle pronunciation (は→wa, へ→e)
+    console.log('[TTS] Using ElevenLabs TTS for', language);
+    audioBuffer = await generateElevenLabsSpeech({ text, language, gender, voiceStyle });
     
     const filename = `tts_${Date.now()}.mp3`;
     const filepath = join(audioStoragePath, filename);
@@ -213,28 +204,15 @@ app.post('/api/repeat-after-me', checkPassword, upload.single('audio'), async (r
     if (!req.file) {
       let audioBuffer: Buffer;
       
-      // Use OpenAI TTS for Japanese (better particle pronunciation)
-      if (language === 'japanese') {
-        console.log(`[Repeat After Me] Using OpenAI TTS for: "${target_text}"`);
-        audioBuffer = await generateOpenAITTS({
-          text: target_text,
-          voice: gender === 'female' ? 'nova' : 'echo'
-        });
-      } else {
-        // For other languages, use ElevenLabs
-        let ttsText = target_text;
-        if (language === 'japanese') {
-          ttsText = await toHiraganaForTTS(target_text);
-          console.log(`TTS: "${target_text}" -> "${ttsText}"`);
-        }
-        
-        audioBuffer = await generateElevenLabsSpeech({
-          text: ttsText,
-          language: language || 'japanese',
-          gender: gender || 'female',
-          voiceStyle: voiceStyle || 'normal'
-        });
-      }
+      // Use ElevenLabs TTS for all languages
+      // Japanese uses romaji conversion for proper particle pronunciation (は→wa, へ→e)
+      console.log(`[Repeat After Me] Using ElevenLabs TTS for: "${target_text}"`);
+      audioBuffer = await generateElevenLabsSpeech({
+        text: target_text,
+        language: language || 'japanese',
+        gender: gender || 'female',
+        voiceStyle: voiceStyle || 'normal'
+      });
       
       // Add furigana for display (async with Jisho API)
       const textWithFurigana = await addFurigana(target_text);

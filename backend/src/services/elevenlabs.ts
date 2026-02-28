@@ -133,17 +133,53 @@ function japaneseToRomaji(text: string): string {
   }
   
   // Post-processing for particle pronunciation
-  // は as particle = wa, へ as particle = e
-  // Add spaces around particles first to ensure patterns match
-  romaji = romaji.replace(/(ha)([^a-z])/g, ' $1 $2'); // add spaces around ha
-  romaji = romaji.replace(/(he)([^a-z])/g, ' $1 $2'); // add spaces around he
+  // Handle Japanese particles that have different readings when used as particles:
+  // は (ha) as topic marker = wa
+  // へ (he) as direction marker = e
+  // を (wo) as object marker = o
   
-  // Now fix particle pronunciations
-  romaji = romaji.replace(/ ha /g, ' wa '); // は as particle = wa
-  romaji = romaji.replace(/ he /g, ' e ');  // へ as particle = e
+  // Pattern: word boundary + particle at end of phrase or before space/punctuation
+  // We need to identify particles vs normal syllables
   
-  // Clean up multiple spaces
-  romaji = romaji.replace(/\s+/g, ' ').trim();
+  // Split into words/tokens and process each
+  const tokens = romaji.split(/(\s+)/);
+  const processed = tokens.map((token, index) => {
+    const trimmed = token.trim();
+    
+    // Check if this looks like a standalone particle
+    // Particles are typically: ha, he, wo, ga, ka, ni, de, to, mo, no
+    // But we only need to fix the ones with different pronunciation: ha->wa, he->e, wo->o
+    
+    if (trimmed === 'ha') {
+      // Check if it's likely a particle (between words or at end)
+      const prevToken = tokens[index - 2]; // -2 because -1 is the space
+      const nextToken = tokens[index + 2]; // +2 because +1 is the space
+      
+      // If previous token exists and looks like a word, and next is space/end/punctuation
+      // then it's likely a particle
+      if (prevToken && prevToken.trim()) {
+        return 'wa';
+      }
+    }
+    
+    if (trimmed === 'he') {
+      const prevToken = tokens[index - 2];
+      if (prevToken && prevToken.trim()) {
+        return 'e';
+      }
+    }
+    
+    if (trimmed === 'wo') {
+      const prevToken = tokens[index - 2];
+      if (prevToken && prevToken.trim()) {
+        return 'o';
+      }
+    }
+    
+    return token;
+  });
+  
+  romaji = processed.join('').replace(/\s+/g, ' ').trim();
   
   return romaji;
 }
