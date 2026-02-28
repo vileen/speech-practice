@@ -72,3 +72,4 @@ coverage/
 *.swp
 *~
 scripts/
+docs/MEMORY.md
