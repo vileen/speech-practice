@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { RepeatMode } from '../../components/RepeatMode';
 
@@ -16,14 +16,16 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 // Mock Audio
-global.Audio = vi.fn(() => ({
-  play: vi.fn().mockResolvedValue(undefined),
-  pause: vi.fn(),
-  currentTime: 0,
-  volume: 0.8,
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-})) as any;
+class MockAudio {
+  play = vi.fn().mockResolvedValue(undefined);
+  pause = vi.fn();
+  currentTime = 0;
+  volume = 0.8;
+  addEventListener = vi.fn();
+  removeEventListener = vi.fn();
+  dispatchEvent = vi.fn();
+}
+global.Audio = MockAudio as any;
 
 global.URL = {
   createObjectURL: vi.fn(() => 'blob:test'),
@@ -35,55 +37,17 @@ describe('RepeatMode API calls', () => {
     vi.clearAllMocks();
   });
 
-  it('should call furigana API on mount', async () => {
-    (global.fetch as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ with_furigana: '<ruby>今日<rt>きょう</rt></ruby>は' }),
-      });
+  it('should call repeat-after-me API on mount for auto-play audio', async () => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      blob: async () => new Blob(['audio']),
+    });
 
     render(
       <MemoryRouter>
         <RepeatMode />
       </MemoryRouter>
     );
-
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/furigana'),
-        expect.objectContaining({
-          method: 'POST',
-          body: expect.stringContaining('おはようございます'),
-        })
-      );
-    });
-  });
-
-  it('should call repeat-after-me API when Listen is clicked', async () => {
-    (global.fetch as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ with_furigana: '<ruby>今日<rt>きょう</rt></ruby>は' }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        blob: async () => new Blob(['audio']),
-      });
-
-    render(
-      <MemoryRouter>
-        <RepeatMode />
-      </MemoryRouter>
-    );
-
-    // Wait for initial load
-    await waitFor(() => {
-      expect(screen.getByText(/Listen/i)).toBeInTheDocument();
-    });
-
-    // Click Listen button
-    const listenBtn = screen.getByText(/Listen/i);
-    listenBtn.click();
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
@@ -96,24 +60,67 @@ describe('RepeatMode API calls', () => {
     });
   });
 
-  it('should call pronunciation API after recording', async () => {
-    (global.fetch as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ with_furigana: '<ruby>今日<rt>きょう</rt></ruby>は' }),
-      });
+  it('should render the component with essential controls', async () => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      blob: async () => new Blob(['audio']),
+    });
 
-    render(
+    const { container } = render(
       <MemoryRouter>
         <RepeatMode />
       </MemoryRouter>
     );
 
+    // Wait for loading to complete - check for Listen button
     await waitFor(() => {
-      expect(screen.getByText(/Listen/i)).toBeInTheDocument();
+      const button = container.querySelector('.play-btn');
+      return button && button.textContent?.includes('Listen');
+    }, { timeout: 3000 });
+
+    // Check essential controls are rendered
+    expect(container.querySelector('.play-btn')).toBeInTheDocument();
+    expect(container.querySelector('.next-btn')).toBeInTheDocument();
+    expect(container.querySelector('.toggle-furigana')).toBeInTheDocument();
+    expect(container.querySelector('.translate-btn')).toBeInTheDocument();
+  });
+
+  it('should call API when next phrase is requested', async () => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      blob: async () => new Blob(['audio']),
     });
 
-    // TODO: Simulate recording completion
-    // This would require mocking VoiceRecorder
+    const { container } = render(
+      <MemoryRouter>
+        <RepeatMode />
+      </MemoryRouter>
+    );
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      return container.querySelector('.next-btn') !== null;
+    }, { timeout: 3000 });
+
+    // Clear mock to count fresh calls
+    vi.clearAllMocks();
+
+    // Click next button
+    const nextBtn = container.querySelector('.next-btn') as HTMLElement;
+    await act(async () => {
+      nextBtn.click();
+    });
+
+    // Should have fetched new phrase audio
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/repeat-after-me'),
+      expect.objectContaining({
+        method: 'POST',
+      })
+    );
   });
 });
