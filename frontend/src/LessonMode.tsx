@@ -162,7 +162,10 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   }, [selectedLessonId]); // Removed 'lessons' to prevent double-fetch
 
   useEffect(() => {
-    loadLessons();
+    // Only load lessons list if we're not viewing a specific lesson
+    if (!selectedLessonId) {
+      loadLessons();
+    }
   }, []);
 
   const loadLessons = async () => {
