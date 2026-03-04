@@ -137,13 +137,20 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   const lessonsListRef = useRef<HTMLDivElement>(null);
   const scrollPositionRef = useRef<number>(0);
 
+  // Track last loaded lesson to avoid duplicate fetches
+  const lastLoadedLessonRef = useRef<string | null>(null);
+  
   // Handle selected lesson changes from props
   useEffect(() => {
     if (selectedLessonId && lessons.length > 0) {
-      // Load lesson when prop changes
-      loadLessonDetail(selectedLessonId, false);
+      // Only load if we haven't loaded this lesson yet
+      if (lastLoadedLessonRef.current !== selectedLessonId) {
+        lastLoadedLessonRef.current = selectedLessonId;
+        loadLessonDetail(selectedLessonId, false);
+      }
     } else if (!selectedLessonId) {
       // Go back to list when prop is null/undefined
+      lastLoadedLessonRef.current = null;
       setSelectedLessonState(null);
       // Restore scroll position when going back
       setTimeout(() => {
@@ -152,7 +159,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
         }
       }, 0);
     }
-  }, [selectedLessonId, lessons]);
+  }, [selectedLessonId]); // Removed 'lessons' to prevent double-fetch
 
   useEffect(() => {
     loadLessons();
