@@ -142,7 +142,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   
   // Handle selected lesson changes from props
   useEffect(() => {
-    if (selectedLessonId && lessons.length > 0) {
+    if (selectedLessonId) {
       // Only load if we haven't loaded this lesson yet
       if (lastLoadedLessonRef.current !== selectedLessonId) {
         lastLoadedLessonRef.current = selectedLessonId;
@@ -482,6 +482,19 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
           <h2>📚 Lesson Mode</h2>
         </div>
         <div className="loading">Loading lessons...</div>
+      </div>
+    );
+  }
+
+  // Show loader when navigating to a specific lesson
+  if (loading && selectedLessonId && !selectedLesson) {
+    return (
+      <div className="lesson-mode">
+        <div className="lesson-header">
+          <button className="back-btn" onClick={handleBackToList}>← All Lessons</button>
+          <h2>📚 Loading Lesson...</h2>
+        </div>
+        <div className="loading">Loading lesson content...</div>
       </div>
     );
   }
