@@ -146,7 +146,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
       // Only load if we haven't loaded this lesson yet
       if (lastLoadedLessonRef.current !== selectedLessonId) {
         lastLoadedLessonRef.current = selectedLessonId;
-        loadLessonDetail(selectedLessonId, false);
+        loadLessonDetail(selectedLessonId, false, false);
       }
     } else if (!selectedLessonId) {
       // Go back to list when prop is null/undefined
@@ -183,7 +183,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     }
   };
 
-  const loadLessonDetail = async (id: string, saveScroll = true) => {
+  const loadLessonDetail = async (id: string, saveScroll = true, notifyParent = true) => {
     if (saveScroll && lessonsListRef.current) {
       scrollPositionRef.current = lessonsListRef.current.scrollTop;
     }
@@ -199,7 +199,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
         setSelectedLessonState(data);
         setActiveTab('overview');
         // Notify parent of selection change (only for user clicks, not prop-driven loads)
-        if (saveScroll) {
+        if (notifyParent) {
           onSelectLesson(id);
         }
       }
@@ -211,7 +211,8 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   };
 
   const handleLessonClick = (lessonId: string) => {
-    loadLessonDetail(lessonId, true);
+    // Don't load here - just notify parent, let the effect handle loading
+    onSelectLesson(lessonId);
   };
 
   const handleBackToList = () => {
