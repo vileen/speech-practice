@@ -184,6 +184,12 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   };
 
   const loadLessonDetail = async (id: string, saveScroll = true, notifyParent = true) => {
+    // Prevent duplicate fetches
+    if (lastLoadedLessonRef.current === id) {
+      return;
+    }
+    lastLoadedLessonRef.current = id;
+    
     if (saveScroll && lessonsListRef.current) {
       scrollPositionRef.current = lessonsListRef.current.scrollTop;
     }
@@ -211,8 +217,9 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   };
 
   const handleLessonClick = (lessonId: string) => {
-    // Don't load here - just notify parent, let the effect handle loading
-    onSelectLesson(lessonId);
+    // Load lesson and notify parent
+    // The effect will also try to load, but lastLoadedLessonRef prevents duplicate
+    loadLessonDetail(lessonId, true, true);
   };
 
   const handleBackToList = () => {
