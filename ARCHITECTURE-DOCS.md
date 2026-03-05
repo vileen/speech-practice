@@ -1,7 +1,7 @@
 # Speech Practice App - Dokumentacja Architektury
 
 ## Data utworzenia: 2026-02-25
-## Ostatnia aktualizacja: 2026-02-26
+## Ostatnia aktualizacja: 2026-03-05
 
 ---
 
@@ -92,6 +92,21 @@ frontend/src/
 ---
 
 ## 🔑 Kluczowe Informacje
+
+### Authentication
+**Type:** Simple header-based password check (not session-based)
+
+**How it works:**
+1. Password stored in `localStorage` on frontend (`speech_practice_password`)
+2. Sent with every API request in `X-Password` header
+3. Backend checks against `ACCESS_PASSWORD` env var (default: `default123`)
+
+**Note:** This is simpler than session-based auth (no cookies, no sessions). Password is verified on every request.
+
+**Security considerations:**
+- Password is sent with every request (use HTTPS only)
+- No session expiration (password persists until cleared from localStorage)
+- Good enough for personal use, not for multi-user scenarios
 
 ### Gdzie są przechowywane lekcje?
 - ✅ **PRODUKCJA**: Wszystkie 27 lekcji w PostgreSQL (dostępne przez API)

@@ -5,7 +5,9 @@
 
 ---
 
-## 1. Hide Mode (Memory Recall)
+## 1. Hide Mode (Memory Recall) ✅ IMPLEMENTED
+
+**Status:** ✅ Complete - See Memory Mode feature
 
 **Problem:** Current "Repeat After Me" shows the Japanese text immediately, working only short-term memory.
 
@@ -15,7 +17,7 @@
 - Recording + reveal correct answer → comparison
 - Self-assessment: ✅ Knew it / ❌ Didn't know (for SRS algorithm)
 
-**Implementation:** Add toggle "Hide Japanese" in RepeatMode settings.
+**Implementation:** New "Memory Mode" section separate from Repeat After Me. Uses FSRS algorithm for scheduling.
 
 ---
 
@@ -33,14 +35,26 @@
 
 ---
 
-## 3. Spaced Repetition + Weak Points Tracking
+## 3. Spaced Repetition + Weak Points Tracking ✅ IMPLEMENTED (Partial)
+
+**Status:** ✅ FSRS Algorithm implemented in Memory Mode (localStorage, 30-day sessions)
 
 **Track in database for each phrase:**
-- `ease_factor` (SM-2/FSRS algorithm)
-- `interval` (next review date)
-- `error_patterns` (e.g., often confuses "shi" with "chi")
+- `ease_factor` (SM-2/FSRS algorithm) ✅
+- `interval` (next review date) ✅
+- `error_patterns` (e.g., often confuses "shi" with "chi") ⏳ TODO
 
-**Behavior:** Phrases with lower ease_factor appear more frequently in random pool.
+**Behavior:** Phrases with lower ease_factor appear more frequently in random pool. ✅
+
+**Implementation:**
+- `frontend/src/lib/fsrs.ts` - FSRS-4.5 algorithm
+- `frontend/src/hooks/useMemoryProgress.ts` - localStorage persistence
+- 30-day session lifetime
+
+**TODO:**
+- [ ] Move from localStorage to PostgreSQL
+- [ ] Add error pattern tracking
+- [ ] Add interleaved practice (mix lessons)
 
 **Tables needed:**
 ```sql
@@ -150,16 +164,34 @@ user_phrase_progress (
 
 ## Priority / Implementation Order
 
-| Priority | Feature | Complexity | Impact |
-|----------|---------|------------|--------|
-| 1 | Hide Mode | Low | High |
-| 2 | SRS Tracking | Medium | High |
-| 3 | Shadowing Enhancement | Medium | High |
-| 4 | Progressive Reveal | Medium | Medium |
-| 5 | Error-Based Drills | High | Medium |
-| 6 | Sentence Building | High | High |
-| 7 | Interleaved Practice | Medium | High |
-| 8 | Grammar Drills | Medium | High |
+| Priority | Feature | Status | Complexity | Impact |
+|----------|---------|--------|------------|--------|
+| 1 | ~~Hide Mode~~ → **Memory Mode** | ✅ Complete | Medium | High |
+| 2 | SRS Tracking | ✅ Core algorithm done | Medium | High |
+| 3 | Interleaved Practice | ⏳ Next priority | Medium | High |
+| 4 | Shadowing Enhancement | ⏳ Planned | Medium | High |
+| 5 | Progressive Reveal | ⏳ Planned | Medium | Medium |
+| 6 | Error-Based Drills | ⏳ Planned | High | Medium |
+| 7 | Sentence Building | ⏳ Planned | High | High |
+| 8 | Grammar Drills | ⏳ Planned | Medium | High |
+
+## Completed Features
+
+### ✅ Memory Mode (Hide Mode + SRS)
+- **Location:** New tab "🧠 Memory Mode" on home screen
+- **Files:**
+  - `frontend/src/components/MemoryMode.tsx`
+  - `frontend/src/components/MemoryMode.css`
+  - `frontend/src/hooks/useMemoryProgress.ts`
+  - `frontend/src/lib/fsrs.ts`
+- **Features:**
+  - Hide Japanese / show English only (active recall)
+  - Self-assessment: Again/Hard/Good/Easy
+  - FSRS-4.5 algorithm for optimal scheduling
+  - 30-day session lifetime
+  - localStorage persistence
+  - Lesson selection (import cards from specific lessons)
+  - Progress stats (total/due/new/in-review)
 
 ---
 
