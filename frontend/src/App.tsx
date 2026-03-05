@@ -451,10 +451,15 @@ function MemoryModeWrapper() {
         });
         if (response.ok) {
           const data = await response.json();
-          setLessons(data);
+          // Ensure data is always an array
+          setLessons(Array.isArray(data) ? data : []);
+        } else {
+          console.error('Failed to fetch lessons:', response.status);
+          setLessons([]);
         }
       } catch (error) {
         console.error('Failed to fetch lessons:', error);
+        setLessons([]);
       } finally {
         setLoading(false);
       }

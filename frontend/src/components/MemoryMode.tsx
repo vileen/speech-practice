@@ -52,7 +52,7 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
 
   // Import lessons when selected
   useEffect(() => {
-    if (selectedLessons.length > 0) {
+    if (selectedLessons.length > 0 && Array.isArray(lessons)) {
       let imported = 0;
       selectedLessons.forEach(lessonId => {
         const lesson = lessons.find(l => l.id === lessonId);
@@ -191,21 +191,25 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
           <div className="lesson-selection">
             <h3>Select Lessons to Study</h3>
             <div className="lesson-chips">
-              {lessons.map(lesson => (
-                <button
-                  key={lesson.id}
-                  className={`lesson-chip ${selectedLessons.includes(lesson.id) ? 'selected' : ''}`}
-                  onClick={() => {
-                    if (selectedLessons.includes(lesson.id)) {
-                      setSelectedLessons(prev => prev.filter(id => id !== lesson.id));
-                    } else {
-                      setSelectedLessons(prev => [...prev, lesson.id]);
-                    }
-                  }}
-                >
-                  {lesson.title || `Lesson ${lesson.id}`}
-                </button>
-              ))}
+              {Array.isArray(lessons) && lessons.length > 0 ? (
+                lessons.map(lesson => (
+                  <button
+                    key={lesson.id}
+                    className={`lesson-chip ${selectedLessons.includes(lesson.id) ? 'selected' : ''}`}
+                    onClick={() => {
+                      if (selectedLessons.includes(lesson.id)) {
+                        setSelectedLessons(prev => prev.filter(id => id !== lesson.id));
+                      } else {
+                        setSelectedLessons(prev => [...prev, lesson.id]);
+                      }
+                    }}
+                  >
+                    {lesson.title || `Lesson ${lesson.id}`}
+                  </button>
+                ))
+              ) : (
+                <p className="no-lessons">No lessons available. Please check your connection.</p>
+              )}
             </div>
           </div>
 
