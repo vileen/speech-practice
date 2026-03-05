@@ -49,22 +49,25 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   const [showSetup, setShowSetup] = useState(true);
   const [selectedLessons, setSelectedLessons] = useState<number[]>([]);
   const [isComplete, setIsComplete] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
 
   // Import lessons when selected
   useEffect(() => {
+    console.log('MemoryMode: Import effect triggered, selectedLessons:', selectedLessons, 'lessons:', lessons?.length);
     if (selectedLessons.length > 0 && Array.isArray(lessons)) {
       let imported = 0;
       selectedLessons.forEach(lessonId => {
         const lesson = lessons.find(l => l.id === lessonId);
+        console.log('MemoryMode: Looking for lesson', lessonId, 'found:', lesson?.title);
         if (lesson) {
-          imported += importFromLesson(lesson);
+          const count = importFromLesson(lesson);
+          imported += count;
+          console.log('MemoryMode: Imported', count, 'cards from', lesson.title);
         }
       });
-      if (imported > 0) {
-        console.log(`Imported ${imported} cards`);
-      }
+      console.log(`MemoryMode: Total imported ${imported} cards, current cards in state:`, cards.length);
     }
-  }, [selectedLessons, lessons, importFromLesson]);
+  }, [selectedLessons, lessons, importFromLesson, cards.length]);
 
   // Get next card when needed
   useEffect(() => {
@@ -98,14 +101,20 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   }, [currentCard, review, getNextCard]);
 
   const startSession = useCallback(() => {
+    setIsStarting(true);
     setShowSetup(false);
     setIsComplete(false);
-    const next = getNextCard();
-    if (next) {
-      setCurrentCard(next);
-    } else {
-      setIsComplete(true);
-    }
+    // Wait a bit for cards to be imported from selected lessons
+    setTimeout(() => {
+      const next = getNextCard();
+      console.log('MemoryMode: Starting session, next card:', next);
+      if (next) {
+        setCurrentCard(next);
+      } else {
+        setIsComplete(true);
+      }
+      setIsStarting(false);
+    }, 500);
   }, [getNextCard]);
 
   const resetSession = useCallback(() => {
@@ -146,10 +155,10 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     return `Review (${card.reps}x)`;
   };
 
-  if (isLoading) {
+  if (isLoading || isStarting) {
     return (
       <div className="memory-mode-loading">
-        <div className="spinner">Loading...</div>
+        <div className="spinner">{isStarting ? 'Preparing cards...' : 'Loading...'}</div>
       </div>
     );
   }
