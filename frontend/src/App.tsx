@@ -9,6 +9,7 @@ import { translateLessonTitle } from './translations.js';
 import { HighlightedText } from './HighlightedText.js';
 import './HighlightedText.css';
 import { RepeatMode } from './components/RepeatMode.js';
+import { MemoryMode } from './components/MemoryMode.js';
 import { OfflineScreen } from './components/OfflineScreen.js';
 
 // Types
@@ -17,6 +18,30 @@ interface Session {
   language: string;
   voice_gender: string;
   created_at: string;
+}
+
+interface Lesson {
+  id: number;
+  date: string;
+  title: string;
+  order: number;
+  topics: string[];
+  vocabCount: number;
+  grammarCount: number;
+  vocabulary?: Array<{
+    jp: string;
+    reading: string;
+    romaji: string;
+    en: string;
+    type?: string;
+    furigana?: string | null;
+  }>;
+  grammar?: Array<{
+    pattern: string;
+    explanation: string;
+    romaji?: string;
+    examples: Array<{jp: string; en: string; furigana?: string | null}>;
+  }>;
 }
 
 // API URL - use env var or default to Cloudflare backend
@@ -344,6 +369,7 @@ function App() {
         <Route path="/chat" element={<ChatSession />} />
         <Route path="/repeat/setup" element={<RepeatSetup />} />
         <Route path="/repeat" element={<RepeatMode />} />
+        <Route path="/memory" element={<MemoryModeWrapper />} />
         <Route path="/lessons" element={<LessonList />} />
         <Route path="/lessons/:id" element={<LessonDetail />} />
         <Route path="/lessons/:id/setup" element={<LessonPracticeSetup />} />
@@ -410,6 +436,50 @@ function Login() {
   );
 }
 
+// Memory Mode Wrapper - fetches lessons data
+function MemoryModeWrapper() {
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLessons = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/lessons`, {
+          headers: {
+            'X-Password': getPassword(),
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setLessons(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch lessons:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLessons();
+  }, []);
+
+  if (loading) {
+    return (
+      <AuthenticatedRoute>
+        <div className="flex justify-content-center align-items-center min-h-screen">
+          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }} />
+        </div>
+      </AuthenticatedRoute>
+    );
+  }
+
+  return (
+    <AuthenticatedRoute>
+      <MemoryMode lessons={lessons} />
+    </AuthenticatedRoute>
+  );
+}
+
 // Home component
 function Home() {
   const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
@@ -448,6 +518,10 @@ function Home() {
                   
                   <button className="lesson-mode-btn" onClick={() => navigate('/lessons')}>
                     📚 Lesson Mode
+                  </button>
+
+                  <button className="memory-mode-btn" onClick={() => navigate('/memory')}>
+                    🧠 Memory Mode
                   </button>
                 </>
               )}

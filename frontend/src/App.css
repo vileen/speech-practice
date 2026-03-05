@@ -478,7 +478,8 @@ header h1 {
 }
 
 .repeat-mode-btn,
-.lesson-mode-btn {
+.lesson-mode-btn,
+.memory-mode-btn {
   background: #16213e !important;
   border: 2px solid #e94560 !important;
   color: #fff !important;
@@ -493,8 +494,17 @@ header h1 {
 }
 
 .repeat-mode-btn:hover,
-.lesson-mode-btn:hover {
+.lesson-mode-btn:hover,
+.memory-mode-btn:hover {
   background: #e94560 !important;
+}
+
+.memory-mode-btn {
+  border-color: #9b59b6 !important;
+}
+
+.memory-mode-btn:hover {
+  background: #9b59b6 !important;
 }
 
 .repeat-main {
