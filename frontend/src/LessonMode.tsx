@@ -576,11 +576,11 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
           {activeTab === 'vocab' && (
             <div className="vocab-tab">
               <div className="vocab-grid">
-                {selectedLesson.vocabulary.map((item, idx) => (
+                {(selectedLesson.vocabulary || []).map((item, idx) => (
                   <div key={idx} className="vocab-card">
-                    <div className="jp-word">{renderFurigana(item.jp, item.reading)}</div>
-                    <div className="romaji">{item.romaji}</div>
-                    <div className="meaning">{item.en}</div>
+                    <div className="jp-word">{renderFurigana(item.jp || (item as any).word || '', item.reading)}</div>
+                    <div className="romaji">{item.romaji || item.reading}</div>
+                    <div className="meaning">{item.en || (item as any).meaning || 'No meaning'}</div>
                     {item.type && <span className="type-tag">{item.type}</span>}
                   </div>
                 ))}
@@ -590,20 +590,20 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
 
           {activeTab === 'grammar' && (
             <div className="grammar-tab">
-              {selectedLesson.grammar.map((item, idx) => (
+              {(selectedLesson.grammar || []).map((item, idx) => (
                 <div key={idx} className="grammar-card">
                   <h3>{renderFurigana(item.pattern)}</h3>
                   {item.romaji && <div className="romaji">{item.romaji}</div>}
                   <div className="explanation">
                     {renderExplanationWithTables(item.explanation)}
                   </div>
-                  {item.examples.length > 0 && (
+                  {(item.examples || []).length > 0 && (
                     <div className="examples">
                       <h4>Examples:</h4>
-                      {item.examples.map((ex, exIdx) => (
+                      {(item.examples || []).map((ex, exIdx) => (
                         <div key={exIdx} className="example">
-                          <span className="jp">{renderFurigana(ex.jp, ex.furigana)}</span>
-                          <span className="en">{ex.en}</span>
+                          <span className="jp">{renderFurigana(ex.jp || (ex as any).japanese || '', ex.furigana)}</span>
+                          <span className="en">{ex.en || (ex as any).english || 'No translation'}</span>
                         </div>
                       ))}
                     </div>
@@ -616,7 +616,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
           {activeTab === 'practice' && (
             <div className="practice-tab">
               <div className="practice-list">
-                {selectedLesson.practice_phrases.map((phrase, idx) => (
+                {(selectedLesson.practice_phrases || []).map((phrase, idx) => (
                   <div key={idx} className="practice-item">
                     <span className="number">{idx + 1}.</span>
                     <div className="phrase-content">
@@ -624,11 +624,11 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
                         {showFurigana && phrase.furigana ? (
                           <span dangerouslySetInnerHTML={{ __html: phrase.furigana }} />
                         ) : (
-                          renderFurigana(phrase.jp, phrase.furigana)
+                          renderFurigana(phrase.jp || (phrase as any).japanese || '', phrase.furigana)
                         )}
                       </span>
-                      {phrase.romaji && <span className="phrase-romaji">{phrase.romaji}</span>}
-                      <span className="phrase-en">{phrase.en}</span>
+                      {(phrase.romaji || (phrase as any).reading) && <span className="phrase-romaji">{phrase.romaji || (phrase as any).reading}</span>}
+                      <span className="phrase-en">{phrase.en || (phrase as any).english || 'No translation'}</span>
                     </div>
                   </div>
                 ))}

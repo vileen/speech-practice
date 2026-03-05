@@ -205,61 +205,81 @@
       "situation": "Waking up early",
       "japanese": "明日五時に起きなければなりません",
       "reading": "Ashita go-ji ni okinakereba narimasen",
-      "english": "Tomorrow I must wake up at 5 o'clock"
+      "english": "Tomorrow I must wake up at 5 o'clock",
+      "jp": "明日五時に起きなければなりません",
+      "en": "Tomorrow I must wake up at 5 o'clock"
     },
     {
       "situation": "Studying for exam",
       "japanese": "試験があるから、勉強しなければなりません",
       "reading": "Shiken ga aru kara, benkyou shinakereba narimasen",
-      "english": "Because there's a test, I must study"
+      "english": "Because there's a test, I must study",
+      "jp": "試験があるから、勉強しなければなりません",
+      "en": "Because there's a test, I must study"
     },
     {
       "situation": "Taking off shoes",
       "japanese": "家に入るから、靴を脱がなければなりません",
       "reading": "Ie ni hairu kara, kutsu wo nuganakereba narimasen",
-      "english": "Because I'm entering the house, I must take off my shoes"
+      "english": "Because I'm entering the house, I must take off my shoes",
+      "jp": "家に入るから、靴を脱がなければなりません",
+      "en": "Because I'm entering the house, I must take off my shoes"
     },
     {
       "situation": "Washing dishes",
       "japanese": "皿が汚いから、洗わなければなりません",
       "reading": "Sara ga kitanai kara, arawanakereba narimasen",
-      "english": "Because the plates are dirty, I must wash them"
+      "english": "Because the plates are dirty, I must wash them",
+      "jp": "皿が汚いから、洗わなければなりません",
+      "en": "Because the plates are dirty, I must wash them"
     },
     {
       "situation": "Taking medicine",
       "japanese": "薬を飲まなければなりません",
       "reading": "Kusuri wo nomanakereba narimasen",
-      "english": "I must take medicine"
+      "english": "I must take medicine",
+      "jp": "薬を飲まなければなりません",
+      "en": "I must take medicine"
     },
     {
       "situation": "Buying new clothes",
       "japanese": "新しいセーターを買わなければなりません",
       "reading": "Atarashii seetaa wo kawanakereba narimasen",
-      "english": "I must buy a new sweater"
+      "english": "I must buy a new sweater",
+      "jp": "新しいセーターを買わなければなりません",
+      "en": "I must buy a new sweater"
     },
     {
       "situation": "Daily practice",
       "japanese": "毎日練習しなければなりません",
       "reading": "Mainichi renshuu shinakereba narimasen",
-      "english": "I must practice every day"
+      "english": "I must practice every day",
+      "jp": "毎日練習しなければなりません",
+      "en": "I must practice every day"
     },
     {
       "situation": "Doing laundry",
       "japanese": "洗濯しなければなりません",
       "reading": "Sentaku shinakereba narimasen",
-      "english": "I must do laundry"
+      "english": "I must do laundry",
+      "jp": "洗濯しなければなりません",
+      "en": "I must do laundry"
     },
     {
       "situation": "Taking a shower",
       "japanese": "シャワーを浴びなければなりません",
       "reading": "Shawaa wo abinakereba narimasen",
-      "english": "I must take a shower"
+      "english": "I must take a shower",
+      "jp": "シャワーを浴びなければなりません",
+      "en": "I must take a shower"
     },
     {
       "situation": "Returning a book",
       "japanese": "本を返さなければなりません",
       "reading": "Hon wo kaesanakereba narimasen",
-      "english": "I must return the book"
+      "english": "I must return the book",
+      "jp": "本を返さなければなりません",
+      "en": "I must return the book"
     }
   ],
   "conversation_starters": [
