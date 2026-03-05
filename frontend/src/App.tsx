@@ -451,8 +451,9 @@ function MemoryModeWrapper() {
         });
         if (response.ok) {
           const data = await response.json();
-          // Ensure data is always an array
-          setLessons(Array.isArray(data) ? data : []);
+          // API returns {count, lessons} object, not array
+          const lessonsArray = data.lessons || data;
+          setLessons(Array.isArray(lessonsArray) ? lessonsArray : []);
         } else {
           console.error('Failed to fetch lessons:', response.status);
           setLessons([]);
