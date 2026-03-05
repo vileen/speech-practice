@@ -97,6 +97,14 @@ curl -s "https://speech.vileen.pl/api/lessons/lesson-YYYY-MM-DD?furigana=true" \
 # Oczekiwane: ["en", "furigana", "jp", "romaji"]
 ```
 
+## Ważne: Furigana MUSI zawierać HIRAGANĘ, nie romaji!
+
+❌ **Źle:** `<ruby>学校<rt>gakkou</rt></ruby>` — furigana zawiera romaji  
+✅ **Dobrze:** `<ruby>学校<rt>がっこう</rt></ruby>` — furigana zawiera hiraganę
+
+**Backend generuje furigana automatycznie z pola `reading`.**  
+Pole `reading` musi zawierać **hiraganę**, nie romaji!
+
 ## Przykład Poprawnego JSON
 
 ```json
@@ -104,11 +112,11 @@ curl -s "https://speech.vileen.pl/api/lessons/lesson-YYYY-MM-DD?furigana=true" \
   "vocabulary": [
     {
       "jp": "学校",
-      "reading": "がっこう",
-      "romaji": "gakkou",
+      "reading": "がっこう",      // ← HIRAGANA (nie "gakkou"!)
+      "romaji": "gakkou",         // ← romaji w osobnym polu
       "en": "school",
       "type": "noun",
-      "furigana": "<ruby>学校<rt>がっこう</rt></ruby>"
+      "furigana": "<ruby>学校<rt>がっこう</rt></ruby>"  // ← HIRAGANA w furiganie
     }
   ],
   "grammar": [

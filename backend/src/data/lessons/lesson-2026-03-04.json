@@ -36,7 +36,7 @@
       "type": "noun",
       "romaji": "sentaku",
       "reading": "sentaku",
-      "furigana": null
+      "furigana": "<ruby>洗濯<rt>せんたく</rt></ruby>"
     },
     {
       "jp": "薬",
@@ -44,7 +44,7 @@
       "type": "noun",
       "romaji": "kusuri",
       "reading": "kusuri",
-      "furigana": null
+      "furigana": "<ruby>薬<rt>くすり</rt></ruby>"
     },
     {
       "jp": "汚い",
@@ -52,7 +52,7 @@
       "type": "i-adjective",
       "romaji": "kitanai",
       "reading": "kitanai",
-      "furigana": null
+      "furigana": "<ruby>汚<rt>きたない</rt></ruby>い"
     },
     {
       "jp": "新しい",
@@ -60,7 +60,7 @@
       "type": "i-adjective",
       "romaji": "atarashii",
       "reading": "atarashii",
-      "furigana": null
+      "furigana": "<ruby>新<rt>あたらしい</rt></ruby>しい"
     },
     {
       "jp": "短い",
@@ -68,7 +68,7 @@
       "type": "i-adjective",
       "romaji": "mijikai",
       "reading": "mijikai",
-      "furigana": null
+      "furigana": "<ruby>短<rt>みじかい</rt></ruby>い"
     },
     {
       "jp": "借りる",
@@ -76,7 +76,7 @@
       "type": "ru-verb",
       "romaji": "kariru",
       "reading": "kariru",
-      "furigana": null
+      "furigana": "<ruby>借<rt>かりる</rt></ruby>りる"
     },
     {
       "jp": "浴びる",
@@ -84,7 +84,7 @@
       "type": "ru-verb",
       "romaji": "abiru",
       "reading": "abiru",
-      "furigana": null
+      "furigana": "<ruby>浴<rt>あびる</rt></ruby>びる"
     },
     {
       "jp": "脱ぐ",
@@ -92,7 +92,7 @@
       "type": "u-verb",
       "romaji": "nugu",
       "reading": "nugu",
-      "furigana": null
+      "furigana": "<ruby>脱<rt>ぬぐ</rt></ruby>ぐ"
     },
     {
       "jp": "完ぺき",
@@ -100,7 +100,7 @@
       "type": "na-adjective",
       "romaji": "kanpeki",
       "reading": "kanpeki",
-      "furigana": null
+      "furigana": "<ruby>完<rt>かんぺき</rt></ruby>ぺき"
     },
     {
       "jp": "試験",
@@ -108,7 +108,7 @@
       "type": "noun",
       "romaji": "shiken",
       "reading": "shiken",
-      "furigana": null
+      "furigana": "<ruby>試験<rt>しけん</rt></ruby>"
     },
     {
       "jp": "今日",
@@ -116,7 +116,7 @@
       "type": "noun",
       "romaji": "kyou",
       "reading": "kyou",
-      "furigana": null
+      "furigana": "<ruby>今日<rt>きょう</rt></ruby>"
     },
     {
       "jp": "明日",
@@ -124,7 +124,7 @@
       "type": "noun",
       "romaji": "ashita",
       "reading": "ashita",
-      "furigana": null
+      "furigana": "<ruby>明日<rt>あした</rt></ruby>"
     },
     {
       "jp": "毎日",
@@ -132,7 +132,7 @@
       "type": "noun",
       "romaji": "mainichi",
       "reading": "mainichi",
-      "furigana": null
+      "furigana": "<ruby>毎日<rt>まいにち</rt></ruby>"
     },
     {
       "jp": "朝",
@@ -140,7 +140,7 @@
       "type": "noun",
       "romaji": "asa",
       "reading": "asa",
-      "furigana": null
+      "furigana": "<ruby>朝<rt>あさ</rt></ruby>"
     },
     {
       "jp": "午後",
@@ -148,7 +148,7 @@
       "type": "noun",
       "romaji": "gogo",
       "reading": "gogo",
-      "furigana": null
+      "furigana": "<ruby>午後<rt>ごご</rt></ruby>"
     }
   ],
   "grammar_patterns": [
