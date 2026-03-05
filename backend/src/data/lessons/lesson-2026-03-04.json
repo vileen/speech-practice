@@ -11,124 +11,142 @@
       "reading": "nakereba narimasen",
       "meaning": "must do / have to (formal)",
       "type": "grammar_pattern",
-      "example": "勉強しなければなりません"
+      "example": "勉強しなければなりません",
+      "jp": "なければなりません"
     },
     {
       "word": "なければならない",
       "reading": "nakereba naranai",
       "meaning": "must do (casual)",
-      "type": "grammar_pattern"
+      "type": "grammar_pattern",
+      "jp": "なければならない"
     },
     {
       "word": "なきゃ",
       "reading": "nakya",
       "meaning": "gotta do (very casual)",
-      "type": "grammar_pattern"
+      "type": "grammar_pattern",
+      "jp": "なきゃ"
     },
     {
       "word": "洗濯",
       "reading": "sentaku",
       "meaning": "laundry, washing",
       "kanji": "洗濯",
-      "type": "noun"
+      "type": "noun",
+      "jp": "洗濯"
     },
     {
       "word": "薬",
       "reading": "kusuri",
       "meaning": "medicine",
       "kanji": "薬",
-      "type": "noun"
+      "type": "noun",
+      "jp": "薬"
     },
     {
       "word": "汚い",
       "reading": "kitanai",
       "meaning": "dirty",
       "kanji": "汚い",
-      "type": "i-adjective"
+      "type": "i-adjective",
+      "jp": "汚い"
     },
     {
       "word": "新しい",
       "reading": "atarashii",
       "meaning": "new",
       "kanji": "新しい",
-      "type": "i-adjective"
+      "type": "i-adjective",
+      "jp": "新しい"
     },
     {
       "word": "短い",
       "reading": "mijikai",
       "meaning": "short (length)",
       "kanji": "短い",
-      "type": "i-adjective"
+      "type": "i-adjective",
+      "jp": "短い"
     },
     {
       "word": "借りる",
       "reading": "kariru",
       "meaning": "to borrow",
       "kanji": "借りる",
-      "type": "ru-verb"
+      "type": "ru-verb",
+      "jp": "借りる"
     },
     {
       "word": "浴びる",
       "reading": "abiru",
       "meaning": "to take (shower)",
       "kanji": "浴びる",
-      "type": "ru-verb"
+      "type": "ru-verb",
+      "jp": "浴びる"
     },
     {
       "word": "脱ぐ",
       "reading": "nugu",
       "meaning": "to take off (clothes)",
       "kanji": "脱ぐ",
-      "type": "u-verb"
+      "type": "u-verb",
+      "jp": "脱ぐ"
     },
     {
       "word": "完ぺき",
       "reading": "kanpeki",
       "meaning": "perfect, excellent",
       "kanji": "完ぺき",
-      "type": "na-adjective"
+      "type": "na-adjective",
+      "jp": "完ぺき"
     },
     {
       "word": "試験",
       "reading": "shiken",
       "meaning": "exam, test",
       "kanji": "試験",
-      "type": "noun"
+      "type": "noun",
+      "jp": "試験"
     },
     {
       "word": "今日",
       "reading": "kyou",
       "meaning": "today",
       "kanji": "今日",
-      "type": "noun"
+      "type": "noun",
+      "jp": "今日"
     },
     {
       "word": "明日",
       "reading": "ashita",
       "meaning": "tomorrow",
       "kanji": "明日",
-      "type": "noun"
+      "type": "noun",
+      "jp": "明日"
     },
     {
       "word": "毎日",
       "reading": "mainichi",
       "meaning": "every day",
       "kanji": "毎日",
-      "type": "noun"
+      "type": "noun",
+      "jp": "毎日"
     },
     {
       "word": "朝",
       "reading": "asa",
       "meaning": "morning",
       "kanji": "朝",
-      "type": "noun"
+      "type": "noun",
+      "jp": "朝"
     },
     {
       "word": "午後",
       "reading": "gogo",
       "meaning": "PM, afternoon",
       "kanji": "午後",
-      "type": "noun"
+      "type": "noun",
+      "jp": "午後"
     }
   ],
   "grammar_patterns": [
@@ -288,19 +306,19 @@
       "formation": "Verb (nai-form) + ければなりません",
       "examples": [
         {
-          "japanese": "明日五時に起きなければなりません",
-          "reading": "Ashita go-ji ni okinakereba narimasen",
-          "english": "I must wake up at 5 o'clock tomorrow"
+          "jp": "明日五時に起きなければなりません",
+          "en": "I must wake up at 5 o'clock tomorrow",
+          "romaji": "Ashita go-ji ni okinakereba narimasen"
         },
         {
-          "japanese": "勉強しなければなりません",
-          "reading": "Benkyou shinakereba narimasen",
-          "english": "I must study"
+          "jp": "勉強しなければなりません",
+          "en": "I must study",
+          "romaji": "Benkyou shinakereba narimasen"
         },
         {
-          "japanese": "薬を飲まなければなりません",
-          "reading": "Kusuri wo nomanakereba narimasen",
-          "english": "I must take medicine"
+          "jp": "薬を飲まなければなりません",
+          "en": "I must take medicine",
+          "romaji": "Kusuri wo nomanakereba narimasen"
         }
       ]
     },
@@ -311,9 +329,9 @@
       "formation": "Verb (nai-form) + ければならない",
       "examples": [
         {
-          "japanese": "早く起きなければならない",
-          "reading": "Hayaku okinakereba naranai",
-          "english": "I must wake up early"
+          "jp": "早く起きなければならない",
+          "en": "I must wake up early",
+          "romaji": "Hayaku okinakereba naranai"
         }
       ]
     },
@@ -324,9 +342,9 @@
       "formation": "Verb (nai-form) without い + きゃ",
       "examples": [
         {
-          "japanese": "行かなきゃ",
-          "reading": "Ikanakya",
-          "english": "I gotta go"
+          "jp": "行かなきゃ",
+          "en": "I gotta go",
+          "romaji": "Ikanakya"
         }
       ]
     }
