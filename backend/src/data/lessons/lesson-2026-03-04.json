@@ -7,146 +7,148 @@
   "duration_minutes": 52,
   "vocabulary": [
     {
-      "word": "なければなりません",
+      "en": "must do / have to (formal)",
+      "jp": "なければなりません",
+      "type": "grammar_pattern",
+      "romaji": "nakereba narimasen",
       "reading": "nakereba narimasen",
-      "meaning": "must do / have to (formal)",
-      "type": "grammar_pattern",
-      "example": "勉強しなければなりません",
-      "jp": "なければなりません"
+      "furigana": null
     },
     {
-      "word": "なければならない",
+      "en": "must do (casual)",
+      "jp": "なければならない",
+      "type": "grammar_pattern",
+      "romaji": "nakereba naranai",
       "reading": "nakereba naranai",
-      "meaning": "must do (casual)",
-      "type": "grammar_pattern",
-      "jp": "なければならない"
+      "furigana": null
     },
     {
-      "word": "なきゃ",
+      "en": "gotta do (very casual)",
+      "jp": "なきゃ",
+      "type": "grammar_pattern",
+      "romaji": "nakya",
       "reading": "nakya",
-      "meaning": "gotta do (very casual)",
-      "type": "grammar_pattern",
-      "jp": "なきゃ"
+      "furigana": null
     },
     {
-      "word": "洗濯",
+      "en": "laundry, washing",
+      "jp": "洗濯",
+      "type": "noun",
+      "romaji": "sentaku",
       "reading": "sentaku",
-      "meaning": "laundry, washing",
-      "kanji": "洗濯",
-      "type": "noun",
-      "jp": "洗濯"
+      "furigana": null
     },
     {
-      "word": "薬",
+      "en": "medicine",
+      "jp": "薬",
+      "type": "noun",
+      "romaji": "kusuri",
       "reading": "kusuri",
-      "meaning": "medicine",
-      "kanji": "薬",
-      "type": "noun",
-      "jp": "薬"
+      "furigana": null
     },
     {
-      "word": "汚い",
+      "en": "dirty",
+      "jp": "汚い",
+      "type": "i-adjective",
+      "romaji": "kitanai",
       "reading": "kitanai",
-      "meaning": "dirty",
-      "kanji": "汚い",
-      "type": "i-adjective",
-      "jp": "汚い"
+      "furigana": null
     },
     {
-      "word": "新しい",
+      "en": "new",
+      "jp": "新しい",
+      "type": "i-adjective",
+      "romaji": "atarashii",
       "reading": "atarashii",
-      "meaning": "new",
-      "kanji": "新しい",
-      "type": "i-adjective",
-      "jp": "新しい"
+      "furigana": null
     },
     {
-      "word": "短い",
+      "en": "short (length)",
+      "jp": "短い",
+      "type": "i-adjective",
+      "romaji": "mijikai",
       "reading": "mijikai",
-      "meaning": "short (length)",
-      "kanji": "短い",
-      "type": "i-adjective",
-      "jp": "短い"
+      "furigana": null
     },
     {
-      "word": "借りる",
+      "en": "to borrow",
+      "jp": "借りる",
+      "type": "ru-verb",
+      "romaji": "kariru",
       "reading": "kariru",
-      "meaning": "to borrow",
-      "kanji": "借りる",
-      "type": "ru-verb",
-      "jp": "借りる"
+      "furigana": null
     },
     {
-      "word": "浴びる",
+      "en": "to take (shower)",
+      "jp": "浴びる",
+      "type": "ru-verb",
+      "romaji": "abiru",
       "reading": "abiru",
-      "meaning": "to take (shower)",
-      "kanji": "浴びる",
-      "type": "ru-verb",
-      "jp": "浴びる"
+      "furigana": null
     },
     {
-      "word": "脱ぐ",
-      "reading": "nugu",
-      "meaning": "to take off (clothes)",
-      "kanji": "脱ぐ",
+      "en": "to take off (clothes)",
+      "jp": "脱ぐ",
       "type": "u-verb",
-      "jp": "脱ぐ"
+      "romaji": "nugu",
+      "reading": "nugu",
+      "furigana": null
     },
     {
-      "word": "完ぺき",
-      "reading": "kanpeki",
-      "meaning": "perfect, excellent",
-      "kanji": "完ぺき",
+      "en": "perfect, excellent",
+      "jp": "完ぺき",
       "type": "na-adjective",
-      "jp": "完ぺき"
+      "romaji": "kanpeki",
+      "reading": "kanpeki",
+      "furigana": null
     },
     {
-      "word": "試験",
+      "en": "exam, test",
+      "jp": "試験",
+      "type": "noun",
+      "romaji": "shiken",
       "reading": "shiken",
-      "meaning": "exam, test",
-      "kanji": "試験",
-      "type": "noun",
-      "jp": "試験"
+      "furigana": null
     },
     {
-      "word": "今日",
+      "en": "today",
+      "jp": "今日",
+      "type": "noun",
+      "romaji": "kyou",
       "reading": "kyou",
-      "meaning": "today",
-      "kanji": "今日",
-      "type": "noun",
-      "jp": "今日"
+      "furigana": null
     },
     {
-      "word": "明日",
+      "en": "tomorrow",
+      "jp": "明日",
+      "type": "noun",
+      "romaji": "ashita",
       "reading": "ashita",
-      "meaning": "tomorrow",
-      "kanji": "明日",
-      "type": "noun",
-      "jp": "明日"
+      "furigana": null
     },
     {
-      "word": "毎日",
+      "en": "every day",
+      "jp": "毎日",
+      "type": "noun",
+      "romaji": "mainichi",
       "reading": "mainichi",
-      "meaning": "every day",
-      "kanji": "毎日",
-      "type": "noun",
-      "jp": "毎日"
+      "furigana": null
     },
     {
-      "word": "朝",
+      "en": "morning",
+      "jp": "朝",
+      "type": "noun",
+      "romaji": "asa",
       "reading": "asa",
-      "meaning": "morning",
-      "kanji": "朝",
-      "type": "noun",
-      "jp": "朝"
+      "furigana": null
     },
     {
-      "word": "午後",
-      "reading": "gogo",
-      "meaning": "PM, afternoon",
-      "kanji": "午後",
+      "en": "PM, afternoon",
+      "jp": "午後",
       "type": "noun",
-      "jp": "午後"
+      "romaji": "gogo",
+      "reading": "gogo",
+      "furigana": null
     }
   ],
   "grammar_patterns": [
