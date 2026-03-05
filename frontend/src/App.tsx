@@ -9,6 +9,7 @@ import { translateLessonTitle } from './translations.js';
 import { HighlightedText } from './HighlightedText.js';
 import './HighlightedText.css';
 import { RepeatMode } from './components/RepeatMode.js';
+import { OfflineScreen } from './components/OfflineScreen.js';
 
 // Types
 interface Session {
@@ -287,21 +288,69 @@ export const PRACTICE_PHRASES: Record<string, PracticePhrase[]> = {
   ],
 };
 
+// Health check wrapper component
+function HealthCheckWrapper({ children }: { children: React.ReactNode }) {
+  const [healthStatus, setHealthStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+
+  const checkHealth = async () => {
+    setHealthStatus('checking');
+    try {
+      const response = await fetch(`${API_URL}/api/health`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        // Short timeout for quick feedback
+        signal: AbortSignal.timeout(5000)
+      });
+      
+      if (response.ok) {
+        setHealthStatus('online');
+      } else {
+        setHealthStatus('offline');
+      }
+    } catch (error) {
+      setHealthStatus('offline');
+    }
+  };
+
+  useEffect(() => {
+    checkHealth();
+  }, []);
+
+  if (healthStatus === 'checking') {
+    return (
+      <div className="loading-screen">
+        <div className="loading-content">
+          <div className="loading-spinner"></div>
+          <p>Checking connection...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (healthStatus === 'offline') {
+    return <OfflineScreen apiUrl={API_URL} onRetry={checkHealth} />;
+  }
+
+  return <>{children}</>;
+}
+
 // Main App wrapper with router
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/chat/setup" element={<ChatSetup />} />
-      <Route path="/chat" element={<ChatSession />} />
-      <Route path="/repeat/setup" element={<RepeatSetup />} />
-      <Route path="/repeat" element={<RepeatMode />} />
-      <Route path="/lessons" element={<LessonList />} />
-      <Route path="/lessons/:id" element={<LessonDetail />} />
-      <Route path="/lessons/:id/setup" element={<LessonPracticeSetup />} />
-      <Route path="/lessons/:id/practice" element={<LessonPractice />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <HealthCheckWrapper>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/chat/setup" element={<ChatSetup />} />
+        <Route path="/chat" element={<ChatSession />} />
+        <Route path="/repeat/setup" element={<RepeatSetup />} />
+        <Route path="/repeat" element={<RepeatMode />} />
+        <Route path="/lessons" element={<LessonList />} />
+        <Route path="/lessons/:id" element={<LessonDetail />} />
+        <Route path="/lessons/:id/setup" element={<LessonPracticeSetup />} />
+        <Route path="/lessons/:id/practice" element={<LessonPractice />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </HealthCheckWrapper>
   );
 }
 
