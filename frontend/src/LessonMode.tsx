@@ -298,7 +298,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
       // Collect pattern text
       if (!furiganaCacheRef.current[item.pattern]) textsToFetch.push(item.pattern);
       // Collect explanation text (split by lines and filter for Japanese text)
-      item.explanation.split('\n').forEach(line => {
+      (item.explanation || '').split('\n').forEach(line => {
         const trimmed = line.trim();
         if (!/[\u4e00-\u9faf]/.test(trimmed)) return; // Skip lines without kanji
         if (furiganaCacheRef.current[trimmed]) return; // Skip already cached
@@ -417,6 +417,11 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
 
   // Render explanation with support for both markdown and HTML tables, and furigana
   const renderExplanationWithTables = (explanation: string) => {
+    // Handle undefined/null explanation
+    if (!explanation) {
+      return <div className="grammar-explanation">No explanation available</div>;
+    }
+    
     // Check if explanation contains HTML table
     if (explanation.includes('<table')) {
       // For HTML tables, we still need to render them as-is

@@ -320,7 +320,8 @@
           "en": "I must take medicine",
           "romaji": "Kusuri wo nomanakereba narimasen"
         }
-      ]
+      ],
+      "explanation": "must do / have to"
     },
     {
       "pattern": "〜なければならない",
@@ -333,7 +334,8 @@
           "en": "I must wake up early",
           "romaji": "Hayaku okinakereba naranai"
         }
-      ]
+      ],
+      "explanation": "must do (casual form)"
     },
     {
       "pattern": "〜なきゃ",
@@ -346,7 +348,8 @@
           "en": "I gotta go",
           "romaji": "Ikanakya"
         }
-      ]
+      ],
+      "explanation": "gotta do (very casual)"
     }
   ],
   "topics": [
