@@ -451,11 +451,13 @@ function MemoryModeWrapper() {
         });
         if (response.ok) {
           const data = await response.json();
+          console.log('MemoryMode: API response:', data);
           // API returns {count, lessons} object, not array
           const lessonsArray = data.lessons || data;
+          console.log('MemoryMode: lessonsArray:', lessonsArray, 'isArray:', Array.isArray(lessonsArray));
           setLessons(Array.isArray(lessonsArray) ? lessonsArray : []);
         } else {
-          console.error('Failed to fetch lessons:', response.status);
+          console.error('MemoryMode: Failed to fetch lessons:', response.status);
           setLessons([]);
         }
       } catch (error) {

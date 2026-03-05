@@ -191,6 +191,12 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
           <div className="lesson-selection">
             <h3>Select Lessons to Study</h3>
             <div className="lesson-chips">
+              {import.meta.env.DEV && (
+                <div style={{fontSize: '12px', color: '#888', marginBottom: '10px'}}>
+                  Debug: lessons type={typeof lessons}, isArray={Array.isArray(lessons)?.toString()}, 
+                  length={lessons?.length}
+                </div>
+              )}
               {Array.isArray(lessons) && lessons.length > 0 ? (
                 lessons.map(lesson => (
                   <button
