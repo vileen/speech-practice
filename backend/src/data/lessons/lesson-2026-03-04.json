@@ -7,144 +7,144 @@
   "duration_minutes": 52,
   "vocabulary": [
     {
-      "en": "must do / have to (formal)",
       "jp": "なければなりません",
+      "en": "must do / have to (formal)",
       "type": "grammar_pattern",
       "romaji": "nakereba narimasen",
       "reading": "nakereba narimasen",
       "furigana": null
     },
     {
-      "en": "must do (casual)",
       "jp": "なければならない",
+      "en": "must do (casual)",
       "type": "grammar_pattern",
       "romaji": "nakereba naranai",
       "reading": "nakereba naranai",
       "furigana": null
     },
     {
-      "en": "gotta do (very casual)",
       "jp": "なきゃ",
+      "en": "gotta do (very casual)",
       "type": "grammar_pattern",
       "romaji": "nakya",
       "reading": "nakya",
       "furigana": null
     },
     {
-      "en": "laundry, washing",
       "jp": "洗濯",
+      "en": "laundry, washing",
       "type": "noun",
       "romaji": "sentaku",
       "reading": "sentaku",
       "furigana": null
     },
     {
-      "en": "medicine",
       "jp": "薬",
+      "en": "medicine",
       "type": "noun",
       "romaji": "kusuri",
       "reading": "kusuri",
       "furigana": null
     },
     {
-      "en": "dirty",
       "jp": "汚い",
+      "en": "dirty",
       "type": "i-adjective",
       "romaji": "kitanai",
       "reading": "kitanai",
       "furigana": null
     },
     {
-      "en": "new",
       "jp": "新しい",
+      "en": "new",
       "type": "i-adjective",
       "romaji": "atarashii",
       "reading": "atarashii",
       "furigana": null
     },
     {
-      "en": "short (length)",
       "jp": "短い",
+      "en": "short (length)",
       "type": "i-adjective",
       "romaji": "mijikai",
       "reading": "mijikai",
       "furigana": null
     },
     {
-      "en": "to borrow",
       "jp": "借りる",
+      "en": "to borrow",
       "type": "ru-verb",
       "romaji": "kariru",
       "reading": "kariru",
       "furigana": null
     },
     {
-      "en": "to take (shower)",
       "jp": "浴びる",
+      "en": "to take (shower)",
       "type": "ru-verb",
       "romaji": "abiru",
       "reading": "abiru",
       "furigana": null
     },
     {
-      "en": "to take off (clothes)",
       "jp": "脱ぐ",
+      "en": "to take off (clothes)",
       "type": "u-verb",
       "romaji": "nugu",
       "reading": "nugu",
       "furigana": null
     },
     {
-      "en": "perfect, excellent",
       "jp": "完ぺき",
+      "en": "perfect, excellent",
       "type": "na-adjective",
       "romaji": "kanpeki",
       "reading": "kanpeki",
       "furigana": null
     },
     {
-      "en": "exam, test",
       "jp": "試験",
+      "en": "exam, test",
       "type": "noun",
       "romaji": "shiken",
       "reading": "shiken",
       "furigana": null
     },
     {
-      "en": "today",
       "jp": "今日",
+      "en": "today",
       "type": "noun",
       "romaji": "kyou",
       "reading": "kyou",
       "furigana": null
     },
     {
-      "en": "tomorrow",
       "jp": "明日",
+      "en": "tomorrow",
       "type": "noun",
       "romaji": "ashita",
       "reading": "ashita",
       "furigana": null
     },
     {
-      "en": "every day",
       "jp": "毎日",
+      "en": "every day",
       "type": "noun",
       "romaji": "mainichi",
       "reading": "mainichi",
       "furigana": null
     },
     {
-      "en": "morning",
       "jp": "朝",
+      "en": "morning",
       "type": "noun",
       "romaji": "asa",
       "reading": "asa",
       "furigana": null
     },
     {
-      "en": "PM, afternoon",
       "jp": "午後",
+      "en": "PM, afternoon",
       "type": "noun",
       "romaji": "gogo",
       "reading": "gogo",
@@ -204,84 +204,64 @@
   ],
   "practice_phrases": [
     {
-      "situation": "Waking up early",
-      "japanese": "明日五時に起きなければなりません",
-      "reading": "Ashita go-ji ni okinakereba narimasen",
-      "english": "Tomorrow I must wake up at 5 o'clock",
       "jp": "明日五時に起きなければなりません",
-      "en": "Tomorrow I must wake up at 5 o'clock"
+      "en": "Tomorrow I must wake up at 5 o'clock",
+      "romaji": "Ashita go-ji ni okinakereba narimasen",
+      "furigana": null
     },
     {
-      "situation": "Studying for exam",
-      "japanese": "試験があるから、勉強しなければなりません",
-      "reading": "Shiken ga aru kara, benkyou shinakereba narimasen",
-      "english": "Because there's a test, I must study",
       "jp": "試験があるから、勉強しなければなりません",
-      "en": "Because there's a test, I must study"
+      "en": "Because there's a test, I must study",
+      "romaji": "Shiken ga aru kara, benkyou shinakereba narimasen",
+      "furigana": null
     },
     {
-      "situation": "Taking off shoes",
-      "japanese": "家に入るから、靴を脱がなければなりません",
-      "reading": "Ie ni hairu kara, kutsu wo nuganakereba narimasen",
-      "english": "Because I'm entering the house, I must take off my shoes",
       "jp": "家に入るから、靴を脱がなければなりません",
-      "en": "Because I'm entering the house, I must take off my shoes"
+      "en": "Because I'm entering the house, I must take off my shoes",
+      "romaji": "Ie ni hairu kara, kutsu wo nuganakereba narimasen",
+      "furigana": null
     },
     {
-      "situation": "Washing dishes",
-      "japanese": "皿が汚いから、洗わなければなりません",
-      "reading": "Sara ga kitanai kara, arawanakereba narimasen",
-      "english": "Because the plates are dirty, I must wash them",
       "jp": "皿が汚いから、洗わなければなりません",
-      "en": "Because the plates are dirty, I must wash them"
+      "en": "Because the plates are dirty, I must wash them",
+      "romaji": "Sara ga kitanai kara, arawanakereba narimasen",
+      "furigana": null
     },
     {
-      "situation": "Taking medicine",
-      "japanese": "薬を飲まなければなりません",
-      "reading": "Kusuri wo nomanakereba narimasen",
-      "english": "I must take medicine",
       "jp": "薬を飲まなければなりません",
-      "en": "I must take medicine"
+      "en": "I must take medicine",
+      "romaji": "Kusuri wo nomanakereba narimasen",
+      "furigana": null
     },
     {
-      "situation": "Buying new clothes",
-      "japanese": "新しいセーターを買わなければなりません",
-      "reading": "Atarashii seetaa wo kawanakereba narimasen",
-      "english": "I must buy a new sweater",
       "jp": "新しいセーターを買わなければなりません",
-      "en": "I must buy a new sweater"
+      "en": "I must buy a new sweater",
+      "romaji": "Atarashii seetaa wo kawanakereba narimasen",
+      "furigana": null
     },
     {
-      "situation": "Daily practice",
-      "japanese": "毎日練習しなければなりません",
-      "reading": "Mainichi renshuu shinakereba narimasen",
-      "english": "I must practice every day",
       "jp": "毎日練習しなければなりません",
-      "en": "I must practice every day"
+      "en": "I must practice every day",
+      "romaji": "Mainichi renshuu shinakereba narimasen",
+      "furigana": null
     },
     {
-      "situation": "Doing laundry",
-      "japanese": "洗濯しなければなりません",
-      "reading": "Sentaku shinakereba narimasen",
-      "english": "I must do laundry",
       "jp": "洗濯しなければなりません",
-      "en": "I must do laundry"
+      "en": "I must do laundry",
+      "romaji": "Sentaku shinakereba narimasen",
+      "furigana": null
     },
     {
-      "situation": "Taking a shower",
-      "japanese": "シャワーを浴びなければなりません",
-      "reading": "Shawaa wo abinakereba narimasen",
-      "english": "I must take a shower",
       "jp": "シャワーを浴びなければなりません",
-      "en": "I must take a shower"
+      "en": "I must take a shower",
+      "romaji": "Shawaa wo abinakereba narimasen",
+      "furigana": null
     },
     {
-      "situation": "Returning a book",
-      "japanese": "本を返さなければなりません",
-      "reading": "Hon wo kaesanakereba narimasen",
-      "english": "I must return the book",
       "jp": "本を返さなければなりません",
-      "en": "I must return the book"
+      "en": "I must return the book",
+      "romaji": "Hon wo kaesanakereba narimasen",
+      "furigana": null
     }
   ],
   "conversation_starters": [
@@ -323,55 +303,49 @@
   "grammar": [
     {
       "pattern": "〜なければなりません",
-      "reading": "nakereba narimasen",
-      "meaning": "must do / have to",
-      "formation": "Verb (nai-form) + ければなりません",
+      "explanation": "must do / have to",
+      "romaji": "nakereba narimasen",
       "examples": [
         {
           "jp": "明日五時に起きなければなりません",
           "en": "I must wake up at 5 o'clock tomorrow",
-          "romaji": "Ashita go-ji ni okinakereba narimasen"
+          "furigana": null
         },
         {
           "jp": "勉強しなければなりません",
           "en": "I must study",
-          "romaji": "Benkyou shinakereba narimasen"
+          "furigana": null
         },
         {
           "jp": "薬を飲まなければなりません",
           "en": "I must take medicine",
-          "romaji": "Kusuri wo nomanakereba narimasen"
+          "furigana": null
         }
-      ],
-      "explanation": "must do / have to"
+      ]
     },
     {
       "pattern": "〜なければならない",
-      "reading": "nakereba naranai",
-      "meaning": "must do (casual form)",
-      "formation": "Verb (nai-form) + ければならない",
+      "explanation": "must do (casual form)",
+      "romaji": "nakereba naranai",
       "examples": [
         {
           "jp": "早く起きなければならない",
           "en": "I must wake up early",
-          "romaji": "Hayaku okinakereba naranai"
+          "furigana": null
         }
-      ],
-      "explanation": "must do (casual form)"
+      ]
     },
     {
       "pattern": "〜なきゃ",
-      "reading": "nakya",
-      "meaning": "gotta do (very casual)",
-      "formation": "Verb (nai-form) without い + きゃ",
+      "explanation": "gotta do (very casual)",
+      "romaji": "nakya",
       "examples": [
         {
           "jp": "行かなきゃ",
           "en": "I gotta go",
-          "romaji": "Ikanakya"
+          "furigana": null
         }
-      ],
-      "explanation": "gotta do (very casual)"
+      ]
     }
   ],
   "topics": [
