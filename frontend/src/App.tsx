@@ -444,6 +444,7 @@ function MemoryModeWrapper() {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
+        // Fetch list of lessons
         const response = await fetch(`${API_URL}/api/lessons`, {
           headers: {
             'X-Password': getPassword(),
@@ -451,11 +452,28 @@ function MemoryModeWrapper() {
         });
         if (response.ok) {
           const data = await response.json();
-          console.log('MemoryMode: API response:', data);
-          // API returns {count, lessons} object, not array
           const lessonsArray = data.lessons || data;
-          console.log('MemoryMode: lessonsArray:', lessonsArray, 'isArray:', Array.isArray(lessonsArray));
-          setLessons(Array.isArray(lessonsArray) ? lessonsArray : []);
+          
+          // Fetch full details for each lesson (needed for vocabulary/grammar)
+          const fullLessons = await Promise.all(
+            lessonsArray.map(async (lesson: any) => {
+              try {
+                const detailRes = await fetch(`${API_URL}/api/lessons/${lesson.id}`, {
+                  headers: {
+                    'X-Password': getPassword(),
+                  },
+                });
+                if (detailRes.ok) {
+                  return await detailRes.json();
+                }
+                return lesson;
+              } catch (e) {
+                return lesson;
+              }
+            })
+          );
+          
+          setLessons(fullLessons);
         } else {
           console.error('MemoryMode: Failed to fetch lessons:', response.status);
           setLessons([]);
