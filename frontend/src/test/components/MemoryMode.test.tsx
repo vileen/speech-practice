@@ -75,9 +75,9 @@ describe('MemoryMode', () => {
       expect(screen.getByText(/No lessons available/)).toBeInTheDocument();
     });
 
-    it('should show hint when no cards', () => {
+    it('should show hint when no lessons selected', () => {
       render(<MemoryMode lessons={mockLessons} />);
-      expect(screen.getByText(/Select lessons above/)).toBeInTheDocument();
+      expect(screen.getByText(/Select at least one lesson/)).toBeInTheDocument();
     });
   });
 
