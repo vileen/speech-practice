@@ -124,22 +124,27 @@ describe('FSRS Algorithm', () => {
   });
 
   describe('getIntervalPreview', () => {
-    it('should return positive interval for new card', () => {
+    it('should return short interval in minutes for new card', () => {
       const card = createCard('test');
       const interval = getIntervalPreview(card, 'good');
       
+      // New cards should have intervals in minutes (10 min for good = 10/1440 days)
       expect(interval).toBeGreaterThan(0);
+      expect(interval).toBeLessThan(1); // Less than 1 day
     });
 
-    it('should return different intervals for different ratings', () => {
+    it('should return different intervals for different ratings on new cards', () => {
       const card = createCard('test');
       
       const againInterval = getIntervalPreview(card, 'again');
+      const hardInterval = getIntervalPreview(card, 'hard');
       const goodInterval = getIntervalPreview(card, 'good');
       const easyInterval = getIntervalPreview(card, 'easy');
       
-      expect(againInterval).not.toBe(goodInterval);
-      expect(goodInterval).not.toBe(easyInterval);
+      // Again should be shortest (1 min), Easy should be longest (4 days)
+      expect(againInterval).toBeLessThan(hardInterval);
+      expect(hardInterval).toBeLessThan(goodInterval);
+      expect(goodInterval).toBeLessThan(easyInterval);
     });
 
     it('should return longer interval for Easy than Again', () => {

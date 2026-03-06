@@ -77,6 +77,18 @@ function nextInterval(s: number): number {
   return Math.min(Math.max(1, Math.round(interval)), FSRS_PARAMS.maximumInterval);
 }
 
+// Get initial interval for new cards (in minutes)
+function initInterval(rating: Rating): number {
+  // For new cards, use minutes instead of days
+  const intervals = {
+    again: 1,    // 1 minute
+    hard: 5,     // 5 minutes
+    good: 10,    // 10 minutes
+    easy: 4 * 24 * 60,  // 4 days (in minutes)
+  };
+  return intervals[rating];
+}
+
 // Main review function
 export function reviewCard(card: Card, rating: Rating, now: Date = new Date()): Card {
   const elapsedDays = card.lastReview 
@@ -86,15 +98,34 @@ export function reviewCard(card: Card, rating: Rating, now: Date = new Date()): 
   let newCard: Card = { ...card };
   
   if (card.state === 'new') {
-    // First review
+    // First review - use minutes for intervals
     newCard.state = 'learning';
     newCard.stability = initStability(rating);
     newCard.difficulty = initDifficulty(rating);
-  } else {
-    // Subsequent reviews
-    newCard.difficulty = nextDifficulty(card.difficulty, rating);
-    newCard.stability = nextStability(card.stability, card.difficulty, rating);
+    
+    // For new cards, scheduledDays is actually in minutes for the first review
+    const intervalMinutes = initInterval(rating);
+    newCard.scheduledDays = intervalMinutes / (24 * 60); // Convert to days for consistency
+    
+    if (rating === 'again') {
+      newCard.lapses += 1;
+      newCard.state = 'relearning';
+    } else {
+      newCard.state = 'review';
+    }
+    
+    newCard.elapsedDays = 0;
+    newCard.reps += 1;
+    newCard.lastReview = now;
+    // For new cards, due date is in minutes
+    newCard.due = new Date(now.getTime() + intervalMinutes * 60 * 1000);
+    
+    return newCard;
   }
+  
+  // Subsequent reviews
+  newCard.difficulty = nextDifficulty(card.difficulty, rating);
+  newCard.stability = nextStability(card.stability, card.difficulty, rating);
   
   if (rating === 'again') {
     newCard.lapses += 1;

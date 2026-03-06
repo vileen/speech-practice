@@ -141,11 +141,20 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     easy: getPreview(currentCard.phraseId, 'easy'),
   } : null;
 
-  // Format interval for display
+  // Format interval for display (handles minutes for new cards)
   const formatInterval = (days: number): string => {
-    if (days < 1) return '< 1d';
+    // Convert days to minutes if less than 1 day
+    if (days < 1 / 24) {
+      const minutes = Math.round(days * 24 * 60);
+      if (minutes < 1) return '< 1m';
+      return `${minutes}m`;
+    }
+    if (days < 1) {
+      const hours = Math.round(days * 24);
+      return `${hours}h`;
+    }
     if (days === 1) return '1d';
-    if (days < 30) return `${days}d`;
+    if (days < 30) return `${Math.round(days)}d`;
     if (days < 365) return `${Math.round(days / 30)}mo`;
     return `${Math.round(days / 365)}y`;
   };
