@@ -50,24 +50,9 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   const [selectedLessons, setSelectedLessons] = useState<number[]>([]);
   const [isComplete, setIsComplete] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
+  const [hasImported, setHasImported] = useState(false);
 
-  // Import lessons when selected
-  useEffect(() => {
-    console.log('MemoryMode: Import effect triggered, selectedLessons:', selectedLessons, 'lessons:', lessons?.length);
-    if (selectedLessons.length > 0 && Array.isArray(lessons)) {
-      let imported = 0;
-      selectedLessons.forEach(lessonId => {
-        const lesson = lessons.find(l => l.id === lessonId);
-        console.log('MemoryMode: Looking for lesson', lessonId, 'found:', lesson?.title);
-        if (lesson) {
-          const count = importFromLesson(lesson);
-          imported += count;
-          console.log('MemoryMode: Imported', count, 'cards from', lesson.title);
-        }
-      });
-      console.log(`MemoryMode: Total imported ${imported} cards, current cards in state:`, cards.length);
-    }
-  }, [selectedLessons, lessons, importFromLesson, cards.length]);
+
 
   // Get next card when needed
   useEffect(() => {
@@ -100,22 +85,44 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     }
   }, [currentCard, review, getNextCard]);
 
+  // Import cards when starting session
   const startSession = useCallback(() => {
     setIsStarting(true);
+    
+    // Import cards from selected lessons FIRST
+    let imported = 0;
+    if (selectedLessons.length > 0 && Array.isArray(lessons)) {
+      selectedLessons.forEach(lessonId => {
+        const lesson = lessons.find(l => l.id === lessonId);
+        if (lesson) {
+          const count = importFromLesson(lesson);
+          imported += count;
+          console.log('MemoryMode: Imported', count, 'cards from', lesson.title);
+        }
+      });
+    }
+    
+    console.log(`MemoryMode: Total imported ${imported} cards`);
+    setHasImported(true);
     setShowSetup(false);
     setIsComplete(false);
-    // Wait a bit for cards to be imported from selected lessons
-    setTimeout(() => {
+  }, [selectedLessons, lessons, importFromLesson]);
+
+  // Start session AFTER cards are imported (watch cards.length change)
+  useEffect(() => {
+    if (hasImported && !showSetup && !isComplete) {
+      console.log('MemoryMode: Cards imported, checking for next card. Total cards:', cards.length);
       const next = getNextCard();
-      console.log('MemoryMode: Starting session, next card:', next);
+      console.log('MemoryMode: Next card:', next);
       if (next) {
         setCurrentCard(next);
       } else {
         setIsComplete(true);
       }
       setIsStarting(false);
-    }, 500);
-  }, [getNextCard]);
+      setHasImported(false); // Reset for next time
+    }
+  }, [cards.length, hasImported, showSetup, isComplete, getNextCard]);
 
   const resetSession = useCallback(() => {
     setShowSetup(true);
@@ -123,6 +130,7 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     setCurrentCard(null);
     setIsComplete(false);
     setSelectedLessons([]);
+    setHasImported(false);
   }, []);
 
   // Get interval previews
