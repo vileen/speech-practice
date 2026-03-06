@@ -479,6 +479,30 @@ app.get('/api/lessons/recent', checkPassword, async (req, res) => {
   }
 });
 
+// Get lessons for Memory Mode (lightweight - only vocab and grammar, no furigana)
+app.get('/api/lessons/memory', checkPassword, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, date, title, order_num as order, topics, vocabulary, grammar FROM lessons ORDER BY order_num DESC'
+    );
+    
+    const lessons = result.rows.map(row => ({
+      id: row.id,
+      date: row.date,
+      title: row.title,
+      order: row.order,
+      topics: row.topics || [],
+      vocabulary: row.vocabulary || [],
+      grammar: row.grammar || []
+    }));
+    
+    res.json({ count: lessons.length, lessons });
+  } catch (error) {
+    console.error('Error fetching lessons for memory mode:', error);
+    res.status(500).json({ error: 'Failed to fetch lessons' });
+  }
+});
+
 // Get specific lesson
 app.get('/api/lessons/:id', checkPassword, async (req, res) => {
   try {
