@@ -239,14 +239,15 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
           <button
             className="start-btn"
             onClick={startSession}
-            disabled={stats.total === 0 && selectedLessons.length === 0}
+            disabled={selectedLessons.length === 0}
+            title={selectedLessons.length === 0 ? 'Select at least one lesson to study' : ''}
           >
             {stats.due > 0 ? `Study ${stats.due} Due Cards` : 'Start New Session'}
           </button>
 
-          {stats.total === 0 && (
+          {selectedLessons.length === 0 && (
             <p className="hint">
-              Select lessons above to add cards to your study deck.
+              Select at least one lesson above to start studying.
             </p>
           )}
         </div>
