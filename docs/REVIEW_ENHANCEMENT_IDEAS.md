@@ -258,11 +258,11 @@ Suggest lessons based on vocabulary overlap:
 | 2 | SRS Tracking | ✅ Core algorithm done | Medium | High |
 | 3 | **Database Refactor** | ⏳ Next priority | High | Critical |
 | 4 | Interleaved Practice | ⏳ Planned | Medium | High |
-| 4 | Shadowing Enhancement | ⏳ Planned | Medium | High |
-| 5 | Progressive Reveal | ⏳ Planned | Medium | Medium |
-| 6 | Error-Based Drills | ⏳ Planned | High | Medium |
-| 7 | Sentence Building | ⏳ Planned | High | High |
-| 8 | Grammar Drills | ⏳ Planned | Medium | High |
+| 5 | Shadowing Enhancement | ⏳ Planned | Medium | High |
+| 6 | Progressive Reveal | ⏳ Planned | Medium | Medium |
+| 7 | Error-Based Drills | ⏳ Planned | High | Medium |
+| 8 | Sentence Building | ⏳ Planned | High | High |
+| 9 | Grammar Drills | ⏳ Planned | Medium | High |
 
 ## Completed Features
 
