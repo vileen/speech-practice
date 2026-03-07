@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { VoiceRecorder } from '../VoiceRecorder';
+import { VoiceRecorder } from './VoiceRecorder.js';
 import { JapanesePhrase } from './JapanesePhrase';
 import { useFurigana } from '../hooks/useFurigana';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';

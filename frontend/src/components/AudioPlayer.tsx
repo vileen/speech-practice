@@ -17,7 +17,7 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-export function AudioPlayer({ audioUrl, volume, isActive, onPlay, onStop, onStopOthers }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl, volume, isActive, onPlay: _onPlay, onStop, onStopOthers }: AudioPlayerProps) {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);

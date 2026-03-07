@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import './LessonMode.css';
-import { translateLessonTitle } from './translations.js';
+import { translateLessonTitle } from '../translations.js';
 
 interface Lesson {
   id: string;
