@@ -255,3 +255,94 @@ npm run build                         # Sprawdź TypeScript
 - [ ] Dodać więcej testów (frontend hooks, komponenty)
 - [ ] Dodać testy E2E (Playwright/Cypress)
 - [ ] Zautomatyzować backup bazy danych
+
+---
+
+## 👥 Uprawnienia Repozytorium
+
+### Obecny Setup
+- **Właściciel:** `vileen` (GitHub)
+- **Branch domyślny:** `main`
+- **Branch protection:** Brak (można pushować bezpośrednio)
+
+### Kolaboracja
+Obecnie tylko właściciel może pushować bezpośrednio na `main`. Dla kolaboracji z innymi deweloperami:
+
+1. **Fork workflow** (dla zewnętrznych kontrybutorów)
+2. **Branch workflow** (dla trusted collaboratorów)
+   - Dodaj collaboratorów w GitHub repo settings
+   - Zalecane: Włączyć branch protection dla `main`
+   - Wymagać PR + review przed mergem
+
+---
+
+## 🔄 Auto-Restart Backendu na PR Merge
+
+### Cel
+Automatyczny restart backendu po zmergowaniu PR do `main` - umożliwia kolaborację bez manualnego restartu.
+
+### TODO: Implementacja
+
+#### Opcja A: GitHub Actions + Webhook
+```yaml
+# .github/workflows/restart-backend.yml
+name: Restart Backend on Merge
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  notify-restart:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger backend restart
+        run: |
+          curl -X POST ${{ secrets.BACKEND_RESTART_WEBHOOK }} \
+            -H "Authorization: Bearer ${{ secrets.RESTART_TOKEN }}" \
+            -d '{"action": "restart", "commit": "${{ github.sha }}"}'
+```
+
+**Wymaga:**
+- Endpoint webhook na backendzie (np. `/webhook/restart`)
+- Autentykacja tokenem
+- Handler PM2/systemd do restartu
+
+#### Opcja B: Watchdog na serwerze
+```bash
+# Skrypt na serwerze lokalnym
+cd ~/Projects/speech-practice
+while true; do
+  git fetch origin
+  LOCAL=$(git rev-parse main)
+  REMOTE=$(git rev-parse origin/main)
+  
+  if [ "$LOCAL" != "$REMOTE" ]; then
+    git pull origin main
+    pm2 restart speech-practice-backend
+  fi
+  
+  sleep 60
+done
+```
+
+#### Opcja C: GitHub Actions + SSH (jeśli serwer publiczny)
+```yaml
+- name: Deploy and restart
+  uses: appleboy/ssh-action@v1.0.0
+  with:
+    host: ${{ secrets.SSH_HOST }}
+    username: ${{ secrets.SSH_USER }}
+    key: ${{ secrets.SSH_KEY }}
+    script: |
+      cd ~/Projects/speech-practice
+      git pull origin main
+      pm2 restart backend
+```
+
+**Uwaga:** Opcja C wymaga publicznego IP lub Tailscale dla serwera.
+
+### Bezpieczeństwo
+- **NIE commitować:** SSH keys, hasła, tokeny do repo
+- **Używać:** GitHub Secrets (`${{ secrets.XXX }}`)
+- **Webhook token:** Generowany losowo, przechowywany poza repo
