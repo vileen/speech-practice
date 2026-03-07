@@ -1,11 +1,11 @@
-# Speech Practice App - Dokumentacja Architektury
+# Speech Practice App - Architecture Documentation
 
-## Data utworzenia: 2026-02-25
-## Ostatnia aktualizacja: 2026-03-05
+## Created: 2026-02-25
+## Last updated: 2026-03-05
 
 ---
 
-## 🏗️ Architektura Systemu
+## 🏗️ System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -36,7 +36,7 @@
 
 ---
 
-## 📁 Struktura Projektu
+## 📁 Project Structure
 
 ### Backend (`backend/`)
 ```
@@ -91,7 +91,7 @@ frontend/src/
 
 ---
 
-## 🔑 Kluczowe Informacje
+## 🔑 Key Information
 
 ### Authentication
 **Type:** Simple header-based password check (not session-based)
@@ -198,9 +198,9 @@ Wszystkie testy uruchamiają się automatycznie przed każdym push:
 
 ---
 
-## 🛠️ Komendy
+## 🛠️ Commands
 
-### Uruchomienie lokalne
+### Local Development
 ```bash
 # Terminal 1 - Backend
 cd ~/Projects/speech-practice/backend
@@ -212,7 +212,7 @@ cloudflared tunnel run speech-practice
 # Frontend jest na GitHub Pages (nie trzeba uruchamiać lokalnie)
 ```
 
-### Skrypty przydatne
+### Useful Scripts
 ```bash
 # Backend
 cd backend
@@ -228,16 +228,16 @@ npm run build                         # Sprawdź TypeScript
 
 ---
 
-## 📊 Stan Danych (2026-02-26)
+## 📊 Data Status (2026-02-26)
 
-| Lokalizacja | Liczba lekcji | Status |
+| Location | Lesson count | Status |
 |-------------|---------------|--------|
-| PostgreSQL (produkcja) | 27 | ✅ Kompletne |
-| Obsidian Vault | 27 | ✅ Dokumentacja |
+| PostgreSQL (produkcja) | 27 | ✅ Complete |
+| Obsidian Vault | 27 | ✅ Documentation |
 
 ---
 
-## ✅ Zrobione (2026-02-26)
+## ✅ Completed (2026-02-26)
 
 - [x] Refactoring backend: wydzielenie romaji.ts
 - [x] Refactoring frontend: wydzielenie komponentów i hooków
@@ -258,15 +258,15 @@ npm run build                         # Sprawdź TypeScript
 
 ---
 
-## 👥 Uprawnienia Repozytorium
+## 👥 Repository Permissions
 
-### Obecny Setup
-- **Właściciel:** `vileen` (GitHub)
-- **Branch domyślny:** `main`
-- **Branch protection:** Brak (można pushować bezpośrednio)
+### Current Setup
+- **Owner:** `vileen` (GitHub)
+- **Default branch:** `main`
+- **Branch protection:** None (można pushować bezpośrednio)
 
-### Kolaboracja
-Obecnie tylko właściciel może pushować bezpośrednio na `main`. Dla kolaboracji z innymi deweloperami:
+### Collaboration
+Currently only owner can push directly to `main`. Dla kolaboracji z innymi deweloperami:
 
 1. **Fork workflow** (dla zewnętrznych kontrybutorów)
 2. **Branch workflow** (dla trusted collaboratorów)
@@ -276,14 +276,14 @@ Obecnie tylko właściciel może pushować bezpośrednio na `main`. Dla kolabora
 
 ---
 
-## 🔄 Auto-Restart Backendu na PR Merge
+## 🔄 Auto-Restart Backend on PR Merge
 
-### Cel
+### Goal
 Automatyczny restart backendu po zmergowaniu PR do `main` - umożliwia kolaborację bez manualnego restartu.
 
-### TODO: Implementacja
+### TODO: Implementation
 
-#### Opcja A: GitHub Actions + Webhook
+#### Option A: GitHub Actions + Webhook
 ```yaml
 # .github/workflows/restart-backend.yml
 name: Restart Backend on Merge
@@ -308,7 +308,7 @@ jobs:
 - Autentykacja tokenem
 - Handler PM2/systemd do restartu
 
-#### Opcja B: Watchdog na serwerze
+#### Option B: Watchdog na serwerze
 ```bash
 # Skrypt na serwerze lokalnym
 cd ~/Projects/speech-practice
@@ -326,7 +326,7 @@ while true; do
 done
 ```
 
-#### Opcja C: GitHub Actions + SSH (jeśli serwer publiczny)
+#### Option C: GitHub Actions + SSH (jeśli serwer publiczny)
 ```yaml
 - name: Deploy and restart
   uses: appleboy/ssh-action@v1.0.0
@@ -342,7 +342,7 @@ done
 
 **Uwaga:** Opcja C wymaga publicznego IP lub Tailscale dla serwera.
 
-### Bezpieczeństwo
+### Security
 - **NIE commitować:** SSH keys, hasła, tokeny do repo
 - **Używać:** GitHub Secrets (`${{ secrets.XXX }}`)
 - **Webhook token:** Generowany losowo, przechowywany poza repo
