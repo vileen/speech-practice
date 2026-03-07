@@ -71,6 +71,24 @@ coverage/
 *.temp
 *.swp
 *~
-docs/MEMORY.md
 docs/CHECKLIST-*.md
-docs/MEMORY.md
+
+# Environment files with secrets
+.env
+.env.local
+!.env.example
+
+# Log files
+*.log
+
+# Audio recordings
+audio_recordings/
+
+# Data/cache files
+data/furigana-cache.json
+
+# Backup files
+*.bak
+*.backup
+backend/.env
+frontend/.env.production
