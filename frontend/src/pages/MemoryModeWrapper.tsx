@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AuthenticatedRoute } from '../App.js';
-import { MemoryMode } from '../components/MemoryMode.js';
+import { MemoryMode } from '../components/MemoryMode/index.js';
 import { API_URL, getPassword } from '../config/api.js';
 import type { Lesson } from '../types/index.js';
 

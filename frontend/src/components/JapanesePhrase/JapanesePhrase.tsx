@@ -1,6 +1,6 @@
 import React from 'react';
-import { FuriganaText } from './FuriganaText.js';
-import { RomajiText } from './RomajiText.js';
+import { FuriganaText } from '../FuriganaText/index.js';
+import { RomajiText } from '../RomajiText/index.js';
 
 interface JapanesePhraseProps {
   /** Japanese text (kanji/kana) */

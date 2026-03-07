@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
-import { LessonMode } from '../components/LessonMode.js';
+import { LessonMode } from '../components/LessonMode/index.js';
 
 export function LessonList() {
   const navigate = useNavigate();

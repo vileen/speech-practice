@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { OfflineScreen } from './OfflineScreen.js';
-import { API_URL } from '../config/api.js';
+import { OfflineScreen } from '../OfflineScreen/index.js';
+import { API_URL } from '../../config/api.js';
 
 export function HealthCheckWrapper({ children }: { children: React.ReactNode }) {
   const [healthStatus, setHealthStatus] = useState<'checking' | 'online' | 'offline'>('checking');

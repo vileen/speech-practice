@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { FuriganaText } from '../../components/FuriganaText.js';
+import { FuriganaText } from '../../components/FuriganaText/index.js';
 
 describe('FuriganaText', () => {
   it('should render plain text when furiganaHtml is not provided', () => {

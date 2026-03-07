@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { RomajiText } from '../../components/RomajiText.js';
+import { RomajiText } from '../../components/RomajiText/index.js';
 
 describe('RomajiText', () => {
   it('should render romaji text', () => {

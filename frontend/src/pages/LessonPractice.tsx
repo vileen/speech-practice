@@ -4,9 +4,9 @@ import { AuthenticatedRoute } from '../App.js';
 import { API_URL, getPassword } from '../config/api.js';
 import type { Session } from '../types/index.js';
 import { translateLessonTitle } from '../translations.js';
-import { HighlightedText } from '../components/HighlightedText.js';
-import { AudioPlayer } from '../components/AudioPlayer.js';
-import { VoiceRecorder } from '../components/VoiceRecorder.js';
+import { HighlightedText } from '../components/HighlightedText/index.js';
+import { AudioPlayer } from '../components/AudioPlayer/index.js';
+import { VoiceRecorder } from '../components/VoiceRecorder/index.js';
 
 export function LessonPractice() {
   const { id } = useParams<{ id: string }>();

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Rating } from '../lib/fsrs.js';
-import { useMemoryProgress, MemoryCard } from '../hooks/useMemoryProgress.js';
-import { JapanesePhrase } from './JapanesePhrase.js';
+import { Rating } from '../../lib/fsrs.js';
+import { useMemoryProgress, MemoryCard } from '../../hooks/useMemoryProgress.js';
+import { JapanesePhrase } from '../JapanesePhrase/index.js';
 import './MemoryMode.css';
-import type { Lesson } from '../types/index.js';
+import type { Lesson } from '../../types/index.js';
 
 
 interface MemoryModeProps {

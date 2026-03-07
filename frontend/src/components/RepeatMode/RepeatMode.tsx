@@ -37,11 +37,11 @@ const PRACTICE_PHRASES: Record<string, PracticePhrase[]> = {
 
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { VoiceRecorder } from './VoiceRecorder.js';
-import { JapanesePhrase } from './JapanesePhrase';
-import { useFurigana } from '../hooks/useFurigana';
-import { useAudioPlayer } from '../hooks/useAudioPlayer';
-import { usePronunciationCheck } from '../hooks/usePronunciationCheck';
+import { VoiceRecorder } from '../VoiceRecorder/index.js';
+import { JapanesePhrase } from '../JapanesePhrase/index.js';
+import { useFurigana } from '../../hooks/useFurigana';
+import { useAudioPlayer } from '../../hooks/useAudioPlayer';
+import { usePronunciationCheck } from '../../hooks/usePronunciationCheck';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
 

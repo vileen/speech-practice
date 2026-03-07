@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { RepeatMode } from './components/RepeatMode.js';
-import { HealthCheckWrapper } from './components/HealthCheckWrapper.js';
+import { RepeatMode } from './components/RepeatMode/index.js';
+import { HealthCheckWrapper } from './components/HealthCheckWrapper/index.js';
 
 // Shared config and types
 
