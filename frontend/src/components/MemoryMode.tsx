@@ -3,31 +3,8 @@ import { Rating } from '../lib/fsrs.js';
 import { useMemoryProgress, MemoryCard } from '../hooks/useMemoryProgress.js';
 import { JapanesePhrase } from './JapanesePhrase.js';
 import './MemoryMode.css';
+import type { Lesson } from '../types/index.js';
 
-interface Lesson {
-  id: number;
-  date: string;
-  title: string;
-  order: number;
-  topics: string[];
-  vocabCount: number;
-  grammarCount: number;
-  vocabulary?: Array<{
-    jp: string;
-    en: string;
-    reading?: string;
-    romaji?: string;
-  }>;
-  grammar?: Array<{
-    pattern: string;
-    explanation: string;
-    romaji?: string;
-    examples?: Array<{
-      jp: string;
-      en: string;
-    }>;
-  }>;
-}
 
 interface MemoryModeProps {
   lessons: Lesson[];
@@ -47,7 +24,7 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   const [currentCard, setCurrentCard] = useState<MemoryCard | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [showSetup, setShowSetup] = useState(true);
-  const [selectedLessons, setSelectedLessons] = useState<number[]>([]);
+  const [selectedLessons, setSelectedLessons] = useState<string[]>([]);
   const [isComplete, setIsComplete] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [hasImported, setHasImported] = useState(false);

@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, createCard, reviewCard, getDueCards, Rating, getIntervalPreview } from '../lib/fsrs';
+import type { Lesson } from '../types/index.js';
 
 const STORAGE_KEY = 'speech-practice-memory-progress';
 
 export interface MemoryCard extends Card {
   phraseId: string;
   phraseType: 'vocabulary' | 'grammar';
-  lessonId: number;
+  lessonId: string;
   // Original phrase data (for display)
   jp: string;
   en: string;
@@ -65,7 +66,7 @@ export function useMemoryProgress() {
   const addCard = useCallback((phrase: {
     id: string;
     type: 'vocabulary' | 'grammar';
-    lessonId: number;
+    lessonId: string;
     jp: string;
     en: string;
     reading?: string;
@@ -145,23 +146,7 @@ export function useMemoryProgress() {
   }, []);
 
   // Import cards from lesson
-  const importFromLesson = useCallback((lesson: {
-    id: number;
-    vocabulary?: Array<{
-      jp: string;
-      en: string;
-      reading?: string;
-      romaji?: string;
-    }>;
-    grammar?: Array<{
-      pattern: string;
-      explanation: string;
-      examples?: Array<{
-        jp: string;
-        en: string;
-      }>;
-    }>;
-  }) => {
+  const importFromLesson = useCallback((lesson: Lesson) => {
     const newCards: MemoryCard[] = [];
     
     // Import vocabulary
