@@ -1,7 +1,7 @@
 # Speech Practice App - Architecture Documentation
 
 ## Created: 2026-02-25
-## Last updated: 2026-03-05
+## Last updated: 2026-03-07
 
 ---
 
@@ -9,12 +9,12 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         UŻYTKOWNIK                             │
+│                         USER                                     │
 └──────────────┬──────────────────────────────────┬───────────────┘
                │                                  │
                ▼                                  ▼
 ┌──────────────────────────┐      ┌──────────────────────────────┐
-│   FRONTEND (GitHub Pages) │      │   BACKEND (Twoja Maszyna)    │
+│   FRONTEND (GitHub Pages) │      │   BACKEND (Your Machine)     │
 │                          │      │                              │
 │  URL:                    │      │  Local: localhost:3001       │
 │  https://vileen.github.io│◄────►│  Public: Cloudflare Tunnel   │
@@ -38,56 +38,56 @@
 
 ## 📁 Project Structure
 
-### Backend (`backend/`)
-```
+### Backend (\`backend/\`)
+\`\`\`
 backend/
 ├── src/
-│   ├── db/                    # Baza danych
+│   ├── db/                    # Database
 │   │   ├── pool.ts
 │   │   ├── init.ts
 │   │   └── migrations/
 │   ├── routes/                # API routes
-│   ├── services/              # Logika biznesowa
-│   │   ├── lessons.ts         # Lekcje (PostgreSQL)
+│   ├── services/              # Business logic
+│   │   ├── lessons.ts         # Lessons (PostgreSQL)
 │   │   ├── chat.ts            # AI chat (OpenAI)
 │   │   ├── elevenlabs.ts      # TTS (ElevenLabs)
 │   │   ├── whisper.ts         # Speech-to-text (OpenAI)
-│   │   └── romaji.ts          # Konwersja JP -> romaji
-│   ├── server.ts              # Główny serwer Express
-│   └── data/                  # Dane JSON (runtime)
+│   │   └── romaji.ts          # JP -> romaji conversion
+│   ├── server.ts              # Main Express server
+│   └── data/                  # JSON data (runtime)
 │       ├── furigana-cache.json
 │       └── backups/
-├── scripts/                   # Skrypty jednorazowe
-│   ├── one-time/              # Migracje, fixy
-│   └── test-*.ts              # Testy
-└── data/                      # Pliki danych (runtime)
+├── scripts/                   # One-time scripts
+│   ├── one-time/              # Migrations, fixes
+│   └── test-*.ts              # Tests
+└── data/                      # Data files (runtime)
     ├── furigana-cache.json
     ├── all-lessons-detailed.json
     └── backups/
-```
+\`\`\`
 
-### Frontend (`frontend/src/`)
-```
+### Frontend (\`frontend/src/\`)
+\`\`\`
 frontend/src/
-├── components/                # React komponenty
-│   ├── RepeatMode.tsx         # Tryb Repeat After Me
-│   ├── JapanesePhrase.tsx     # Wyświetlanie JP + furigana + romaji
-│   ├── FuriganaText.tsx       # Tekst z furigana
+├── components/                # React components
+│   ├── RepeatMode.tsx         # Repeat After Me mode
+│   ├── JapanesePhrase.tsx     # Display JP + furigana + romaji
+│   ├── FuriganaText.tsx       # Text with furigana
 │   ├── RomajiText.tsx         # Romaji
-│   └── VoiceRecorder.tsx      # Nagrywanie głosu
+│   └── VoiceRecorder.tsx      # Voice recording
 ├── hooks/                     # Custom React hooks
-│   ├── useFurigana.ts         # Fetch furigana z API
-│   ├── useAudioPlayer.ts      # Odtwarzanie audio
-│   └── usePronunciationCheck.ts  # Sprawdzanie wymowy
-├── test/                      # Testy (Vitest)
+│   ├── useFurigana.ts         # Fetch furigana from API
+│   ├── useAudioPlayer.ts      # Audio playback
+│   └── usePronunciationCheck.ts  # Pronunciation check
+├── test/                      # Tests (Vitest)
 │   ├── components/
 │   ├── hooks/
 │   └── utils/
-├── App.tsx                    # Główna aplikacja
-├── LessonMode.tsx             # Tryb lekcji
-├── VoiceRecorder.tsx          # Nagrywanie (root level)
-└── translations.ts            # Tłumaczenia
-```
+├── App.tsx                    # Main application
+├── LessonMode.tsx             # Lesson mode
+├── VoiceRecorder.tsx          # Recording (root level)
+└── translations.ts            # Translations
+\`\`\`
 
 ---
 
@@ -97,9 +97,9 @@ frontend/src/
 **Type:** Simple header-based password check (not session-based)
 
 **How it works:**
-1. Password stored in `localStorage` on frontend (`speech_practice_password`)
-2. Sent with every API request in `X-Password` header
-3. Backend checks against `ACCESS_PASSWORD` env var (default: `default123`)
+1. Password stored in \`localStorage\` on frontend (\`speech_practice_password\`)
+2. Sent with every API request in \`X-Password\` header
+3. Backend checks against \`ACCESS_PASSWORD\` env var (default: \`default123\`)
 
 **Note:** This is simpler than session-based auth (no cookies, no sessions). Password is verified on every request.
 
@@ -108,46 +108,46 @@ frontend/src/
 - No session expiration (password persists until cleared from localStorage)
 - Good enough for personal use, not for multi-user scenarios
 
-### Gdzie są przechowywane lekcje?
-- ✅ **PRODUKCJA**: Wszystkie 27 lekcji w PostgreSQL (dostępne przez API)
-- ✅ **LOKALNIE**: Dane z PostgreSQL (nie ma JSONów w src/data/)
+### Where are lessons stored?
+- ✅ **PRODUCTION**: All 27 lessons in PostgreSQL (available via API)
+- ✅ **LOCAL**: Data from PostgreSQL (no JSON files in src/data/)
 
-### Jak działa deployment?
-1. **Frontend** deployowany na GitHub Pages (statyczne pliki)
-2. **Backend** uruchomiony lokalnie na Twojej maszynie
-3. **Cloudflare Tunnel** tworzy publiczny URL do lokalnego backendu
-4. **Frontend** łączy się z backendem przez ten tunnel
+### How does deployment work?
+1. **Frontend** deployed to GitHub Pages (static files)
+2. **Backend** running locally on your machine
+3. **Cloudflare Tunnel** creates public URL to local backend
+4. **Frontend** connects to backend through this tunnel
 
-### Deployment Frontend
-**NIE używaj `npm run deploy` ani `gh-pages`!**
+### Frontend Deployment
+**DO NOT use \`npm run deploy\` or \`gh-pages\`!**
 
-Poprawny proces:
-1. Zrób zmiany w kodzie
-2. `git add -A`
-3. `git commit -m "opis zmian"`
-4. `git push origin main`
-5. GitHub Actions automatycznie zbuduje i wdroży
+Correct process:
+1. Make code changes
+2. \`git add -A\`
+3. \`git commit -m "description of changes"\`
+4. \`git push origin main\`
+5. GitHub Actions automatically builds and deploys
 
 ---
 
-## 🧪 Testy
+## 🧪 Tests
 
 ### Backend Tests
-```bash
+\`\`\`bash
 cd backend
 npx tsx scripts/test-voice-recorder-logic.ts
 npx tsx scripts/test-repeat-mode-loading.ts
-```
+\`\`\`
 
 ### Frontend Tests
-```bash
+\`\`\`bash
 cd frontend
 npm test              # Vitest (unit tests)
 npm run build         # TypeScript check
-```
+\`\`\`
 
 ### Pre-push Hook
-Wszystkie testy uruchamiają się automatycznie przed każdym push:
+All tests run automatically before every push:
 - VoiceRecorder logic tests
 - Repeat Mode loading tests
 - Frontend unit tests (Vitest)
@@ -156,10 +156,10 @@ Wszystkie testy uruchamiają się automatycznie przed każdym push:
 
 ---
 
-## 📋 Struktura Danych
+## 📋 Data Structure
 
 ### Vocabulary (PostgreSQL)
-```json
+\`\`\`json
 {
   "jp": "パソコン",
   "reading": "ぱそこん",
@@ -168,20 +168,20 @@ Wszystkie testy uruchamiają się automatycznie przed każdym push:
   "type": "noun",
   "furigana": null
 }
-```
+\`\`\`
 
-### Pola:
-| Pole | Opis | Przykład |
-|------|------|----------|
-| `jp` | Japoński (kanji/katakana/hiragana) | `パソコン` |
-| `reading` | Czytanie kanji (bez okurigana!) | `ぱそこん` |
-| `romaji` | Romaji (generowane automatycznie) | `pasokon` |
-| `en` | Angielskie tłumaczenie | `PC` |
-| `type` | Typ gramatyczny | `noun`, `verb`, `i-adjective`, `na-adjective`, `expression` |
-| `furigana` | HTML z ruby tags (opcjonalne) | `<ruby>...` |
+### Fields:
+| Field | Description | Example |
+|-------|-------------|---------|
+| \`jp\` | Japanese (kanji/katakana/hiragana) | \`パソコン\` |
+| \`reading\` | Kanji reading (without okurigana!) | \`ぱそこん\` |
+| \`romaji\` | Romaji (automatically generated) | \`pasokon\` |
+| \`en\` | English translation | \`PC\` |
+| \`type\` | Grammar type | \`noun\`, \`verb\`, \`i-adjective\`, \`na-adjective\`, \`expression\` |
+| \`furigana\` | HTML with ruby tags (optional) | \`<ruby>...\` |
 
 ### Grammar (PostgreSQL)
-```json
+\`\`\`json
 {
   "pattern": "〜てもいいです",
   "explanation": "Asking for permission",
@@ -194,97 +194,97 @@ Wszystkie testy uruchamiają się automatycznie przed każdym push:
     }
   ]
 }
-```
+\`\`\`
 
 ---
 
 ## 🛠️ Commands
 
 ### Local Development
-```bash
+\`\`\`bash
 # Terminal 1 - Backend
 cd ~/Projects/speech-practice/backend
 npm run dev
 
-# Terminal 2 - Cloudflare Tunnel (do publicznego dostępu)
+# Terminal 2 - Cloudflare Tunnel (for public access)
 cloudflared tunnel run speech-practice
 
-# Frontend jest na GitHub Pages (nie trzeba uruchamiać lokalnie)
-```
+# Frontend is on GitHub Pages (no need to run locally)
+\`\`\`
 
 ### Useful Scripts
-```bash
+\`\`\`bash
 # Backend
 cd backend
-npx tsx scripts/scan-lessons.ts      # Skanowanie lekcji
-npx tsx scripts/dump-lesson.ts 2025-10-01  # Eksport lekcji
-npm run db:init                       # Inicjalizacja bazy
+npx tsx scripts/scan-lessons.ts      # Scan lessons
+npx tsx scripts/dump-lesson.ts 2025-10-01  # Export lesson
+npm run db:init                       # Database initialization
 
 # Frontend
 cd frontend
-npm test                              # Uruchom testy
-npm run build                         # Sprawdź TypeScript
-```
+npm test                              # Run tests
+npm run build                         # Check TypeScript
+\`\`\`
 
 ---
 
 ## 📊 Data Status (2026-02-26)
 
 | Location | Lesson count | Status |
-|-------------|---------------|--------|
-| PostgreSQL (produkcja) | 27 | ✅ Complete |
+|----------|--------------|--------|
+| PostgreSQL (production) | 27 | ✅ Complete |
 | Obsidian Vault | 27 | ✅ Documentation |
 
 ---
 
 ## ✅ Completed (2026-02-26)
 
-- [x] Refactoring backend: wydzielenie romaji.ts
-- [x] Refactoring frontend: wydzielenie komponentów i hooków
-- [x] Dodanie testów (Vitest dla frontendu)
-- [x] Fix: okurigana w furigana (好き → す, nie すき)
-- [x] Fix: particle pronunciation (は → wa, nie ha)
-- [x] Fix: loading states w RepeatMode
-- [x] Pre-push hook z testami
-- [x] Organizacja plików: runtime vs skrypty
+- [x] Backend refactoring: extracted romaji.ts
+- [x] Frontend refactoring: extracted components and hooks
+- [x] Added tests (Vitest for frontend)
+- [x] Fix: okurigana in furigana (好き → す, not すき)
+- [x] Fix: particle pronunciation (は → wa, not ha)
+- [x] Fix: loading states in RepeatMode
+- [x] Pre-push hook with tests
+- [x] File organization: runtime vs scripts
 
 ---
 
 ## 🔧 TODO
 
-- [ ] Dodać więcej testów (frontend hooks, komponenty)
-- [ ] Dodać testy E2E (Playwright/Cypress)
-- [ ] Zautomatyzować backup bazy danych
+- [ ] Add more tests (frontend hooks, components)
+- [ ] Add E2E tests (Playwright/Cypress)
+- [ ] Automate database backup
 
 ---
 
 ## 👥 Repository Permissions
 
 ### Current Setup
-- **Owner:** `vileen` (GitHub)
-- **Default branch:** `main`
-- **Branch protection:** None (można pushować bezpośrednio)
+- **Owner:** \`vileen\` (GitHub)
+- **Default branch:** \`main\`
+- **Branch protection:** None (can push directly)
 
 ### Collaboration
-Currently only owner can push directly to `main`. Dla kolaboracji z innymi deweloperami:
+Currently only owner can push directly to \`main\`. For collaboration with other developers:
 
-1. **Fork workflow** (dla zewnętrznych kontrybutorów)
-2. **Branch workflow** (dla trusted collaboratorów)
-   - Dodaj collaboratorów w GitHub repo settings
-   - Zalecane: Włączyć branch protection dla `main`
-   - Wymagać PR + review przed mergem
+1. **Fork workflow** (for external contributors)
+2. **Branch workflow** (for trusted collaborators)
+   - Add collaborators in GitHub repo settings
+   - Recommended: Enable branch protection for \`main\`
+   - Require PR + review before merge
 
 ---
 
 ## 🔄 Auto-Restart Backend on PR Merge
 
 ### Goal
-Automatyczny restart backendu po zmergowaniu PR do `main` - umożliwia kolaborację bez manualnego restartu.
+Automatic backend restart after PR is merged to \`main\` - enables collaboration without manual restart.
 
 ### TODO: Implementation
 
 #### Option A: GitHub Actions + Webhook
-```yaml
+\`\`\`yaml
 # .github/workflows/restart-backend.yml
 name: Restart Backend on Merge
 
@@ -301,16 +301,16 @@ jobs:
           curl -X POST ${{ secrets.BACKEND_RESTART_WEBHOOK }} \
             -H "Authorization: Bearer ${{ secrets.RESTART_TOKEN }}" \
             -d '{"action": "restart", "commit": "${{ github.sha }}"}'
-```
+\`\`\`
 
-**Wymaga:**
-- Endpoint webhook na backendzie (np. `/webhook/restart`)
-- Autentykacja tokenem
-- Handler PM2/systemd do restartu
+**Requires:**
+- Webhook endpoint on backend (e.g. \`/webhook/restart\`)
+- Token authentication
+- PM2/systemd handler for restart
 
-#### Option B: Watchdog na serwerze
-```bash
-# Skrypt na serwerze lokalnym
+#### Option B: Watchdog on server
+\`\`\`bash
+# Script on local server
 cd ~/Projects/speech-practice
 while true; do
   git fetch origin
@@ -324,10 +324,10 @@ while true; do
   
   sleep 60
 done
-```
+\`\`\`
 
-#### Option C: GitHub Actions + SSH (jeśli serwer publiczny)
-```yaml
+#### Option C: GitHub Actions + SSH (if server is public)
+\`\`\`yaml
 - name: Deploy and restart
   uses: appleboy/ssh-action@v1.0.0
   with:
@@ -338,11 +338,11 @@ done
       cd ~/Projects/speech-practice
       git pull origin main
       pm2 restart backend
-```
+\`\`\`
 
-**Uwaga:** Opcja C wymaga publicznego IP lub Tailscale dla serwera.
+**Note:** Option C requires public IP or Tailscale for the server.
 
 ### Security
-- **NIE commitować:** SSH keys, hasła, tokeny do repo
-- **Używać:** GitHub Secrets (`${{ secrets.XXX }}`)
-- **Webhook token:** Generowany losowo, przechowywany poza repo
+- **DO NOT commit:** SSH keys, passwords, tokens to repo
+- **Use:** GitHub Secrets (\`${{ secrets.XXX }}\`)
+- **Webhook token:** Randomly generated, stored outside repo
