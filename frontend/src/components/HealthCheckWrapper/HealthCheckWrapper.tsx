@@ -1,16 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { OfflineScreen } from '../OfflineScreen/index.js';
 import { API_URL } from '../../config/api.js';
 
 export function HealthCheckWrapper({ children }: { children: React.ReactNode }) {
   const [healthStatus, setHealthStatus] = useState<'checking' | 'online' | 'offline'>('checking');
-  const hasChecked = useRef(false);
 
   useEffect(() => {
-    // Prevent double execution in React StrictMode
-    if (hasChecked.current) return;
-    hasChecked.current = true;
-
+    let cancelled = false;
+    
     const checkHealth = async () => {
       try {
         const response = await fetch(`${API_URL}/api/health`, {
@@ -19,17 +16,19 @@ export function HealthCheckWrapper({ children }: { children: React.ReactNode }) 
           signal: AbortSignal.timeout(5000)
         });
         
-        if (response.ok) {
-          setHealthStatus('online');
-        } else {
-          setHealthStatus('offline');
+        if (!cancelled) {
+          setHealthStatus(response.ok ? 'online' : 'offline');
         }
       } catch (error) {
-        setHealthStatus('offline');
+        if (!cancelled) {
+          setHealthStatus('offline');
+        }
       }
     };
 
     checkHealth();
+    
+    return () => { cancelled = true; };
   }, []);
 
   // When offline, retry every 5 seconds
@@ -62,10 +61,7 @@ export function HealthCheckWrapper({ children }: { children: React.ReactNode }) 
     return (
       <OfflineScreen 
         apiUrl={API_URL} 
-        onRetry={() => {
-          setHealthStatus('checking');
-          hasChecked.current = false;
-        }} 
+        onRetry={() => setHealthStatus('checking')} 
       />
     );
   }
