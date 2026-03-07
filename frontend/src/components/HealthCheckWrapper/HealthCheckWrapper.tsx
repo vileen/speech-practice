@@ -5,18 +5,11 @@ import { API_URL } from '../../config/api.js';
 export function HealthCheckWrapper({ children }: { children: React.ReactNode }) {
   const [healthStatus, setHealthStatus] = useState<'checking' | 'online' | 'offline'>('checking');
   const mounted = useRef(true);
-  const renderCount = useRef(0);
-
-  // Debug
-  renderCount.current++;
-  console.log('[HealthCheck] Render #', renderCount.current, 'status:', healthStatus);
 
   useEffect(() => {
-    console.log('[HealthCheck] Effect running, mounted:', mounted.current);
     mounted.current = true;
     
     const checkHealth = async () => {
-      console.log('[HealthCheck] Checking health...');
       try {
         const response = await fetch(`${API_URL}/api/health`, {
           method: 'GET',
@@ -24,14 +17,10 @@ export function HealthCheckWrapper({ children }: { children: React.ReactNode }) 
           signal: AbortSignal.timeout(5000)
         });
         
-        console.log('[HealthCheck] Response:', response.status, 'mounted:', mounted.current);
-        
         if (mounted.current) {
-          console.log('[HealthCheck] Setting status to:', response.ok ? 'online' : 'offline');
           setHealthStatus(response.ok ? 'online' : 'offline');
         }
       } catch (error) {
-        console.log('[HealthCheck] Error:', error, 'mounted:', mounted.current);
         if (mounted.current) {
           setHealthStatus('offline');
         }
@@ -40,10 +29,7 @@ export function HealthCheckWrapper({ children }: { children: React.ReactNode }) 
 
     checkHealth();
     
-    return () => { 
-      console.log('[HealthCheck] Cleanup, setting mounted to false');
-      mounted.current = false; 
-    };
+    return () => { mounted.current = false; };
   }, []);
 
   // When offline, retry every 5 seconds
