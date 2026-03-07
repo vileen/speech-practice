@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Link, useNavigate, useParams, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
-import { LessonMode } from './components/LessonMode.js';
 import './components/LessonMode.css';
 import { VoiceRecorder } from './components/VoiceRecorder.js';
 import './components/VoiceRecorder.css';
@@ -18,6 +17,12 @@ import type { Session, Lesson } from './types/index.js';
 
 // Extracted components
 import { AudioPlayer } from './components/AudioPlayer.js';
+// Page components
+import { Login } from './pages/Login.js';
+import { Home } from './pages/Home.js';
+import { LessonList } from './pages/LessonList.js';
+import { LessonDetail } from './pages/LessonDetail.js';
+
 
 // Types
 
@@ -126,7 +131,7 @@ function App() {
 }
 
 // Helper component for authenticated routes
-function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
+export function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -154,34 +159,6 @@ function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-// Login component
-function Login() {
-  const [password, setPassword] = useState('');
-
-  const handleLogin = async () => {
-    localStorage.setItem('speech_practice_password', password);
-    // Reload to trigger auth check
-    window.location.reload();
-  };
-
-  return (
-    <div className="login-container">
-      <h1>🎤 Speech Practice</h1>
-      <div className="login-form">
-        <input
-          type="password"
-          placeholder="Enter password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-        />
-        <button onClick={handleLogin}>Enter</button>
-      </div>
-    </div>
-  );
-}
-
-// Memory Mode Wrapper - fetches lessons data
 function MemoryModeWrapper() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
@@ -228,58 +205,6 @@ function MemoryModeWrapper() {
   return (
     <AuthenticatedRoute>
       <MemoryMode lessons={lessons} />
-    </AuthenticatedRoute>
-  );
-}
-
-// Home component
-function Home() {
-  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
-  const navigate = useNavigate();
-
-  return (
-    <AuthenticatedRoute>
-      <div className="app">
-        <header>
-          <h1>🎤 Speech Practice</h1>
-          <div className="setup">
-              <div className="language-select">
-                <button 
-                  className={language === 'japanese' ? 'active' : ''}
-                  onClick={() => setLanguage('japanese')}
-                >
-                  🇯🇵 Japanese
-                </button>
-                <button 
-                  className={language === 'italian' ? 'active' : ''}
-                  onClick={() => setLanguage('italian')}
-                >
-                  🇮🇹 Italian
-                </button>
-              </div>
-              
-              <button className="start-btn" onClick={() => navigate('/chat/setup')}>
-                💬 Start Chat
-              </button>
-              
-              {language === 'japanese' && (
-                <>
-                  <button className="repeat-mode-btn" onClick={() => navigate('/repeat/setup')}>
-                    🎯 Repeat After Me
-                  </button>
-                  
-                  <button className="lesson-mode-btn" onClick={() => navigate('/lessons')}>
-                    📚 Lesson Mode
-                  </button>
-
-                  <button className="memory-mode-btn" onClick={() => navigate('/memory')}>
-                    🧠 Memory Mode
-                  </button>
-                </>
-              )}
-            </div>
-        </header>
-      </div>
     </AuthenticatedRoute>
   );
 }
@@ -1058,57 +983,6 @@ function RepeatSetup() {
           </div>
         </main>
       </div>
-    </AuthenticatedRoute>
-  );
-}
-
-// Lesson List component
-function LessonList() {
-  const navigate = useNavigate();
-
-  const handleStartLessonChat = (lessonId: string, lessonTitle: string) => {
-    navigate(`/lessons/${lessonId}/setup`, { state: { lessonTitle } });
-  };
-
-  return (
-    <AuthenticatedRoute>
-      <LessonMode
-        password={localStorage.getItem('speech_practice_password') || ''}
-        onBack={() => navigate('/')}
-        onStartLessonChat={handleStartLessonChat}
-        selectedLessonId={undefined}
-        onSelectLesson={(id) => {
-          if (id) navigate(`/lessons/${id}`);
-        }}
-      />
-    </AuthenticatedRoute>
-  );
-}
-
-// Lesson Detail component
-function LessonDetail() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-
-  const handleStartLessonChat = (lessonId: string, lessonTitle: string) => {
-    navigate(`/lessons/${lessonId}/setup`, { state: { lessonTitle } });
-  };
-
-  return (
-    <AuthenticatedRoute>
-      <LessonMode
-        password={localStorage.getItem('speech_practice_password') || ''}
-        onBack={() => navigate('/lessons')}
-        onStartLessonChat={handleStartLessonChat}
-        selectedLessonId={id}
-        onSelectLesson={(selectedId) => {
-          if (selectedId && selectedId !== id) {
-            navigate(`/lessons/${selectedId}`);
-          } else if (!selectedId) {
-            navigate('/lessons');
-          }
-        }}
-      />
     </AuthenticatedRoute>
   );
 }
