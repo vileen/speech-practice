@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { OfflineScreen } from '../OfflineScreen/index.js';
 import { API_URL } from '../../config/api.js';
 
 export function HealthCheckWrapper({ children }: { children: React.ReactNode }) {
   const [healthStatus, setHealthStatus] = useState<'checking' | 'online' | 'offline'>('checking');
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const checkHealth = useCallback(async () => {
     try {
@@ -25,23 +24,17 @@ export function HealthCheckWrapper({ children }: { children: React.ReactNode }) 
   }, []);
 
   useEffect(() => {
-    // Initial check
+    // Check once at startup
     checkHealth();
+  }, [checkHealth]);
+
+  // When offline, retry every 5 seconds
+  useEffect(() => {
+    if (healthStatus !== 'offline') return;
     
-    // Set up interval - recreate when status changes
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    
-    intervalRef.current = setInterval(checkHealth, healthStatus === 'online' ? 30000 : 5000);
-    
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [healthStatus]);
+    const interval = setInterval(checkHealth, 5000);
+    return () => clearInterval(interval);
+  }, [healthStatus, checkHealth]);
 
   if (healthStatus === 'checking') {
     return (
