@@ -22,10 +22,10 @@ The `backend/scripts/` folder contains **76 scripts** that need cleanup for a pu
 
 **Issues:**
 ```javascript
-user: process.env.USER || 'dominiksoczewka',  // Hardcoded username
+user: process.env.USER || 'USERNAME',  // Hardcoded username
 
 // Full system paths:
-readFileSync('/Users/dominiksoczewka/clawd/lesson-2026-03-02.json')
+readFileSync('/path/to/lesson-2026-03-02.json')
 ```
 
 **Risk:** Low - username and local paths are not critical, but reveal personal info and system structure.
@@ -34,7 +34,7 @@ readFileSync('/Users/dominiksoczewka/clawd/lesson-2026-03-02.json')
 
 Scripts reference files outside the project directory:
 ```javascript
-'/Users/dominiksoczewka/clawd/lesson-2026-03-02.json'
+'/path/to/lesson-2026-03-02.json'
 ```
 
 These files won't work on other machines.
@@ -81,9 +81,9 @@ All check-*.ts files (15 files) - except reusable ones
 ### Option B: Clean Personal Info
 
 For scripts that must stay, remove:
-1. Replace `|| 'dominiksoczewka'` with `|| 'postgres'`
+1. Replace `|| 'USERNAME'` with `|| 'postgres'`
 2. Replace hardcoded paths with relative paths or env vars
-3. Remove references to `/Users/dominiksoczewka/`
+3. Remove references to `/Users/USERNAME/`
 
 ### Option C: Add to .gitignore
 
