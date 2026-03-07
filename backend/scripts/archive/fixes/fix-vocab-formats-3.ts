@@ -1,0 +1,156 @@
+#!/usr/bin/env node
+import { pool } from '../src/db/pool.js';
+
+async function fixVocabFormat(id, title, vocabData) {
+  console.log(`Fixing ${id}: ${title}...`);
+  
+  await pool.query(
+    'UPDATE lessons SET vocabulary = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+    [JSON.stringify(vocabData), id]
+  );
+  console.log(`✅ ${id} fixed (${vocabData.length} items)`);
+}
+
+async function main() {
+  // 2025-10-27: Katakana ma-ya-ra, Verbs
+  await fixVocabFormat('2025-10-27', 'Katakana M-row, Y-row, R-row, Verbs', [
+    { jp: 'マ', reading: 'ma', en: 'ma (katakana)', tags: ['katakana'] },
+    { jp: 'ミ', reading: 'mi', en: 'mi (katakana)', tags: ['katakana'] },
+    { jp: 'ム', reading: 'mu', en: 'mu (katakana)', tags: ['katakana'] },
+    { jp: 'メ', reading: 'me', en: 'me (katakana)', tags: ['katakana'] },
+    { jp: 'モ', reading: 'mo', en: 'mo (katakana)', tags: ['katakana'] },
+    { jp: 'ヤ', reading: 'ya', en: 'ya (katakana)', tags: ['katakana'] },
+    { jp: 'ユ', reading: 'yu', en: 'yu (katakana)', tags: ['katakana'] },
+    { jp: 'ヨ', reading: 'yo', en: 'yo (katakana)', tags: ['katakana'] },
+    { jp: 'ラ', reading: 'ra', en: 'ra (katakana)', tags: ['katakana'] },
+    { jp: 'リ', reading: 'ri', en: 'ri (katakana)', tags: ['katakana'] },
+    { jp: 'ル', reading: 'ru', en: 'ru (katakana)', tags: ['katakana'] },
+    { jp: 'レ', reading: 're', en: 're (katakana)', tags: ['katakana'] },
+    { jp: 'ロ', reading: 'ro', en: 'ro (katakana)', tags: ['katakana'] },
+    { jp: 'ワ', reading: 'wa', en: 'wa (katakana)', tags: ['katakana'] },
+    { jp: 'ヲ', reading: 'wo', en: 'wo (katakana)', tags: ['katakana'] },
+    { jp: 'ン', reading: 'n', en: 'n (katakana)', tags: ['katakana'] },
+    { jp: '食べます', reading: 'tabemasu', en: 'eat (polite)', tags: ['verb'] },
+    { jp: '食べません', reading: 'tabemasen', en: 'do not eat (polite)', tags: ['verb'] },
+    { jp: '見ます', reading: 'mimasu', en: 'watch/see (polite)', tags: ['verb'] },
+    { jp: '見ません', reading: 'mimasen', en: 'do not watch (polite)', tags: ['verb'] },
+    { jp: '読みます', reading: 'yomimasu', en: 'read (polite)', tags: ['verb'] },
+    { jp: '読みません', reading: 'yomimasen', en: 'do not read (polite)', tags: ['verb'] },
+    { jp: '行きます', reading: 'ikimasu', en: 'go (polite)', tags: ['verb'] },
+    { jp: '行きません', reading: 'ikimasen', en: 'do not go (polite)', tags: ['verb'] },
+    { jp: 'します', reading: 'shimasu', en: 'do (polite)', tags: ['verb'] },
+    { jp: 'しません', reading: 'shimasen', en: 'do not do (polite)', tags: ['verb'] },
+    { jp: '来ます', reading: 'kimasu', en: 'come (polite)', tags: ['verb'] },
+    { jp: '来ません', reading: 'kimasen', en: 'do not come (polite)', tags: ['verb'] },
+    { jp: '勉強する', reading: 'benkyō suru', en: 'to study', tags: ['verb'] },
+    { jp: '勉強します', reading: 'benkyō shimasu', en: 'study (polite)', tags: ['verb'] },
+    { jp: 'スポーツする', reading: 'supōtsu suru', en: 'to do sports', tags: ['verb'] },
+    { jp: 'スポーツします', reading: 'supōtsu shimasu', en: 'do sports (polite)', tags: ['verb'] },
+    { jp: 'マンガ', reading: 'manga', en: 'manga, comics', tags: ['katakana-word'] },
+    { jp: 'ミュージック', reading: 'myūjikku', en: 'music', tags: ['katakana-word'] },
+    { jp: 'メール', reading: 'mēru', en: 'email', tags: ['katakana-word'] },
+    { jp: 'レストラン', reading: 'resutoran', en: 'restaurant', tags: ['katakana-word'] },
+    { jp: 'ワイン', reading: 'wain', en: 'wine', tags: ['katakana-word'] },
+  ]);
+
+  // 2025-10-29: Adjectives, Combining
+  await fixVocabFormat('2025-10-29', 'Adjectives, Combining', [
+    { jp: '～い形容詞＋名詞', reading: '[i-adj] + [noun]', en: 'direct connection (no particle)', tags: ['grammar'] },
+    { jp: 'かわいい猫', reading: 'kawaii neko', en: 'cute cat', tags: ['example'] },
+    { jp: '～な形容詞＋な＋名詞', reading: '[na-adj] + na + [noun]', en: 'na-adjective needs な before noun', tags: ['grammar'] },
+    { jp: '綺麗な花', reading: 'kirei na hana', en: 'beautiful flower', tags: ['example'] },
+    { jp: '元気な人', reading: 'genki na hito', en: 'energetic person', tags: ['example'] },
+    { jp: 'は', reading: 'wa', en: 'topic marker', tags: ['particle'] },
+    { jp: 'が', reading: 'ga', en: 'subject marker', tags: ['particle'] },
+    { jp: 'の', reading: 'no', en: 'possession', tags: ['particle'] },
+    { jp: 'を', reading: 'wo/o', en: 'direct object marker', tags: ['particle'] },
+    { jp: 'に', reading: 'ni', en: 'place/time marker', tags: ['particle'] },
+    { jp: 'へ', reading: 'e', en: 'direction marker', tags: ['particle'] },
+    { jp: 'から', reading: 'kara', en: 'from', tags: ['particle'] },
+    { jp: 'まで', reading: 'made', en: 'until, to', tags: ['particle'] },
+    { jp: 'と', reading: 'to', en: 'together with, and', tags: ['particle'] },
+    { jp: 'どっち', reading: 'docchi', en: 'which one (casual)', tags: ['question'] },
+    { jp: 'どちら', reading: 'dochira', en: 'which one (polite)', tags: ['question'] },
+    { jp: 'どんな', reading: 'donna', en: 'what kind of', tags: ['question'] },
+    { jp: 'でも', reading: 'demo', en: 'but, however', tags: ['conjunction'] },
+    { jp: 'ずっと', reading: 'zutto', en: 'always, constantly', tags: ['adverb'] },
+    { jp: 'そば', reading: 'soba', en: 'next to, near', tags: ['noun'] },
+    { jp: 'います', reading: 'imasu', en: 'to exist (people/animals)', tags: ['verb'] },
+    { jp: 'あります', reading: 'arimasu', en: 'to exist (objects)', tags: ['verb'] },
+    { jp: 'ここ', reading: 'koko', en: 'here (near speaker)', tags: ['demonstrative'] },
+    { jp: 'そこ', reading: 'soko', en: 'there (near listener)', tags: ['demonstrative'] },
+    { jp: 'あそこ', reading: 'asoko', en: 'over there (far)', tags: ['demonstrative'] },
+    { jp: 'どこ', reading: 'doko', en: 'where', tags: ['question'] },
+    { jp: '大丈夫', reading: 'daijoubu', en: 'okay, alright', tags: ['na-adjective'] },
+    { jp: '残念', reading: 'zannen', en: 'regrettable', tags: ['na-adjective'] },
+    { jp: '汚い', reading: 'kitanai', en: 'dirty', tags: ['i-adjective'] },
+    { jp: '難しい', reading: 'muzukashii', en: 'difficult', tags: ['i-adjective'] },
+    { jp: '簡単', reading: 'kantan', en: 'simple, easy', tags: ['na-adjective'] },
+    { jp: '大変', reading: 'taihen', en: 'difficult, tiring', tags: ['na-adjective'] },
+    { jp: 'つまらない', reading: 'tsumaranai', en: 'boring', tags: ['i-adjective'] },
+    { jp: '辛い', reading: 'karai', en: 'spicy', tags: ['i-adjective'] },
+    { jp: '甘い', reading: 'amai', en: 'sweet', tags: ['i-adjective'] },
+    { jp: '温かい', reading: 'atatakai', en: 'warm', tags: ['i-adjective'] },
+    { jp: '涼しい', reading: 'suzushii', en: 'cool, refreshing', tags: ['i-adjective'] },
+    { jp: '寒い', reading: 'samui', en: 'cold (weather)', tags: ['i-adjective'] },
+    { jp: '暑い', reading: 'atsui', en: 'hot (weather)', tags: ['i-adjective'] },
+    { jp: '熱い', reading: 'atsui', en: 'hot (touch)', tags: ['i-adjective'] },
+    { jp: '冷たい', reading: 'tsumetai', en: 'cold (touch)', tags: ['i-adjective'] },
+    { jp: '痛い', reading: 'itai', en: 'painful, hurts', tags: ['i-adjective'] },
+    { jp: '怖い', reading: 'kowai', en: 'scary, afraid', tags: ['i-adjective'] },
+    { jp: '可哀想', reading: 'kawaisou', en: 'poor thing, pitiful', tags: ['na-adjective'] },
+  ]);
+
+  // 2025-11-03: Katakana ra-wa, Dictionary Form
+  await fixVocabFormat('2025-11-03', 'Katakana R-row, W-row, Dictionary Form', [
+    { jp: 'ラ', reading: 'ra', en: 'ra (katakana)', tags: ['katakana'] },
+    { jp: 'ラーメン', reading: 'rāmen', en: 'ramen', tags: ['katakana-word'] },
+    { jp: 'ラジオ', reading: 'rajio', en: 'radio', tags: ['katakana-word'] },
+    { jp: 'リ', reading: 'ri', en: 'ri (katakana)', tags: ['katakana'] },
+    { jp: 'リサイクル', reading: 'risaikuru', en: 'recycle', tags: ['katakana-word'] },
+    { jp: 'ル', reading: 'ru', en: 'ru (katakana)', tags: ['katakana'] },
+    { jp: 'ルール', reading: 'rūru', en: 'rule', tags: ['katakana-word'] },
+    { jp: 'レ', reading: 're', en: 're (katakana)', tags: ['katakana'] },
+    { jp: 'レストラン', reading: 'resutoran', en: 'restaurant', tags: ['katakana-word'] },
+    { jp: 'ロ', reading: 'ro', en: 'ro (katakana)', tags: ['katakana'] },
+    { jp: 'ロボット', reading: 'robotto', en: 'robot', tags: ['katakana-word'] },
+    { jp: 'ワ', reading: 'wa', en: 'wa (katakana)', tags: ['katakana'] },
+    { jp: 'ワイン', reading: 'wain', en: 'wine', tags: ['katakana-word'] },
+    { jp: 'ヲ', reading: 'wo', en: 'wo (katakana)', tags: ['katakana'] },
+    { jp: 'ン', reading: 'n', en: 'n (katakana)', tags: ['katakana'] },
+    { jp: 'いる', reading: 'iru', en: 'to exist (people/animals)', tags: ['verb'] },
+    { jp: 'ある', reading: 'aru', en: 'to exist (objects)', tags: ['verb'] },
+    { jp: '人', reading: 'hito', en: 'person, human', tags: ['noun'] },
+    { jp: '机', reading: 'tsukue', en: 'desk', tags: ['noun'] },
+    { jp: '上', reading: 'ue', en: 'top, above, on', tags: ['noun'] },
+    { jp: '明日', reading: 'ashita', en: 'tomorrow', tags: ['time'] },
+    { jp: '今日', reading: 'kyou', en: 'today', tags: ['time'] },
+    { jp: '昨日', reading: 'kinou', en: 'yesterday', tags: ['time'] },
+    { jp: '雨', reading: 'ame', en: 'rain', tags: ['noun'] },
+    { jp: '降る', reading: 'furu', en: 'to fall (rain/snow)', tags: ['verb'] },
+    { jp: '雪', reading: 'yuki', en: 'snow', tags: ['noun'] },
+    { jp: '試合', reading: 'shiai', en: 'match, game', tags: ['noun'] },
+    { jp: '牛乳', reading: 'gyuunyuu', en: 'milk (cow)', tags: ['noun'] },
+    { jp: 'ミルク', reading: 'miruku', en: 'milk (general)', tags: ['katakana-word'] },
+    { jp: 'パン', reading: 'pan', en: 'bread', tags: ['katakana-word'] },
+    { jp: 'ジュース', reading: 'jūsu', en: 'juice', tags: ['katakana-word'] },
+    { jp: '食べる', reading: 'taberu', en: 'to eat (dict.)', tags: ['verb'] },
+    { jp: '見る', reading: 'miru', en: 'to see (dict.)', tags: ['verb'] },
+    { jp: '飲む', reading: 'nomu', en: 'to drink (dict.)', tags: ['verb'] },
+    { jp: '話す', reading: 'hanasu', en: 'to speak (dict.)', tags: ['verb'] },
+    { jp: '来る', reading: 'kuru', en: 'to come (dict.)', tags: ['verb'] },
+    { jp: 'する', reading: 'suru', en: 'to do (dict.)', tags: ['verb'] },
+    { jp: 'アメリカ', reading: 'amerika', en: 'America, USA', tags: ['katakana-word'] },
+    { jp: 'フランス', reading: 'furansu', en: 'France', tags: ['katakana-word'] },
+    { jp: 'イギリス', reading: 'igirisu', en: 'UK, Britain', tags: ['katakana-word'] },
+    { jp: 'ドイツ', reading: 'doitsu', en: 'Germany', tags: ['katakana-word'] },
+    { jp: 'イタリア', reading: 'itaria', en: 'Italy', tags: ['katakana-word'] },
+    { jp: 'カナダ', reading: 'kanada', en: 'Canada', tags: ['katakana-word'] },
+    { jp: 'オーストラリア', reading: 'ōsutoraria', en: 'Australia', tags: ['katakana-word'] },
+  ]);
+
+  await pool.end();
+  console.log('\n✅ Batch 3 complete!');
+}
+
+main().catch(console.error);

@@ -71,7 +71,6 @@ coverage/
 *.temp
 *.swp
 *~
-scripts/
 docs/MEMORY.md
 docs/CHECKLIST-*.md
 docs/MEMORY.md

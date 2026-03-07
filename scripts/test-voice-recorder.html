@@ -1,0 +1,158 @@
+// scripts/test-voice-recorder.html
+// Manual test page for VoiceRecorder component
+// Open this in browser and check console
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VoiceRecorder Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    button { padding: 10px 20px; margin: 5px; font-size: 16px; }
+    .log { background: #f5f5f5; padding: 10px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <h1>VoiceRecorder Debug Test</h1>
+  
+  <h2>Basic Audio Test</h2>
+  <button id="test-audio">Test AudioContext</button>
+  <button id="test-mic">Test Microphone Access</button>
+  <button id="test-recorder">Test MediaRecorder</button>
+  
+  <h2>State Test</h2>
+  <button id="check-state">Check Component State</button>
+  
+  <div id="log" class="log"></div>
+
+  <script>
+    const log = (msg, type = 'info') => {
+      const el = document.getElementById('log');
+      const line = document.createElement('div');
+      line.className = type;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      el.appendChild(line);
+      console.log(msg);
+    };
+
+    document.getElementById('test-audio').onclick = async () => {
+      try {
+        log('Creating AudioContext...');
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        log(`AudioContext created. State: ${ctx.state}`, 'success');
+        
+        if (ctx.state === 'suspended') {
+          log('Resuming AudioContext...');
+          await ctx.resume();
+          log(`AudioContext resumed. State: ${ctx.state}`, 'success');
+        }
+        
+        // Test analyzer
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        log(`Analyser created. fftSize: ${analyser.fftSize}`, 'success');
+        
+        ctx.close();
+        log('AudioContext closed.', 'success');
+      } catch (err) {
+        log(`AudioContext ERROR: ${err.message}`, 'error');
+      }
+    };
+
+    document.getElementById('test-mic').onclick = async () => {
+      try {
+        log('Requesting microphone access...');
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        log(`Microphone access granted! Tracks: ${stream.getAudioTracks().length}`, 'success');
+        
+        const track = stream.getAudioTracks()[0];
+        log(`Track label: ${track.label}`);
+        log(`Track enabled: ${track.enabled}`);
+        log(`Track muted: ${track.muted}`);
+        
+        // Cleanup
+        stream.getTracks().forEach(t => t.stop());
+        log('Microphone tracks stopped.', 'success');
+      } catch (err) {
+        log(`Microphone ERROR: ${err.name} - ${err.message}`, 'error');
+      }
+    };
+
+    document.getElementById('test-recorder').onclick = async () => {
+      try {
+        log('Testing MediaRecorder...');
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        // Check supported MIME types
+        const types = ['audio/webm', 'audio/webm;codecs=opus', 'audio/ogg', 'audio/mp4'];
+        log('Supported MIME types:');
+        types.forEach(type => {
+          const supported = MediaRecorder.isTypeSupported(type);
+          log(`  ${type}: ${supported ? 'YES' : 'NO'}`, supported ? 'success' : 'info');
+        });
+        
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+          ? 'audio/webm;codecs=opus' 
+          : 'audio/webm';
+        
+        log(`Using MIME type: ${mimeType}`);
+        
+        const recorder = new MediaRecorder(stream, { mimeType });
+        log(`MediaRecorder created. State: ${recorder.state}`, 'success');
+        
+        let chunks = [];
+        recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            chunks.push(e.data);
+            log(`Data available: ${e.data.size} bytes`);
+          }
+        };
+        
+        recorder.onstart = () => log('Recording started!', 'success');
+        recorder.onstop = () => {
+          log('Recording stopped!', 'success');
+          const blob = new Blob(chunks, { type: mimeType });
+          log(`Recorded blob: ${blob.size} bytes`, 'success');
+          chunks = [];
+        };
+        recorder.onerror = (e) => log(`Recorder error: ${e.message}`, 'error');
+        
+        // Record for 1 second
+        recorder.start(100);
+        log('Started recording (100ms chunks)...');
+        
+        setTimeout(() => {
+          if (recorder.state !== 'inactive') {
+            recorder.stop();
+          }
+          stream.getTracks().forEach(t => t.stop());
+        }, 1000);
+        
+      } catch (err) {
+        log(`MediaRecorder ERROR: ${err.message}`, 'error');
+      }
+    };
+
+    document.getElementById('check-state').onclick = () => {
+      log('Checking React component state...');
+      log('Check browser DevTools > Components > VoiceRecorder');
+      log('Props to verify:');
+      log('  - disabled: should be false');
+      log('  - isListening: should be false initially');
+      log('  - mode: "push-to-talk" or "voice-activated"');
+      log('');
+      log('Events to check:');
+      log('  - onClick handler should call startPushToTalk()');
+      log('  - Button should NOT have disabled attribute');
+    };
+
+    // Auto-run basic checks
+    log('Page loaded. Click buttons to test.');
+    log(`User Agent: ${navigator.userAgent}`);
+    log(`AudioContext supported: ${!!(window.AudioContext || window.webkitAudioContext)}`);
+    log(`MediaRecorder supported: ${!!window.MediaRecorder}`);
+  </script>
+</body>
+</html>

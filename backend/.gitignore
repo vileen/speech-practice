@@ -36,3 +36,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Archived scripts (one-time use)
+scripts/archive/

@@ -1,0 +1,157 @@
+#!/usr/bin/env node
+import { pool } from '../src/db/pool.js';
+
+async function fixVocabFormat(id, title, vocabData) {
+  console.log(`Fixing ${id}: ${title}...`);
+  
+  await pool.query(
+    'UPDATE lessons SET vocabulary = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+    [JSON.stringify(vocabData), id]
+  );
+  console.log(`✅ ${id} fixed (${vocabData.length} items)`);
+}
+
+async function main() {
+  // 2025-10-06: Numbers, Age and Hiragana
+  await fixVocabFormat('2025-10-06', 'Numbers, Age', [
+    { jp: '病気です', reading: 'byōki desu', en: 'I am sick', tags: ['expression'] },
+    { jp: '０', reading: 'zero / rei', en: 'zero', tags: ['number'] },
+    { jp: '４', reading: 'yon / shi', en: 'four (avoid shi - death association)', tags: ['number'] },
+    { jp: '７', reading: 'nana / shichi', en: 'seven (nana more common)', tags: ['number'] },
+    { jp: '９', reading: 'kyū / ku', en: 'nine (both forms OK)', tags: ['number'] },
+    { jp: '１１', reading: 'jū ichi', en: 'eleven (10 + 1)', tags: ['number'] },
+    { jp: '１２', reading: 'jū ni', en: 'twelve (10 + 2)', tags: ['number'] },
+    { jp: '１３', reading: 'jū san', en: 'thirteen (10 + 3)', tags: ['number'] },
+    { jp: '１４', reading: 'jū yon', en: 'fourteen (avoid jū shi!)', tags: ['number'] },
+    { jp: '１５', reading: 'jū go', en: 'fifteen (10 + 5)', tags: ['number'] },
+    { jp: '１６', reading: 'jū roku', en: 'sixteen (10 + 6)', tags: ['number'] },
+    { jp: '１７', reading: 'jū nana', en: 'seventeen (10 + 7)', tags: ['number'] },
+    { jp: '１８', reading: 'jū hachi', en: 'eighteen (10 + 8)', tags: ['number'] },
+    { jp: '１９', reading: 'jū kyū', en: 'nineteen (10 + 9)', tags: ['number'] },
+    { jp: '２０', reading: 'ni jū', en: 'twenty (2 × 10)', tags: ['number'] },
+    { jp: '３０', reading: 'san jū', en: 'thirty (3 × 10)', tags: ['number'] },
+    { jp: '４０', reading: 'yon jū', en: 'forty (4 × 10)', tags: ['number'] },
+    { jp: '５０', reading: 'go jū', en: 'fifty (5 × 10)', tags: ['number'] },
+    { jp: '６０', reading: 'roku jū', en: 'sixty (6 × 10)', tags: ['number'] },
+    { jp: '７０', reading: 'nana jū', en: 'seventy (7 × 10)', tags: ['number'] },
+    { jp: '８０', reading: 'hachi jū', en: 'eighty (8 × 10)', tags: ['number'] },
+    { jp: '９０', reading: 'kyū jū', en: 'ninety (9 × 10)', tags: ['number'] },
+    { jp: '１歳', reading: 'issai', en: '1 year old (avoid ichi-sai)', tags: ['age'] },
+    { jp: '８歳', reading: 'hassai', en: '8 years old (hachi → ha)', tags: ['age'] },
+    { jp: '１０歳', reading: 'jū-sai', en: '10 years old', tags: ['age'] },
+    { jp: '二十歳', reading: 'hatachi', en: '20 years old (special)', tags: ['age'] },
+    { jp: '一年生', reading: 'ichi-nensei', en: 'first year student', tags: ['school'] },
+    { jp: '二年生', reading: 'ni-nensei', en: 'second year student', tags: ['school'] },
+  ]);
+
+  // 2025-10-08: Hiragana ha-hi-fu-he-ho
+  await fixVocabFormat('2025-10-08', 'Hiragana H-row', [
+    { jp: 'は', reading: 'ha', en: 'ha (hiragana)', tags: ['hiragana'] },
+    { jp: 'ひ', reading: 'hi', en: 'hi (hiragana)', tags: ['hiragana'] },
+    { jp: 'ふ', reading: 'fu', en: 'fu (hiragana)', tags: ['hiragana'] },
+    { jp: 'へ', reading: 'he', en: 'he (hiragana)', tags: ['hiragana'] },
+    { jp: 'ほ', reading: 'ho', en: 'ho (hiragana)', tags: ['hiragana'] },
+    { jp: '花', reading: 'hana', en: 'flower / nose', tags: ['vocab'] },
+    { jp: '話す', reading: 'hanasu', en: 'to talk, speak', tags: ['verb'] },
+    { jp: 'お箸', reading: 'ohashi', en: 'chopsticks (polite)', tags: ['vocab'] },
+    { jp: '箱', reading: 'hako', en: 'box', tags: ['vocab'] },
+    { jp: '低い', reading: 'hikui', en: 'short, low', tags: ['i-adjective'] },
+    { jp: '火', reading: 'hi', en: 'fire', tags: ['vocab'] },
+    { jp: '星', reading: 'hoshi', en: 'star', tags: ['vocab'] },
+    { jp: '船', reading: 'fune', en: 'ship, boat', tags: ['vocab'] },
+    { jp: '普通', reading: 'futsuu', en: 'normal, ordinary', tags: ['na-adjective'] },
+    { jp: '二つ', reading: 'futatsu', en: 'two (general counter)', tags: ['counter'] },
+    { jp: '服', reading: 'fuku', en: 'clothes', tags: ['vocab'] },
+    { jp: '太い', reading: 'futoi', en: 'fat, thick', tags: ['i-adjective'] },
+    { jp: '塀', reading: 'hei', en: 'fence, wall', tags: ['vocab'] },
+    { jp: '骨', reading: 'hone', en: 'bone', tags: ['vocab'] },
+    { jp: '頬', reading: 'hoho', en: 'cheek', tags: ['vocab'] },
+    { jp: '細い', reading: 'hosoi', en: 'thin, slender', tags: ['i-adjective'] },
+    { jp: 'タバコ', reading: 'tabako', en: 'tobacco, cigarette', tags: ['katakana-word'] },
+    { jp: '言葉', reading: 'kotoba', en: 'word, language', tags: ['vocab'] },
+    { jp: '犬', reading: 'inu', en: 'dog', tags: ['vocab'] },
+    { jp: '喉', reading: 'nodo', en: 'throat', tags: ['vocab'] },
+    { jp: '匂い', reading: 'nioi', en: 'smell, odor', tags: ['vocab'] },
+    { jp: 'お金', reading: 'okane', en: 'money', tags: ['vocab'] },
+  ]);
+
+  // 2025-10-15: Hiragana ma-mi-mu-me-mo, ya-yu-yo
+  await fixVocabFormat('2025-10-15', 'Hiragana M-row, Y-row', [
+    { jp: 'ま', reading: 'ma', en: 'ma (hiragana)', tags: ['hiragana'] },
+    { jp: 'み', reading: 'mi', en: 'mi (hiragana)', tags: ['hiragana'] },
+    { jp: 'む', reading: 'mu', en: 'mu (hiragana)', tags: ['hiragana'] },
+    { jp: 'め', reading: 'me', en: 'me (hiragana)', tags: ['hiragana'] },
+    { jp: 'も', reading: 'mo', en: 'mo (hiragana)', tags: ['hiragana'] },
+    { jp: 'や', reading: 'ya', en: 'ya (hiragana)', tags: ['hiragana'] },
+    { jp: 'ゆ', reading: 'yu', en: 'yu (hiragana)', tags: ['hiragana'] },
+    { jp: 'よ', reading: 'yo', en: 'yo (hiragana)', tags: ['hiragana'] },
+    { jp: '町', reading: 'machi', en: 'town, city', tags: ['vocab'] },
+    { jp: '待つ', reading: 'matsu', en: 'to wait', tags: ['verb'] },
+    { jp: 'また', reading: 'mata', en: 'again', tags: ['adverb'] },
+    { jp: 'まだ', reading: 'mada', en: 'still, not yet', tags: ['adverb'] },
+    { jp: '抹茶', reading: 'maccha', en: 'matcha (powdered green tea)', tags: ['vocab'] },
+    { jp: '耳', reading: 'mimi', en: 'ear', tags: ['vocab'] },
+    { jp: '道', reading: 'michi', en: 'street, road, way', tags: ['vocab'] },
+    { jp: '港', reading: 'minato', en: 'port, harbor', tags: ['vocab'] },
+    { jp: '南', reading: 'minami', en: 'south', tags: ['vocab'] },
+    { jp: '虫', reading: 'mushi', en: 'insect, bug', tags: ['vocab'] },
+    { jp: '眠い', reading: 'nemui', en: 'sleepy', tags: ['i-adjective'] },
+    { jp: '昔', reading: 'mukashi', en: 'long ago, old times', tags: ['noun'] },
+    { jp: '目', reading: 'me', en: 'eye', tags: ['vocab'] },
+    { jp: '亀', reading: 'kame', en: 'turtle', tags: ['vocab'] },
+    { jp: '買い物', reading: 'kaimono', en: 'shopping', tags: ['noun'] },
+    { jp: '飲み物', reading: 'nomimono', en: 'drinks, beverage', tags: ['noun'] },
+    { jp: '桃', reading: 'momo', en: 'peach', tags: ['vocab'] },
+    { jp: '芋', reading: 'imo', en: 'potato, tuber', tags: ['vocab'] },
+    { jp: '持つ', reading: 'motsu', en: 'to hold, carry', tags: ['verb'] },
+    { jp: '山', reading: 'yama', en: 'mountain', tags: ['vocab'] },
+    { jp: '休む', reading: 'yasumu', en: 'to rest', tags: ['verb'] },
+    { jp: '親', reading: 'oya', en: 'parent', tags: ['vocab'] },
+    { jp: '焼肉', reading: 'yakiniku', en: 'grilled meat', tags: ['vocab'] },
+    { jp: '夢', reading: 'yume', en: 'dream', tags: ['vocab'] },
+    { jp: 'お湯', reading: 'oyu', en: 'hot water (polite)', tags: ['vocab'] },
+    { jp: '痒い', reading: 'kayui', en: 'itchy', tags: ['i-adjective'] },
+    { jp: '雪', reading: 'yuki', en: 'snow', tags: ['vocab'] },
+    { jp: '冬', reading: 'fuyu', en: 'winter', tags: ['vocab'] },
+    { jp: '予約', reading: 'yoyaku', en: 'reservation', tags: ['noun'] },
+    { jp: '夜中', reading: 'yonaka', en: 'middle of the night', tags: ['noun'] },
+    { jp: '良い', reading: 'yoi/ii', en: 'good', tags: ['i-adjective'] },
+    { jp: '泳ぐ', reading: 'oyogu', en: 'to swim', tags: ['verb'] },
+    { jp: '呼ぶ', reading: 'yobu', en: 'to call', tags: ['verb'] },
+    { jp: 'ありがとうございます', reading: 'arigatou gozaimasu', en: 'thank you (polite)', tags: ['expression'] },
+    { jp: 'さようなら', reading: 'sayonara', en: 'goodbye', tags: ['expression'] },
+    { jp: 'すみません', reading: 'sumimasen', en: 'excuse me / sorry', tags: ['expression'] },
+    { jp: 'おはよう', reading: 'ohayou', en: 'good morning (casual)', tags: ['expression'] },
+    { jp: 'お休みなさい', reading: 'oyasuminasai', en: 'good night', tags: ['expression'] },
+    { jp: 'こんにちは', reading: 'konnichiwa', en: 'hello / good afternoon', tags: ['expression'] },
+    { jp: 'こんばんは', reading: 'konbanwa', en: 'good evening', tags: ['expression'] },
+    { jp: 'ごちそうさま', reading: 'gochisousama', en: 'thanks for the meal (after)', tags: ['expression'] },
+    { jp: 'いただきます', reading: 'itadakimasu', en: 'thanks for the meal (before)', tags: ['expression'] },
+    { jp: 'いってきます', reading: 'ittekimasu', en: 'I\'m leaving (and will return)', tags: ['expression'] },
+    { jp: 'ただいま', reading: 'tadaima', en: 'I\'m back', tags: ['expression'] },
+    { jp: 'お帰りなさい', reading: 'okaerinasai', en: 'welcome back', tags: ['expression'] },
+    { jp: '家族', reading: 'kazoku', en: 'family', tags: ['vocab'] },
+    { jp: '両親', reading: 'ryoushin', en: 'parents', tags: ['vocab'] },
+    { jp: '兄弟', reading: 'kyoudai', en: 'siblings', tags: ['vocab'] },
+    { jp: '姉妹', reading: 'shimai', en: 'sisters', tags: ['vocab'] },
+    { jp: 'お母さん', reading: 'okaasan', en: 'mother', tags: ['vocab'] },
+    { jp: '母', reading: 'haha', en: 'my mother (humble)', tags: ['vocab'] },
+    { jp: 'お父さん', reading: 'otousan', en: 'father', tags: ['vocab'] },
+    { jp: '父', reading: 'chichi', en: 'my father (humble)', tags: ['vocab'] },
+    { jp: 'お兄さん', reading: 'oniisan', en: 'older brother', tags: ['vocab'] },
+    { jp: '兄', reading: 'ani', en: 'my older brother (humble)', tags: ['vocab'] },
+    { jp: '弟', reading: 'otouto', en: 'younger brother', tags: ['vocab'] },
+    { jp: 'お姉さん', reading: 'oneesan', en: 'older sister', tags: ['vocab'] },
+    { jp: '姉', reading: 'ane', en: 'my older sister (humble)', tags: ['vocab'] },
+    { jp: '妹', reading: 'imouto', en: 'younger sister', tags: ['vocab'] },
+    { jp: 'おじさん', reading: 'ojisan', en: 'uncle / middle-aged man', tags: ['vocab'] },
+    { jp: 'おばさん', reading: 'obasan', en: 'aunt / middle-aged woman', tags: ['vocab'] },
+    { jp: 'おじいさん', reading: 'ojiisan', en: 'grandfather', tags: ['vocab'] },
+    { jp: 'おばあさん', reading: 'obaasan', en: 'grandmother', tags: ['vocab'] },
+  ]);
+
+  await pool.end();
+  console.log('\n✅ All vocabulary formats fixed!');
+}
+
+main().catch(console.error);
