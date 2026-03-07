@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { readFile } from 'fs/promises';
-import { generateSpeech } from '../services/elevenlabs.js';
-import { addFurigana } from '../services/elevenlabs.js';
+import { generateSpeech } from '../services/elevenlabs/index.js';
+import { addFurigana } from '../services/elevenlabs/index.js';
 import { transcribeAudioDirect } from '../services/whisper.js';
 import { checkPassword } from '../middleware/auth.js';
 import { appConfig } from '../config/index.js';

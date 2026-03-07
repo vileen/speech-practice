@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { join } from 'path';
 import { writeFile } from 'fs/promises';
-import { generateSpeech } from '../services/elevenlabs.js';
+import { generateSpeech } from '../services/elevenlabs/index.js';
 import { checkPassword } from '../middleware/auth.js';
 import { appConfig } from '../config/index.js';
 
