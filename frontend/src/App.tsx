@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
 import { RepeatMode } from './components/RepeatMode.js';
 import { MemoryMode } from './components/MemoryMode.js';
 import { OfflineScreen } from './components/OfflineScreen.js';

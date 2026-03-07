@@ -1,0 +1,88 @@
+.setup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.language-select,
+.gender-select {
+  display: flex;
+  gap: 10px;
+}
+
+.language-select button,
+.gender-select button {
+  padding: 12px 24px;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background: #16213e;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.language-select button.active,
+.gender-select button.active {
+  border-color: #e94560;
+  background: #e94560;
+}
+
+.options {
+  margin: 10px 0;
+}
+
+.options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.options input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #e94560;
+}
+
+.start-btn,
+.end-btn {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.start-btn {
+  background: #e94560;
+  color: #fff;
+  width: 100%;
+  max-width: 300px;
+}
+
+.start-btn:hover {
+  background: #c73e54;
+}
+
+.end-btn {
+  background: #333;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.logout-btn {
+  background: #666;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  margin-left: 8px;
+}
+
+.logout-btn:hover {
+  background: #888;
+}
+

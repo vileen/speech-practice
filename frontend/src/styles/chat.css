@@ -1,0 +1,219 @@
+.session-info {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.session-left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.session-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.global-volume {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #16213e;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #333;
+}
+
+.global-volume input[type="range"] {
+  width: 60px;
+  height: 4px;
+  accent-color: #e94560;
+}
+
+.mode-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+.end-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+  padding: 12px 16px;
+  background: #16213e;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.session-info button {
+  margin-left: 8px;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.message {
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 80%;
+}
+
+.message.assistant {
+  background: #0f3460;
+  align-self: flex-start;
+}
+
+.message.user {
+  background: #e94560;
+  align-self: flex-end;
+}
+
+.message .text {
+  font-size: 150%;
+  line-height: 1.6;
+}
+
+.message .text ruby {
+  font-size: 100%;
+}
+
+.message .text rt {
+  font-size: 50%;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.role-badge {
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.translate-toggle {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.translate-toggle:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.audio-player {
+  margin-top: 8px;
+}
+
+.play-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.play-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.play-btn.playing {
+  background: #e94560;
+  animation: pulse-red 1.5s infinite;
+}
+
+.play-btn.playing:hover {
+  background: #ff4444;
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(233, 69, 96, 0); }
+}
+
+.input-area {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background: #16213e;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.input-area button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #0f3460;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.input-area button:hover {
+  background: #1a4a7a;
+}
+
+/* .record-btn styles moved to VoiceRecorder.css */
+
+/* Help text for new users */
+.help-text {
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #16213e;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+/* Audio loading indicator */
+.audio-loading {
+  margin-top: 8px;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+  100% { content: ''; }
+}
+
