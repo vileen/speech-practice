@@ -9,29 +9,29 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         USER                                     │
-└──────────────┬──────────────────────────────────┬───────────────┘
-               │                                  │
+|                         USER                                     |
+`--────────────┬──────────────────────────────────┬───────────────┘
+               |                                  |
                ▼                                  ▼
 ┌──────────────────────────┐      ┌──────────────────────────────┐
-│   FRONTEND (GitHub Pages) │      │   BACKEND (Your Machine)     │
-│                          │      │                              │
-│  URL:                    │      │  Local: localhost:3001       │
-│  https://vileen.github.io│◄────►│  Public: Cloudflare Tunnel   │
-│  /speech-practice/       │      │  https://trunk-sticks-connect│
-│                          │      │  -currency.trycloudflare.com │
-└──────────────────────────┘      └──────────────┬───────────────┘
-                                                  │
+|   FRONTEND (GitHub Pages) |      |   BACKEND (Your Machine)     |
+|                          |      |                              |
+|  URL:                    |      |  Local: localhost:3001       |
+|  https://vileen.github.io|◄────►|  Public: Cloudflare Tunnel   |
+|  /speech-practice/       |      |  https://trunk-sticks-connect|
+|                          |      |  -currency.trycloudflare.com |
+`--────────────────────────┘      `--────────────┬───────────────┘
+                                                  |
                                                   ▼
                                     ┌──────────────────────────┐
-                                    │   POSTGRESQL DATABASE    │
-                                    │                          │
-                                    │  Host: localhost:5432    │
-                                    │  Name: speech_practice   │
-                                    │  Tables: lessons,        │
-                                    │  sessions, messages,     │
-                                    │  furigana_cache          │
-└───────────────────────────────────┴──────────────────────────┘
+                                    |   POSTGRESQL DATABASE    |
+                                    |                          |
+                                    |  Host: localhost:5432    |
+                                    |  Name: speech_practice   |
+                                    |  Tables: lessons,        |
+                                    |  sessions, messages,     |
+                                    |  furigana_cache          |
+`--─────────────────────────────────┴──────────────────────────┘
 ```
 
 ---
@@ -41,52 +41,52 @@
 ### Backend (\`backend/\`)
 \`\`\`
 backend/
-├── src/
-│   ├── db/                    # Database
-│   │   ├── pool.ts
-│   │   ├── init.ts
-│   │   └── migrations/
-│   ├── routes/                # API routes
-│   ├── services/              # Business logic
-│   │   ├── lessons.ts         # Lessons (PostgreSQL)
-│   │   ├── chat.ts            # AI chat (OpenAI)
-│   │   ├── elevenlabs.ts      # TTS (ElevenLabs)
-│   │   ├── whisper.ts         # Speech-to-text (OpenAI)
-│   │   └── romaji.ts          # JP -> romaji conversion
-│   ├── server.ts              # Main Express server
-│   └── data/                  # JSON data (runtime)
-│       ├── furigana-cache.json
-│       └── backups/
-├── scripts/                   # One-time scripts
-│   ├── one-time/              # Migrations, fixes
-│   └── test-*.ts              # Tests
-└── data/                      # Data files (runtime)
-    ├── furigana-cache.json
-    ├── all-lessons-detailed.json
-    └── backups/
++-- src/
+|   +-- db/                    # Database
+|   |   +-- pool.ts
+|   |   +-- init.ts
+|   |   `-- migrations/
+|   +-- routes/                # API routes
+|   +-- services/              # Business logic
+|   |   +-- lessons.ts         # Lessons (PostgreSQL)
+|   |   +-- chat.ts            # AI chat (OpenAI)
+|   |   +-- elevenlabs.ts      # TTS (ElevenLabs)
+|   |   +-- whisper.ts         # Speech-to-text (OpenAI)
+|   |   `-- romaji.ts          # JP -> romaji conversion
+|   +-- server.ts              # Main Express server
+|   `-- data/                  # JSON data (runtime)
+|       +-- furigana-cache.json
+|       `-- backups/
++-- scripts/                   # One-time scripts
+|   +-- one-time/              # Migrations, fixes
+|   `-- test-*.ts              # Tests
+`-- data/                      # Data files (runtime)
+    +-- furigana-cache.json
+    +-- all-lessons-detailed.json
+    `-- backups/
 \`\`\`
 
 ### Frontend (\`frontend/src/\`)
 \`\`\`
 frontend/src/
-├── components/                     # React components
-│   ├── RepeatMode.tsx              # Repeat After Me mode
-│   ├── JapanesePhrase.tsx          # Display JP + furigana + romaji
-│   ├── FuriganaText.tsx            # Text with furigana
-│   ├── RomajiText.tsx              # Romaji
-│   └── VoiceRecorder.tsx           # Voice recording
-├── hooks/                          # Custom React hooks
-│   ├── useFurigana.ts              # Fetch furigana from API
-│   ├── useAudioPlayer.ts           # Audio playback
-│   └── usePronunciationCheck.ts    # Pronunciation check
-├── test/                           # Tests (Vitest)
-│   ├── components/
-│   ├── hooks/
-│   └── utils/
-├── App.tsx                         # Main application
-├── LessonMode.tsx                  # Lesson mode
-├── VoiceRecorder.tsx               # Recording (root level)
-└── translations.ts                 # Translations
++-- components/                     # React components
+|   +-- RepeatMode.tsx              # Repeat After Me mode
+|   +-- JapanesePhrase.tsx          # Display JP + furigana + romaji
+|   +-- FuriganaText.tsx            # Text with furigana
+|   +-- RomajiText.tsx              # Romaji
+|   `-- VoiceRecorder.tsx           # Voice recording
++-- hooks/                          # Custom React hooks
+|   +-- useFurigana.ts              # Fetch furigana from API
+|   +-- useAudioPlayer.ts           # Audio playback
+|   `-- usePronunciationCheck.ts    # Pronunciation check
++-- test/                           # Tests (Vitest)
+|   +-- components/
+|   +-- hooks/
+|   `-- utils/
++-- App.tsx                         # Main application
++-- LessonMode.tsx                  # Lesson mode
++-- VoiceRecorder.tsx               # Recording (root level)
+`-- translations.ts                 # Translations
 \`\`\`
 
 ---
