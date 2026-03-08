@@ -168,6 +168,20 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     }
   }, []);
 
+  const loadVocabularyWithSources = async (lessonId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/lessons/${lessonId}/vocabulary-with-sources`, {
+        headers: { 'X-Password': password }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setVocabWithSources(data.vocabulary);
+      }
+    } catch (error) {
+      console.error('Error loading vocabulary with sources:', error);
+    }
+  };
+
   const loadLessons = async () => {
     try {
       const response = await fetch(`${API_URL}/api/lessons`, {
