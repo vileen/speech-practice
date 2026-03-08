@@ -602,10 +602,12 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
                             <div className="review-tooltip">
                               <div className="review-tooltip-header">Also appears in:</div>
                               {sources.otherLessons.map((l: any) => {
-                                const lessonNum = lessons.findIndex((les: any) => les.id === l.id);
-                                const displayNum = sortOrder === 'newest' 
-                                  ? lessons.length - lessonNum 
-                                  : lessonNum + 1;
+                                // Use order from API, or fall back to calculating
+                                const displayNum = l.order ? 
+                                  (sortOrder === 'newest' ? 
+                                    Math.max(...lessons.map((les: any) => les.order || 0)) - l.order + 1 :
+                                    l.order) :
+                                  lessons.findIndex((les: any) => les.id === l.id) + 1;
                                 return (
                                   <a 
                                     key={l.id} 
