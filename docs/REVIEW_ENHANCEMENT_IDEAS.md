@@ -386,29 +386,60 @@ Added as Priority #3 - High complexity but critical for vocabulary tracking.
 
 ### Phase-Based Progression
 
-**Phase 1: Foundation (Months 1-3) - N5 Level**
-- Target: 1000 vocabulary words
-- Daily routine: 15 min Memory Mode + 15 min Chat + 10 min Repeat After Me
-- Chat topics: Self-introduction, weather, schedule, food
-- Milestones: Fluent self-intro, understand simple audio
+> **Reality Check:** N5 typically requires ~150 hours of study. At 40 min/day, that's ~6 months, not 3. The timelines below are realistic estimates based on consistent daily practice.
 
-**Phase 2: Expansion (Months 4-6) - N4 Level**
-- Target: 2000 vocabulary words  
-- Daily routine: 15 min Memory Mode + 20 min Chat + 10 min Repeat After Me
-- Chat topics: Past experiences, future plans, comparisons
-- Milestones: Describe past events, standard-speed comprehension
+---
 
-**Phase 3: Consolidation (Months 7-9) - N3 Bridge**
-- Target: 3000 vocabulary words
-- Daily routine: 20 min Memory Mode + 25 min Chat + 10 min Repeat After Me
-- Chat topics: Opinions, hypotheticals, abstract concepts
-- Milestones: Explain "why", understand 70% native conversations
+**Phase 1: Foundation (Months 1-6) - N5 Level**
+- Target: 800 vocabulary words + hiragana/katakana
+- Study time: ~150 hours (40 min/day × 6 months)
+- Daily routine: 15 min Memory Mode + 20 min Chat + 15 min Repeat After Me
+- Chat topics: Self-introduction, weather, schedule, food, numbers
+- Milestones: 
+  - Month 2: Read hiragana/katakana fluently
+  - Month 4: Hold 5-minute basic conversation
+  - Month 6: Pass N5 practice test, understand simple audio
 
-**Phase 4: Refinement (Months 10-12) - N3 Ready**
-- Target: 4000+ vocabulary words
-- Daily routine: 20 min Memory Mode + 30 min Chat + 10 min Repeat After Me
-- Chat topics: Complex scenarios, role-play, debates
-- Milestones: N3 practice test ready, work in Japanese environment
+**Phase 2: Expansion (Months 7-12) - N4 Level**
+- Target: 1,500 vocabulary words (cumulative)
+- Study time: ~150 hours additional (40 min/day × 6 months)
+- Daily routine: 15 min Memory Mode + 25 min Chat + 15 min Repeat After Me
+- Chat topics: Past experiences, future plans, comparisons, shopping
+- Milestones:
+  - Month 9: Describe past events accurately
+  - Month 12: Pass N4 practice test, understand standard-speed audio
+
+**Phase 3: Consolidation (Months 13-18) - N3 Bridge**
+- Target: 3,000 vocabulary words (cumulative)
+- Study time: ~200 hours additional (45-60 min/day × 6 months)
+- Daily routine: 20 min Memory Mode + 30 min Chat + 15 min Repeat After Me
+- Chat topics: Opinions, hypotheticals, abstract concepts, work situations
+- Milestones:
+  - Month 15: Explain "why" and negotiate
+  - Month 18: Understand 60% of native conversations, casual anime without subtitles
+
+**Phase 4: Refinement (Months 19-24) - N3 Ready**
+- Target: 3,750 vocabulary words (cumulative) - N3 requirement
+- Study time: ~200 hours additional (45-60 min/day × 6 months)
+- Daily routine: 20 min Memory Mode + 35 min Chat + 15 min Repeat After Me
+- Chat topics: Complex scenarios, role-play, debates, business Japanese
+- Milestones:
+  - Month 21: Handle unexpected questions, express nuanced opinions
+  - Month 24: Pass N3 exam, function in Japanese work environment
+
+---
+
+### Time Investment Summary
+
+| Level | Duration | Daily Time | Total Hours | Vocabulary |
+|-------|----------|------------|-------------|------------|
+| N5 | 6 months | 40 min | ~120 hrs | 800 words |
+| N4 | 6 months | 40 min | ~120 hrs | 1,500 words |
+| N3 Bridge | 6 months | 45-60 min | ~150 hrs | 3,000 words |
+| N3 | 6 months | 45-60 min | ~150 hrs | 3,750 words |
+| **Total** | **~24 months** | **40-60 min** | **~540 hrs** | **3,750+ words** |
+
+> **Note:** These are *minimum* estimates for dedicated learners. Most learners take 2-3 years to reach N3. Consistency beats intensity—20 minutes daily for 2 years beats 2 hours daily for 3 months.
 
 ### Feature Integration
 
