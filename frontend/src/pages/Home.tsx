@@ -27,6 +27,10 @@ export function Home() {
             </button>
           </div>
         </header>
+        
+        <div className="quote-footer">
+          "Either increase sacrifice or reduce desire."
+        </div>
       </div>
     </AuthenticatedRoute>
   );
