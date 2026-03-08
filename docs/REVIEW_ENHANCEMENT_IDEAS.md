@@ -6,15 +6,16 @@
 
 | Priority | Feature | Status | Complexity | Impact |
 |----------|---------|--------|------------|--------|
-| 1 | ~~Hide Mode~~ → **Memory Mode** | ✅ Complete | Medium | High |
-| 2 | SRS Tracking | ✅ Core algorithm done | Medium | High |
-| 3 | **Database Refactor** | ⏳ Next priority | High | Critical |
-| 4 | Interleaved Practice | ⏳ Planned | Medium | High |
-| 5 | Shadowing Enhancement | ⏳ Planned | Medium | High |
-| 6 | Progressive Reveal | ⏳ Planned | Medium | Medium |
-| 7 | Error-Based Drills | ⏳ Planned | High | Medium |
-| 8 | Sentence Building | ⏳ Planned | High | High |
-| 9 | Grammar Drills | ⏳ Planned | Medium | High |
+| 1 | [~~Hide Mode~~ → **Memory Mode**](#1-hide-mode-memory-recall-) | ✅ Complete | Medium | High |
+| 2 | [SRS Tracking](#3-spaced-repetition--weak-points-tracking-) | ✅ Core algorithm done | Medium | High |
+| 3 | [**Database Refactor**](#9-database-refactor-vocabulary-table-) | ⏳ Next priority | High | Critical |
+| 4 | [Interleaved Practice](#6-interleaved-practice-mode) | ⏳ Planned | Medium | High |
+| 5 | [Shadowing Enhancement](#8-shadowing-mode-enhancement) | ⏳ Planned | Medium | High |
+| 6 | [Progressive Reveal](#2-progressive-reveal-hint-cascade) | ⏳ Planned | Medium | Medium |
+| 7 | [Error-Based Drills](#4-minimal-pairs-drills-error-based) | ⏳ Planned | High | Medium |
+| 8 | [Sentence Building](#5-sentence-building-voice-lego) | ⏳ Planned | High | High |
+| 9 | [Grammar Drills](#7-grammar-pattern-drills) | ⏳ Planned | Medium | High |
+| 10 | [JLPT N3 Roadmap](#10-structured-learning-path-jlpt-n3-roadmap) | 📋 Documented | Medium | High |
 
 
 ---
