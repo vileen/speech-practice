@@ -669,7 +669,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
       </div>
       
       <div className="lessons-list" ref={lessonsListRef}>
-        {sortedLessons.map(lesson => (
+        {sortedLessons.map((lesson, index) => (
           <div 
             key={lesson.id} 
             className="lesson-card"
@@ -677,6 +677,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
           >
             <div className="lesson-card-header">
               <span className="lesson-date">{formatDate(lesson.date)}</span>
+              <span className="lesson-number">Lesson #{sortOrder === 'newest' ? sortedLessons.length - index : index + 1}</span>
               <span className="lesson-title">{translateLessonTitle(lesson.title)}</span>
             </div>
             <div className="lesson-card-stats">

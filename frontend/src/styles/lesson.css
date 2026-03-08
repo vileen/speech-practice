@@ -145,3 +145,22 @@
   font-style: italic;
 }
 
+
+/* Hint with fixed min-height to prevent layout shift */
+.setup-hint {
+  min-height: 1.5rem;
+  display: block;
+}
+
+/* Lesson number badge */
+.lesson-number {
+  display: inline-block;
+  background: #e94560;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  width: fit-content;
+}
