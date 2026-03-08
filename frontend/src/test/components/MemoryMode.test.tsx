@@ -3,24 +3,34 @@ import { render, screen } from '@testing-library/react';
 import { MemoryMode } from '../../components/MemoryMode';
 
 // Mock the hooks
+const mockReview = vi.fn();
+const mockGetNextCard = vi.fn();
+const mockGetPreview = vi.fn().mockReturnValue(1);
+const mockImportFromLesson = vi.fn().mockReturnValue(2);
+const mockResetProgress = vi.fn();
+const mockAddCard = vi.fn();
+
 vi.mock('../../hooks/useMemoryProgress', () => ({
   useMemoryProgress: () => ({
-    cards: [],
+    cards: [
+      { id: '1', front: '学校', back: 'school', state: 0, due: new Date().toISOString() },
+      { id: '2', front: '先生', back: 'teacher', state: 1, due: new Date().toISOString() },
+    ],
     isLoading: false,
     stats: {
-      total: 0,
-      new: 0,
-      learning: 0,
+      total: 2,
+      new: 1,
+      learning: 1,
       review: 0,
       relearning: 0,
-      due: 0,
+      due: 2,
     },
-    review: vi.fn(),
-    getNextCard: vi.fn().mockReturnValue(null),
-    getPreview: vi.fn().mockReturnValue(1),
-    importFromLesson: vi.fn().mockReturnValue(2),
-    resetProgress: vi.fn(),
-    addCard: vi.fn(),
+    review: mockReview,
+    getNextCard: mockGetNextCard,
+    getPreview: mockGetPreview,
+    importFromLesson: mockImportFromLesson,
+    resetProgress: mockResetProgress,
+    addCard: mockAddCard,
   }),
 }));
 
@@ -35,6 +45,7 @@ const mockLessons = [
     grammarCount: 2,
     vocabulary: [
       { jp: '学校', en: 'school', reading: 'がっこう', romaji: 'gakkou' },
+      { jp: '先生', en: 'teacher', reading: 'せんせい', romaji: 'sensei' },
     ],
     grammar: [
       {
@@ -43,6 +54,19 @@ const mockLessons = [
         examples: [{ jp: '見てください', en: 'Please look' }],
       },
     ],
+  },
+  {
+    id: 2,
+    date: '2026-03-05',
+    title: 'Test Lesson 2',
+    order: 2,
+    topics: ['vocabulary'],
+    vocabCount: 3,
+    grammarCount: 0,
+    vocabulary: [
+      { jp: '本', en: 'book', reading: 'ほん', romaji: 'hon' },
+    ],
+    grammar: [],
   },
 ];
 
@@ -68,6 +92,7 @@ describe('MemoryMode', () => {
     it('should render lesson selection chips', () => {
       render(<MemoryMode lessons={mockLessons} />);
       expect(screen.getByText('Test Lesson 1')).toBeInTheDocument();
+      expect(screen.getByText('Test Lesson 2')).toBeInTheDocument();
     });
 
     it('should handle empty lessons array', () => {
@@ -84,14 +109,21 @@ describe('MemoryMode', () => {
   describe('Edge Cases', () => {
     it('should handle undefined lessons gracefully', () => {
       render(<MemoryMode lessons={undefined as any} />);
-      // Component should not crash, title should still render
       expect(screen.getByText('🧠 Memory Mode')).toBeInTheDocument();
     });
 
     it('should handle null lessons gracefully', () => {
       render(<MemoryMode lessons={null as any} />);
-      // Component should not crash, title should still render
       expect(screen.getByText('🧠 Memory Mode')).toBeInTheDocument();
+    });
+
+    it('should handle lessons without vocabulary', () => {
+      const lessonsWithoutVocab = [{
+        ...mockLessons[0],
+        vocabulary: [],
+      }];
+      render(<MemoryMode lessons={lessonsWithoutVocab} />);
+      expect(screen.getByText('Test Lesson 1')).toBeInTheDocument();
     });
   });
 });
