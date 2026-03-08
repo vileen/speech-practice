@@ -77,7 +77,7 @@ router.get('/:id/vocabulary-with-sources', checkPassword, async (req, res) => {
         if (!wordText) return { ...word, otherLessons: [] };
         
         const otherLessons = await pool.query(`
-          SELECT DISTINCT l.id, l.title, l.date, l.order_num as order
+          SELECT DISTINCT l.id, l.title, l.date
           FROM lessons l
           WHERE l.id != $1
             AND EXISTS (

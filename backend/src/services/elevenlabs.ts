@@ -396,6 +396,37 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
         }
       }
       
+      console.log(`[Furigana] Fourth pass: trying partial match for ${word}`);
+      // Fourth pass: partial match (e.g., "浴び" should match "浴びる")
+      for (const result of data.data) {
+        for (const japanese of result.japanese || []) {
+          if (japanese && japanese.reading && japanese.word) {
+            console.log(`[Furigana] Checking partial: resultWord=${japanese.word}, query=${word}, startsWith=${japanese.word.startsWith(word)}`);
+            const resultWord = japanese.word;
+            const reading = japanese.reading;
+            
+            // If result word starts with our query word
+            if (resultWord.startsWith(word)) {
+              // Extract okurigana from our word (hiragana portion after kanji)
+              const kanjiRegex = /[\u4e00-\u9faf]/;
+              let kanjiEnd = 0;
+              for (let i = 0; i < word.length; i++) {
+                if (kanjiRegex.test(word[i])) kanjiEnd = i + 1;
+              }
+              const okurigana = word.substring(kanjiEnd);
+              
+              // Remove okurigana from reading to get kanji reading
+              if (okurigana && reading.endsWith(okurigana)) {
+                const kanjiReading = reading.slice(0, -okurigana.length);
+                furiganaCache.set(word, kanjiReading);
+                await saveCache();
+                console.log(`[Furigana] Cached (partial match): ${word} = ${kanjiReading}`);
+                return kanjiReading;
+              }
+            }
+          }
+        }
+      }
       console.log(`[Furigana] No result with reading found for: ${word}`);
     } else {
       console.log(`[Furigana] No results for: ${word}`);

@@ -601,26 +601,17 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
                             <span className="review-badge">&#x21bb; {otherCount}</span>
                             <div className="review-tooltip">
                               <div className="review-tooltip-header">Also appears in:</div>
-                              {sources.otherLessons.map((l: any) => {
-                                // Use order from API, or fall back to calculating
-                                const displayNum = l.order ? 
-                                  (sortOrder === 'newest' ? 
-                                    Math.max(...lessons.map((les: any) => les.order || 0)) - l.order + 1 :
-                                    l.order) :
-                                  lessons.findIndex((les: any) => les.id === l.id) + 1;
-                                return (
-                                  <a 
-                                    key={l.id} 
-                                    href={`#/lessons/${l.id}`}
-                                    className="review-tooltip-item"
-                                    onClick={(e) => { e.preventDefault(); onSelectLesson(l.id); }}
-                                  >
-                                    <span className="review-tooltip-number">Lesson #{displayNum}</span>
-                                    <span className="review-tooltip-date">{new Date(l.date).toLocaleDateString()}</span>
-                                    <span className="review-tooltip-title">{l.title}</span>
-                                  </a>
-                                );
-                              })}
+                              {sources.otherLessons.map((l: any) => (
+                                <a 
+                                  key={l.id} 
+                                  href={`#/lessons/${l.id}`}
+                                  className="review-tooltip-item"
+                                  onClick={(e) => { e.preventDefault(); onSelectLesson(l.id); }}
+                                >
+                                  <span className="review-tooltip-title">{l.title}</span>
+                                  <span className="review-tooltip-date">{new Date(l.date).toLocaleDateString()}</span>
+                                </a>
+                              ))}
                             </div>
                           </div>
                         )}
