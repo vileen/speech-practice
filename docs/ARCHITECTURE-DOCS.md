@@ -69,24 +69,24 @@ backend/
 ### Frontend (\`frontend/src/\`)
 \`\`\`
 frontend/src/
-├── components/                # React components
-│   ├── RepeatMode.tsx         # Repeat After Me mode
-│   ├── JapanesePhrase.tsx     # Display JP + furigana + romaji
-│   ├── FuriganaText.tsx       # Text with furigana
-│   ├── RomajiText.tsx         # Romaji
-│   └── VoiceRecorder.tsx      # Voice recording
-├── hooks/                     # Custom React hooks
-│   ├── useFurigana.ts         # Fetch furigana from API
-│   ├── useAudioPlayer.ts      # Audio playback
-│   └── usePronunciationCheck.ts  # Pronunciation check
-├── test/                      # Tests (Vitest)
+├── components/                     # React components
+│   ├── RepeatMode.tsx              # Repeat After Me mode
+│   ├── JapanesePhrase.tsx          # Display JP + furigana + romaji
+│   ├── FuriganaText.tsx            # Text with furigana
+│   ├── RomajiText.tsx              # Romaji
+│   └── VoiceRecorder.tsx           # Voice recording
+├── hooks/                          # Custom React hooks
+│   ├── useFurigana.ts              # Fetch furigana from API
+│   ├── useAudioPlayer.ts           # Audio playback
+│   └── usePronunciationCheck.ts    # Pronunciation check
+├── test/                           # Tests (Vitest)
 │   ├── components/
 │   ├── hooks/
 │   └── utils/
-├── App.tsx                    # Main application
-├── LessonMode.tsx             # Lesson mode
-├── VoiceRecorder.tsx          # Recording (root level)
-└── translations.ts            # Translations
+├── App.tsx                         # Main application
+├── LessonMode.tsx                  # Lesson mode
+├── VoiceRecorder.tsx               # Recording (root level)
+└── translations.ts                 # Translations
 \`\`\`
 
 ---
