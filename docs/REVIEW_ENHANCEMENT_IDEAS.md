@@ -6,9 +6,9 @@
 
 | Priority | Feature | Status | Complexity | Impact |
 |----------|---------|--------|------------|--------|
-| 1 | [~~Hide Mode~~ → **Memory Mode**](#1-hide-mode-memory-recall-) | ✅ Complete | Medium | High |
-| 2 | [SRS Tracking](#3-spaced-repetition--weak-points-tracking-) | ✅ Core algorithm done | Medium | High |
-| 3 | [**Database Refactor**](#9-database-refactor-vocabulary-table-) | ⏳ Next priority | High | Critical |
+| 1 | [~~Hide Mode~~ → **Memory Mode**](#1-hide-mode-memory-recall-implemented) | ✅ Complete | Medium | High |
+| 2 | [SRS Tracking](#3-spaced-repetition--weak-points-tracking-implemented-partial) | ✅ Core algorithm done | Medium | High |
+| 3 | [**Database Refactor**](#9-database-refactor-vocabulary-table-planned) | ⏳ Next priority | High | Critical |
 | 4 | [Interleaved Practice](#6-interleaved-practice-mode) | ⏳ Planned | Medium | High |
 | 5 | [Shadowing Enhancement](#8-shadowing-mode-enhancement) | ⏳ Planned | Medium | High |
 | 6 | [Progressive Reveal](#2-progressive-reveal-hint-cascade) | ⏳ Planned | Medium | Medium |
