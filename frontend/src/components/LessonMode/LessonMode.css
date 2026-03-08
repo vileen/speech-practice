@@ -737,3 +737,26 @@ ruby.furigana-failed rt {
     padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 }
+
+/* Vocabulary review badge */
+.vocab-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.review-badge {
+  background: #f0ad4e;
+  color: #1a1a2e;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  white-space: nowrap;
+  cursor: help;
+}
+
+.review-badge:hover {
+  background: #ec971f;
+}
