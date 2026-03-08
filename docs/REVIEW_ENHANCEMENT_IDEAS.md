@@ -1,5 +1,25 @@
 # Review Mode Enhancement Ideas
 
+---
+
+## Priority / Implementation Order
+
+| Priority | Feature | Status | Complexity | Impact |
+|----------|---------|--------|------------|--------|
+| 1 | ~~Hide Mode~~ → **Memory Mode** | ✅ Complete | Medium | High |
+| 2 | SRS Tracking | ✅ Core algorithm done | Medium | High |
+| 3 | **Database Refactor** | ⏳ Next priority | High | Critical |
+| 4 | Interleaved Practice | ⏳ Planned | Medium | High |
+| 5 | Shadowing Enhancement | ⏳ Planned | Medium | High |
+| 6 | Progressive Reveal | ⏳ Planned | Medium | Medium |
+| 7 | Error-Based Drills | ⏳ Planned | High | Medium |
+| 8 | Sentence Building | ⏳ Planned | High | High |
+| 9 | Grammar Drills | ⏳ Planned | Medium | High |
+
+
+---
+
+
 > Ideas for improving the material review process after lessons.
 > Passive reading of grammar/vocabulary is ineffective - active recall is key.
 
@@ -249,20 +269,6 @@ Suggest lessons based on vocabulary overlap:
 3. **Update Memory Mode** to support "unique words only" filter
 
 ---
-
-## Priority / Implementation Order
-
-| Priority | Feature | Status | Complexity | Impact |
-|----------|---------|--------|------------|--------|
-| 1 | ~~Hide Mode~~ → **Memory Mode** | ✅ Complete | Medium | High |
-| 2 | SRS Tracking | ✅ Core algorithm done | Medium | High |
-| 3 | **Database Refactor** | ⏳ Next priority | High | Critical |
-| 4 | Interleaved Practice | ⏳ Planned | Medium | High |
-| 5 | Shadowing Enhancement | ⏳ Planned | Medium | High |
-| 6 | Progressive Reveal | ⏳ Planned | Medium | Medium |
-| 7 | Error-Based Drills | ⏳ Planned | High | Medium |
-| 8 | Sentence Building | ⏳ Planned | High | High |
-| 9 | Grammar Drills | ⏳ Planned | Medium | High |
 
 ## Completed Features
 
