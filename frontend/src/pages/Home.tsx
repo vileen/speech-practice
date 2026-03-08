@@ -11,9 +11,6 @@ export function Home() {
       <div className="app">
         <header>
           <h1>Speech Practice</h1>
-        </header>
-        
-        <main className="main-content">
           <div className="setup">
             <div className="language-select">
               <button 
@@ -50,11 +47,7 @@ export function Home() {
               </>
             )}
           </div>
-        </main>
-        
-        <footer className="quote-footer">
-          "Either increase sacrifice or reduce desire."
-        </footer>
+        </header>
       </div>
     </AuthenticatedRoute>
   );
