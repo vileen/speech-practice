@@ -777,3 +777,81 @@ ruby.furigana-failed rt {
 .other-lessons a:hover {
   text-decoration: underline;
 }
+
+/* Review badge with hover tooltip */
+.review-badge-container {
+  position: relative;
+}
+
+.review-badge {
+  background: #f0ad4e;
+  color: #1a1a2e;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.review-tooltip {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #1a1a2e;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 280px;
+  max-width: 320px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  margin-top: 8px;
+}
+
+.review-badge-container:hover .review-tooltip {
+  display: block;
+}
+
+.review-tooltip-header {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #333;
+}
+
+.review-tooltip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  margin-bottom: 4px;
+  background: #16213e;
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.review-tooltip-item:hover {
+  background: #0f3460;
+  transform: translateX(-2px);
+}
+
+.review-tooltip-number {
+  font-size: 0.75rem;
+  color: #e94560;
+  font-weight: bold;
+}
+
+.review-tooltip-date {
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.review-tooltip-title {
+  font-size: 0.8rem;
+  color: #fff;
+}

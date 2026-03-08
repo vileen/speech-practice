@@ -53,6 +53,58 @@ router.get('/memory', checkPassword, async (_req, res) => {
 });
 
 // Get specific lesson
+
+// Get vocabulary with sources for a lesson
+router.get('/:id/vocabulary-with-sources', checkPassword, async (req, res) => {
+  try {
+    const lessonId = req.params.id;
+    
+    const result = await pool.query(`
+      SELECT vocabulary
+      FROM lessons
+      WHERE id = $1
+    `, [lessonId]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Lesson not found' });
+    }
+    
+    const vocabulary = result.rows[0].vocabulary || [];
+    
+    const vocabWithSources = await Promise.all(
+      vocabulary.map(async (word: any) => {
+        const wordText = word.jp || word.word;
+        if (!wordText) return { ...word, otherLessons: [] };
+        
+        const otherLessons = await pool.query(`
+          SELECT DISTINCT l.id, l.title, l.date
+          FROM lessons l
+          WHERE l.id != $1
+            AND EXISTS (
+              SELECT 1 FROM jsonb_array_elements(l.vocabulary) AS v
+              WHERE v->>'jp' = $2 OR v->>'word' = $2
+            )
+          ORDER BY l.date DESC
+          LIMIT 5
+        `, [lessonId, wordText]);
+        
+        return {
+          ...word,
+          otherLessons: otherLessons.rows
+        };
+      })
+    );
+    
+    res.json({
+      lessonId,
+      vocabulary: vocabWithSources
+    });
+  } catch (error) {
+    console.error('Error fetching vocabulary with sources:', error);
+    res.status(500).json({ error: 'Failed to fetch vocabulary' });
+  }
+});
+
 router.get('/:id', checkPassword, async (req, res) => {
   try {
     const { id } = req.params;

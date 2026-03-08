@@ -596,12 +596,36 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
                     <div key={idx} className="vocab-card">
                       <div className="vocab-card-header">
                         <div className="jp-word">{renderFurigana(item.jp || (item as any).word || '', item.reading)}</div>
-                        {otherCount > 0 && <span className="review-badge">&#x21bb; {otherCount}</span>}
+                        {otherCount > 0 && (
+                          <div className="review-badge-container">
+                            <span className="review-badge">&#x21bb; {otherCount}</span>
+                            <div className="review-tooltip">
+                              <div className="review-tooltip-header">Also appears in:</div>
+                              {sources.otherLessons.map((l: any) => {
+                                const lessonNum = lessons.findIndex((les: any) => les.id === l.id);
+                                const displayNum = sortOrder === 'newest' 
+                                  ? lessons.length - lessonNum 
+                                  : lessonNum + 1;
+                                return (
+                                  <a 
+                                    key={l.id} 
+                                    href={`#/lessons/${l.id}`}
+                                    className="review-tooltip-item"
+                                    onClick={(e) => { e.preventDefault(); onSelectLesson(l.id); }}
+                                  >
+                                    <span className="review-tooltip-number">Lesson #{displayNum}</span>
+                                    <span className="review-tooltip-date">{new Date(l.date).toLocaleDateString()}</span>
+                                    <span className="review-tooltip-title">{l.title}</span>
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="romaji">{item.romaji || item.reading}</div>
                       <div className="meaning">{item.en || (item as any).meaning || 'No meaning'}</div>
                       {item.type && <span className="type-tag">{item.type}</span>}
-                      {otherCount > 0 && <div className="other-lessons">Also in: {sources.otherLessons.map((l: any) => l.title).join(', ')}</div>}
                     </div>
                   );
                 })}
