@@ -11,9 +11,4 @@ export const VOICES: Record<Language, Record<VoiceStyle, Record<Gender, string>>
       female: 'cgSgspJ2msm6clMCkdW9',   // Jessica - cute, playful, expressive
     },
   },
-    anime: {
-      male: 'IKne3meq5aSn9XLyUdCD',     // Charlie - energetic
-      female: 'cgSgspJ2msm6clMCkdW9',   // Jessica - cute, expressive
-    },
-  },
 };
