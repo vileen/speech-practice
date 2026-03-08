@@ -406,22 +406,13 @@ async function getReadingFromJisho(word: string): Promise<string | null> {
             const reading = japanese.reading;
             
             // If result word starts with our query word
-            if (resultWord.startsWith(word)) {
-              // Extract okurigana from our word (hiragana portion after kanji)
-              const kanjiRegex = /[\u4e00-\u9faf]/;
-              let kanjiEnd = 0;
-              for (let i = 0; i < word.length; i++) {
-                if (kanjiRegex.test(word[i])) kanjiEnd = i + 1;
-              }
-              const okurigana = word.substring(kanjiEnd);
-              
-              // Remove okurigana from reading to get kanji reading
-              if (okurigana && reading.endsWith(okurigana)) {
-                const kanjiReading = reading.slice(0, -okurigana.length);
-                furiganaCache.set(word, kanjiReading);
-                await saveCache();
-                console.log(`[Furigana] Cached (partial match): ${word} = ${kanjiReading}`);
-                return kanjiReading;
+            if (resultWord.startsWith(word) && resultWord.length > word.length) {
+            // Get the extra part that result has beyond our word
+            const extra = resultWord.slice(word.length);
+            
+            // If reading ends with that extra part, remove it to get kanji reading
+            if (extra && reading.endsWith(extra)) {
+              const kanjiReading = reading.slice(0, -extra.length);
               }
             }
           }

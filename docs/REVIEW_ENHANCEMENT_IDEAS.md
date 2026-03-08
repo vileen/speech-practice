@@ -8,15 +8,18 @@
 |----------|---------|--------|------------|--------|
 | 1 | [~~Hide Mode~~ → **Memory Mode**](#1-hide-mode-memory-recall--implemented) | ✅ Complete | Medium | High |
 | 2 | [SRS Tracking](#3-spaced-repetition--weak-points-tracking--implemented-partial) | ✅ Core algorithm done | Medium | High |
-| 3 | [**Database Refactor**](#9-database-refactor-vocabulary-table--planned) | ⏳ Next priority | High | Critical |
-| 4 | [Interleaved Practice](#6-interleaved-practice-mode) | ⏳ Planned | Medium | High |
-| 5 | [Shadowing Enhancement](#8-shadowing-mode-enhancement) | ⏳ Planned | Medium | High |
-| 6 | [Progressive Reveal](#2-progressive-reveal-hint-cascade) | ⏳ Planned | Medium | Medium |
-| 7 | [Error-Based Drills](#4-minimal-pairs-drills-error-based) | ⏳ Planned | High | Medium |
-| 8 | [Sentence Building](#5-sentence-building-voice-lego) | ⏳ Planned | High | High |
-| 9 | [Grammar Drills](#7-grammar-pattern-drills) | ⏳ Planned | Medium | High |
-| 10 | [JLPT N3 Roadmap](#10-structured-learning-path-jlpt-n3-roadmap) | 📋 Documented | Medium | High |
-| 11 | [Daily Tracker + Pomodoro](#11-daily-practice-tracker-with-pomodoro-technique--planned) | ⏳ Planned | Medium | Medium |
+| 3 | [~~Database Refactor~~](#9-database-refactor-vocabulary-table--completed) | ✅ Complete | High | Critical |
+| 4 | [~~Backend Modularization~~](#12-backend-modularization--completed) | ✅ Complete | High | Critical |
+| 5 | [~~Frontend Refactoring~~](#13-frontend-refactoring--completed) | ✅ Complete | Medium | High |
+| 6 | [~~Vocabulary Review Badges~~](#14-vocabulary-review-badges--completed) | ✅ Complete | Low | Medium |
+| 7 | [Interleaved Practice](#6-interleaved-practice-mode) | ⏳ Planned | Medium | High |
+| 8 | [Shadowing Enhancement](#8-shadowing-mode-enhancement) | ⏳ Planned | Medium | High |
+| 9 | [Progressive Reveal](#2-progressive-reveal-hint-cascade) | ⏳ Planned | Medium | Medium |
+| 10 | [Error-Based Drills](#4-minimal-pairs-drills-error-based) | ⏳ Planned | High | Medium |
+| 11 | [Sentence Building](#5-sentence-building-voice-lego) | ⏳ Planned | High | High |
+| 12 | [Grammar Drills](#7-grammar-pattern-drills) | ⏳ Planned | Medium | High |
+| 13 | [JLPT N3 Roadmap](#10-structured-learning-path-jlpt-n3-roadmap) | 📋 Documented | Medium | High |
+| 14 | [Daily Tracker + Pomodoro](#11-daily-practice-tracker-with-pomodoro-technique--planned) | ⏳ Planned | Medium | Medium |
 
 
 ---
@@ -553,3 +556,77 @@ Medium complexity, high user value. Helps users maximize existing features rathe
 Medium - Nice to have for motivation, but core learning features come first.
 
 ---
+
+---
+
+## 12. Backend Modularization ✅ COMPLETED
+
+**Status:** ✅ Complete (March 2026)
+
+**Changes:**
+- Split monolithic `server.ts` (686 lines → 55 lines)
+- Created modular route structure in `src/routes/`
+  - health, sessions, tts, chat, furigana, lessons, translate, upload, repeat, logs, vocabulary
+- Added middleware layer (auth, error-handler)
+- Created typed configuration (`src/config/index.ts`)
+- Archived 74 one-time scripts to `scripts/archive/`
+
+**Services Restructured:**
+- ElevenLabs: Split into types, voices, index modules
+- Furigana: Dedicated service with cache persistence
+- Lessons: Modular service structure
+
+---
+
+## 13. Frontend Refactoring ✅ COMPLETED
+
+**Status:** ✅ Complete (March 2026)
+
+**Changes:**
+- **App.tsx:** ~1813 lines → ~210 lines (-88% reduction)
+- **Component Extraction:**
+  - Pages: Login, Home, LessonList, LessonDetail, ChatSetup, ChatSession, RepeatSetup, LessonPractice, MemoryModeWrapper
+  - HealthCheckWrapper component
+- **CSS Modularization:** Split into 7 files
+  - base.css, login.css, home.css, chat.css, lesson.css, repeat.css, components.css
+- **Type Safety:** Fixed TypeScript types (Lesson.id from number to string)
+
+---
+
+## 14. Vocabulary Review Badges ✅ COMPLETED
+
+**Status:** ✅ Complete (March 2026)
+
+**Features:**
+- "↻ N" badge on vocabulary cards showing word repetition across lessons
+- Hover tooltip showing other lessons where word appears
+- Clickable links to navigate to those lessons
+- API endpoint: `/api/lessons/:id/vocabulary-with-sources`
+
+**UI:**
+- Badge positioned on vocabulary card header
+- Tooltip with lesson title and date
+- Gapless hover experience (no disappearing when moving mouse)
+
+---
+
+## 15. Infrastructure & Security ✅ COMPLETED
+
+**Status:** ✅ Complete (March 2026)
+
+**Security:**
+- Git history rewritten with git-filter-repo
+- Removed API keys from all commits
+- Removed personal paths and usernames
+- node_modules removed from git tracking
+- All secrets in .env (not committed)
+
+**Infrastructure:**
+- PM2 process management with auto-restart
+- Cloudflare Tunnels for services
+- Logging endpoints for debugging
+- Status Dashboard with file-based log reading
+
+**Removed:**
+- Italian language support (simplified UI to Japanese only)
+
