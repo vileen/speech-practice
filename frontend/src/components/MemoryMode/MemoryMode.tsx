@@ -231,11 +231,9 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
             {stats.due > 0 ? `Study ${stats.due} Due Cards` : 'Start New Session'}
           </button>
 
-          {selectedLessons.length === 0 && (
-            <p className="hint">
-              Select at least one lesson above to start studying.
-            </p>
-          )}
+          <p className={`hint ${selectedLessons.length > 0 ? 'hint-hidden' : ''}`}>
+            Select at least one lesson above to start studying.
+          </p>
         </div>
       </div>
     );

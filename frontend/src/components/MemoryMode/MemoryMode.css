@@ -416,3 +416,16 @@
     width: 100%;
   }
 }
+
+/* Hint with fixed min-height to prevent layout shift */
+.hint {
+  min-height: 1.5rem;
+  margin: 0.5rem 0;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.hint-hidden {
+  visibility: hidden;
+  opacity: 0;
+}
