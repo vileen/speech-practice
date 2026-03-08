@@ -63,6 +63,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
+  const [vocabWithSources, setVocabWithSources] = useState<any[]>([]);
   const [showFurigana, setShowFurigana] = useState(() => {
     // Read from localStorage on initial load
     if (typeof window !== 'undefined') {
@@ -142,6 +143,17 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   
   // Handle selected lesson changes from props
   useEffect(() => {
+    if (selectedLesson) {
+      fetch(`${API_URL}/api/lessons/${selectedLesson.id}/vocabulary-with-sources`, {
+        headers: { 'X-Password': password }
+      })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => data && setVocabWithSources(data.vocabulary))
+      .catch(() => {});
+    }
+  }, [selectedLesson, password]);
+
+  useEffect(() => {
     if (selectedLessonId) {
       // Only load if we haven't loaded this lesson yet
       if (lastLoadedLessonRef.current !== selectedLessonId) {
@@ -168,19 +180,6 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     }
   }, []);
 
-  const loadVocabularyWithSources = async (lessonId: string) => {
-    try {
-      const response = await fetch(`${API_URL}/api/lessons/${lessonId}/vocabulary-with-sources`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setVocabWithSources(data.vocabulary);
-      }
-    } catch (error) {
-      console.error('Error loading vocabulary with sources:', error);
-    }
-  };
 
   const loadLessons = async () => {
     try {
@@ -590,14 +589,22 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
           {activeTab === 'vocab' && (
             <div className="vocab-tab">
               <div className="vocab-grid">
-                {(selectedLesson.vocabulary || []).map((item, idx) => (
-                  <div key={idx} className="vocab-card">
-                    <div className="jp-word">{renderFurigana(item.jp || (item as any).word || '', item.reading)}</div>
-                    <div className="romaji">{item.romaji || item.reading}</div>
-                    <div className="meaning">{item.en || (item as any).meaning || 'No meaning'}</div>
-                    {item.type && <span className="type-tag">{item.type}</span>}
-                  </div>
-                ))}
+                {(selectedLesson.vocabulary || []).map((item, idx) => {
+                  const sources = vocabWithSources.find((v: any) => (v.jp || v.word) === (item.jp || (item as any).word));
+                  const otherCount = sources?.otherLessons?.length || 0;
+                  return (
+                    <div key={idx} className="vocab-card">
+                      <div className="vocab-card-header">
+                        <div className="jp-word">{renderFurigana(item.jp || (item as any).word || '', item.reading)}</div>
+                        {otherCount > 0 && <span className="review-badge">&#x21bb; {otherCount}</span>}
+                      </div>
+                      <div className="romaji">{item.romaji || item.reading}</div>
+                      <div className="meaning">{item.en || (item as any).meaning || 'No meaning'}</div>
+                      {item.type && <span className="type-tag">{item.type}</span>}
+                      {otherCount > 0 && <div className="other-lessons">Also in: {sources.otherLessons.map((l: any) => l.title).join(', ')}</div>}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
