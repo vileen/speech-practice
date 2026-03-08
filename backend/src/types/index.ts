@@ -61,7 +61,7 @@ export interface ChatMessage {
 
 export interface TTSOptions {
   text: string;
-  language: 'japanese' | 'italian';
+  language: 'japanese';
   gender: 'male' | 'female';
   voiceStyle?: 'normal' | 'anime';
 }

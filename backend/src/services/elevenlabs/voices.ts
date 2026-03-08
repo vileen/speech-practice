@@ -11,11 +11,6 @@ export const VOICES: Record<Language, Record<VoiceStyle, Record<Gender, string>>
       female: 'cgSgspJ2msm6clMCkdW9',   // Jessica - cute, playful, expressive
     },
   },
-  italian: {
-    normal: {
-      male: 'TX3AEvVoIzMeN6vkV4Ch',     // Italian male
-      female: 'XrExE9yKIg1WjnnlVkGX',   // Italian female
-    },
     anime: {
       male: 'IKne3meq5aSn9XLyUdCD',     // Charlie - energetic
       female: 'cgSgspJ2msm6clMCkdW9',   // Jessica - cute, expressive

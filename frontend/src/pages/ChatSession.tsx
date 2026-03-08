@@ -62,9 +62,6 @@ export function ChatSession() {
       japanese: {
         'はい、理解しました。続けてください。': 'Yes, I understand. Please continue.',
       },
-      italian: {
-        'Sì, ho capito. Continua pure.': 'Yes, I understand. Please continue.',
-      },
     };
     const translation = translations[session.language]?.[text];
     
@@ -169,7 +166,7 @@ export function ChatSession() {
           <main>
             <div className="session-info">
               <div className="session-left">
-                <span>{language === 'japanese' ? 'Japanese' : 'Italian'}</span>
+                <span>{'Japanese'}</span>
                 {activeLesson && (
                   <span className="active-lesson">{translateLessonTitle(activeLesson.title)}</span>
                 )}

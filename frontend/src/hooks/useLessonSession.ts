@@ -22,7 +22,7 @@ export function useLessonSession() {
   const navigate = useNavigate();
   
   const [password, setPassword] = useState('');
-  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
+  const [language, setLanguage] = useState<'japanese'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
   const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
   const [simpleMode, setSimpleMode] = useState(false);

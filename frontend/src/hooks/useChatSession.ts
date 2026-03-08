@@ -22,7 +22,7 @@ export function useChatSession() {
   
   const [password, setPassword] = useState('');
   const [session, setSession] = useState<Session | null>(null);
-  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
+  const [language, setLanguage] = useState<'japanese'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
   const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
   const [messages, setMessages] = useState<ChatMessage[]>([]);

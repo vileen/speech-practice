@@ -7,7 +7,7 @@ const openai = new OpenAI({
 
 interface TranscriptionOptions {
   audioFilePath: string;
-  language?: string; // 'ja' for Japanese, 'it' for Italian
+  language?: string; 
 }
 
 export async function transcribeAudio({ audioFilePath, language }: TranscriptionOptions): Promise<string> {

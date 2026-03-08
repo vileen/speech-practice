@@ -1,6 +1,6 @@
 export type VoiceStyle = 'normal' | 'anime';
 export type Gender = 'male' | 'female';
-export type Language = 'japanese' | 'italian';
+export type Language = 'japanese';
 
 export interface TTSOptions {
   text: string;

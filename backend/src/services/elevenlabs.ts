@@ -13,7 +13,7 @@ const CACHE_FILE = './data/furigana-cache.json';
 // Get valid IDs from: https://api.elevenlabs.io/v1/voices
 type VoiceStyle = 'normal' | 'anime';
 type Gender = 'male' | 'female';
-type Language = 'japanese' | 'italian';
+type Language = 'japanese';
 
 const VOICES: Record<Language, Record<VoiceStyle, Record<Gender, string>>> = {
   japanese: {
@@ -26,11 +26,6 @@ const VOICES: Record<Language, Record<VoiceStyle, Record<Gender, string>>> = {
       female: 'cgSgspJ2msm6clMCkdW9',   // Jessica - cute, playful, expressive
     },
   },
-  italian: {
-    normal: {
-      male: 'TX3AEvVoIzMeN6vkV4Ch',     // Italian male
-      female: 'XrExE9yKIg1WjnnlVkGX',   // Italian female
-    },
     anime: {
       male: 'IKne3meq5aSn9XLyUdCD',     // Charlie - energetic
       female: 'cgSgspJ2msm6clMCkdW9',   // Jessica - cute, expressive
@@ -40,7 +35,7 @@ const VOICES: Record<Language, Record<VoiceStyle, Record<Gender, string>>> = {
 
 interface TTSOptions {
   text: string;
-  language: 'japanese' | 'italian';
+  language: 'japanese';
   gender: 'male' | 'female';
   voiceStyle?: 'normal' | 'anime';
 }

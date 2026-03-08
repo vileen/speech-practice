@@ -12,7 +12,7 @@ export function LessonPractice() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
-  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
+  const [language, setLanguage] = useState<'japanese'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
   const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
   const [simpleMode, setSimpleMode] = useState(false);
@@ -293,7 +293,7 @@ export function LessonPractice() {
           <main>
             <div className="session-info">
               <div className="session-left">
-                <span>🌍 {language === 'japanese' ? 'Japanese' : 'Italian'}</span>
+                <span>🌍 {'Japanese'}</span>
                 <span>🎭 {gender === 'male' ? 'Male' : 'Female'}</span>
                 {activeLesson && (
                   <span className="active-lesson">📚 {translateLessonTitle(activeLesson.title)}</span>

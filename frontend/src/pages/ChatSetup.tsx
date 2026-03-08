@@ -5,7 +5,6 @@ import { API_URL, getPassword } from '../config/api.js';
 
 export function ChatSetup() {
   const navigate = useNavigate();
-  const [language, setLanguage] = useState<'japanese' | 'italian'>('japanese');
   const [gender, setGender] = useState<'male' | 'female'>('female');
   const [voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>(() => {
     return localStorage.getItem('voiceStyle') as 'normal' | 'anime' || 'normal';
@@ -19,12 +18,11 @@ export function ChatSetup() {
           'Content-Type': 'application/json',
           'X-Password': getPassword(),
         },
-        body: JSON.stringify({ language, voice_gender: gender }),
+        body: JSON.stringify({ language: 'japanese', voice_gender: gender }),
       });
       
       if (response.ok) {
-        // Store session info in state or context
-        navigate('/chat', { state: { session: await response.json(), language, gender, voiceStyle } });
+        navigate('/chat', { state: { session: await response.json(), language: 'japanese', gender, voiceStyle } });
       }
     } catch (error) {
       console.error('Error creating session:', error);
@@ -43,24 +41,6 @@ export function ChatSetup() {
             <p className="setup-lesson-title">Configure your chat session</p>
 
             <div className="setup-options">
-              <div className="setup-section">
-                <span className="setup-section-label">Language</span>
-                <div className="setup-voice-select">
-                  <button
-                    className={language === 'japanese' ? 'active' : ''}
-                    onClick={() => setLanguage('japanese')}
-                  >
-                    🇯🇵 Japanese
-                  </button>
-                  <button
-                    className={language === 'italian' ? 'active' : ''}
-                    onClick={() => setLanguage('italian')}
-                  >
-                    🇮🇹 Italian
-                  </button>
-                </div>
-              </div>
-
               <div className="setup-section">
                 <span className="setup-section-label">Voice</span>
                 <div className="setup-voice-select">

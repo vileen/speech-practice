@@ -22,17 +22,6 @@ const PRACTICE_PHRASES: Record<string, PracticePhrase[]> = {
     { text: 'ラーメンの方がおいしいです', translation: 'Ramen is tastier' },
     { text: '伝統的な町が好きですから', translation: 'Because I like traditional towns' },
   ],
-  italian: [
-    { text: 'Buongiorno', translation: 'Good morning' },
-    { text: 'Buonasera', translation: 'Good evening' },
-    { text: 'Grazie mille', translation: 'Thank you very much' },
-    { text: 'Mi scusi', translation: 'Excuse me' },
-    { text: 'Come si chiama', translation: 'What is your name?' },
-    { text: 'Sono uno studente', translation: 'I am a student' },
-    { text: 'Studio italiano', translation: 'I study Italian' },
-    { text: 'Oggi fa freddo', translation: 'Today it is cold' },
-    { text: 'Domani è martedì', translation: 'Tomorrow is Tuesday' },
-  ],
 };
 
 import { useState, useEffect, useCallback } from 'react';
