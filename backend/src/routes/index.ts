@@ -8,6 +8,7 @@ import lessonRoutes from './lessons.js';
 import translateRoutes from './translate.js';
 import uploadRoutes from './upload.js';
 import repeatRoutes from './repeat.js';
+import logsRoutes from './logs.js';
 
 const router = Router();
 
@@ -21,5 +22,6 @@ router.use('/lessons', lessonRoutes);
 router.use('/translate', translateRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/repeat-after-me', repeatRoutes);
+router.use('/logs', logsRoutes);
 
 export default router;
