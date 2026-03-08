@@ -16,7 +16,7 @@
 | 8 | [Sentence Building](#5-sentence-building-voice-lego) | ⏳ Planned | High | High |
 | 9 | [Grammar Drills](#7-grammar-pattern-drills) | ⏳ Planned | Medium | High |
 | 10 | [JLPT N3 Roadmap](#10-structured-learning-path-jlpt-n3-roadmap) | 📋 Documented | Medium | High |
-| 11 | [Daily Tracker + Pomodoro](#11-daily-practice-tracker-with-pomodoro-technique-planned) | ⏳ Planned | Medium | Medium |
+| 11 | [Daily Tracker + Pomodoro](#11-daily-practice-tracker-with-pomodoro-technique--planned) | ⏳ Planned | Medium | Medium |
 
 
 ---
@@ -387,63 +387,6 @@ Added as Priority #3 - High complexity but critical for vocabulary tracking.
 ---
 
 
-## 11. Daily Practice Tracker with Pomodoro Technique ⏳ PLANNED
-
-**Problem:** Users lose motivation without tracking progress and structured focus time.
-
-**Solution:** Built-in daily practice tracking with Pomodoro timer integration.
-
-### Features
-
-**A. Daily Streak Tracking**
-- Track consecutive days of practice
-- Minimum requirement: 15 min to count as "practiced today"
-- Visual calendar heatmap (GitHub-style)
-- Current streak + longest streak display
-
-**B. Pomodoro Timer**
-- 25-minute focused practice sessions
-- 5-minute break between sessions
-- Long break (15 min) after 4 sessions
-- Auto-start next Pomodoro option
-- Session count tracking
-
-**C. Practice Goals**
-- Daily: 40 minutes (1-2 Pomodoros)
-- Weekly: 5 days minimum
-- Monthly targets with progress visualization
-
-**D. Stats Dashboard**
-- Total practice time (daily/weekly/monthly)
-- Mode breakdown: Chat vs Repeat vs Memory vs Lessons
-- Best time of day for practice
-- Weak point improvement tracking
-
-### UI Implementation
-```
-┌─────────────────────────────────┐
-│ 🔥 12 day streak    ⏱️ 2/3 today │
-├─────────────────────────────────┤
-│  [Start 25min Pomodoro]         │
-│                                 │
-│  Today: 40 min / 40 min goal ✓  │
-│  [████████████░░░░░░] 75%       │
-│                                 │
-│  This week: 5/7 days ✓          │
-│  ████░░░                         │
-└─────────────────────────────────┘
-```
-
-### Technical Notes
-- Store data in localStorage (privacy-first)
-- Sync with backend when available
-- Export data option (JSON/CSV)
-- Notification: "Time for practice!" (optional)
-
-### Priority
-Medium - Nice to have for motivation, but core learning features come first.
-
----
 
 ## 10. Structured Learning Path (JLPT N3 Roadmap)
 
@@ -552,3 +495,61 @@ Document should guide users to add:
 
 ### Priority
 Medium complexity, high user value. Helps users maximize existing features rather than building new ones.
+
+## 11. Daily Practice Tracker with Pomodoro Technique ⏳ PLANNED
+
+**Problem:** Users lose motivation without tracking progress and structured focus time.
+
+**Solution:** Built-in daily practice tracking with Pomodoro timer integration.
+
+### Features
+
+**A. Daily Streak Tracking**
+- Track consecutive days of practice
+- Minimum requirement: 15 min to count as "practiced today"
+- Visual calendar heatmap (GitHub-style)
+- Current streak + longest streak display
+
+**B. Pomodoro Timer**
+- 25-minute focused practice sessions
+- 5-minute break between sessions
+- Long break (15 min) after 4 sessions
+- Auto-start next Pomodoro option
+- Session count tracking
+
+**C. Practice Goals**
+- Daily: 40 minutes (1-2 Pomodoros)
+- Weekly: 5 days minimum
+- Monthly targets with progress visualization
+
+**D. Stats Dashboard**
+- Total practice time (daily/weekly/monthly)
+- Mode breakdown: Chat vs Repeat vs Memory vs Lessons
+- Best time of day for practice
+- Weak point improvement tracking
+
+### UI Implementation
+```
+┌─────────────────────────────────┐
+│ 🔥 12 day streak    ⏱️ 2/3 today │
+├─────────────────────────────────┤
+│  [Start 25min Pomodoro]         │
+│                                 │
+│  Today: 40 min / 40 min goal ✓  │
+│  [████████████░░░░░░] 75%       │
+│                                 │
+│  This week: 5/7 days ✓          │
+│  ████░░░                         │
+└─────────────────────────────────┘
+```
+
+### Technical Notes
+- Store data in localStorage (privacy-first)
+- Sync with backend when available
+- Export data option (JSON/CSV)
+- Notification: "Time for practice!" (optional)
+
+### Priority
+Medium - Nice to have for motivation, but core learning features come first.
+
+---
