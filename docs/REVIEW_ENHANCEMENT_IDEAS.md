@@ -17,7 +17,7 @@
 | 9 | [Progressive Reveal](#2-progressive-reveal-hint-cascade) | ⏳ Planned | Medium | Medium |
 | 10 | [Error-Based Drills](#4-minimal-pairs-drills-error-based) | ⏳ Planned | High | Medium |
 | 11 | [Sentence Building](#5-sentence-building-voice-lego) | ⏳ Planned | High | High |
-| 12 | [Grammar Drills](#7-grammar-pattern-drills) | ⏳ Planned | Medium | High |
+| 12 | [Grammar Drills](#7-grammar-pattern-drills-enhanced) | ⏳ Planned | Medium | High |
 | 13 | [JLPT N3 Roadmap](#10-structured-learning-path-jlpt-n3-roadmap) | 📋 Documented | Medium | High |
 | 14 | [Daily Tracker + Pomodoro](#11-daily-practice-tracker-with-pomodoro-technique--planned) | ⏳ Planned | Medium | Medium |
 
