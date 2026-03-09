@@ -1,0 +1,334 @@
+{
+  "id": "2026-03-09",
+  "date": "2026-03-09",
+  "title": "Nakute mo ii desu - Don't Have To",
+  "duration": 57,
+  "vocabulary": [
+    {
+      "jp": "急ぐ",
+      "en": "to hurry",
+      "type": "u-verb",
+      "romaji": "isogu",
+      "reading": "いそぐ",
+      "furigana": "<ruby>急<rt>いそ</rt></ruby>ぐ"
+    },
+    {
+      "jp": "走る",
+      "en": "to run",
+      "type": "u-verb",
+      "romaji": "hashiru",
+      "reading": "はしる",
+      "furigana": "<ruby>走<rt>はし</rt></ruby>る"
+    },
+    {
+      "jp": "まだ",
+      "en": "still, yet",
+      "type": "adv",
+      "romaji": "mada",
+      "reading": "まだ",
+      "furigana": "まだ"
+    },
+    {
+      "jp": "時間",
+      "en": "time",
+      "type": "noun",
+      "romaji": "jikan",
+      "reading": "じかん",
+      "furigana": "<ruby>時<rt>じ</rt></ruby><ruby>間<rt>かん</rt></ruby>"
+    },
+    {
+      "jp": "いっぱい",
+      "en": "full, plenty",
+      "type": "na-adj",
+      "romaji": "ippai",
+      "reading": "いっぱい",
+      "furigana": "いっぱい"
+    },
+    {
+      "jp": "暇",
+      "en": "free time",
+      "type": "noun",
+      "romaji": "hima",
+      "reading": "ひま",
+      "furigana": "<ruby>暇<rt>ひま</rt></ruby>"
+    },
+    {
+      "jp": "節分",
+      "en": "Setsubun festival",
+      "type": "noun",
+      "romaji": "setsubun",
+      "reading": "せつぶん",
+      "furigana": "<ruby>節<rt>せつ</rt></ruby><ruby>分<rt>ぶん</rt></ruby>"
+    },
+    {
+      "jp": "鬼",
+      "en": "demon, ogre",
+      "type": "noun",
+      "romaji": "oni",
+      "reading": "おに",
+      "furigana": "<ruby>鬼<rt>おに</rt></ruby>"
+    },
+    {
+      "jp": "福",
+      "en": "fortune, luck",
+      "type": "noun",
+      "romaji": "fuku",
+      "reading": "ふく",
+      "furigana": "<ruby>福<rt>ふく</rt></ruby>"
+    },
+    {
+      "jp": "外",
+      "en": "outside",
+      "type": "noun",
+      "romaji": "soto",
+      "reading": "そと",
+      "furigana": "<ruby>外<rt>そと</rt></ruby>"
+    },
+    {
+      "jp": "内",
+      "en": "inside, home",
+      "type": "noun",
+      "romaji": "uchi",
+      "reading": "うち",
+      "furigana": "<ruby>内<rt>うち</rt></ruby>"
+    },
+    {
+      "jp": "春休み",
+      "en": "spring break",
+      "type": "noun",
+      "romaji": "haru yasumi",
+      "reading": "はるやすみ",
+      "furigana": "<ruby>春<rt>はる</rt></ruby><ruby>休<rt>やす</rt></ruby>み"
+    },
+    {
+      "jp": "夏休み",
+      "en": "summer vacation",
+      "type": "noun",
+      "romaji": "natsu yasumi",
+      "reading": "なつやすみ",
+      "furigana": "<ruby>夏<rt>なつ</rt></ruby><ruby>休<rt>やす</rt></ruby>み"
+    },
+    {
+      "jp": "寂しい",
+      "en": "lonely",
+      "type": "i-adj",
+      "romaji": "sabishii",
+      "reading": "さびしい",
+      "furigana": "<ruby>寂<rt>さび</rt></ruby>しい"
+    },
+    {
+      "jp": "早く",
+      "en": "early, quickly",
+      "type": "adv",
+      "romaji": "hayaku",
+      "reading": "はやく",
+      "furigana": "<ruby>早<rt>はや</rt></ruby>く"
+    },
+    {
+      "jp": "遅く",
+      "en": "late",
+      "type": "adv",
+      "romaji": "osoku",
+      "reading": "おそく",
+      "furigana": "<ruby>遅<rt>おそ</rt></ruby>く"
+    },
+    {
+      "jp": "ロボット",
+      "en": "robot",
+      "type": "noun",
+      "romaji": "robotto",
+      "reading": "ロボット",
+      "furigana": "ロボット"
+    },
+    {
+      "jp": "綺麗",
+      "en": "clean, beautiful",
+      "type": "na-adj",
+      "romaji": "kirei",
+      "reading": "きれい",
+      "furigana": "<ruby>綺<rt>き</rt></ruby><ruby>麗<rt>れい</rt></ruby>"
+    },
+    {
+      "jp": "掃除",
+      "en": "cleaning",
+      "type": "noun",
+      "romaji": "souji",
+      "reading": "そうじ",
+      "furigana": "<ruby>掃<rt>そう</rt></ruby><ruby>除<rt>じ</rt></ruby>"
+    },
+    {
+      "jp": "傘",
+      "en": "umbrella",
+      "type": "noun",
+      "romaji": "kasa",
+      "reading": "かさ",
+      "furigana": "<ruby>傘<rt>かさ</rt></ruby>"
+    },
+    {
+      "jp": "引く",
+      "en": "to pull",
+      "type": "u-verb",
+      "romaji": "hiku",
+      "reading": "ひく",
+      "furigana": "<ruby>引<rt>ひ</rt></ruby>く"
+    },
+    {
+      "jp": "開く",
+      "en": "to open",
+      "type": "u-verb",
+      "romaji": "hiraku",
+      "reading": "ひらく",
+      "furigana": "<ruby>開<rt>ひら</rt></ruby>く"
+    },
+    {
+      "jp": "電気",
+      "en": "electricity",
+      "type": "noun",
+      "romaji": "denki",
+      "reading": "でんき",
+      "furigana": "<ruby>電<rt>でん</rt></ruby><ruby>気<rt>き</rt></ruby>"
+    },
+    {
+      "jp": "消す",
+      "en": "to turn off",
+      "type": "u-verb",
+      "romaji": "kesu",
+      "reading": "けす",
+      "furigana": "<ruby>消<rt>け</rt></ruby>す"
+    },
+    {
+      "jp": "付ける",
+      "en": "to turn on",
+      "type": "ru-verb",
+      "romaji": "tsukeru",
+      "reading": "つける",
+      "furigana": "<ruby>付<rt>つ</rt></ruby>ける"
+    },
+    {
+      "jp": "涼しい",
+      "en": "cool, refreshing",
+      "type": "i-adj",
+      "romaji": "suzushii",
+      "reading": "すずしい",
+      "furigana": "<ruby>涼<rt>すず</rt></ruby>しい"
+    },
+    {
+      "jp": "風",
+      "en": "wind",
+      "type": "noun",
+      "romaji": "kaze",
+      "reading": "かぜ",
+      "furigana": "<ruby>風<rt>かぜ</rt></ruby>"
+    },
+    {
+      "jp": "仕事",
+      "en": "work",
+      "type": "noun",
+      "romaji": "shigoto",
+      "reading": "しごと",
+      "furigana": "<ruby>仕<rt>し</rt></ruby><ruby>事<rt>ごと</rt></ruby>"
+    },
+    {
+      "jp": "日曜日",
+      "en": "Sunday",
+      "type": "noun",
+      "romaji": "nichiyoubi",
+      "reading": "にちようび",
+      "furigana": "<ruby>日<rt>にち</rt></ruby><ruby>曜<rt>よう</rt></ruby><ruby>日<rt>び</rt></ruby>"
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "〜なくてもいいです",
+      "explanation": "Don't have to / don't need to do something",
+      "examples": [
+        {
+          "jp": "急がなくてもいいです",
+          "en": "You don't have to hurry",
+          "furigana": "<ruby>急<rt>いそ</rt></ruby>がなくてもいいです"
+        },
+        {
+          "jp": "早く起きなくてもいいです",
+          "en": "I don't have to wake up early",
+          "furigana": "<ruby>早<rt>はや</rt></ruby>く<ruby>起<rt>お</rt></ruby>きなくてもいいです"
+        },
+        {
+          "jp": "持たなくてもいいです",
+          "en": "You don't have to bring it",
+          "furigana": "<ruby>持<rt>も</rt></ruby>たなくてもいいです"
+        }
+      ]
+    },
+    {
+      "pattern": "〜くなります",
+      "explanation": "Become ~ (with i-adjectives)",
+      "examples": [
+        {
+          "jp": "寂しくなります",
+          "en": "I become lonely",
+          "furigana": "<ruby>寂<rt>さび</rt></ruby>しくなります"
+        },
+        {
+          "jp": "早くなります",
+          "en": "It becomes early/fast",
+          "furigana": "<ruby>早<rt>はや</rt></ruby>くなります"
+        },
+        {
+          "jp": "涼しくなります",
+          "en": "It becomes cool",
+          "furigana": "<ruby>涼<rt>すず</rt></ruby>しくなります"
+        }
+      ]
+    }
+  ],
+  "practice_phrases": [
+    {
+      "jp": "まだ時間がいっぱいあるから、急がなくてもいいです",
+      "en": "There's still plenty of time, so you don't have to hurry",
+      "romaji": "mada jikan ga ippai aru kara, isoganakute mo ii desu",
+      "furigana": "まだ<ruby>時間<rt>じかん</rt></ruby>がいっぱいあるから、<ruby>急<rt>いそ</rt></ruby>がなくてもいいです"
+    },
+    {
+      "jp": "日曜日は仕事がないから、早く起きなくてもいいです",
+      "en": "There's no work on Sunday, so I don't have to wake up early",
+      "romaji": "nichiyoubi wa shigoto ga nai kara, hayaku okinakute mo ii desu",
+      "furigana": "<ruby>日曜日<rt>にちようび</rt></ruby>は<ruby>仕事<rt>しごと</rt></ruby>がないから、<ruby>早<rt>はや</rt></ruby>く<ruby>起<rt>お</rt></ruby>きなくてもいいです"
+    },
+    {
+      "jp": "ロボットが掃除するから、しなくてもいいです",
+      "en": "The robot cleans, so I don't have to do it",
+      "romaji": "robotto ga souji suru kara, shinakute mo ii desu",
+      "furigana": "ロボットが<ruby>掃除<rt>そうじ</rt></ruby>するから、しなくてもいいです"
+    },
+    {
+      "jp": "春休みに東京に行くので、寂しくなります",
+      "en": "I'm going to Tokyo during spring break, so I'll become lonely",
+      "romaji": "haru yasumi ni Tokyo ni iku node, sabishiku narimasu",
+      "furigana": "<ruby>春休<rt>はるやす</rt></ruby>みに<ruby>東京<rt>とうきょう</rt></ruby>に<ruby>行<rt>い</rt></ruby>くので、<ruby>寂<rt>さび</rt></ruby>しくなります"
+    },
+    {
+      "jp": "毎日練習したら、早くなります",
+      "en": "If I practice every day, I'll become faster",
+      "romaji": "mainichi renshuu shitara, hayaku narimasu",
+      "furigana": "<ruby>毎日<rt>まいにち</rt></ruby><ruby>練習<rt>れんしゅう</rt></ruby>したら、<ruby>早<rt>はや</rt></ruby>くなります"
+    },
+    {
+      "jp": "鬼は外、福は内",
+      "en": "Demons out, fortune in (Setsubun chant)",
+      "romaji": "oni wa soto, fuku wa uchi",
+      "furigana": "<ruby>鬼<rt>おに</rt></ruby>は<ruby>外<rt>そと</rt></ruby>、<ruby>福<rt>ふく</rt></ruby>は<ruby>内<rt>うち</rt></ruby>"
+    },
+    {
+      "jp": "傘を持たなくてもいいです",
+      "en": "You don't have to bring an umbrella",
+      "romaji": "kasa wo motanakute mo ii desu",
+      "furigana": "<ruby>傘<rt>かさ</rt></ruby>を<ruby>持<rt>も</rt></ruby>たなくてもいいです"
+    },
+    {
+      "jp": "電気を消さなくてもいいです",
+      "en": "You don't have to turn off the lights",
+      "romaji": "denki wo kesanakute mo ii desu",
+      "furigana": "<ruby>電気<rt>でんき</rt></ruby>を<ruby>消<rt>け</rt></ruby>さなくてもいいです"
+    }
+  ]
+}

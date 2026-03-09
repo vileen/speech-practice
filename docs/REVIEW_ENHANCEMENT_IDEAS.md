@@ -126,33 +126,697 @@ user_phrase_progress (
 
 ---
 
-## 6. Interleaved Practice Mode
+## 6. Interleaved Practice Mode 🆕 DETAILED SPEC
 
-**Problem:** Blocked practice (one lesson at a time) is less effective than mixed review.
+**Status:** ⏳ Planned - Ready for implementation
 
-**Solution:** Daily review session mixing phrases from multiple lessons:
-- 5 phrases from Lesson 1
-- 3 from Lesson 5
-- 2 from Lesson 12
+**Problem:** Current Memory Mode reviews phrases from selected lessons but presents them in blocks (all from Lesson 5, then all from Lesson 12). Research shows interleaved practice (mixed topics) produces 43% better long-term retention than blocked practice.
 
-**Benefit:** Research shows interleaved learning > blocked learning for retention.
+**Solution:** "Interleaved Mode" — intelligent mixing of phrases from multiple lessons based on:
+- SRS due dates (prioritize overdue items)
+- Lesson age (older = higher priority for review)
+- Difficulty level (mix easy/hard for optimal challenge)
+- Pattern variety (alternate grammar patterns)
 
 ---
 
-## 7. Grammar Pattern Drills
+### 6.1 Core Algorithm
 
-**Focus:** Specific grammar patterns, not just vocabulary.
+**Input:** User selects lessons to include (e.g., Lessons 1, 5, 8, 12)
+
+**Mixing Strategy:**
+```typescript
+interface InterleavedSession {
+  // Fetch all due cards from selected lessons
+  cards: MemoryCard[];
+  
+  // Sort by: overdue days > lesson age > difficulty
+  sortPriority: (card) => {
+    const overdue = daysSince(card.nextReview);
+    const lessonAge = currentLessonNumber - card.lessonNumber;
+    const difficulty = 1 / card.easeFactor; // Lower ease = harder
+    return (overdue * 3) + (lessonAge * 2) + difficulty;
+  };
+  
+  // Chunking: Never 3+ from same lesson in a row
+  distribute: (sortedCards) => {
+    const chunks = [];
+    let lastLesson = null;
+    let streak = 0;
+    
+    for (const card of sortedCards) {
+      if (card.lessonId === lastLesson) {
+        streak++;
+        if (streak >= 2) {
+          // Find card from different lesson
+          const alternate = findNextDifferentLesson(cards, lastLesson);
+          chunks.push(alternate);
+          streak = 0;
+        }
+      } else {
+        streak = 0;
+      }
+      chunks.push(card);
+      lastLesson = card.lessonId;
+    }
+    return chunks;
+  };
+}
+```
+
+**Mixing Rules:**
+| Rule | Description |
+|------|-------------|
+| No same-lesson streak | Max 2 consecutive cards from same lesson |
+| Overdue priority | Cards 3+ days overdue appear first |
+| Age weighting | Lesson 1 cards appear 2x more often than Lesson 12 |
+| Difficulty blend | Mix easy (ease > 2.5) and hard (ease < 2.0) cards |
+
+---
+
+### 6.2 Session Types
+
+**A. Daily Review (Recommended)**
+```
+Duration: 15-20 minutes
+Cards: 20-30 mixed from all learned lessons
+Algorithm:
+  - 40% from lessons 1-10 (foundation review)
+  - 40% from lessons 11-20 (recent material)
+  - 20% from current lesson (new material)
+```
+
+**B. Cram Mode (Before Test)**
+```
+Duration: 30-45 minutes
+Cards: 50+ from selected range
+Algorithm:
+  - Equal distribution across all selected lessons
+  - Prioritize cards with lowest ease factors
+  - Include previously "Again" rated cards
+```
+
+**C. Weak Points Focus**
+```
+Duration: 10-15 minutes
+Cards: 15-20 specifically challenging items
+Algorithm:
+  - Only cards with ease < 2.0
+  - Cards marked "Again" 2+ times
+  - Mix from all lessons (no lesson bias)
+```
+
+**D. Pattern Mastery**
+```
+Duration: Flexible
+Cards: All cards using specific grammar pattern
+Algorithm:
+  - Group by pattern (〜てもいい, 〜たい, etc.)
+  - Mix across lessons using same pattern
+  - Compare/contrast similar patterns
+```
+
+---
+
+### 6.3 Smart Scheduling
+
+**Spaced Repetition with Interleaving:**
+
+```typescript
+function calculateNextReview(card, rating) {
+  // Standard FSRS update
+  const fsrsResult = fsrs.update(card, rating);
+  
+  // Interleaving adjustment: Add slight randomness
+  // to prevent "same time tomorrow" clustering
+  const jitterDays = Math.random() * 2 - 1; // -1 to +1 days
+  
+  return {
+    ...fsrsResult,
+    nextReview: fsrsResult.nextReview.addDays(jitterDays)
+  };
+}
+```
+
+**Daily Queue Generation:**
+```
+1. Get all cards due today (from all lessons)
+2. Add "early review" cards (scheduled for tomorrow ±1 day)
+3. Cap at 30 cards max
+4. Apply interleaving distribution
+5. Save queue to session state
+```
+
+---
+
+### 6.4 Progress Tracking
+
+**Interleaving-Specific Metrics:**
+
+```typescript
+interface InterleavedStats {
+  // Retention by lesson age
+  retentionByAge: {
+    recent: number;      // Lessons N-5 to N
+    medium: number;      // Lessons N-10 to N-6
+    old: number;         // Lessons 1 to N-11
+  };
+  
+  // Context switching performance
+  contextSwitchAccuracy: number;  // % correct after lesson switch
+  blockedAccuracy: number;        // % correct within same lesson
+  
+  // Lesson coverage
+  lessonsReviewed: string[];      // Which lessons appeared
+  coveragePercent: number;        // % of selected lessons reviewed
+  
+  // Difficulty distribution
+  easyCards: number;              // ease > 2.5
+  mediumCards: number;            // ease 1.8-2.5
+  hardCards: number;              // ease < 1.8
+}
+```
+
+**Visual Dashboard:**
+```
+┌─────────────────────────────────────────┐
+│ 📊 Interleaved Session Stats            │
+├─────────────────────────────────────────┤
+│ Retention: 87% (+5% vs blocked mode)   │
+│ Context switches: 12                    │
+│ Lessons covered: 8/10 selected          │
+│                                         │
+│ By Age:                                 │
+│ 🟢 Recent (5): 92%                      │
+│ 🟡 Medium (3): 85%                      │
+│ 🔴 Old (2): 80% ← Focus here!          │
+└─────────────────────────────────────────┘
+```
+
+---
+
+### 6.5 UI/UX Design
+
+**Interleaved Mode Setup:**
+```
+┌─────────────────────────────────────────┐
+│ 🔄 Interleaved Practice                 │
+├─────────────────────────────────────────┤
+│ Select lessons to mix:                  │
+│ ☑️ Lesson 1 (12 cards due)             │
+│ ☑️ Lesson 5 (8 cards due)              │
+│ ☐ Lesson 8 (0 cards due)               │
+│ ☑️ Lesson 12 (5 cards due)             │
+│                                         │
+│ Session type: [Daily Review ▼]          │
+│ • Daily Review (20 cards, ~15 min)     │
+│ • Cram Mode (50 cards, ~40 min)        │
+│ • Weak Points (15 cards, ~10 min)      │
+│                                         │
+│ [Start Interleaved Session]             │
+│                                         │
+│ ℹ️ Mixing: 40% old + 40% recent +      │
+│    20% new material                     │
+└─────────────────────────────────────────┘
+```
+
+**During Session:**
+```
+┌─────────────────────────────────────────┐
+│ Card 12/30                              │
+│ ━━━━━━━━━━━━━━━━░░░░░░░░░░ 40%          │
+│                                         │
+│ 🇬🇧 "I want to eat sushi"                │
+│                                         │
+│ [Reveal Japanese]                       │
+│                                         │
+│ Source: Lesson 5 (from 3 days ago)     │
+│ Next: Lesson 1 → Lesson 12 → Lesson 5  │
+└─────────────────────────────────────────┘
+```
+
+**Post-Session Summary:**
+```
+┌─────────────────────────────────────────┐
+│ ✅ Session Complete!                    │
+├─────────────────────────────────────────┤
+│ Score: 26/30 (87%)                      │
+│ Time: 18 minutes                        │
+│                                         │
+│ Lessons reviewed:                       │
+│ • Lesson 1: 10 cards (90% accuracy)    │
+│ • Lesson 5: 12 cards (83% accuracy)    │
+│ • Lesson 12: 8 cards (88% accuracy)    │
+│                                         │
+│ 🔥 Streak: 5 days of interleaved       │
+│                                         │
+│ [Start Next Session] [Review Mistakes]  │
+└─────────────────────────────────────────┘
+```
+
+---
+
+### 6.6 Technical Implementation
+
+**New Components:**
+```
+frontend/src/components/InterleavedMode/
+├── InterleavedSetup.tsx         # Lesson selection & session config
+├── InterleavedSession.tsx       # Main practice session
+├── InterleavedCard.tsx          # Card display with source indicator
+├── ProgressBar.tsx              # Session progress with lesson colors
+├── InterleavedStats.tsx         # Post-session analytics
+└── useInterleavedQueue.ts       # Queue generation & management
+```
+
+**Algorithm Service:**
+```typescript
+// services/interleaving.ts
+export class InterleavingService {
+  // Generate mixed queue from selected lessons
+  generateQueue(
+    lessons: Lesson[],
+    sessionType: SessionType,
+    maxCards: number
+  ): InterleavedCard[];
+  
+  // Apply no-streak rule
+  distributeCards(cards: Card[]): Card[];
+  
+  // Calculate interleaving stats
+  calculateStats(session: Session): InterleavedStats;
+  
+  // Recommend optimal mix ratio
+  suggestMixRatio(lessonCount: number): MixRatio;
+}
+```
+
+**API Endpoints:**
+```typescript
+// Get interleaved queue
+POST /api/interleaved/queue
+body: {
+  lessonIds: string[],
+  sessionType: "daily" | "cram" | "weak" | "pattern",
+  maxCards?: number
+}
+
+// Get interleaving stats
+GET /api/interleaved/stats?days=30
+
+// Submit session results
+POST /api/interleaved/session
+body: {
+  cardsReviewed: CardResult[],
+  sessionType: string,
+  duration: number
+}
+```
+
+**Database Additions:**
+```sql
+-- Track interleaved session history
+interleaved_sessions (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER,
+  session_type VARCHAR(20),
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  cards_reviewed INTEGER,
+  accuracy FLOAT,
+  lessons_included TEXT[]
+);
+
+-- Track per-lesson performance in interleaved context
+interleaved_lesson_stats (
+  user_id INTEGER,
+  lesson_id VARCHAR(20),
+  interleaved_accuracy FLOAT,    -- Accuracy when mixed
+  blocked_accuracy FLOAT,        -- Accuracy when isolated
+  context_switches INTEGER,      -- Times switched to/from
+  PRIMARY KEY (user_id, lesson_id)
+);
+```
+
+---
+
+### 6.7 Research-Backed Design
+
+**Why Interleaving Works:**
+
+| Study | Finding | Application |
+|-------|---------|-------------|
+| Rohrer (2010) | 43% better retention | Core algorithm |
+| Taylor (2013) | Context switching improves discrimination | Mix similar patterns |
+| Sana (2017) | Interleaving > blocking even when harder | Don't simplify for comfort |
+
+**Key Principles Applied:**
+1. **Discriminative Contrast:** Mixing 〜てもいい and 〜てはいけません forces active pattern recognition
+2. **Contextual Interference:** Slight difficulty increase leads to better long-term learning
+3. **Spacing Effect:** Natural gaps between same-lesson reviews enhance retention
+
+---
+
+### 6.8 Integration with Existing Features
+
+| Feature | Interleaved Integration |
+|---------|------------------------|
+| **Memory Mode** | Add "Interleaved" toggle to use mixing algorithm |
+| **Grammar Mode** | Mix grammar patterns across lessons |
+| **SRS Algorithm** | Add jitter to prevent clustering |
+| **Progress Stats** | Show interleaved vs blocked accuracy comparison |
+
+---
+
+### 6.9 Implementation Phases
+
+**Phase 1: Core Algorithm (Week 1)**
+- [ ] Queue generation with mixing rules
+- [ ] No-streak distribution logic
+- [ ] Basic session flow
+
+**Phase 2: UI/UX (Week 2)**
+- [ ] Setup screen with lesson selection
+- [ ] Session progress UI
+- [ ] Post-session summary
+
+**Phase 3: Smart Features (Week 3)**
+- [ ] Session type presets (Daily/Cram/Weak)
+- [ ] Smart scheduling with jitter
+- [ ] Stats dashboard
+
+**Phase 4: Integration (Week 4)**
+- [ ] Merge with Memory Mode
+- [ ] API endpoints
+- [ ] Testing & refinement
+
+---
+
+### 6.10 Success Metrics
+
+**Target Improvements:**
+- 25%+ better long-term retention vs blocked mode
+- 90%+ user satisfaction with mixing
+- 40% of users choose interleaved as default
+
+**A/B Test:**
+- Group A: Blocked practice (current)
+- Group B: Interleaved practice (new)
+- Measure: 7-day retention rates
+
+---
+
+## 7. Grammar Pattern Drills 🆕 ENHANCED
+
+**Status:** ⏳ Planned - Needs detailed specification
+
+**Problem:** Current app focuses on vocabulary repetition (Repeat Mode, Memory Mode) but lacks structured grammar practice. Users can memorize phrases but don't actively practice constructing sentences with specific grammar patterns.
+
+**Solution:** Dedicated "Grammar Mode" for active construction and repetition of grammar patterns with AI-powered feedback.
+
+---
+
+### 7.1 Pattern Recognition Mode
+
+**Goal:** Recognize and identify grammar patterns in context.
 
 **Flow:**
-1. Prompt: "Use 〜てもいいです to ask permission to take a photo"
-2. User constructs sentence by voice
-3. AI feedback: correct / almost / wrong + explanation
+1. Show Japanese sentence with highlighted grammar pattern
+2. User speaks the pattern name or explains its function
+3. AI verification + explanation
 
-**Patterns to cover:**
-- 〜てもいいです (permission)
-- 〜てはいけません (prohibition)
-- 〜たいです (desire)
-- 〜ませんか (invitation)
+**Example:**
+```
+Sentence: 写真を撮ってもいいですか。
+         [〜てもいい]
+User: "Permission pattern - asking if something is allowed"
+AI: ✅ Correct! 〜てもいいです means "May I..." / "Is it OK to..."
+```
+
+---
+
+### 7.2 Sentence Construction Mode
+
+**Goal:** Actively construct sentences using specific patterns.
+
+**Flow:**
+1. Prompt: "Ask for permission to enter using 〜てもいいです"
+2. User constructs sentence by voice
+3. AI analyzes:
+   - ✅ Correct: 入ってもいいですか。
+   - ⚠️ Partial: 入ります (wrong form, needs 〜て)
+   - ❌ Wrong: 入ってはいけません (prohibition, not permission)
+
+**Scoring:**
+| Result | Points | Action |
+|--------|--------|--------|
+| Perfect | 100% | Next pattern |
+| Minor error | 70% | Hint + retry |
+| Major error | 30% | Explanation + example |
+
+---
+
+### 7.3 Pattern Transformation Drills
+
+**Goal:** Practice converting between related patterns.
+
+**Exercise types:**
+
+**A. Permission ↔ Prohibition**
+```
+Given: 食べてもいいです (allowed)
+Task: Make it prohibited
+Answer: 食べてはいけません
+```
+
+**B. Polite ↔ Casual**
+```
+Given: 行きます (polite)
+Task: Casual form  
+Answer: 行く
+```
+
+**C. Affirmative ↔ Negative**
+```
+Given: わかります (understand)
+Task: Negative form
+Answer: わかりません
+```
+
+**D. Present ↔ Past**
+```
+Given: 寒いです (cold - present)
+Task: Past tense
+Answer: 寒かったです
+```
+
+---
+
+### 7.4 Contextual Fill-in-the-Blank
+
+**Goal:** Practice patterns in realistic contexts.
+
+**Format:**
+```
+Scenario: You're at a restaurant. Ask if smoking is allowed.
+Hint: Use 〜てもいいです
+
+Sentence: すみません、タバコを＿＿＿＿＿＿。
+          [    ?    ]
+
+User speaks: 吸ってもいいですか
+AI: ✅ Perfect! "Excuse me, may I smoke?"
+```
+
+---
+
+### 7.5 Error Correction Mode
+
+**Goal:** Identify and fix grammar mistakes.
+
+**Format:**
+```
+Show incorrect sentence:
+"行きてはいけません" ❌
+
+User identifies error:
+"Wrong te-form - should be 行って not 行きて"
+
+User speaks correct version:
+"行ってはいけません" ✅
+
+AI explains:
+"行く is an U-verb (iku), so te-form is 行って (itte), 
+not 行きて (ikite). Remember: く→いて for U-verbs!"
+```
+
+---
+
+### 7.6 Progressive Pattern Chaining
+
+**Goal:** Build complex sentences by combining patterns.
+
+**Levels:**
+- Level 1: Single pattern (〜てもいいです)
+- Level 2: Two patterns (〜てもいいです + 〜たいです)
+- Level 3: Three+ patterns (〜てもいいです + 〜たい + 〜と思います)
+
+**Example Level 2:**
+```
+Task: "Say you want to take photos, ask if it's allowed"
+
+Step 1: 写真を撮りたいです (desire)
+Step 2: 写真を撮ってもいいですか (permission)
+Step 3: Combine: 写真を撮りたいんですが、撮ってもいいですか
+```
+
+---
+
+### 7.7 Grammar SRS (Spaced Repetition)
+
+**Goal:** Track grammar pattern mastery like vocabulary.
+
+**Tracking per pattern:**
+```typescript
+interface GrammarProgress {
+  pattern: string;           // "〜てもいいです"
+  category: string;          // "Permission"
+  jlptLevel: string;         // "N5"
+  easeFactor: number;        // FSRS algorithm
+  intervalDays: number;      // Next review
+  totalAttempts: number;
+  correctAttempts: number;
+  commonErrors: string[];    // ["wrong te-form", "missing です"]
+}
+```
+
+**Review scheduling:**
+- New pattern: Review after 1 day
+- Getting it right: 3 days → 7 days → 14 days → 30 days
+- Getting it wrong: Reset to 1 day
+
+---
+
+### 7.8 Grammar Patterns Library
+
+**Organized pattern database:**
+
+| Category | Patterns | JLPT |
+|----------|----------|------|
+| **Permission/Prohibition** | 〜てもいいです, 〜てはいけません, 〜てはだめです | N5 |
+| **Desire** | 〜たいです, 〜たくないです, 〜たがっています | N5 |
+| **Ability** | 〜ことができます, 〜られます (potential) | N5/N4 |
+| **Experience** | 〜ことがあります | N5 |
+| **Obligation** | 〜なければなりません, 〜なくてはいけません | N5 |
+| **Lack of obligation** | 〜なくてもいいです | N5 |
+| **Invitation** | 〜ませんか, 〜ましょう | N5 |
+| **Comparison** | 〜より〜の方が, 〜の中で〜がいちばん | N4 |
+| **Cause/Reason** | 〜から, 〜ので, 〜ため | N5/N4 |
+| **Giving/Receiving** | 〜てあげる, 〜てくれる, 〜てもらう | N4 |
+
+**Each pattern includes:**
+- Formation rules
+- Usage examples
+- Common mistakes
+- Related patterns
+- Practice exercises
+
+---
+
+### Implementation Architecture
+
+**New Components:**
+```
+frontend/src/components/GrammarMode/
+├── GrammarMode.tsx              # Main container
+├── PatternCard.tsx              # Display pattern with examples
+├── ConstructionExercise.tsx     # Build sentences
+├── TransformationDrill.tsx      # Convert patterns
+├── ErrorCorrection.tsx          # Fix mistakes
+├── PatternChain.tsx             # Combine patterns
+└── GrammarProgress.tsx          # SRS stats
+```
+
+**New API Endpoints:**
+```typescript
+// Get patterns for user's level
+GET /api/grammar/patterns?jlptLevel=N5&category=permission
+
+// Validate sentence construction
+POST /api/grammar/validate
+body: {
+  pattern: "〜てもいいです",
+  userSentence: "入ってもいいですか",
+  context: "asking permission to enter"
+}
+
+// Get next pattern for review (SRS)
+GET /api/grammar/next-review
+
+// Submit attempt & update progress
+POST /api/grammar/progress
+body: {
+  patternId: string,
+  result: "correct" | "partial" | "wrong",
+  userSentence: string,
+  errorType?: string
+}
+```
+
+**Database Schema:**
+```sql
+-- Grammar patterns library
+grammar_patterns (
+  id SERIAL PRIMARY KEY,
+  pattern TEXT NOT NULL,           -- "〜てもいいです"
+  category TEXT NOT NULL,          -- "Permission"
+  jlpt_level TEXT,                 -- "N5", "N4", etc.
+  formation_rules JSONB,           -- [{"step": 1, "rule": "Te-form + もいい"}]
+  examples JSONB,                  -- [{"jp": "...", "en": "..."}]
+  common_mistakes JSONB            -- [{"mistake": "...", "explanation": "..."}]
+);
+
+-- User progress per pattern
+user_grammar_progress (
+  user_id INTEGER,
+  pattern_id INTEGER,
+  ease_factor FLOAT DEFAULT 2.5,
+  interval_days INTEGER DEFAULT 1,
+  next_review_at TIMESTAMP,
+  total_attempts INTEGER DEFAULT 0,
+  correct_attempts INTEGER DEFAULT 0,
+  streak INTEGER DEFAULT 0,
+  error_patterns JSONB,            -- Track specific mistakes
+  PRIMARY KEY (user_id, pattern_id)
+);
+```
+
+---
+
+### Integration with Existing Features
+
+| Existing Feature | Grammar Integration |
+|------------------|---------------------|
+| **Memory Mode** | Add grammar cards alongside vocabulary |
+| **Chat Sessions** | AI tutors can target specific patterns |
+| **Lesson Mode** | Extract patterns from lesson grammar section |
+| **Progress Tracking** | Combined vocabulary + grammar stats |
+
+---
+
+### Priority: HIGH
+
+**Why high priority:**
+- Fills major gap in app functionality
+- Complements vocabulary practice
+- Critical for JLPT preparation
+- High user demand based on learning science
+
+**Estimated effort:** 3-4 weeks
+- Week 1: Pattern library + database schema
+- Week 2: Construction & transformation modes
+- Week 3: SRS integration + progress tracking
+- Week 4: Polish + testing
 
 ---
 

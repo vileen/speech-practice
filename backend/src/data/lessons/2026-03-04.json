@@ -1,0 +1,501 @@
+{
+  "id": "2026-03-04",
+  "date": "2026-03-04",
+  "title": "Nakereba Narimasen - Must Do Form",
+  "duration": 51,
+  "vocabulary": [
+    {
+      "jp": "人気",
+      "en": "popular",
+      "type": "na-adj",
+      "romaji": "ninki",
+      "reading": "にんき",
+      "furigana": "<ruby>人<rt>にん</rt></ruby><ruby>気<rt>き</rt></ruby>"
+    },
+    {
+      "jp": "色々",
+      "en": "various, many",
+      "type": "na-adj",
+      "romaji": "iroiro",
+      "reading": "いろいろ",
+      "furigana": "<ruby>色<rt>いろ</rt></ruby><ruby>々<rt>いろ</rt></ruby>"
+    },
+    {
+      "jp": "合わせる",
+      "en": "to match, fit together",
+      "type": "ru-verb",
+      "romaji": "awaseru",
+      "reading": "あわせる",
+      "furigana": "<ruby>合<rt>あ</rt></ruby>わせる"
+    },
+    {
+      "jp": "易い",
+      "en": "easy",
+      "type": "i-adj",
+      "romaji": "yasui",
+      "reading": "やすい",
+      "furigana": "<ruby>易<rt>やす</rt></ruby>い"
+    },
+    {
+      "jp": "こちら",
+      "en": "this way, here (polite)",
+      "type": "pronoun",
+      "romaji": "kochira",
+      "reading": "こちら",
+      "furigana": "こちら"
+    },
+    {
+      "jp": "利用",
+      "en": "use, utilization",
+      "type": "noun",
+      "romaji": "riyou",
+      "reading": "りよう",
+      "furigana": "<ruby>利<rt>り</rt></ruby><ruby>用<rt>よう</rt></ruby>"
+    },
+    {
+      "jp": "敬語",
+      "en": "honorific language",
+      "type": "noun",
+      "romaji": "keigo",
+      "reading": "けいご",
+      "furigana": "<ruby>敬<rt>けい</rt></ruby><ruby>語<rt>ご</rt></ruby>"
+    },
+    {
+      "jp": "汚い",
+      "en": "dirty",
+      "type": "i-adj",
+      "romaji": "kitanai",
+      "reading": "きたない",
+      "furigana": "<ruby>汚<rt>きたな</rt></ruby>い"
+    },
+    {
+      "jp": "洗濯",
+      "en": "laundry, washing",
+      "type": "noun",
+      "romaji": "sentaku",
+      "reading": "せんたく",
+      "furigana": "<ruby>洗<rt>せん</rt></ruby><ruby>濯<rt>たく</rt></ruby>"
+    },
+    {
+      "jp": "借りる",
+      "en": "to borrow",
+      "type": "ru-verb",
+      "romaji": "kariru",
+      "reading": "かりる",
+      "furigana": "<ruby>借<rt>か</rt></ruby>りる"
+    },
+    {
+      "jp": "浴びる",
+      "en": "to take (shower)",
+      "type": "ru-verb",
+      "romaji": "abiru",
+      "reading": "あびる",
+      "furigana": "<ruby>浴<rt>あ</rt></ruby>びる"
+    },
+    {
+      "jp": "起きる",
+      "en": "to wake up",
+      "type": "ru-verb",
+      "romaji": "okiru",
+      "reading": "おきる",
+      "furigana": "<ruby>起<rt>お</rt></ruby>きる"
+    },
+    {
+      "jp": "登る",
+      "en": "to climb",
+      "type": "u-verb",
+      "romaji": "noboru",
+      "reading": "のぼる",
+      "furigana": "<ruby>登<rt>のぼ</rt></ruby>る"
+    },
+    {
+      "jp": "山",
+      "en": "mountain",
+      "type": "noun",
+      "romaji": "yama",
+      "reading": "やま",
+      "furigana": "<ruby>山<rt>やま</rt></ruby>"
+    },
+    {
+      "jp": "川",
+      "en": "river",
+      "type": "noun",
+      "romaji": "kawa",
+      "reading": "かわ",
+      "furigana": "<ruby>川<rt>かわ</rt></ruby>"
+    },
+    {
+      "jp": "小",
+      "en": "small",
+      "type": "prefix",
+      "romaji": "ko",
+      "reading": "こ",
+      "furigana": "<ruby>小<rt>こ</rt></ruby>"
+    },
+    {
+      "jp": "火山",
+      "en": "volcano",
+      "type": "noun",
+      "romaji": "kazan",
+      "reading": "かざん",
+      "furigana": "<ruby>火<rt>か</rt></ruby><ruby>山<rt>ざん</rt></ruby>"
+    },
+    {
+      "jp": "富士山",
+      "en": "Mt. Fuji",
+      "type": "noun",
+      "romaji": "fujisan",
+      "reading": "ふじさん",
+      "furigana": "<ruby>富士<rt>ふじ</rt></ruby><ruby>山<rt>さん</rt></ruby>"
+    },
+    {
+      "jp": "山道",
+      "en": "mountain path",
+      "type": "noun",
+      "romaji": "yamamichi",
+      "reading": "やまみち",
+      "furigana": "<ruby>山<rt>やま</rt></ruby><ruby>道<rt>みち</rt></ruby>"
+    },
+    {
+      "jp": "山芋",
+      "en": "mountain potato",
+      "type": "noun",
+      "romaji": "yamaimo",
+      "reading": "やまいも",
+      "furigana": "<ruby>山<rt>やま</rt></ruby><ruby>芋<rt>いも</rt></ruby>"
+    },
+    {
+      "jp": "短い",
+      "en": "short (length)",
+      "type": "i-adj",
+      "romaji": "mijikai",
+      "reading": "みじかい",
+      "furigana": "<ruby>短<rt>みじか</rt></ruby>い"
+    },
+    {
+      "jp": "新しい",
+      "en": "new",
+      "type": "i-adj",
+      "romaji": "atarashii",
+      "reading": "あたらしい",
+      "furigana": "<ruby>新<rt>あたら</rt></ruby>しい"
+    },
+    {
+      "jp": "薬",
+      "en": "medicine",
+      "type": "noun",
+      "romaji": "kusuri",
+      "reading": "くすり",
+      "furigana": "<ruby>薬<rt>くすり</rt></ruby>"
+    },
+    {
+      "jp": "試験",
+      "en": "exam, test",
+      "type": "noun",
+      "romaji": "shiken",
+      "reading": "しけん",
+      "furigana": "<ruby>試<rt>し</rt></ruby><ruby>験<rt>けん</rt></ruby>"
+    },
+    {
+      "jp": "練習",
+      "en": "practice",
+      "type": "noun",
+      "romaji": "renshuu",
+      "reading": "れんしゅう",
+      "furigana": "<ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>"
+    },
+    {
+      "jp": "毎日",
+      "en": "every day",
+      "type": "noun",
+      "romaji": "mainichi",
+      "reading": "まいにち",
+      "furigana": "<ruby>毎<rt>まい</rt></ruby><ruby>日<rt>にち</rt></ruby>"
+    },
+    {
+      "jp": "明日",
+      "en": "tomorrow",
+      "type": "noun",
+      "romaji": "ashita",
+      "reading": "あした",
+      "furigana": "<ruby>明日<rt>あした</rt></ruby>"
+    },
+    {
+      "jp": "今日",
+      "en": "today",
+      "type": "noun",
+      "romaji": "kyou",
+      "reading": "きょう",
+      "furigana": "<ruby>今日<rt>きょう</rt></ruby>"
+    },
+    {
+      "jp": "脱ぐ",
+      "en": "to take off (clothes)",
+      "type": "u-verb",
+      "romaji": "nugu",
+      "reading": "ぬぐ",
+      "furigana": "<ruby>脱<rt>ぬ</rt></ruby>ぐ"
+    },
+    {
+      "jp": "買う",
+      "en": "to buy",
+      "type": "u-verb",
+      "romaji": "kau",
+      "reading": "かう",
+      "furigana": "<ruby>買<rt>か</rt></ruby>う"
+    },
+    {
+      "jp": "食べる",
+      "en": "to eat",
+      "type": "ru-verb",
+      "romaji": "taberu",
+      "reading": "たべる",
+      "furigana": "<ruby>食<rt>た</rt></ruby>べる"
+    },
+    {
+      "jp": "飲む",
+      "en": "to drink",
+      "type": "u-verb",
+      "romaji": "nomu",
+      "reading": "のむ",
+      "furigana": "<ruby>飲<rt>の</rt></ruby>む"
+    },
+    {
+      "jp": "行く",
+      "en": "to go",
+      "type": "u-verb",
+      "romaji": "iku",
+      "reading": "いく",
+      "furigana": "<ruby>行<rt>い</rt></ruby>く"
+    },
+    {
+      "jp": "来る",
+      "en": "to come",
+      "type": "irregular",
+      "romaji": "kuru",
+      "reading": "くる",
+      "furigana": "<ruby>来<rt>く</rt></ruby>る"
+    },
+    {
+      "jp": "する",
+      "en": "to do",
+      "type": "irregular",
+      "romaji": "suru",
+      "reading": "する",
+      "furigana": "する"
+    },
+    {
+      "jp": "高い",
+      "en": "high, tall, expensive",
+      "type": "i-adj",
+      "romaji": "takai",
+      "reading": "たかい",
+      "furigana": "<ruby>高<rt>たか</rt></ruby>い"
+    },
+    {
+      "jp": "朝",
+      "en": "morning",
+      "type": "noun",
+      "romaji": "asa",
+      "reading": "あさ",
+      "furigana": "<ruby>朝<rt>あさ</rt></ruby>"
+    }
+  ],
+  "grammar": [
+    {
+      "pattern": "〜なければなりません",
+      "explanation": "Must do something (formal). Formation: verb nai-form + なければなりません. Used to express obligation or necessity.",
+      "romaji": "nakereba narimasen",
+      "examples": [
+        {
+          "jp": "明日5時に起きなければなりません",
+          "en": "Tomorrow I must wake up at 5 o'clock",
+          "furigana": "<ruby>明日<rt>あした</rt></ruby>5<ruby>時<rt>じ</rt></ruby>に<ruby>起<rt>お</rt></ruby>きなければなりません"
+        },
+        {
+          "jp": "食べなければなりません",
+          "en": "I must eat",
+          "furigana": "<ruby>食<rt>た</rt></ruby>べなければなりません"
+        },
+        {
+          "jp": "買わなければなりません",
+          "en": "I must buy",
+          "furigana": "<ruby>買<rt>か</rt></ruby>わなければなりません"
+        },
+        {
+          "jp": "行かなければなりません",
+          "en": "I must go",
+          "furigana": "<ruby>行<rt>い</rt></ruby>かなければなりません"
+        },
+        {
+          "jp": "飲まなければなりません",
+          "en": "I must drink",
+          "furigana": "<ruby>飲<rt>の</rt></ruby>まなければなりません"
+        },
+        {
+          "jp": "勉強しなければなりません",
+          "en": "I must study",
+          "furigana": "<ruby>勉強<rt>べんきょう</rt></ruby>しなければなりません"
+        },
+        {
+          "jp": "薬を飲まなければなりません",
+          "en": "I must take medicine",
+          "furigana": "<ruby>薬<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>まなければなりません"
+        },
+        {
+          "jp": "洗濯しなければなりません",
+          "en": "I must do laundry",
+          "furigana": "<ruby>洗濯<rt>せんたく</rt></ruby>しなければなりません"
+        }
+      ]
+    },
+    {
+      "pattern": "〜なければならない",
+      "explanation": "Must do something (casual form). Used in casual speech, newspapers, and writing.",
+      "romaji": "nakereba naranai",
+      "examples": [
+        {
+          "jp": "早く起きなければならない",
+          "en": "I must wake up early",
+          "furigana": "<ruby>早<rt>はや</rt></ruby>く<ruby>起<rt>お</rt></ruby>きなければならない"
+        },
+        {
+          "jp": "勉強しなければならない",
+          "en": "I must study (casual)",
+          "furigana": "<ruby>勉強<rt>べんきょう</rt></ruby>しなければならない"
+        }
+      ]
+    },
+    {
+      "pattern": "〜なきゃいけません / 〜なきゃ",
+      "explanation": "Must do (less formal/very casual). 'Nakya' is a contracted form used with friends.",
+      "romaji": "nakya ikemasen / nakya",
+      "examples": [
+        {
+          "jp": "行かなきゃ",
+          "en": "I gotta go (very casual)",
+          "furigana": "<ruby>行<rt>い</rt></ruby>かなきゃ"
+        },
+        {
+          "jp": "明日6時に起きなきゃいけません",
+          "en": "Tomorrow I must wake up at 6 (less formal)",
+          "furigana": "<ruby>明日<rt>あした</rt></ruby>6<ruby>時<rt>じ</rt></ruby>に<ruby>起<rt>お</rt></ruby>きなきゃいけません"
+        }
+      ]
+    },
+    {
+      "pattern": "〜しなければなりません (Exceptions)",
+      "explanation": "Special form for する (to do). する becomes しなければなりません (not すなければ...).",
+      "romaji": "shinakereba narimasen",
+      "examples": [
+        {
+          "jp": "勉強しなければなりません",
+          "en": "I must study",
+          "furigana": "<ruby>勉強<rt>べんきょう</rt></ruby>しなければなりません"
+        },
+        {
+          "jp": "洗濯しなければなりません",
+          "en": "I must do laundry",
+          "furigana": "<ruby>洗濯<rt>せんたく</rt></ruby>しなければなりません"
+        },
+        {
+          "jp": "練習しなければなりません",
+          "en": "I must practice",
+          "furigana": "<ruby>練習<rt>れんしゅう</rt></ruby>しなければなりません"
+        }
+      ]
+    },
+    {
+      "pattern": "〜来なければなりません (Exceptions)",
+      "explanation": "Special form for 来る (to come). 来る becomes 来なければなりません (konakereba...).",
+      "romaji": "konakereba narimasen",
+      "examples": [
+        {
+          "jp": "明日来なければなりません",
+          "en": "I must come tomorrow",
+          "furigana": "<ruby>明日<rt>あした</rt></ruby><ruby>来<rt>こ</rt></ruby>なければなりません"
+        }
+      ]
+    }
+  ],
+  "practice_phrases": [
+    {
+      "jp": "明日5時に起きなければなりません",
+      "en": "Tomorrow I must wake up at 5 o'clock",
+      "romaji": "ashita goji ni okinakereba narimasen",
+      "furigana": "<ruby>明日<rt>あした</rt></ruby>5<ruby>時<rt>じ</rt></ruby>に<ruby>起<rt>お</rt></ruby>きなければなりません"
+    },
+    {
+      "jp": "試験があるから、勉強しなければなりません",
+      "en": "Because there's a test, I must study",
+      "romaji": "shiken ga aru kara, benkyou shinakereba narimasen",
+      "furigana": "<ruby>試験<rt>しけん</rt></ruby>があるから、<ruby>勉強<rt>べんきょう</rt></ruby>しなければなりません"
+    },
+    {
+      "jp": "家に入るから、靴を脱がなければなりません",
+      "en": "Because I'm entering the house, I must take off my shoes",
+      "romaji": "ie ni hairu kara, kutsu wo nuganakereba narimasen",
+      "furigana": "<ruby>家<rt>いえ</rt></ruby>に<ruby>入<rt>はい</rt></ruby>るから、<ruby>靴<rt>くつ</rt></ruby>を<ruby>脱<rt>ぬ</rt></ruby>がなければなりません"
+    },
+    {
+      "jp": "皿が汚いから、洗わなければなりません",
+      "en": "Because the plates are dirty, I must wash them",
+      "romaji": "sara ga kitanai kara, arawanakereba narimasen",
+      "furigana": "<ruby>皿<rt>さら</rt></ruby>が<ruby>汚<rt>きたな</rt></ruby>いから、<ruby>洗<rt>あら</rt></ruby>わなければなりません"
+    },
+    {
+      "jp": "薬を飲まなければなりません",
+      "en": "I must take medicine",
+      "romaji": "kusuri wo nomanakereba narimasen",
+      "furigana": "<ruby>薬<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>まなければなりません"
+    },
+    {
+      "jp": "新しいセーターを買わなければなりません",
+      "en": "I must buy a new sweater",
+      "romaji": "atarashii seetaa wo kawanakereba narimasen",
+      "furigana": "<ruby>新<rt>あたら</rt></ruby>しいセーターを<ruby>買<rt>か</rt></ruby>わなければなりません"
+    },
+    {
+      "jp": "毎日練習しなければなりません",
+      "en": "I must practice every day",
+      "romaji": "mainichi renshuu shinakereba narimasen",
+      "furigana": "<ruby>毎日<rt>まいにち</rt></ruby><ruby>練習<rt>れんしゅう</rt></ruby>しなければなりません"
+    },
+    {
+      "jp": "洗濯しなければなりません",
+      "en": "I must do laundry",
+      "romaji": "sentaku shinakereba narimasen",
+      "furigana": "<ruby>洗濯<rt>せんたく</rt></ruby>しなければなりません"
+    },
+    {
+      "jp": "シャワーを浴びなければなりません",
+      "en": "I must take a shower",
+      "romaji": "shawaa wo abinakereba narimasen",
+      "furigana": "シャワーを<ruby>浴<rt>あ</rt></ruby>びなければなりません"
+    },
+    {
+      "jp": "本を返さなければなりません",
+      "en": "I must return the book",
+      "romaji": "hon wo kaesanakereba narimasen",
+      "furigana": "<ruby>本<rt>ほん</rt></ruby>を<ruby>返<rt>かえ</rt></ruby>さなければなりません"
+    },
+    {
+      "jp": "図書館で本を借りなければなりません",
+      "en": "I must borrow a book from the library",
+      "romaji": "toshokan de hon wo karinakereba narimasen",
+      "furigana": "<ruby>図書館<rt>としょかん</rt></ruby>で<ruby>本<rt>ほん</rt></ruby>を<ruby>借<rt>か</rt></ruby>りなければなりません"
+    },
+    {
+      "jp": "明日何時に起きなければなりませんか",
+      "en": "What time must you wake up tomorrow?",
+      "romaji": "ashita nanji ni okinakereba narimasen ka",
+      "furigana": "<ruby>明日<rt>あした</rt></ruby>なん<ruby>時<rt>じ</rt></ruby>に<ruby>起<rt>お</rt></ruby>きなければなりませんか"
+    },
+    {
+      "jp": "毎日何をしなければなりませんか",
+      "en": "What must you do every day?",
+      "romaji": "mainichi nani wo shinakereba narimasen ka",
+      "furigana": "<ruby>毎日<rt>まいにち</rt></ruby>なにをしなければなりませんか"
+    }
+  ]
+}
