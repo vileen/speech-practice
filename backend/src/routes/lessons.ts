@@ -159,4 +159,56 @@ router.post('/:id/start', checkPassword, async (req, res) => {
   }
 });
 
+// Get unique vocabulary for a lesson (words that first appeared in this lesson)
+router.get('/:id/unique-vocabulary', checkPassword, async (req, res) => {
+  try {
+    const lessonId = req.params.id;
+    
+    // Get target lesson and all earlier lessons
+    const result = await pool.query(`
+      WITH target_lesson AS (
+        SELECT id, order_num, vocabulary
+        FROM lessons
+        WHERE id = $1
+      ),
+      earlier_lessons AS (
+        SELECT vocabulary
+        FROM lessons
+        WHERE order_num < (SELECT order_num FROM target_lesson)
+      ),
+      earlier_words AS (
+        SELECT DISTINCT v->>'jp' as word
+        FROM earlier_lessons, jsonb_array_elements(vocabulary) AS v
+        WHERE v->>'jp' IS NOT NULL
+      )
+      SELECT 
+        (SELECT vocabulary FROM target_lesson) as target_vocab,
+        (SELECT json_agg(word) FROM earlier_words) as earlier_words
+    `, [lessonId]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Lesson not found' });
+    }
+    
+    const targetVocab = result.rows[0].target_vocab || [];
+    const earlierWords = new Set(result.rows[0].earlier_words || []);
+    
+    // Filter to only unique words
+    const uniqueVocab = targetVocab.filter((word: any) => {
+      const wordText = word.jp || word.word;
+      return wordText && !earlierWords.has(wordText);
+    });
+    
+    res.json({
+      lessonId,
+      totalVocab: targetVocab.length,
+      uniqueVocab: uniqueVocab.length,
+      vocabulary: uniqueVocab
+    });
+  } catch (error) {
+    console.error('Error fetching unique vocabulary:', error);
+    res.status(500).json({ error: 'Failed to fetch unique vocabulary' });
+  }
+});
+
 export default router;

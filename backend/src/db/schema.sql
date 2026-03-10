@@ -58,3 +58,63 @@ CREATE TABLE IF NOT EXISTS furigana_cache (
 
 -- Index for quick lookup
 CREATE INDEX IF NOT EXISTS idx_furigana_original ON furigana_cache(original_text);
+
+-- Grammar patterns library
+CREATE TABLE IF NOT EXISTS grammar_patterns (
+  id SERIAL PRIMARY KEY,
+  pattern TEXT NOT NULL,           -- "〜てもいいです"
+  category TEXT NOT NULL,          -- "Permission"
+  jlpt_level TEXT,                 -- "N5", "N4", etc.
+  formation_rules JSONB,           -- [{"step": 1, "rule": "Te-form + もいい"}]
+  examples JSONB,                  -- [{"jp": "...", "en": "...", "romaji": "..."}]
+  common_mistakes JSONB,           -- [{"mistake": "...", "explanation": "..."}]
+  related_patterns INTEGER[],      -- IDs of related patterns
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Grammar exercises for each pattern
+CREATE TABLE IF NOT EXISTS grammar_exercises (
+  id SERIAL PRIMARY KEY,
+  pattern_id INTEGER REFERENCES grammar_patterns(id) ON DELETE CASCADE,
+  type TEXT NOT NULL,              -- 'construction', 'transformation', 'error_correction', 'fill_blank'
+  prompt TEXT NOT NULL,            -- Exercise prompt
+  context TEXT,                    -- Additional context
+  correct_answer TEXT,             -- Expected answer
+  hints JSONB,                     -- Progressive hints
+  difficulty INTEGER DEFAULT 1,    -- 1-3 scale
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User progress per pattern
+CREATE TABLE IF NOT EXISTS user_grammar_progress (
+  id SERIAL PRIMARY KEY,
+  pattern_id INTEGER REFERENCES grammar_patterns(id) ON DELETE CASCADE,
+  ease_factor FLOAT DEFAULT 2.5,
+  interval_days INTEGER DEFAULT 1,
+  next_review_at TIMESTAMP,
+  total_attempts INTEGER DEFAULT 0,
+  correct_attempts INTEGER DEFAULT 0,
+  streak INTEGER DEFAULT 0,
+  error_patterns JSONB DEFAULT '[]',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(pattern_id)
+);
+
+-- Grammar attempt history
+CREATE TABLE IF NOT EXISTS grammar_attempts (
+  id SERIAL PRIMARY KEY,
+  pattern_id INTEGER REFERENCES grammar_patterns(id) ON DELETE CASCADE,
+  exercise_id INTEGER REFERENCES grammar_exercises(id) ON DELETE SET NULL,
+  user_sentence TEXT,              -- What user said
+  result TEXT NOT NULL,            -- 'correct', 'partial', 'wrong'
+  error_type TEXT,                 -- Type of error if any
+  ai_feedback TEXT,                -- AI-generated feedback
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_grammar_patterns_category ON grammar_patterns(category);
+CREATE INDEX IF NOT EXISTS idx_grammar_patterns_jlpt ON grammar_patterns(jlpt_level);
+CREATE INDEX IF NOT EXISTS idx_grammar_progress_review ON user_grammar_progress(next_review_at);
+CREATE INDEX IF NOT EXISTS idx_grammar_exercises_pattern ON grammar_exercises(pattern_id);

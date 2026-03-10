@@ -36,6 +36,9 @@ export function Home() {
             <button className="memory-mode-btn" onClick={() => navigate('/memory')}>
               🧠 Memory Mode
             </button>
+            <button className="grammar-mode-btn" onClick={() => navigate('/grammar')}>
+              📚 Grammar Drills
+            </button>
           </div>
         </header>
         
