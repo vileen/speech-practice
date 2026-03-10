@@ -1,8 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
 
+const QUOTES = [
+  "Either increase sacrifice or reduce desire.",
+  "Retardmaxxing fixes everything.",
+];
+
 export function Home() {
   const navigate = useNavigate();
+  const randomQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
 
   return (
     <AuthenticatedRoute>
@@ -29,7 +35,7 @@ export function Home() {
         </header>
         
         <div className="quote-footer">
-          "Either increase sacrifice or reduce desire."
+          {randomQuote}
         </div>
       </div>
     </AuthenticatedRoute>
