@@ -14,7 +14,7 @@
 | 6 | [~~Vocabulary Review Badges~~](#14-vocabulary-review-badges--completed) | ✅ Complete | Low | Medium | - |
 | **7** | [**Interleaved Practice**](#6-interleaved-practice-mode) | ⏳ **Next** | Medium | High | High impact, medium complexity |
 | 8 | [Shadowing Enhancement](#8-shadowing-mode-enhancement) | ⏳ Planned | Medium | High | Improves existing Repeat Mode |
-| 9 | [**Grammar Drills**](#7-grammar-pattern-drills-enhanced) | ⏳ Planned | Medium | High | Fills major gap, good ROI |
+| 9 | [**Grammar Drills**](#7-grammar-pattern-drills) | ⏳ Planned | Medium | High | Fills major gap, good ROI |
 | 10 | [Progressive Reveal](#2-progressive-reveal-hint-cascade) | ⏳ Planned | Medium | Medium | Nice-to-have UX improvement |
 | 11 | [Sentence Building](#5-sentence-building-voice-lego) | ⏳ Planned | High | High | High effort but high value |
 | 12 | [JLPT N3 Roadmap](#10-structured-learning-path-jlpt-n3-roadmap) | 📋 Documented | Medium | High | Mostly documentation/integration |
@@ -126,7 +126,7 @@ user_phrase_progress (
 
 ---
 
-## 6. Interleaved Practice Mode 🆕 DETAILED SPEC
+## 6. Interleaved Practice Mode
 
 **Status:** ⏳ Planned - Ready for implementation
 
@@ -526,7 +526,7 @@ interleaved_lesson_stats (
 
 ---
 
-## 7. Grammar Pattern Drills 🆕 ENHANCED
+## 7. Grammar Pattern Drills
 
 **Status:** ⏳ Planned - Needs detailed specification
 
