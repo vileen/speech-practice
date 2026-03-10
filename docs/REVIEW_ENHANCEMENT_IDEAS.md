@@ -4,22 +4,22 @@
 
 ## Priority / Implementation Order
 
-| Priority | Feature | Status | Complexity | Impact |
-|----------|---------|--------|------------|--------|
-| 1 | [~~Hide Mode~~ → **Memory Mode**](#1-hide-mode-memory-recall--implemented) | ✅ Complete | Medium | High |
-| 2 | [SRS Tracking](#3-spaced-repetition--weak-points-tracking--implemented-partial) | ✅ Core algorithm done | Medium | High |
-| 3 | [~~Database Refactor~~](#9-database-refactor-vocabulary-table--completed) | ✅ Complete | High | Critical |
-| 4 | [~~Backend Modularization~~](#12-backend-modularization--completed) | ✅ Complete | High | Critical |
-| 5 | [~~Frontend Refactoring~~](#13-frontend-refactoring--completed) | ✅ Complete | Medium | High |
-| 6 | [~~Vocabulary Review Badges~~](#14-vocabulary-review-badges--completed) | ✅ Complete | Low | Medium |
-| 7 | [Interleaved Practice](#6-interleaved-practice-mode) | ⏳ Planned | Medium | High |
-| 8 | [Shadowing Enhancement](#8-shadowing-mode-enhancement) | ⏳ Planned | Medium | High |
-| 9 | [Progressive Reveal](#2-progressive-reveal-hint-cascade) | ⏳ Planned | Medium | Medium |
-| 10 | [Error-Based Drills](#4-minimal-pairs-drills-error-based) | ⏳ Planned | High | Medium |
-| 11 | [Sentence Building](#5-sentence-building-voice-lego) | ⏳ Planned | High | High |
-| 12 | [Grammar Drills](#7-grammar-pattern-drills-enhanced) | ⏳ Planned | Medium | High |
-| 13 | [JLPT N3 Roadmap](#10-structured-learning-path-jlpt-n3-roadmap) | 📋 Documented | Medium | High |
-| 14 | [Daily Tracker + Pomodoro](#11-daily-practice-tracker-with-pomodoro-technique--planned) | ⏳ Planned | Medium | Medium |
+| Priority | Feature | Status | Complexity | Impact | Rationale |
+|----------|---------|--------|------------|--------|-----------|
+| 1 | [~~Hide Mode~~ → **Memory Mode**](#1-hide-mode-memory-recall--implemented) | ✅ Complete | Medium | High | - |
+| 2 | [SRS Tracking](#3-spaced-repetition--weak-points-tracking--implemented-partial) | ✅ Core algorithm done | Medium | High | - |
+| 3 | [~~Database Refactor~~](#9-database-refactor-vocabulary-table--completed) | ✅ Complete | High | Critical | - |
+| 4 | [~~Backend Modularization~~](#12-backend-modularization--completed) | ✅ Complete | High | Critical | - |
+| 5 | [~~Frontend Refactoring~~](#13-frontend-refactoring--completed) | ✅ Complete | Medium | High | - |
+| 6 | [~~Vocabulary Review Badges~~](#14-vocabulary-review-badges--completed) | ✅ Complete | Low | Medium | - |
+| **7** | [**Interleaved Practice**](#6-interleaved-practice-mode) | ⏳ **Next** | Medium | High | High impact, medium complexity |
+| 8 | [Shadowing Enhancement](#8-shadowing-mode-enhancement) | ⏳ Planned | Medium | High | Improves existing Repeat Mode |
+| 9 | [**Grammar Drills**](#7-grammar-pattern-drills-enhanced) | ⏳ Planned | Medium | High | Fills major gap, good ROI |
+| 10 | [Progressive Reveal](#2-progressive-reveal-hint-cascade) | ⏳ Planned | Medium | Medium | Nice-to-have UX improvement |
+| 11 | [Sentence Building](#5-sentence-building-voice-lego) | ⏳ Planned | High | High | High effort but high value |
+| 12 | [JLPT N3 Roadmap](#10-structured-learning-path-jlpt-n3-roadmap) | 📋 Documented | Medium | High | Mostly documentation/integration |
+| 13 | [Error-Based Drills](#4-minimal-pairs-drills-error-based) | ⏳ Planned | High | Medium | High complexity, medium impact |
+| 14 | [Daily Tracker + Pomodoro](#11-daily-practice-tracker-with-pomodoro-technique--planned) | ⏳ Planned | Medium | Medium | Motivational, not core learning |
 
 
 ---
