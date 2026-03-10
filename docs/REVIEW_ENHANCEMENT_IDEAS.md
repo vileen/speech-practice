@@ -30,7 +30,9 @@
 
 ---
 
-## 1. Hide Mode (Memory Recall) ✅ IMPLEMENTED
+## 1. Hide Mode (Memory Recall)
+
+**Status:** ✅ IMPLEMENTED
 
 **Status:** ✅ Complete - See Memory Mode feature
 
@@ -60,7 +62,9 @@
 
 ---
 
-## 3. Spaced Repetition + Weak Points Tracking ✅ IMPLEMENTED (Partial)
+## 3. Spaced Repetition + Weak Points Tracking
+
+**Status:** ✅ IMPLEMENTED (Partial)
 
 **Status:** ✅ FSRS Algorithm implemented in Memory Mode (localStorage, 30-day sessions)
 
@@ -851,7 +855,9 @@ user_grammar_progress (
 
 ---
 
-## 9. Database Refactor: Vocabulary Table ⏳ PLANNED
+## 9. Database Refactor: Vocabulary Table
+
+**Status:** ⏳ PLANNED
 
 **Problem:** Currently vocabulary is embedded in lessons as text/vocabulary fields. No way to track word frequency across lessons or identify unique words per lesson.
 
@@ -1163,7 +1169,9 @@ Document should guide users to add:
 ### Priority
 Medium complexity, high user value. Helps users maximize existing features rather than building new ones.
 
-## 11. Daily Practice Tracker with Pomodoro Technique ⏳ PLANNED
+## 11. Daily Practice Tracker with Pomodoro Technique
+
+**Status:** ⏳ PLANNED
 
 **Problem:** Users lose motivation without tracking progress and structured focus time.
 
@@ -1223,7 +1231,9 @@ Medium - Nice to have for motivation, but core learning features come first.
 
 ---
 
-## 12. Backend Modularization ✅ COMPLETED
+## 12. Backend Modularization
+
+**Status:** ✅ COMPLETED
 
 **Status:** ✅ Complete (March 2026)
 
@@ -1242,7 +1252,9 @@ Medium - Nice to have for motivation, but core learning features come first.
 
 ---
 
-## 13. Frontend Refactoring ✅ COMPLETED
+## 13. Frontend Refactoring
+
+**Status:** ✅ COMPLETED
 
 **Status:** ✅ Complete (March 2026)
 
@@ -1257,7 +1269,9 @@ Medium - Nice to have for motivation, but core learning features come first.
 
 ---
 
-## 14. Vocabulary Review Badges ✅ COMPLETED
+## 14. Vocabulary Review Badges
+
+**Status:** ✅ COMPLETED
 
 **Status:** ✅ Complete (March 2026)
 
@@ -1274,7 +1288,9 @@ Medium - Nice to have for motivation, but core learning features come first.
 
 ---
 
-## 15. Infrastructure & Security ✅ COMPLETED
+## 15. Infrastructure & Security
+
+**Status:** ✅ COMPLETED
 
 **Status:** ✅ Complete (March 2026)
 
