@@ -1,5 +1,38 @@
 # Development Progress Summary
 
+### Documentation & Priority Updates (2026-03-10)
+
+#### 1. Review Enhancement Ideas - Major Expansion
+- **Grammar Pattern Drills** (Section 7): Expanded from 15 lines to 295+ lines
+  - 8 detailed subsections (Recognition, Construction, Transformation, etc.)
+  - Implementation architecture with components and API endpoints
+  - Database schema for grammar progress tracking
+  - 4-week implementation timeline
+  
+- **Interleaved Practice Mode** (Section 6): Expanded to 380+ lines
+  - Core mixing algorithm with no-streak rule
+  - 4 session types (Daily Review, Cram Mode, Weak Points, Pattern Mastery)
+  - Smart scheduling with FSRS + jitter
+  - Research-backed design (Rohrer 2010: +43% retention)
+
+- **Priority Reordering** based on ROI analysis:
+  - Grammar Drills: #12 → #9 (higher priority)
+  - Error-Based Drills: #10 → #13 (lower priority - high complexity)
+  - Daily Tracker: #14 (last - motivational, not core)
+  - Interleaved Practice marked as #7 (next to implement)
+
+#### 2. Memory Mode UI Enhancement
+- Added lesson number badges (#N) before lesson titles
+- CSS styling for number badges with accent colors
+- Updated tests to handle new DOM structure
+
+#### 3. Data Cleanup
+- Removed lesson JSONs from repository (now only in PostgreSQL)
+- Added `.gitignore` to prevent future JSON commits
+- Fixed lesson ID format (removed `lesson-` prefix)
+
+---
+
 ## Recently Completed (March 2026)
 
 ### Backend Refactoring
@@ -114,4 +147,4 @@
 
 ---
 
-*Last updated: 2026-03-08*
+*Last updated: 2026-03-10*

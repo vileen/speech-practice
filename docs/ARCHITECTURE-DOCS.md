@@ -1,7 +1,7 @@
 # Speech Practice App - Architecture Documentation
 
 ## Created: 2026-02-25
-## Last updated: 2026-03-07
+## Last updated: 2026-03-10
 
 ---
 
@@ -70,23 +70,47 @@ backend/
 ```
 frontend/src/
 +-- components/                     # React components
-|   +-- RepeatMode.tsx              # Repeat After Me mode
-|   +-- JapanesePhrase.tsx          # Display JP + furigana + romaji
-|   +-- FuriganaText.tsx            # Text with furigana
-|   +-- RomajiText.tsx              # Romaji
-|   `-- VoiceRecorder.tsx           # Voice recording
+|   +-- AudioPlayer/                # Audio playback controls
+|   +-- FuriganaText/               # Text with furigana annotations
+|   +-- HealthCheckWrapper/         # Backend connection check
+|   +-- HighlightedText/            # Text highlighting for corrections
+|   +-- JapanesePhrase/             # Display JP + furigana + romaji
+|   +-- LessonMode/                 # Lesson browsing and selection
+|   +-- MemoryMode/                 # SRS-based vocabulary review
+|   +-- OfflineScreen/              # Offline state display
+|   +-- RepeatMode/                 # Repeat After Me mode
+|   +-- RomajiText/                 # Romaji display
+|   +-- VoiceRecorder/              # Voice recording component
+|   `-- index.ts                    # Component exports
 +-- hooks/                          # Custom React hooks
+|   +-- useAudioPlayer.ts           # Audio playback management
 |   +-- useFurigana.ts              # Fetch furigana from API
-|   +-- useAudioPlayer.ts           # Audio playback
-|   `-- usePronunciationCheck.ts    # Pronunciation check
+|   +-- useMemoryProgress.ts        # Memory Mode SRS tracking
+|   +-- usePronunciationCheck.ts    # Pronunciation verification
+|   `-- index.ts                    # Hook exports
++-- lib/                            # Utilities
+|   +-- fsrs.ts                     # FSRS-4.5 algorithm implementation
+|   `-- utils.ts                    # Helper functions
++-- pages/                          # Page components
+|   +-- ChatSession.tsx             # Active chat interface
+|   +-- ChatSetup.tsx               # Chat configuration
+|   +-- Home.tsx                    # Main dashboard
+|   +-- LessonDetail.tsx            # Individual lesson view
+|   +-- LessonList.tsx              # Lesson browser
+|   +-- LessonPractice.tsx          # Practice mode with AI
+|   +-- LessonPracticeSetup.tsx     # Practice configuration
+|   +-- Login.tsx                   # Authentication screen
+|   +-- MemoryModeWrapper.tsx       # Memory Mode container
+|   `-- RepeatSetup.tsx             # Repeat mode configuration
 +-- test/                           # Tests (Vitest)
 |   +-- components/
 |   +-- hooks/
 |   `-- utils/
-+-- App.tsx                         # Main application
-+-- LessonMode.tsx                  # Lesson mode
-+-- VoiceRecorder.tsx               # Recording (root level)
-`-- translations.ts                 # Translations
++-- App.tsx                         # Main application with routing
++-- main.tsx                        # Entry point
++-- translations.ts                 # UI translations
+`-- types/
+    `-- index.ts                    # TypeScript type definitions
 ```
 
 ---
@@ -232,8 +256,8 @@ npm run build                         # Check TypeScript
 
 | Location | Lesson count | Status |
 |----------|--------------|--------|
-| PostgreSQL (production) | 27 | ✅ Complete |
-| Obsidian Vault | 27 | ✅ Documentation |
+| PostgreSQL (production) | 30 | ✅ Complete |
+| Obsidian Vault | 30 | ✅ Documentation |
 
 ---
 

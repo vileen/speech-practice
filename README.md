@@ -8,6 +8,7 @@ Japanese/Italian language learning app with AI conversation, speech recognition,
 - 🔊 **Text-to-Speech** (ElevenLabs)
 - 📚 **Lesson Mode** — practice specific lessons with AI
 - 🎯 **Repeat After Me** — pronunciation training with feedback
+- 🧠 **Memory Mode** — SRS-based vocabulary review with FSRS algorithm
 - 💬 **AI Conversation** — practice speaking naturally
 
 ## Architecture
