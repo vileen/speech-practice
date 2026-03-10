@@ -7,7 +7,8 @@ const QUOTES = [
   "Skill issue? Just grind more levels and out-stat the problem.",
   "Overthinking is just mental cardio.",
   "I put the 'fun' in 'dysfunctional'.",
-  "Your heart is a muscle—train it with energy drinks.",
+  "I will not be outworked.",
+  "Your heart is a muscle - train it with energy drinks.",
 ];
 
 export function Home() {
