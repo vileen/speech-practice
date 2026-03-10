@@ -34,9 +34,9 @@ export const GrammarMode: React.FC = () => {
   const [state, setState] = useState<ExerciseState>('loading');
   const [userAnswer, setUserAnswer] = useState('');
   const [feedback, setFeedback] = useState<any>(null);
-  const [stats, setStats] = useState<any>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [categories, setCategories] = useState<string[]>([]);
+  const [dueCount, setDueCount] = useState(0);
 
   const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
   const password = localStorage.getItem('speech_practice_password') || '';
@@ -44,7 +44,7 @@ export const GrammarMode: React.FC = () => {
   // Load patterns and stats on mount
   useEffect(() => {
     loadPatterns();
-    loadStats();
+    loadDuePatterns();
   }, []);
 
   const loadPatterns = async () => {
@@ -64,17 +64,35 @@ export const GrammarMode: React.FC = () => {
     }
   };
 
-  const loadStats = async () => {
+  const loadDuePatterns = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/grammar/stats`, {
+      const response = await fetch(`${API_URL}/api/grammar/review`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
         const data = await response.json();
-        setStats(data);
+        setDueCount(data.count);
       }
     } catch (err) {
-      console.error('Failed to load stats:', err);
+      console.error('Failed to load due patterns:', err);
+    }
+  };
+
+  const startReview = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/grammar/review`, {
+        headers: { 'X-Password': password }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.patterns.length > 0) {
+          const firstPattern = data.patterns[0];
+          setCurrentPattern(firstPattern);
+          await loadExercise(firstPattern.id);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to start review:', err);
     }
   };
 
@@ -133,7 +151,7 @@ export const GrammarMode: React.FC = () => {
           progress: data.progress
         });
         setState('feedback');
-        loadStats();
+        loadDuePatterns();
       }
     } catch (err) {
       console.error('Failed to submit:', err);
@@ -154,17 +172,37 @@ export const GrammarMode: React.FC = () => {
   return (
     <div className="grammar-mode">
       <header className="grammar-header">
-        <h2>Grammar Drills</h2>
-        {stats && (
-          <div className="grammar-stats">
-            <span>Patterns: {stats.overall?.total_patterns || 0}</span>
-            <span>Accuracy: {Math.round((stats.overall?.accuracy || 0) * 100)}%</span>
-          </div>
+        {!currentPattern ? (
+          <>
+            <h2>📚 Grammar Drills</h2>
+            <div className="grammar-stats">
+              {dueCount > 0 && (
+                <span className="due-badge">{dueCount} due</span>
+              )}
+              <span>{patterns.length} patterns</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <button className="back-btn" onClick={() => setCurrentPattern(null)}>
+              ← Back
+            </button>
+            <h2>Grammar Drills</h2>
+            <div style={{ width: '60px' }}></div>
+          </>
         )}
       </header>
 
       {!currentPattern ? (
         <div className="pattern-selection">
+          {dueCount > 0 && (
+            <div className="review-banner">
+              <span>🔥 {dueCount} patterns ready for review</span>
+              <button className="review-btn" onClick={startReview}>
+                Start Review
+              </button>
+            </div>
+          )}
           <div className="category-filter">
             <select
               value={selectedCategory}
@@ -198,10 +236,6 @@ export const GrammarMode: React.FC = () => {
         </div>
       ) : (
         <div className="exercise-container">
-          <button className="back-btn" onClick={() => setCurrentPattern(null)}>
-            ← Back to Patterns
-          </button>
-
           <div className="pattern-info">
             <h3>{currentPattern.pattern}</h3>
             <p className="category">{currentPattern.category}</p>
