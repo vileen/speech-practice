@@ -213,7 +213,7 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
                       }
                     }}
                   >
-                    {lesson.title || `Lesson ${lesson.id}`}
+                    <span className="lesson-number">#{lesson.order}</span><span className="lesson-title">{lesson.title || `Lesson ${lesson.id}`}</span>
                   </button>
                 ))
               ) : (

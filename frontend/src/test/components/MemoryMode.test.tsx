@@ -107,7 +107,7 @@ describe('MemoryMode', () => {
       const lessonChip = screen.getByText('Test Lesson 1');
       fireEvent.click(lessonChip);
       
-      expect(lessonChip).toHaveClass('selected');
+      expect(lessonChip.closest('.lesson-chip')).toHaveClass('selected');
     });
 
     it('should deselect lesson when clicked again', () => {
@@ -115,10 +115,10 @@ describe('MemoryMode', () => {
       
       const lessonChip = screen.getByText('Test Lesson 1');
       fireEvent.click(lessonChip);
-      expect(lessonChip).toHaveClass('selected');
+      expect(lessonChip.closest('.lesson-chip')).toHaveClass('selected');
       
       fireEvent.click(lessonChip);
-      expect(lessonChip).not.toHaveClass('selected');
+      expect(lessonChip.closest('.lesson-chip')).not.toHaveClass('selected');
     });
 
     it('should select multiple lessons', () => {
@@ -127,8 +127,8 @@ describe('MemoryMode', () => {
       fireEvent.click(screen.getByText('Test Lesson 1'));
       fireEvent.click(screen.getByText('Test Lesson 2'));
       
-      expect(screen.getByText('Test Lesson 1')).toHaveClass('selected');
-      expect(screen.getByText('Test Lesson 2')).toHaveClass('selected');
+      expect(screen.getByText('Test Lesson 1').closest('.lesson-chip')).toHaveClass('selected');
+      expect(screen.getByText('Test Lesson 2').closest('.lesson-chip')).toHaveClass('selected');
     });
 
     it('should show hint when no lessons selected', () => {

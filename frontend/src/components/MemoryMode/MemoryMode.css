@@ -148,6 +148,26 @@
   border-color: #e94560;
 }
 
+.lesson-chip .lesson-number {
+  display: inline-block;
+  background: rgba(233, 69, 96, 0.3);
+  color: #e94560;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.lesson-chip.selected .lesson-number {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.lesson-chip .lesson-title {
+  font-weight: 500;
+}
+
 /* Start Button */
 .start-btn {
   width: 100%;
