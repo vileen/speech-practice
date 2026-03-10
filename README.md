@@ -1,6 +1,6 @@
 # Speech Practice App
 
-Japanese/Italian language learning app with AI conversation, speech recognition, and lesson-based practice.
+Japanese language learning app with AI conversation, speech recognition, and lesson-based practice.
 
 ## Features
 
@@ -110,11 +110,28 @@ psql "$DATABASE_URL" -f src/db/schema.sql
 ```
 
 ### Adding New Lessons
-Place lesson JSON files in `backend/src/data/lessons/`
-Format: see existing lesson files for structure.
+Lessons are stored in PostgreSQL database. To add a new lesson:
+
+1. Create a JSON file with lesson data (vocabulary, grammar, practice_phrases)
+2. Run the import script:
+   ```bash
+   cd backend
+   npx tsx scripts/import-lesson.ts YYYY-MM-DD
+   ```
+3. Verify in database:
+   ```bash
+   psql "$DATABASE_URL" -c "SELECT id, title FROM lessons WHERE date = 'YYYY-MM-DD';"
+   ```
+
+See `docs/ARCHITECTURE-DOCS.md` for detailed data structure.
+
+## Documentation
+
+- `docs/ARCHITECTURE-DOCS.md` — System architecture and data flow
+- `docs/REVIEW_ENHANCEMENT_IDEAS.md` — Planned features and enhancements
+- `docs/PROGRESS_SUMMARY.md` — Recent changes and development log
+- `CONTRIBUTING.md` — Guidelines for contributors
 
 ## License
 
 MIT
-# Trigger rebuild
-# Rebuild
