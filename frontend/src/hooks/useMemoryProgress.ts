@@ -191,6 +191,51 @@ export function useMemoryProgress() {
     return newCards.length;
   }, [cards]);
 
+  // Import unique vocabulary from lesson (words that first appeared in this lesson)
+  const importUniqueVocabulary = useCallback(async (lessonId: string, password: string) => {
+    const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
+    
+    const response = await fetch(`${API_URL}/api/lessons/${lessonId}/unique-vocabulary`, {
+      headers: {
+        'X-Password': password,
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch unique vocabulary');
+    }
+    
+    const data = await response.json();
+    const newCards: MemoryCard[] = [];
+    
+    // Import unique vocabulary
+    data.vocabulary?.forEach((vocab: any, index: number) => {
+      const id = `lesson-${lessonId}-vocab-${index}`;
+      if (!cards.find(c => c.phraseId === id)) {
+        newCards.push({
+          ...createCard(id),
+          phraseId: id,
+          phraseType: 'vocabulary',
+          lessonId: lessonId,
+          jp: vocab.jp,
+          en: vocab.en,
+          reading: vocab.reading,
+          romaji: vocab.romaji,
+        });
+      }
+    });
+    
+    if (newCards.length > 0) {
+      setCards(prev => [...prev, ...newCards]);
+    }
+    
+    return {
+      imported: newCards.length,
+      total: data.totalVocab,
+      unique: data.uniqueVocab,
+    };
+  }, [cards]);
+
   return {
     cards,
     isLoading,
@@ -202,6 +247,7 @@ export function useMemoryProgress() {
     getPreview,
     resetProgress,
     importFromLesson,
+    importUniqueVocabulary,
   };
 }
 

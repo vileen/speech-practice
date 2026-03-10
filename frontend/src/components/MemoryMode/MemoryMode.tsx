@@ -7,7 +7,7 @@ import type { Lesson } from '../../types/index.js';
 
 
 interface MemoryModeProps {
-  lessons: Lesson[];
+  lessons?: Lesson[]; // Kept for backwards compatibility, but not used
 }
 
 export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
@@ -18,7 +18,7 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     review,
     getNextCard,
     getPreview,
-    importFromLesson,
+    importUniqueVocabulary,
   } = useMemoryProgress();
 
   const [currentCard, setCurrentCard] = useState<MemoryCard | null>(null);
@@ -63,27 +63,30 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   }, [currentCard, review, getNextCard]);
 
   // Import cards when starting session
-  const startSession = useCallback(() => {
+  const startSession = useCallback(async () => {
     setIsStarting(true);
     
-    // Import cards from selected lessons FIRST
+    // Import unique vocabulary from selected lessons FIRST
     let imported = 0;
-    if (selectedLessons.length > 0 && Array.isArray(lessons)) {
-      selectedLessons.forEach(lessonId => {
-        const lesson = lessons.find(l => l.id === lessonId);
-        if (lesson) {
-          const count = importFromLesson(lesson);
-          imported += count;
-          console.log('MemoryMode: Imported', count, 'cards from', lesson.title);
+    const password = localStorage.getItem('speech_practice_password') || '';
+    
+    if (selectedLessons.length > 0) {
+      for (const lessonId of selectedLessons) {
+        try {
+          const result = await importUniqueVocabulary(lessonId, password);
+          imported += result.imported;
+          console.log('MemoryMode: Imported', result.imported, 'unique cards from', lessonId, '(', result.unique, 'of', result.total, 'total)');
+        } catch (err) {
+          console.error('MemoryMode: Failed to import from', lessonId, err);
         }
-      });
+      }
     }
     
-    console.log(`MemoryMode: Total imported ${imported} cards`);
+    console.log(`MemoryMode: Total imported ${imported} unique cards`);
     setHasImported(true);
     setShowSetup(false);
     setIsComplete(false);
-  }, [selectedLessons, lessons, importFromLesson]);
+  }, [selectedLessons, importUniqueVocabulary]);
 
   // Start session AFTER cards are imported (watch cards.length change)
   useEffect(() => {
