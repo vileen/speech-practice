@@ -201,21 +201,24 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
                 </div>
               )}
               {Array.isArray(lessons) && lessons.length > 0 ? (
-                lessons.map(lesson => (
-                  <button
-                    key={lesson.id}
-                    className={`lesson-chip ${selectedLessons.includes(lesson.id) ? 'selected' : ''}`}
-                    onClick={() => {
-                      if (selectedLessons.includes(lesson.id)) {
-                        setSelectedLessons(prev => prev.filter(id => id !== lesson.id));
-                      } else {
-                        setSelectedLessons(prev => [...prev, lesson.id]);
-                      }
-                    }}
-                  >
-                    <span className="lesson-number">#{lesson.order}</span><span className="lesson-title">{lesson.title || `Lesson ${lesson.id}`}</span>
-                  </button>
-                ))
+                [...lessons]
+                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                  .map((lesson, index) => (
+                    <button
+                      key={lesson.id}
+                      className={`lesson-chip ${selectedLessons.includes(lesson.id) ? 'selected' : ''}`}
+                      onClick={() => {
+                        if (selectedLessons.includes(lesson.id)) {
+                          setSelectedLessons(prev => prev.filter(id => id !== lesson.id));
+                        } else {
+                          setSelectedLessons(prev => [...prev, lesson.id]);
+                        }
+                      }}
+                    >
+                      <span className="lesson-number">#{index + 1}</span>
+                      <span className="lesson-title">{lesson.title || `Lesson ${lesson.id}`}</span>
+                    </button>
+                  ))
               ) : (
                 <p className="no-lessons">No lessons available. Please check your connection.</p>
               )}
