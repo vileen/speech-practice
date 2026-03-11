@@ -26,7 +26,8 @@
 
 .repeat-mode-btn,
 .lesson-mode-btn,
-.memory-mode-btn {
+.memory-mode-btn,
+.grammar-mode-btn {
   background: #16213e !important;
   border: 2px solid #e94560 !important;
   color: #fff !important;
@@ -42,7 +43,8 @@
 
 .repeat-mode-btn:hover,
 .lesson-mode-btn:hover,
-.memory-mode-btn:hover {
+.memory-mode-btn:hover,
+.grammar-mode-btn:hover {
   background: #e94560 !important;
 }
 
