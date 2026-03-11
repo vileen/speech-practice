@@ -9,6 +9,7 @@ const QUOTES = [
   "I put the 'fun' in 'dysfunctional'.",
   "I will not be outworked.",
   "Your heart is a muscle - train it with energy drinks.",
+  "Fuck it, we ball.",
 ];
 
 export function Home() {
