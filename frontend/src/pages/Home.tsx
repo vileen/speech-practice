@@ -10,6 +10,7 @@ const QUOTES = [
   "I will not be outworked.",
   "Your heart is a muscle - train it with energy drinks.",
   "Fuck it, we ball.",
+  "Getting shit done > looking good doing it.",
 ];
 
 export function Home() {

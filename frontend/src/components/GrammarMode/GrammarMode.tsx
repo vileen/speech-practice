@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FuriganaText } from '../FuriganaText/FuriganaText';
+import { useFurigana } from '../../hooks/useFurigana';
 import './GrammarMode.css';
 
 interface GrammarPattern {
@@ -39,8 +41,10 @@ export const GrammarMode: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [dueCount, setDueCount] = useState(0);
+  const [showFurigana, setShowFurigana] = useState(true);
 
   const STORAGE_KEY = 'grammar_selected_categories';
+  const FURIGANA_STORAGE_KEY = 'grammar_show_furigana';
 
   const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
   const password = localStorage.getItem('speech_practice_password') || '';
@@ -71,9 +75,22 @@ export const GrammarMode: React.FC = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedCategories));
   }, [selectedCategories]);
 
+  // Load furigana preference from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem(FURIGANA_STORAGE_KEY);
+    if (saved !== null) {
+      setShowFurigana(saved === 'true');
+    }
+  }, []);
+
+  // Save furigana preference to localStorage
+  useEffect(() => {
+    localStorage.setItem(FURIGANA_STORAGE_KEY, showFurigana.toString());
+  }, [showFurigana]);
+
   const loadPatterns = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/grammar/patterns?limit=100`, {
+      const response = await fetch(`${API_URL}/api/grammar/patterns`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
@@ -212,6 +229,53 @@ export const GrammarMode: React.FC = () => {
 
   const filteredPatterns = patterns.filter(p => selectedCategories.includes(p.category));
 
+  // Sub-component for pattern cards with furigana
+  const PatternCard: React.FC<{
+    pattern: GrammarPattern;
+    showFurigana: boolean;
+    onClick: () => void;
+  }> = ({ pattern, showFurigana, onClick }) => {
+    const { furigana, isLoading } = useFurigana(pattern.pattern, showFurigana);
+    
+    return (
+      <div className="pattern-card" onClick={onClick}>
+        <div className="pattern-header">
+          <span className="pattern-text">
+            {showFurigana && furigana ? (
+              <span dangerouslySetInnerHTML={{ __html: furigana }} />
+            ) : (
+              pattern.pattern
+            )}
+          </span>
+          <span className="pattern-level">{pattern.jlpt_level}</span>
+        </div>
+        <div className="pattern-category">{pattern.category}</div>
+        {(pattern.streak ?? 0) > 0 && (
+          <div className="pattern-streak">🔥 {pattern.streak}</div>
+        )}
+      </div>
+    );
+  };
+
+  // Sub-component for exercise display with furigana
+  const ExerciseDisplay: React.FC<{
+    text: string;
+    showFurigana: boolean;
+    className?: string;
+  }> = ({ text, showFurigana, className = '' }) => {
+    const { furigana } = useFurigana(text, showFurigana);
+    
+    return (
+      <span className={className}>
+        {showFurigana && furigana ? (
+          <span dangerouslySetInnerHTML={{ __html: furigana }} />
+        ) : (
+          text
+        )}
+      </span>
+    );
+  };
+
   return (
     <div className="grammar-mode">
       <header className="grammar-header">
@@ -221,11 +285,20 @@ export const GrammarMode: React.FC = () => {
               ← Back
             </button>
             <h2>📚 Grammar Drills</h2>
-            <div className="grammar-stats">
-              {dueCount > 0 && (
-                <span className="due-badge">{dueCount} due</span>
-              )}
-              <span>{patterns.length} patterns</span>
+            <div className="grammar-header-actions">
+              <button 
+                className="furigana-toggle" 
+                onClick={() => setShowFurigana(!showFurigana)}
+                title={showFurigana ? 'Hide furigana' : 'Show furigana'}
+              >
+                {showFurigana ? 'あ' : '漢'}
+              </button>
+              <div className="grammar-stats">
+                {dueCount > 0 && (
+                  <span className="due-badge">{dueCount} due</span>
+                )}
+                <span>{patterns.length} patterns</span>
+              </div>
             </div>
           </>
         ) : (
@@ -234,7 +307,16 @@ export const GrammarMode: React.FC = () => {
               ← Back
             </button>
             <h2>Grammar Drills</h2>
-            <div style={{ width: '60px' }}></div>
+            <div className="grammar-header-actions">
+              <button 
+                className="furigana-toggle" 
+                onClick={() => setShowFurigana(!showFurigana)}
+                title={showFurigana ? 'Hide furigana' : 'Show furigana'}
+              >
+                {showFurigana ? 'あ' : '漢'}
+              </button>
+              <div style={{ width: '60px' }}></div>
+            </div>
           </>
         )}
       </header>
@@ -278,20 +360,12 @@ export const GrammarMode: React.FC = () => {
           ) : (
             <div className="patterns-grid">
               {filteredPatterns.map(pattern => (
-                <div
+                <PatternCard
                   key={pattern.id}
-                  className="pattern-card"
+                  pattern={pattern}
+                  showFurigana={showFurigana}
                   onClick={() => startPattern(pattern)}
-                >
-                  <div className="pattern-header">
-                    <span className="pattern-text">{pattern.pattern}</span>
-                    <span className="pattern-level">{pattern.jlpt_level}</span>
-                  </div>
-                  <div className="pattern-category">{pattern.category}</div>
-                  {(pattern.streak ?? 0) > 0 && (
-                    <div className="pattern-streak">🔥 {pattern.streak}</div>
-                  )}
-                </div>
+                />
               ))}
             </div>
           )}
@@ -299,7 +373,9 @@ export const GrammarMode: React.FC = () => {
       ) : (
         <div className="exercise-container">
           <div className="pattern-info">
-            <h3>{currentPattern.pattern}</h3>
+            <h3>
+              <ExerciseDisplay text={currentPattern.pattern} showFurigana={showFurigana} />
+            </h3>
             <p className="category">{currentPattern.category}</p>
           </div>
 
@@ -308,9 +384,13 @@ export const GrammarMode: React.FC = () => {
           {state === 'input' && exercise && (
             <div className="exercise-prompt">
               <div className="prompt-type">{exercise.type.replace('_', ' ')}</div>
-              <p className="prompt-text">{exercise.prompt}</p>
+              <p className="prompt-text">
+                <ExerciseDisplay text={exercise.prompt} showFurigana={showFurigana} />
+              </p>
               {exercise.context && (
-                <p className="context">{exercise.context}</p>
+                <p className="context">
+                  <ExerciseDisplay text={exercise.context} showFurigana={showFurigana} />
+                </p>
               )}
               
               <div className="input-section">
@@ -346,12 +426,16 @@ export const GrammarMode: React.FC = () => {
               <div className="answer-comparison">
                 <div className="your-answer">
                   <label>Your answer:</label>
-                  <p>{feedback.userAnswer}</p>
+                  <p>
+                    <ExerciseDisplay text={feedback.userAnswer} showFurigana={showFurigana} />
+                  </p>
                 </div>
                 {!feedback.correct && (
                   <div className="correct-answer">
                     <label>Correct answer:</label>
-                    <p>{feedback.correctAnswer}</p>
+                    <p>
+                      <ExerciseDisplay text={feedback.correctAnswer} showFurigana={showFurigana} />
+                    </p>
                   </div>
                 )}
               </div>

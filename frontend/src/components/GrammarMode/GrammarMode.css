@@ -35,6 +35,31 @@
   border-radius: 6px;
 }
 
+.grammar-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.furigana-toggle {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  color: #e94560;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  min-width: 36px;
+}
+
+.furigana-toggle:hover {
+  background: #e94560;
+  color: #fff;
+  border-color: #e94560;
+}
+
 .grammar-stats .due-badge {
   background: rgba(40, 167, 69, 0.2);
   color: #28a745;

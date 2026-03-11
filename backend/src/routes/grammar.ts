@@ -7,7 +7,7 @@ const router = Router();
 // Get all grammar patterns (optionally filtered by category or JLPT level)
 router.get('/patterns', checkPassword, async (req, res) => {
   try {
-    const { category, jlptLevel, limit = '50' } = req.query;
+    const { category, jlptLevel } = req.query;
     
     let query = 'SELECT * FROM grammar_patterns WHERE 1=1';
     const params: any[] = [];
@@ -22,8 +22,7 @@ router.get('/patterns', checkPassword, async (req, res) => {
       query += ` AND jlpt_level = $${params.length}`;
     }
     
-    query += ' ORDER BY jlpt_level, category, id LIMIT $' + (params.length + 1);
-    params.push(parseInt(limit as string));
+    query += ' ORDER BY jlpt_level, category, id';
     
     const result = await pool.query(query, params);
     
