@@ -14,7 +14,7 @@
 | 6 | [~~Vocabulary Review Badges~~](#14-vocabulary-review-badges--completed) | ✅ Complete | Low | Medium | - |
 | **7** | [**Interleaved Practice**](#6-interleaved-practice-mode) | ⏳ **Next** | Medium | High | High impact, medium complexity |
 | 8 | [Shadowing Enhancement](#8-shadowing-mode-enhancement) | ⏳ Planned | Medium | High | Improves existing Repeat Mode |
-| 9 | [**Grammar Drills**](#7-grammar-pattern-drills) | ⏳ Planned | Medium | High | Fills major gap, good ROI |
+| 9 | [**Grammar Drills**](#7-grammar-pattern-drills) | 🚧 In Progress | Medium | High | Basic implementation done, needs voice integration |
 | 10 | [Progressive Reveal](#2-progressive-reveal-hint-cascade) | ⏳ Planned | Medium | Medium | Nice-to-have UX improvement |
 | 11 | [Sentence Building](#5-sentence-building-voice-lego) | ⏳ Planned | High | High | High effort but high value |
 | 12 | [JLPT N3 Roadmap](#10-structured-learning-path-jlpt-n3-roadmap) | 📋 Documented | Medium | High | Mostly documentation/integration |
@@ -532,7 +532,25 @@ interleaved_lesson_stats (
 
 ## 7. Grammar Pattern Drills
 
-**Status:** ⏳ Planned - Needs detailed specification
+**Status:** 🚧 In Progress - Basic implementation complete (March 2026)
+
+**What's Working:**
+- ✅ Pattern library with categories and JLPT levels
+- ✅ Pattern selection screen with category filter
+- ✅ SRS-based review system (due patterns, streak tracking)
+- ✅ Exercise mode: Fill-in-the-blank with text input
+- ✅ Answer validation and feedback (correct/incorrect)
+- ✅ Progress tracking per pattern (ease factor, interval, streak)
+- ✅ Navigation: Back buttons on both screens
+- ✅ UI styling consistent with app theme
+
+**Still Needed:**
+- ⏳ Pattern recognition mode (identify pattern in sentence)
+- ⏳ Sentence construction with voice input (currently text only)
+- ⏳ Pattern transformation drills (permission ↔ prohibition, etc.)
+- ⏳ Error correction mode
+- ⏳ Pattern chaining (combine multiple patterns)
+- ⏳ Audio playback for pattern examples
 
 **Problem:** Current app focuses on vocabulary repetition (Repeat Mode, Memory Mode) but lacks structured grammar practice. Users can memorize phrases but don't actively practice constructing sentences with specific grammar patterns.
 
