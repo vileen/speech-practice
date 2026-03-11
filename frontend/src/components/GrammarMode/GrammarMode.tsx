@@ -212,9 +212,7 @@ export const GrammarMode: React.FC = () => {
     setSelectedCategories([]);
   };
 
-  const filteredPatterns = selectedCategories.length > 0
-    ? patterns.filter(p => selectedCategories.includes(p.category))
-    : patterns;
+  const filteredPatterns = patterns.filter(p => selectedCategories.includes(p.category));
 
   return (
     <div className="grammar-mode">
@@ -275,24 +273,30 @@ export const GrammarMode: React.FC = () => {
             </div>
           </div>
 
-          <div className="patterns-grid">
-            {filteredPatterns.map(pattern => (
-              <div
-                key={pattern.id}
-                className="pattern-card"
-                onClick={() => startPattern(pattern)}
-              >
-                <div className="pattern-header">
-                  <span className="pattern-text">{pattern.pattern}</span>
-                  <span className="pattern-level">{pattern.jlpt_level}</span>
+          {selectedCategories.length === 0 ? (
+            <div className="no-selection">
+              <p>Select at least one category to see patterns</p>
+            </div>
+          ) : (
+            <div className="patterns-grid">
+              {filteredPatterns.map(pattern => (
+                <div
+                  key={pattern.id}
+                  className="pattern-card"
+                  onClick={() => startPattern(pattern)}
+                >
+                  <div className="pattern-header">
+                    <span className="pattern-text">{pattern.pattern}</span>
+                    <span className="pattern-level">{pattern.jlpt_level}</span>
+                  </div>
+                  <div className="pattern-category">{pattern.category}</div>
+                  {(pattern.streak ?? 0) > 0 && (
+                    <div className="pattern-streak">🔥 {pattern.streak}</div>
+                  )}
                 </div>
-                <div className="pattern-category">{pattern.category}</div>
-                {(pattern.streak ?? 0) > 0 && (
-                  <div className="pattern-streak">🔥 {pattern.streak}</div>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div className="exercise-container">
