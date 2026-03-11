@@ -1,5 +1,7 @@
 # Speech Practice App
 
+[![codecov](https://codecov.io/gh/vileen/speech-practice/graph/badge.svg)](https://codecov.io/gh/vileen/speech-practice)
+
 Japanese language learning app with AI conversation, speech recognition, and lesson-based practice.
 
 ## Features
