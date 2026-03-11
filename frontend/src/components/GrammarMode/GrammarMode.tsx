@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FuriganaText } from '../FuriganaText/FuriganaText';
 import { useFurigana } from '../../hooks/useFurigana';
 import './GrammarMode.css';
 
@@ -235,7 +234,7 @@ export const GrammarMode: React.FC = () => {
     showFurigana: boolean;
     onClick: () => void;
   }> = ({ pattern, showFurigana, onClick }) => {
-    const { furigana, isLoading } = useFurigana(pattern.pattern, showFurigana);
+    const { furigana } = useFurigana(pattern.pattern, showFurigana);
     
     return (
       <div className="pattern-card" onClick={onClick}>
