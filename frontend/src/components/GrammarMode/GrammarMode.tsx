@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './GrammarMode.css';
 
 interface GrammarPattern {
@@ -28,6 +29,7 @@ interface GrammarExercise {
 type ExerciseState = 'loading' | 'prompt' | 'input' | 'processing' | 'feedback';
 
 export const GrammarMode: React.FC = () => {
+  const navigate = useNavigate();
   const [patterns, setPatterns] = useState<GrammarPattern[]>([]);
   const [currentPattern, setCurrentPattern] = useState<GrammarPattern | null>(null);
   const [exercise, setExercise] = useState<GrammarExercise | null>(null);
@@ -174,6 +176,9 @@ export const GrammarMode: React.FC = () => {
       <header className="grammar-header">
         {!currentPattern ? (
           <>
+            <button className="back-btn" onClick={() => navigate('/')}>
+              ← Back
+            </button>
             <h2>📚 Grammar Drills</h2>
             <div className="grammar-stats">
               {dueCount > 0 && (
