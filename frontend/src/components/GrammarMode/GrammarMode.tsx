@@ -68,9 +68,7 @@ export const GrammarMode: React.FC = () => {
 
   // Save selected categories to localStorage when they change
   useEffect(() => {
-    if (selectedCategories.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedCategories));
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedCategories));
   }, [selectedCategories]);
 
   const loadPatterns = async () => {
