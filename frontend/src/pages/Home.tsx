@@ -4,7 +4,7 @@ import { AuthenticatedRoute } from '../App.js';
 const QUOTES = [
   "Either increase sacrifice or reduce desire.",
   "Retardmaxxing fixes everything.",
-  "Skill issue? Just grind more levels and out-stat the problem.",
+  "Skill issue? Grind harder.",
   "Overthinking is just mental cardio.",
   "I put the 'fun' in 'dysfunctional'.",
   "I will not be outworked.",
@@ -21,6 +21,9 @@ export function Home() {
       <div className="app">
         <header>
           <h1>🎤 Speech Practice</h1>
+        </header>
+        
+        <main>
           <div className="setup">
             <button className="start-btn" onClick={() => navigate('/chat/setup')}>
               💬 Start Chat
@@ -41,11 +44,11 @@ export function Home() {
               📚 Grammar Drills
             </button>
           </div>
-        </header>
+        </main>
         
-        <div className="quote-footer">
+        <footer className="quote-footer">
           {randomQuote}
-        </div>
+        </footer>
       </div>
     </AuthenticatedRoute>
   );
