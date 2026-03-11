@@ -36,9 +36,11 @@ export const GrammarMode: React.FC = () => {
   const [state, setState] = useState<ExerciseState>('loading');
   const [userAnswer, setUserAnswer] = useState('');
   const [feedback, setFeedback] = useState<any>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [dueCount, setDueCount] = useState(0);
+
+  const STORAGE_KEY = 'grammar_selected_categories';
 
   const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
   const password = localStorage.getItem('speech_practice_password') || '';
@@ -48,6 +50,28 @@ export const GrammarMode: React.FC = () => {
     loadPatterns();
     loadDuePatterns();
   }, []);
+
+  // Load selected categories from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setSelectedCategories(parsed);
+        }
+      } catch (e) {
+        console.error('Failed to parse saved categories:', e);
+      }
+    }
+  }, []);
+
+  // Save selected categories to localStorage when they change
+  useEffect(() => {
+    if (selectedCategories.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedCategories));
+    }
+  }, [selectedCategories]);
 
   const loadPatterns = async () => {
     try {
@@ -60,6 +84,11 @@ export const GrammarMode: React.FC = () => {
         // Extract unique categories
         const cats = [...new Set(data.patterns.map((p: GrammarPattern) => p.category))] as string[];
         setCategories(cats);
+        // Select all categories by default if nothing saved
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved && cats.length > 0) {
+          setSelectedCategories(cats);
+        }
       }
     } catch (err) {
       console.error('Failed to load patterns:', err);
@@ -167,8 +196,24 @@ export const GrammarMode: React.FC = () => {
     }
   };
 
-  const filteredPatterns = selectedCategory
-    ? patterns.filter(p => p.category === selectedCategory)
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
+
+  const selectAllCategories = () => {
+    setSelectedCategories(categories);
+  };
+
+  const deselectAllCategories = () => {
+    setSelectedCategories([]);
+  };
+
+  const filteredPatterns = selectedCategories.length > 0
+    ? patterns.filter(p => selectedCategories.includes(p.category))
     : patterns;
 
   return (
@@ -209,15 +254,25 @@ export const GrammarMode: React.FC = () => {
             </div>
           )}
           <div className="category-filter">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              <option value="">All Categories</option>
+            <div className="category-filter-header">
+              <label className="filter-label">Categories:</label>
+              <div className="filter-actions">
+                <button className="filter-btn" onClick={selectAllCategories}>Select All</button>
+                <button className="filter-btn" onClick={deselectAllCategories}>Deselect All</button>
+              </div>
+            </div>
+            <div className="category-checkboxes">
               {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+                <label key={cat} className="category-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.includes(cat)}
+                    onChange={() => toggleCategory(cat)}
+                  />
+                  <span>{cat}</span>
+                </label>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className="patterns-grid">

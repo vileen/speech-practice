@@ -107,6 +107,57 @@ INSERT INTO grammar_exercises (pattern_id, type, prompt, context, correct_answer
 (7, 'construction', 'Invite someone to eat together.', 'Use 〜ませんか', '一緒に食べませんか。', '["Together = 一緒に", "Eat = 食べる"]', 1),
 (8, 'construction', 'Suggest: Let''s go!', 'Use 〜ましょう', '行きましょう！', '["Go = 行く", "Use stem form"]', 1);
 
+-- I-adjectives (い-adjectives)
+INSERT INTO grammar_patterns (pattern, category, jlpt_level, formation_rules, examples, common_mistakes) VALUES
+('い-adjectives: Present affirmative', 'I-Adjectives', 'N5',
+ '[{"step": 1, "rule": "Use dictionary form"}, {"step": 2, "rule": "Ends in い, no change needed"}]'::jsonb,
+ '[{"jp": "これは高いです。", "en": "This is expensive.", "romaji": "Kore wa takai desu."}, {"jp": "その本は面白いです。", "en": "That book is interesting.", "romaji": "Sono hon wa omoshiroi desu."}]'::jsonb,
+ '[{"mistake": "Adding な before です", "explanation": "い-adjectives connect directly to です: 高いです not 高いなです"}]'::jsonb
+),
+('い-adjectives: Present negative', 'I-Adjectives', 'N5',
+ '[{"step": 1, "rule": "Drop final い"}, {"step": 2, "rule": "Add くない"}]'::jsonb,
+ '[{"jp": "これは高くないです。", "en": "This is not expensive.", "romaji": "Kore wa takakunai desu."}, {"jp": "今日は寒くないです。", "en": "Today is not cold.", "romaji": "Kyou wa samukunai desu."}]'::jsonb,
+ '[{"mistake": "Using ではありません", "explanation": "い-adjectives form negative with くない: 高くない not 高いではありません"}]'::jsonb
+),
+('い-adjectives: Past affirmative', 'I-Adjectives', 'N5',
+ '[{"step": 1, "rule": "Drop final い"}, {"step": 2, "rule": "Add かった"}]'::jsonb,
+ '[{"jp": "昨日は暑かったです。", "en": "Yesterday was hot.", "romaji": "Kinou wa atsukatta desu."}, {"jp": "その映画は面白かったです。", "en": "That movie was interesting.", "romaji": "Sono eiga wa omoshirokatta desu."}]'::jsonb,
+ '[{"mistake": "Adding です directly to い form", "explanation": "Must change to past form: 高かった not 高いでした"}]'::jsonb
+),
+('い-adjectives: Past negative', 'I-Adjectives', 'N5',
+ '[{"step": 1, "rule": "Drop final い"}, {"step": 2, "rule": "Add くなかった"}]'::jsonb,
+ '[{"jp": "昨日は寒くなかったです。", "en": "Yesterday was not cold.", "romaji": "Kinou wa samukunakatta desu."}, {"jp": "その本は難しくなかったです。", "en": "That book was not difficult.", "romaji": "Sono hon wa muzukashikunakatta desu."}]'::jsonb,
+ '[{"mistake": "Using ではありませんでした", "explanation": "Use くなかった: 高くなかった not 高いではありませんでした"}]'::jsonb
+);
+
+-- Na-adjectives (な-adjectives)
+INSERT INTO grammar_patterns (pattern, category, jlpt_level, formation_rules, examples, common_mistakes) VALUES
+('な-adjectives: Present affirmative', 'Na-Adjectives', 'N5',
+ '[{"step": 1, "rule": "Dictionary form"}, {"step": 2, "rule": "Add です (no な before です)"}]'::jsonb,
+ '[{"jp": "彼女はきれいです。", "en": "She is pretty.", "romaji": "Kanojo wa kirei desu."}, {"jp": "これは便利です。", "en": "This is convenient.", "romaji": "Kore wa benri desu."}]'::jsonb,
+ '[{"mistake": "Adding な before です", "explanation": "な is only used before nouns: きれいです (not きれいなです)"}]'::jsonb
+),
+('な-adjectives: Present negative', 'Na-Adjectives', 'N5',
+ '[{"step": 1, "rule": "Dictionary form"}, {"step": 2, "rule": "Add ではありません or じゃありません"}]'::jsonb,
+ '[{"jp": "ここは便利ではありません。", "en": "This place is not convenient.", "romaji": "Koko wa benri dewa arimasen."}, {"jp": "それは簡単じゃありません。", "en": "That is not simple.", "romaji": "Sore wa kantan ja arimasen."}]'::jsonb,
+ '[{"mistake": "Using くない", "explanation": "な-adjectives use ではありません not くない: 便利ではありません not 便利くない"}]'::jsonb
+),
+('な-adjectives: Past affirmative', 'Na-Adjectives', 'N5',
+ '[{"step": 1, "rule": "Dictionary form"}, {"step": 2, "rule": "Add でした"}]'::jsonb,
+ '[{"jp": "昨日は暇でした。", "en": "Yesterday was free (I was free).", "romaji": "Kinou wa hima deshita."}, {"jp": "前の仕事は大変でした。", "en": "The previous job was tough.", "romaji": "Mae no shigoto wa taihen deshita."}]'::jsonb,
+ '[]'::jsonb
+),
+('な-adjectives: Past negative', 'Na-Adjectives', 'N5',
+ '[{"step": 1, "rule": "Dictionary form"}, {"step": 2, "rule": "Add ではありませんでした or じゃありませんでした"}]'::jsonb,
+ '[{"jp": "昨日は暇ではありませんでした。", "en": "Yesterday was not free.", "romaji": "Kinou wa hima dewa arimasen deshita."}, {"jp": "それは簡単じゃありませんでした。", "en": "That was not simple.", "romaji": "Sore wa kantan ja arimasen deshita."}]'::jsonb,
+ '[]'::jsonb
+),
+('な-adjectives: Before nouns', 'Na-Adjectives', 'N5',
+ '[{"step": 1, "rule": "Dictionary form"}, {"step": 2, "rule": "Add な before the noun"}]'::jsonb,
+ '[{"jp": "きれいな花", "en": "Pretty flower", "romaji": "Kirei na hana"}, {"jp": "便利な道具", "en": "Convenient tool", "romaji": "Benri na dougu"}, {"jp": "有名な人", "en": "Famous person", "romaji": "Yuumei na hito"}]'::jsonb,
+ '[{"mistake": "Forgetting な before nouns", "explanation": "な-adjectives need な before nouns: きれいな花 not きれい花"}]'::jsonb
+);
+
 -- Get the IDs of newly inserted particle patterns and add exercises
 -- The particle patterns should be IDs 9-18 (after the first 8 patterns)
 
