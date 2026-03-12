@@ -1,6 +1,19 @@
 # Speech Practice App
 
+<!-- Frontend Badges -->
+[![Frontend Deploy](https://img.shields.io/badge/frontend-github%20pages-success)](https://vileen.github.io/speech-practice/)
+[![Frontend Tests](https://github.com/vileen/speech-practice/workflows/Tests%20&%20Coverage/badge.svg)](https://github.com/vileen/speech-practice/actions)
+
+<!-- Backend Badges -->
+[![Backend Status](https://img.shields.io/badge/backend-online-success)](https://trunk-sticks-connect-currency.trycloudflare.com/health)
 [![codecov](https://codecov.io/gh/vileen/speech-practice/graph/badge.svg)](https://codecov.io/gh/vileen/speech-practice)
+
+## Test Coverage
+
+| Component | Tests | Coverage |
+|-----------|-------|----------|
+| Frontend | 128 | TBD |
+| Backend | 0 → adding | TBD |
 
 Japanese language learning app with AI conversation, speech recognition, and lesson-based practice.
 
