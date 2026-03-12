@@ -32,12 +32,12 @@ router.post('/', checkPassword, async (req, res) => {
     }
     
     if (!hasFurigana && text.match(/[\u4e00-\u9faf]/)) {
-      return res.status(404).json({
+      // Return 200 with original text instead of 404 - client can handle gracefully
+      return res.json({
         original: text,
         with_furigana: text,
         cached: false,
-        hasFurigana: false,
-        error: 'No furigana found for this text'
+        hasFurigana: false
       });
     }
     
