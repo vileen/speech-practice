@@ -2,7 +2,7 @@
 
 <!-- Frontend Badges -->
 [![Frontend Deploy](https://img.shields.io/badge/frontend-github%20pages-success)](https://vileen.github.io/speech-practice/)
-[![Frontend Tests](https://github.com/vileen/speech-practice/workflows/Tests%20%26%20Coverage/badge.svg?branch=main)](https://github.com/vileen/speech-practice/actions)
+[![Frontend Tests](https://img.shields.io/github/actions/workflow/status/vileen/speech-practice/tests.yml?branch=main&label=tests)](https://github.com/vileen/speech-practice/actions)
 
 <!-- Backend Badges -->
 [![Backend Status](https://img.shields.io/badge/backend-online-success)](https://speech.vileen.pl/api/health)
