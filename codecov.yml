@@ -5,6 +5,14 @@ coverage:
       default:
         target: 70%
         threshold: 5%
+      frontend:
+        target: 70%
+        flags:
+          - frontend
+      backend:
+        target: 70%
+        flags:
+          - backend
     patch:
       default:
         target: 70%
@@ -15,10 +23,16 @@ flags:
     paths:
       - frontend/src/
     carryforward: true
+    statuses:
+      - type: project
+        target: 70%
   backend:
     paths:
       - backend/src/
     carryforward: true
+    statuses:
+      - type: project
+        target: 70%
 
 # Component-based coverage reporting
 component_management:
@@ -33,12 +47,26 @@ component_management:
       name: Frontend
       paths:
         - frontend/src/**
+      statuses:
+        - type: project
+          target: 70%
     - component_id: backend
       name: Backend
       paths:
         - backend/src/**
+      statuses:
+        - type: project
+          target: 70%
 
 comment:
   layout: "header, diff, flags, components"
   behavior: default
   require_changes: false
+
+# Ignore paths
+ignore:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/test/**"
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
