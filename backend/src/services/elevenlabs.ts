@@ -3,7 +3,51 @@ import { config } from 'dotenv';
 import { resolve } from 'path';
 import { readFile, writeFile } from 'fs/promises';
 import { existsSync } from 'fs';
+import kuromoji from 'kuromoji';
 config({ path: resolve(process.cwd(), '.env.local') });
+
+// Kuromoji tokenizer singleton
+let tokenizer: any = null;
+
+async function getTokenizer(): Promise<any> {
+  if (tokenizer) return tokenizer;
+  return new Promise((resolve, reject) => {
+    kuromoji.builder({ dicPath: 'node_modules/kuromoji/dict' }).build((err: any, t: any) => {
+      if (err) reject(err);
+      else { tokenizer = t; resolve(t); }
+    });
+  });
+}
+
+// Konwertuj katakana na hiragana
+function katakanaToHiragana(katakana: string): string {
+  return katakana.replace(/[\u30a1-\u30f6]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  );
+}
+
+// Główna funkcja Kuromoji do dodawania furigany
+async function addFuriganaWithKuromoji(text: string): Promise<string> {
+  const t = await getTokenizer();
+  const tokens = t.tokenize(text);
+
+  let result = text;
+  // Przetwarzaj od końca żeby nie psuć indeksów
+  for (let i = tokens.length - 1; i >= 0; i--) {
+    const token = tokens[i];
+    const surface = token.surface_form;
+    const readingKata = token.reading;
+
+    // Jeśli ma kanji i czytanie
+    if (/[\u4e00-\u9faf]/.test(surface) && readingKata) {
+      const reading = katakanaToHiragana(readingKata);
+      const ruby = `<ruby>${surface}<rt>${reading}</rt></ruby>`;
+      // Zamień pierwsze wystąpienie surface na ruby
+      result = result.replace(surface, ruby);
+    }
+  }
+  return result;
+}
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_BASE_URL = 'https://api.elevenlabs.io/v1';
@@ -516,77 +560,72 @@ async function getReadingForFullWord(fullText: string, kanjiWord: string): Promi
   return null;
 }
 
-// Add furigana using Jisho API for unknown kanji
+// Add furigana using Kuromoji (primary) with Jisho fallback
 export async function addFurigana(text: string): Promise<string> {
   await loadCache();
-  
+
+  console.log(`[Furigana] Processing text: "${text}"`);
+
+  // First try: Kuromoji for handling inflected forms (e.g., 吸って -> すって)
+  try {
+    const kuromojiResult = await addFuriganaWithKuromoji(text);
+    // Check if Kuromoji added any furigana
+    if (kuromojiResult.includes('<ruby>')) {
+      console.log(`[Furigana] Kuromoji result: "${kuromojiResult}"`);
+
+      // Post-processing: check if all kanji have furigana
+      const textWithoutRuby = kuromojiResult.replace(/<ruby>[^<]*<rt>[^<]*<\/rt><\/ruby>/g, '');
+      const remainingKanji = textWithoutRuby.match(/[\u4e00-\u9faf]/g);
+
+      if (!remainingKanji || remainingKanji.length === 0) {
+        // All kanji have furigana, return Kuromoji result
+        return kuromojiResult;
+      }
+
+      // Some kanji still missing furigana, use Kuromoji result as base and try Jisho for remaining
+      console.log(`[Furigana] Kuromoji left ${remainingKanji.length} kanji without furigana, using Jisho fallback`);
+      let result = kuromojiResult;
+      const uniqueRemaining = [...new Set(remainingKanji)];
+
+      for (const kanji of uniqueRemaining) {
+        let reading = furiganaCache.get(kanji);
+        if (!reading) {
+          reading = (await getReadingFromJisho(kanji)) ?? undefined;
+        }
+        if (reading) {
+          const ruby = `<ruby>${kanji}<rt>${reading}</rt></ruby>`;
+          result = result.replace(kanji, ruby);
+        }
+      }
+      return result;
+    }
+  } catch (error) {
+    console.log(`[Furigana] Kuromoji failed: ${error}, falling back to Jisho`);
+  }
+
+  // Fallback: Jisho-based method
+  console.log(`[Furigana] Using Jisho fallback for: "${text}"`);
   let result = text;
   const kanjiRegex = /[\u4e00-\u9faf]+/g;
   const matches = text.match(kanjiRegex) || [];
-  
-  console.log(`[Furigana] Processing text: "${text}", found ${matches.length} kanji matches: [${matches.join(', ')}]`);
-  
-  // Sort by length (longest first) to avoid partial matches
+
   const uniqueMatches = [...new Set(matches)].sort((a, b) => b.length - a.length);
-  
-  console.log(`[Furigana] Unique matches to process: [${uniqueMatches.join(', ')}]`);
-  
+
   for (const kanjiWord of uniqueMatches) {
-    // First try: get reading for kanji in context of full word (with okurigana)
-    // This gives correct kun'yomi reading (e.g., 暑い -> あつ not しょ)
     const fullWordReading = await getReadingForFullWord(text, kanjiWord);
-    
     let reading = fullWordReading;
-    
+
     if (!reading) {
-      // Fallback: get reading for kanji alone
       reading = await getReadingFromJisho(kanjiWord);
     }
-    
+
     if (reading) {
       const ruby = `<ruby>${kanjiWord}<rt>${reading}</rt></ruby>`;
       result = result.replace(new RegExp(kanjiWord, 'g'), ruby);
       console.log(`[Furigana] Replaced "${kanjiWord}" with "${ruby}"`);
-    } else {
-      console.log(`[Furigana] No reading found for: "${kanjiWord}"`);
     }
   }
-  
-  console.log(`[Furigana] Result: "${result}"`);
-  
-  // Post-processing: check if all kanji have furigana
-  // Find any remaining bare kanji (not wrapped in <ruby> tags)
-  // Remove all ruby tags temporarily to check what's left
-  const textWithoutRuby = result.replace(/<ruby>[^<]*<rt>[^<]*<\/rt><\/ruby>/g, '');
-  const kanjiRegex2 = /[\u4e00-\u9faf]/g;
-  const remainingKanji = textWithoutRuby.match(kanjiRegex2);
-  
-  if (remainingKanji && remainingKanji.length > 0) {
-    const uniqueRemaining = [...new Set(remainingKanji)];
-    console.log(`[Furigana] Post-processing: Found ${uniqueRemaining.length} unique kanji without furigana: [${uniqueRemaining.join(', ')}]`);
-    
-    // Try to get furigana for remaining kanji individually
-    for (const kanji of uniqueRemaining) {
-      // Check cache first
-      let reading = furiganaCache.get(kanji);
-      
-      if (!reading) {
-        // Fetch from Jisho
-        reading = (await getReadingFromJisho(kanji)) ?? undefined;
-      }
-      
-      if (reading) {
-        const ruby = `<ruby>${kanji}<rt>${reading}</rt></ruby>`;
-        // Replace bare kanji that are not already inside ruby tags
-        // Simple approach: replace in the original result
-        result = result.replace(kanji, ruby);
-        console.log(`[Furigana] Post-process: Added "${ruby}" for "${kanji}"`);
-      } else {
-        console.log(`[Furigana] Post-process: Could not find reading for "${kanji}"`);
-      }
-    }
-  }
-  
+
   return result;
 }
 
