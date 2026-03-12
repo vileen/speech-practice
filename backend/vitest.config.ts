@@ -6,8 +6,10 @@ export default defineConfig({
     environment: 'node',
     coverage: {
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'dist/'],
-      reportsDirectory: './coverage'
+      exclude: ['node_modules/', 'dist/', 'src/test/', '**/*.test.ts'],
+      reportsDirectory: './coverage',
+      all: true,
+      include: ['src/**/*.ts']
     }
   }
 });
