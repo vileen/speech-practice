@@ -29,6 +29,7 @@
     "@types/node": "^20.11.16",
     "@types/pg": "^8.11.0",
     "@types/supertest": "^7.2.0",
+    "@vitest/coverage-v8": "^4.1.0",
     "@vitest/ui": "^4.1.0",
     "supertest": "^7.2.2",
     "tsx": "^4.7.0",
