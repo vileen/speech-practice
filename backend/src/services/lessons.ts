@@ -101,6 +101,21 @@ export async function cacheFurigana(text: string, furiganaHtml: string): Promise
   );
 }
 
+// Batch lookup dla furigana
+async function getCachedFuriganaBatch(texts: string[]): Promise<Record<string, string>> {
+  if (texts.length === 0) return {};
+  const placeholders = texts.map((_, i) => `$${i + 1}`).join(',');
+  const result = await pool.query(
+    `SELECT original_text, furigana_html FROM furigana_cache WHERE original_text IN (${placeholders})`,
+    texts
+  );
+  const map: Record<string, string> = {};
+  for (const row of result.rows) {
+    map[row.original_text] = row.furigana_html;
+  }
+  return map;
+}
+
 // Get specific lesson with enriched grammar examples (includes furigana)
 export async function getLesson(id: string, includeFurigana: boolean = false): Promise<LessonData | null> {
   const result = await pool.query(
@@ -129,39 +144,56 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
     });
   }
 
+  // Collect all texts that need furigana for batch lookup
+  const allTexts: string[] = [];
+  
+  // Grammar examples
+  if (includeFurigana && grammar.length > 0) {
+    grammar.forEach((g: GrammarPoint) => {
+      g.examples?.forEach((ex) => allTexts.push(ex.jp));
+    });
+  }
+  
+  // Practice phrases
+  let practice_phrases = row.practice_phrases || [];
+  if (practice_phrases.length > 0) {
+    practice_phrases.forEach((p: PracticePhrase) => allTexts.push(p.jp));
+  }
+  
+  // Batch fetch all furigana in one query
+  const furiganaMap = includeFurigana && allTexts.length > 0 
+    ? await getCachedFuriganaBatch([...new Set(allTexts)])
+    : {};
+
   // Enrich grammar examples with cached furigana if requested
   if (includeFurigana && grammar.length > 0) {
-    grammar = await Promise.all(grammar.map(async (g: GrammarPoint) => {
+    grammar = grammar.map((g: GrammarPoint) => {
       if (!g.examples || g.examples.length === 0) return g;
 
-      const enrichedExamples = await Promise.all(g.examples.map(async (ex) => {
-        const cached = await getCachedFurigana(ex.jp);
-        return {
-          ...ex,
-          furigana: cached || null
-        };
+      const enrichedExamples = g.examples.map((ex) => ({
+        ...ex,
+        furigana: furiganaMap[ex.jp] || null
       }));
 
       return {
         ...g,
         examples: enrichedExamples
       };
-    }));
+    });
   }
 
   // Enrich practice phrases with furigana and romaji
-  let practice_phrases = row.practice_phrases || [];
   if (practice_phrases.length > 0) {
     practice_phrases = await Promise.all(practice_phrases.map(async (p: PracticePhrase) => {
-      // Try to get furigana from cache
-      const cachedFurigana = includeFurigana ? await getCachedFurigana(p.jp) : null;
+      // Get furigana from map
+      const cachedFurigana = includeFurigana ? furiganaMap[p.jp] || null : null;
 
       // Generate romaji using furigana if available (for correct kanji readings)
       const romaji = await generateRomaji(p.jp, cachedFurigana);
 
       return {
         ...p,
-        furigana: cachedFurigana || null,
+        furigana: cachedFurigana,
         romaji: romaji
       };
     }));
