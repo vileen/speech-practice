@@ -6,8 +6,8 @@
 
 <!-- Backend Badges -->
 [![Backend Status](https://img.shields.io/badge/backend-online-success)](https://speech.vileen.pl/api/health)
-[![Frontend Coverage](https://codecov.io/gh/vileen/speech-practice/flag/frontend/graph/badge.svg?label=frontend%20cov)](https://codecov.io/gh/vileen/speech-practice)
-[![Backend Coverage](https://codecov.io/gh/vileen/speech-practice/flag/backend/graph/badge.svg?label=backend%20cov)](https://codecov.io/gh/vileen/speech-practice)
+[![Frontend Coverage](https://img.shields.io/codecov/c/github/vileen/speech-practice?flag=frontend&label=frontend%20cov)](https://codecov.io/gh/vileen/speech-practice)
+[![Backend Coverage](https://img.shields.io/codecov/c/github/vileen/speech-practice?flag=backend&label=backend%20cov)](https://codecov.io/gh/vileen/speech-practice)
 
 Japanese language learning app with AI conversation, speech recognition, and lesson-based practice.
 
