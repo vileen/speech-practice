@@ -32,12 +32,17 @@ jobs:
           yarn test --coverage
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: Wandalen/wretry.action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./frontend/coverage/coverage-final.json
-          flags: frontend
-          name: frontend-coverage
+          action: codecov/codecov-action@v5
+          with: |
+            token: ${{ secrets.CODECOV_TOKEN }}
+            files: ./frontend/coverage/coverage-final.json
+            flags: frontend
+            name: frontend-coverage
+            fail_ci_if_error: false
+          attempt_limit: 3
+          attempt_delay: 15000
 
   # Backend tests placeholder - to be implemented
   # backend-test:
