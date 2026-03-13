@@ -11,6 +11,7 @@ const QUOTES = [
   "Your heart is a muscle - train it with energy drinks.",
   "Fuck it, we ball.",
   "Nobody cares about your process, only your output.",
+  "You have to be odd to be number 1.",
 ];
 
 export function Home() {
