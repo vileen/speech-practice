@@ -1,11 +1,13 @@
 # Speech Practice App
 
-<!-- Frontend Badges -->
+<!-- Deploy -->
 [![Frontend Deploy](https://img.shields.io/badge/frontend-github%20pages-success)](https://vileen.github.io/speech-practice/)
-[![Frontend Tests](https://img.shields.io/github/actions/workflow/status/vileen/speech-practice/tests.yml?branch=main&label=tests)](https://github.com/vileen/speech-practice/actions)
-
-<!-- Backend Badges -->
 [![Backend Status](https://img.shields.io/badge/backend-online-success)](https://speech.vileen.pl/api/health)
+
+<!-- CI/CD -->
+[![Tests](https://img.shields.io/github/actions/workflow/status/vileen/speech-practice/tests.yml?branch=main&label=tests)](https://github.com/vileen/speech-practice/actions)
+
+<!-- Coverage -->
 [![Frontend Coverage](https://img.shields.io/codecov/c/github/vileen/speech-practice?flag=frontend&label=frontend%20cov)](https://codecov.io/gh/vileen/speech-practice)
 [![Backend Coverage](https://img.shields.io/codecov/c/github/vileen/speech-practice?flag=backend&label=backend%20cov)](https://codecov.io/gh/vileen/speech-practice)
 
