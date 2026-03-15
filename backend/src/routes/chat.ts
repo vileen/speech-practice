@@ -52,7 +52,13 @@ router.post('/', checkPassword, async (req, res) => {
       [session_id, 'assistant', response.text]
     );
     
-    res.json(response);
+    // Return snake_case to match frontend expectations
+    res.json({
+      text: response.text,
+      text_with_furigana: response.textWithFurigana,
+      romaji: response.romaji,
+      translation: response.translation,
+    });
   } catch (error) {
     console.error('Error generating chat response:', error);
     res.status(500).json({ error: 'Failed to generate response' });

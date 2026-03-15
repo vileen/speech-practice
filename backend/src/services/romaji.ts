@@ -187,35 +187,37 @@ function convertKanaToRomaji(text: string): string {
 }
 
 /**
- * Add spaces around particles in hiragana text
- * Example: "saikineakonwo" -> "saikin eakon wo"
+ * Add spaces around major particles in hiragana text
+ * Only spaces around: は, が, を - the most distinctive particles
+ * Avoids splitting words that contain に, で, か, etc.
  */
 function addSpacesAroundParticles(hiraganaText: string): string {
+  // Only major particles that are rarely part of words
+  const majorParticles = ['は', 'が', 'を'];
   let result = '';
-  
+
   for (let i = 0; i < hiraganaText.length; i++) {
     const char = hiraganaText[i];
     const prevChar = hiraganaText[i - 1];
     const nextChar = hiraganaText[i + 1];
-    
-    const isParticle = particles.includes(char);
+
+    const isMajorParticle = majorParticles.includes(char);
     const prevIsSpace = prevChar === ' ';
     const nextIsSpace = nextChar === ' ';
-    const nextIsParticle = particles.includes(nextChar);
-    
-    // Add space BEFORE particle
-    if (isParticle && i > 0 && !prevIsSpace) {
+
+    // Add space BEFORE major particle
+    if (isMajorParticle && i > 0 && !prevIsSpace) {
       result += ' ';
     }
-    
+
     result += char;
-    
-    // Add space AFTER particle (if next isn't space and isn't another particle)
-    if (isParticle && i < hiraganaText.length - 1 && !nextIsSpace && !nextIsParticle) {
+
+    // Add space AFTER major particle
+    if (isMajorParticle && i < hiraganaText.length - 1 && !nextIsSpace) {
       result += ' ';
     }
   }
-  
+
   return result;
 }
 

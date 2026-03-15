@@ -4,8 +4,9 @@ import { generateRomaji, generateFuriganaFromReading } from '../../services/roma
 describe('romaji service', () => {
   it('should convert hiragana to romaji with particle spacing', async () => {
     const result = await generateRomaji('こんにちは');
-    // Particles get spaces: ni and wa are treated as particles in this simple algorithm
-    expect(result).toBe('kon ni chi wa');
+    // Only major particles (は, が, を) get spaces
+    // "こんにちは" -> "konnichi wa" (only final は is a particle)
+    expect(result).toBe('konnichi wa');
   });
   
   it('should generate furigana from reading', () => {
