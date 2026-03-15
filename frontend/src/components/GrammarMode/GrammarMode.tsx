@@ -168,8 +168,18 @@ export const GrammarMode: React.FC = () => {
     
     setState('processing');
 
-    // Simple validation (exact match for now)
-    const isCorrect = userAnswer.trim() === exercise?.correct_answer?.trim();
+    // Normalize answers: remove punctuation and whitespace for comparison
+    const normalizeForComparison = (text: string) => {
+      return text
+        .trim()
+        .replace(/[。．、，！？・…ー〜〃〄々〆〇〈〉《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟]/g, '') // Remove Japanese punctuation
+        .replace(/[.!,?…\-~"'""''()[\]{}]/g, '') // Remove Western punctuation
+        .replace(/\s+/g, ''); // Remove all whitespace
+    };
+
+    const normalizedUser = normalizeForComparison(userAnswer);
+    const normalizedCorrect = normalizeForComparison(exercise?.correct_answer || '');
+    const isCorrect = normalizedUser === normalizedCorrect;
     const result = isCorrect ? 'correct' : 'wrong';
 
     try {
