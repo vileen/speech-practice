@@ -187,38 +187,24 @@ function convertKanaToRomaji(text: string): string {
 }
 
 /**
- * Add spaces around major particles in hiragana text
- * Only spaces around: は, が, を - the most distinctive particles
- * Avoids splitting words that contain に, で, か, etc.
+ * Post-process romaji to add spaces at natural boundaries.
+ * Uses simple heuristics to identify likely word boundaries.
  */
-function addSpacesAroundParticles(hiraganaText: string): string {
-  // Only major particles that are rarely part of words
-  const majorParticles = ['は', 'が', 'を'];
-  let result = '';
+function addSpacesToRomaji(romaji: string): string {
+  // Add spaces after question marks (ka at end of sentence)
+  let result = romaji
+    .replace(/(ka)([^a-z]|$)/g, '$1 $2')     // か (question) followed by non-letter or end
+    .replace(/(ne)([^a-z]|$)/g, '$1 $2')     // ね (confirmation)
+    .replace(/(yo)([^a-z]|$)/g, '$1 $2')     // よ (emphasis)
+    .replace(/(na)(do)([^a-z]|$)/g, '$1$2 $3') // など (etc)
+    .replace(/(de)(su)([^a-z]|$)/g, '$1$2 $3') // です
+    .replace(/(ma)(su)([^a-z]|$)/g, '$1$2 $3') // ～ます
+    .replace(/(ta)(i)([^a-z]|$)/g, '$1$2 $3')  // ～たい
+    .replace(/(nai)([^a-z]|$)/g, '$1 $2')    // ～ない
+    .replace(/(ta)([^a-z]|$)/g, '$1 $2');    // ～た (past)
 
-  for (let i = 0; i < hiraganaText.length; i++) {
-    const char = hiraganaText[i];
-    const prevChar = hiraganaText[i - 1];
-    const nextChar = hiraganaText[i + 1];
-
-    const isMajorParticle = majorParticles.includes(char);
-    const prevIsSpace = prevChar === ' ';
-    const nextIsSpace = nextChar === ' ';
-
-    // Add space BEFORE major particle
-    if (isMajorParticle && i > 0 && !prevIsSpace) {
-      result += ' ';
-    }
-
-    result += char;
-
-    // Add space AFTER major particle
-    if (isMajorParticle && i < hiraganaText.length - 1 && !nextIsSpace) {
-      result += ' ';
-    }
-  }
-
-  return result;
+  // Clean up multiple spaces and trim
+  return result.replace(/ +/g, ' ').trim();
 }
 
 /**
@@ -237,13 +223,45 @@ function fixParticlePronunciations(romaji: string): string {
 }
 
 /**
- * Extract hiragana readings from furigana HTML
- * Replaces <ruby>漢字<rt>かんじ</rt></ruby> with かんじ
+ * Extract hiragana readings from furigana HTML and segment into words.
+ * Uses <ruby> tags to identify word boundaries.
+ * Returns array of { text, isParticle } for each segment.
  */
-function extractHiraganaFromFurigana(furiganaHtml: string): string {
-  return furiganaHtml
-    .replace(/<ruby>[^<]*<rt>([^<]*)<\/rt><\/ruby>/g, '$1')
-    .replace(/<[^>]*>/g, '');
+function extractAndSegmentFurigana(furiganaHtml: string): Array<{ text: string; isParticle: boolean }> {
+  const segments: Array<{ text: string; isParticle: boolean }> = [];
+  const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'か', 'ね', 'よ'];
+  
+  // Regex to match: <ruby>...</ruby> or plain text
+  const tokenRegex = /<ruby>[^<]*<rt>([^<]*)<\/rt><\/ruby>|([^<]+)/g;
+  let match;
+  
+  while ((match = tokenRegex.exec(furiganaHtml)) !== null) {
+    if (match[1]) {
+      // This is a <ruby> tag with reading in group 1
+      segments.push({ text: match[1], isParticle: false });
+    } else if (match[2]) {
+      // This is plain text in group 2
+      const text = match[2];
+      // Split plain text into particles and words
+      let current = '';
+      for (const char of text) {
+        if (particles.includes(char)) {
+          if (current) {
+            segments.push({ text: current, isParticle: false });
+            current = '';
+          }
+          segments.push({ text: char, isParticle: true });
+        } else {
+          current += char;
+        }
+      }
+      if (current) {
+        segments.push({ text: current, isParticle: false });
+      }
+    }
+  }
+  
+  return segments;
 }
 
 /**
@@ -262,24 +280,42 @@ export async function generateRomaji(
   let hiraganaText: string;
   const hasKanji = /[\u4e00-\u9faf]/.test(text);
 
+  let segments: Array<{ text: string; isParticle: boolean }>;
+
   if (furiganaHtml) {
-    // Use provided furigana
-    hiraganaText = extractHiraganaFromFurigana(furiganaHtml);
+    // Use furigana HTML structure to segment properly
+    segments = extractAndSegmentFurigana(furiganaHtml);
   } else if (hasKanji) {
     // Generate furigana for kanji
     const { addFurigana } = await import('./elevenlabs.js');
     const generated = await addFurigana(text);
-    hiraganaText = extractHiraganaFromFurigana(generated);
+    segments = extractAndSegmentFurigana(generated);
   } else {
-    // No kanji - use text directly
-    hiraganaText = text;
+    // No kanji - segment plain text
+    const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'か', 'ね', 'よ'];
+    segments = [];
+    let current = '';
+    for (const char of text) {
+      if (particles.includes(char)) {
+        if (current) {
+          segments.push({ text: current, isParticle: false });
+          current = '';
+        }
+        segments.push({ text: char, isParticle: true });
+      } else {
+        current += char;
+      }
+    }
+    if (current) {
+      segments.push({ text: current, isParticle: false });
+    }
   }
 
-  // Add spaces only around particles (not between every character)
-  const segmentedHiragana = addSpacesAroundParticles(hiraganaText);
-
-  // Convert to romaji
-  const romaji = convertKanaToRomaji(segmentedHiragana);
+  // Convert each segment to romaji and join with spaces
+  const romajiParts = segments.map((seg) => convertKanaToRomaji(seg.text));
+  
+  // Join with spaces between segments
+  const romaji = romajiParts.join(' ');
 
   // Fix particle pronunciations (ha -> wa, he -> e)
   return fixParticlePronunciations(romaji).trim();
