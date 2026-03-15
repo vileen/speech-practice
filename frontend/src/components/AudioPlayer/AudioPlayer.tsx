@@ -142,18 +142,35 @@ export function AudioPlayer({ audioUrl, volume, isActive, onPlay: _onPlay, onSto
       <button 
         className="play-btn"
         onClick={() => {
+          const audio = audioRef.current;
+          if (!audio) return;
+          
           if (isActive) {
-            onStop();
+            // Pause (preserve position)
+            audio.pause();
           } else {
-            const audio = audioRef.current;
-            if (audio) {
-              _onPlay(audio);
-            }
+            // Play from current position
+            _onPlay(audio);
           }
         }}
         aria-label={isActive ? 'Pause' : 'Play'}
       >
         {isActive ? '⏸️' : '▶️'}
+      </button>
+      <button 
+        className="stop-btn"
+        onClick={() => {
+          const audio = audioRef.current;
+          if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+          }
+          onStop();
+        }}
+        aria-label="Stop"
+        disabled={!isActive && currentTime === 0}
+      >
+        ⏹️
       </button>
       <div 
         className="progress-bar-container"
