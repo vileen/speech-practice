@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
 import { API_URL, getPassword } from '../config/api.js';
@@ -69,6 +69,22 @@ export function LessonPractice() {
       });
     }
   }, [id, navigate]);
+
+  // Stable callbacks for audio handling
+  const handleAudioPlay = useCallback((audio: HTMLAudioElement, idx: number) => {
+    setPlayingAudio({ id: idx, audio });
+  }, []);
+
+  const handleAudioStop = useCallback(() => {
+    setPlayingAudio(null);
+  }, []);
+
+  const handleStopOthers = useCallback((currentIdx: number) => {
+    if (playingAudio && playingAudio.id !== currentIdx) {
+      playingAudio.audio.pause();
+      playingAudio.audio.currentTime = 0;
+    }
+  }, [playingAudio]);
 
   // Save volume
   useEffect(() => {
@@ -431,18 +447,13 @@ export function LessonPractice() {
                     </div>
                   )}
                   {msg.audioUrl && (
-                    <AudioPlayer 
+                    <AudioPlayer
                       audioUrl={msg.audioUrl}
                       volume={volume}
                       isActive={playingAudio?.id === idx}
-                      onPlay={(audio) => setPlayingAudio({ id: idx, audio })}
-                      onStop={() => setPlayingAudio(null)}
-                      onStopOthers={() => {
-                        if (playingAudio && playingAudio.id !== idx) {
-                          playingAudio.audio.pause();
-                          playingAudio.audio.currentTime = 0;
-                        }
-                      }}
+                      onPlay={(audio) => handleAudioPlay(audio, idx)}
+                      onStop={handleAudioStop}
+                      onStopOthers={() => handleStopOthers(idx)}
                     />
                   )}
                 </div>
