@@ -44,19 +44,26 @@ Your job is to PUSH the user to practice more, not just accept minimal answers.`
     max_tokens: 500,
   });
 
-  let text = response.choices[0]?.message?.content || 'すみません、もう一度言ってください。';
+  let rawText = response.choices[0]?.message?.content || 'すみません、もう一度言ってください。';
   
   // Extract translation if present
   let translation: string | undefined;
-  const translationMatch = text.match(/TRANSLATION:\s*(.+)$/);
+  const translationMatch = rawText.match(/TRANSLATION:\s*(.+)$/);
   if (translationMatch) {
     translation = translationMatch[1].trim();
     // Remove translation from main text
-    text = text.replace(/\s*TRANSLATION:.+$/, '').trim();
+    rawText = rawText.replace(/\s*TRANSLATION:.+$/, '').trim();
   }
   
-  // Always ensure furigana is properly added - AI sometimes formats it incorrectly
-  // Process the text to ensure all kanji have proper <ruby> tags
+  // Extract plain text (remove any <ruby> tags that AI might have added)
+  // Plain text should have kanji, not furigana markup
+  const text = rawText.replace(/<ruby>[^<]*<rt>[^<]*<\/rt><\/ruby>/g, (match) => {
+    // Extract just the kanji part (before <rt>)
+    const kanjiMatch = match.match(/<ruby>([^<]*)<rt>/);
+    return kanjiMatch ? kanjiMatch[1] : match;
+  });
+  
+  // Always ensure furigana is properly added using our system
   let textWithFurigana = text;
   const kanjiRegex = /[\u4e00-\u9faf]/;
   if (kanjiRegex.test(text)) {
