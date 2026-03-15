@@ -159,7 +159,7 @@ export function AudioPlayer({ audioUrl, volume, isActive, onPlay: _onPlay, onPau
       >
         {isActive ? '⏸️' : '▶️'}
       </button>
-      <button 
+      <button
         className="stop-btn"
         onClick={() => {
           const audio = audioRef.current;
@@ -167,6 +167,8 @@ export function AudioPlayer({ audioUrl, volume, isActive, onPlay: _onPlay, onPau
             audio.pause();
             audio.currentTime = 0;
           }
+          setProgress(0);
+          setCurrentTime(0);
           onStop();
         }}
         aria-label="Stop"

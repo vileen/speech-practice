@@ -7,6 +7,7 @@ import { translateLessonTitle } from '../translations.js';
 
 import { AudioPlayer } from '../components/AudioPlayer/index.js';
 import { VoiceRecorder } from '../components/VoiceRecorder/index.js';
+import { HighlightedText } from '../components/HighlightedText/index.js';
 
 export function LessonPractice() {
   const { id } = useParams<{ id: string }>();
@@ -427,7 +428,13 @@ export function LessonPractice() {
                     ) : (
                       <>
                         <div className="jp-text">
-                          {showFurigana && msg.withFurigana ? (
+                          {playingAudio?.id === idx ? (
+                            <HighlightedText
+                              text={msg.text}
+                              audioElement={playingAudio.audio}
+                              isPlaying={true}
+                            />
+                          ) : showFurigana && msg.withFurigana ? (
                             <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
                           ) : (
                             msg.text
