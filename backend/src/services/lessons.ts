@@ -188,8 +188,8 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
       // Get furigana from map
       const cachedFurigana = includeFurigana ? furiganaMap[p.jp] || null : null;
 
-      // Generate romaji using furigana if available (for correct kanji readings)
-      const romaji = await generateRomaji(p.jp, cachedFurigana);
+      // Generate romaji using kuromoji for proper tokenization
+      const romaji = await generateRomaji(p.jp);
 
       return {
         ...p,

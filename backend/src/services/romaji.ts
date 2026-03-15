@@ -1,4 +1,5 @@
 // romaji.ts - Japanese text to romaji conversion utilities
+import kuromoji from 'kuromoji';
 
 // Basic hiragana/katakana to romaji mapping
 const kanaToRomaji: Record<string, string> = {
@@ -38,92 +39,37 @@ const kanaToRomaji: Record<string, string> = {
   'ャ': 'ya', 'ュ': 'yu', 'ョ': 'yo', 'ッ': '',
 };
 
-const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や', 'か', 'ね', 'よ', 'わ', 'て', 'ば'];
+// Lazy-loaded kuromoji tokenizer
+let tokenizer: any = null;
 
-// Common Japanese words for segmentation (hiragana)
-const commonWords = new Set([
-  'あなた', 'あの', 'ありがとう', 'ある', 'あれ', 'いい', 'いく', 'いくつ', 'いち', 'いま', 'いや', 'いる', 'いろいろ',
-  'うち', 'うまい', 'おい', 'おいしい', 'おおきい', 'おかしい', 'おきる', 'おく', 'おくる', 'おさけ', 'おしえる',
-  'おちる', 'おっと', 'おと', 'おとうと', 'おとな', 'おなか', 'おにい', 'おねえ', 'おのおの', 'おば', 'おばあ',
-  'おひさ', 'おふろ', 'おまえ', 'おもい', 'おもう', 'おや', 'およぐ', 'おりる', 'おる', 'おれ', 'おわり', 'おんな',
-  'かい', 'かう', 'かえる', 'かお', 'かかる', 'かぎ', 'かく', 'かける', 'かさ', 'かす', 'かた', 'かち', 'かつ',
-  'かなしい', 'かのじょ', 'かばん', 'かべ', 'かみ', 'かも', 'から', 'かるい', 'かれ', 'かんじ', 'き', 'きいろ',
-  'きく', 'きせつ', 'きた', 'きたない', 'きっと', 'きのう', 'きみ', 'きもち', 'きる', 'きょう', 'きょねん',
-  'きらい', 'きれい', 'きろ', 'ぎん', 'く', 'くい', 'くう', 'くすり', 'くだ', 'くち', 'くに', 'くも', 'くらい',
-  'くる', 'くれ', 'くろ', 'け', 'けさ', 'けす', 'けっこう', 'けっして', 'けれど', 'げつ', 'こい', 'こう', 'ここ',
-  'こちら', 'こっち', 'こと', 'この', 'こば', 'こまる', 'これ', 'こん', 'こんど', 'こんばん', 'さい', 'さか',
-  'さき', 'さく', 'さす', 'さっき', 'さて', 'さとう', 'さびしい', 'さむい', 'さらい', 'さん', 'しかし', 'しごと',
-  'しぬ', 'しばらく', 'しまう', 'しめる', 'しゃ', 'しゃべる', 'しゅう', 'しょう', 'しょく', 'しる', 'しろ',
-  'しん', 'す', 'すぐ', 'すこし', 'すずしい', 'すてる', 'すな', 'すぱ', 'すみ', 'する', 'すわる', 'せん', 'ぜん',
-  'そう', 'そこ', 'そちら', 'そっち', 'そと', 'その', 'そば', 'そら', 'それ', 'そろ', 'たい', 'たいせつ', 'たかい',
-  'たく', 'たくさん', 'たしか', 'たす', 'たすける', 'たつ', 'たて', 'たぶん', 'たべ', 'たべる', 'たまご', 'ため',
-  'たより', 'だい', 'だけ', 'だす', 'だれ', 'ちい', 'ちいさい', 'ちがう', 'ちかい', 'ちから', 'ちず', 'ちち',
-  'ちゃ', 'ちゃん', 'ちょう', 'ちょっと', 'つい', 'つかう', 'つかれる', 'つき', 'つく', 'つくえ', 'つける', 'つぎ',
-  'つまらない', 'つめ', 'つもり', 'つよい', 'つる', 'て', 'てがみ', 'てつ', 'てぶくろ', 'てら', 'でも', 'でる',
-  'でんわ', 'と', 'とう', 'とお', 'とおい', 'とき', 'ところ', 'とし', 'とち', 'とても', 'とどく', 'となり', 'とまる',
-  'とも', 'とる', 'どう', 'どうして', 'どうぞ', 'どこ', 'どちら', 'どっち', 'どの', 'どれ', 'なか', 'ながい',
-  'なく', 'なぜ', 'なつ', 'なに', 'なの', 'なふだ', 'なまえ', 'なら', 'なる', 'なん', 'に', 'にく', 'にし',
-  'にち', 'にもつ', 'にわ', 'ぬ', 'ぬぐ', 'ぬる', 'ね', 'ねがい', 'ねこ', 'ねだん', 'ねる', 'の', 'のこる',
-  'のぞく', 'のる', 'はい', 'はがき', 'はこ', 'はし', 'はじまる', 'はじめ', 'はじめて', 'はず', 'はたらく',
-  'はち', 'はな', 'はなす', 'はなび', 'はなみ', 'はやい', 'はる', 'はれ', 'はん', 'ば', 'ばか', 'ばかり',
-  'ひく', 'ひこう', 'ひだり', 'ひと', 'ひとつ', 'ひま', 'ひゃく', 'ひる', 'ひろい', 'ふう', 'ふく', 'ふたつ',
-  'ふつ', 'ふる', 'ふん', 'ぶ', 'へ', 'へい', 'へる', 'ほう', 'ほしい', 'ほそい', 'ほど', 'ほん', 'まい',
-  'まいにち', 'まえ', 'まがる', 'まず', 'また', 'まだ', 'まち', 'まっ', 'まど', 'まるい', 'まわる', 'み', 'みぎ',
-  'みじかい', 'みず', 'みせ', 'みせる', 'みち', 'みっつ', 'みな', 'みなみ', 'みみ', 'みる', 'みんな', 'むい',
-  'むすこ', 'むすめ', 'むね', 'むら', 'め', 'めがね', 'も', 'もう', 'もく', 'もし', 'もちろん', 'もつ', 'もっと',
-  'もみじ', 'もも', 'もや', 'もらう', 'もん', 'や', 'やお', 'やさい', 'やすい', 'やすむ', 'やっと', 'やま',
-  'やめる', 'ゆう', 'ゆうがた', 'ゆうびん', 'ゆうべ', 'ゆうめい', 'ゆき', 'ゆっくり', 'ゆび', 'ゆめ', 'ゆるい',
-  'よ', 'よう', 'ようか', 'よく', 'よこ', 'よし', 'よつ', 'よてい', 'よねん', 'よぶ', 'よむ', 'よる', 'より',
-  'よわい', 'よん', 'らい', 'らいげつ', 'らいしゅう', 'らいねん', 'らく', 'り', 'りっぱ', 'りょう', 'りょこう',
-  'る', 'るす', 'れい', 'れき', 'ろく', 'わ', 'わかい', 'わかる', 'わすれる', 'わたし', 'わるい', 'わん',
-  // Extended vocabulary
-  'ことば', 'ともだち', 'かぞく', 'せんせい', 'がっこう', 'だいがく', 'びょういん', 'えき', 'ひこうき',
-  'でんしゃ', 'くるま', 'じてんしゃ', 'みせ', 'レストラン', 'ホテル', 'まち', 'くに', 'かたち', 'いろ',
-  'おんがく', 'えいが', 'しゃしん', 'てがみ', 'きょうみ', 'しゅみ', 'うんどう', 'りょうり', 'さかな',
-  'にく', 'やさい', 'くだもの', 'のみもの', 'さとう', 'しお', 'しょうゆ', 'みず', 'おちゃ', 'こうちゃ',
-  'ぎゅうにゅう', 'パン', 'ごはん', 'みそしる', 'すいか', 'りんご', 'みかん', 'ばなな', 'にほん', 'えいご',
-  'がいこく', 'がいこくじん', 'かんこう', 'りょかん', 'おんせん', 'まつり', 'しゅうまつ', 'きょうと',
-  'とうきょう', 'おおさか', 'ふくおか', 'さっぽろ', 'なごや', 'こうべ', 'ひろしま'
-]);
+async function getTokenizer(): Promise<any> {
+  if (tokenizer) return tokenizer;
+  
+  return new Promise((resolve, reject) => {
+    kuromoji.builder({ dicPath: 'node_modules/kuromoji/dict' }).build((err: any, t: any) => {
+      if (err) {
+        reject(err);
+      } else {
+        tokenizer = t;
+        resolve(t);
+      }
+    });
+  });
+}
 
 /**
- * Segment hiragana text into words using dictionary lookup
- * Falls back to particle-based segmentation for unknown words
+ * Tokenize Japanese text using kuromoji
+ * Returns array of tokens with surface form and reading
  */
-function segmentHiraganaWords(hiraganaText: string): string {
-  const result: string[] = [];
-  let i = 0;
-  
-  while (i < hiraganaText.length) {
-    // Try to find longest matching word in dictionary
-    let matched = false;
-    
-    // Try lengths from 8 chars down to 1
-    for (let len = Math.min(8, hiraganaText.length - i); len >= 1; len--) {
-      const substring = hiraganaText.substring(i, i + len);
-      
-      if (commonWords.has(substring)) {
-        result.push(substring);
-        i += len;
-        matched = true;
-        break;
-      }
-    }
-    
-    if (!matched) {
-      // Check if it's a particle
-      const char = hiraganaText[i];
-      if (particles.includes(char)) {
-        result.push(char);
-      } else {
-        // Unknown word - add single character
-        result.push(char);
-      }
-      i++;
-    }
+async function tokenizeJapanese(text: string): Promise<Array<{ surface: string; reading: string; pos: string }>> {
+  try {
+    const t = await getTokenizer();
+    return t.tokenize(text);
+  } catch (err) {
+    console.error('Kuromoji tokenization failed:', err);
+    // Fallback: return single token
+    return [{ surface: text, reading: text, pos: 'UNKNOWN' }];
   }
-  
-  return result.join(' ');
 }
 
 /**
@@ -187,27 +133,6 @@ function convertKanaToRomaji(text: string): string {
 }
 
 /**
- * Post-process romaji to add spaces at natural boundaries.
- * Uses simple heuristics to identify likely word boundaries.
- */
-function addSpacesToRomaji(romaji: string): string {
-  // Add spaces after question marks (ka at end of sentence)
-  let result = romaji
-    .replace(/(ka)([^a-z]|$)/g, '$1 $2')     // か (question) followed by non-letter or end
-    .replace(/(ne)([^a-z]|$)/g, '$1 $2')     // ね (confirmation)
-    .replace(/(yo)([^a-z]|$)/g, '$1 $2')     // よ (emphasis)
-    .replace(/(na)(do)([^a-z]|$)/g, '$1$2 $3') // など (etc)
-    .replace(/(de)(su)([^a-z]|$)/g, '$1$2 $3') // です
-    .replace(/(ma)(su)([^a-z]|$)/g, '$1$2 $3') // ～ます
-    .replace(/(ta)(i)([^a-z]|$)/g, '$1$2 $3')  // ～たい
-    .replace(/(nai)([^a-z]|$)/g, '$1 $2')    // ～ない
-    .replace(/(ta)([^a-z]|$)/g, '$1 $2');    // ～た (past)
-
-  // Clean up multiple spaces and trim
-  return result.replace(/ +/g, ' ').trim();
-}
-
-/**
  * Fix particle pronunciations in romaji
  * ha -> wa, he -> e when used as particles
  */
@@ -223,120 +148,25 @@ function fixParticlePronunciations(romaji: string): string {
 }
 
 /**
- * Extract hiragana readings from furigana HTML and segment into words.
- * Uses <ruby> tags to identify word boundaries.
- * Returns array of { text, isParticle } for each segment.
- */
-function extractAndSegmentFurigana(furiganaHtml: string): Array<{ text: string; isParticle: boolean }> {
-  const segments: Array<{ text: string; isParticle: boolean }> = [];
-  const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'か', 'ね', 'よ'];
-  
-  // Regex to match: <ruby>...</ruby> or plain text
-  const tokenRegex = /<ruby>[^<]*<rt>([^<]*)<\/rt><\/ruby>|([^<]+)/g;
-  let match;
-  
-  while ((match = tokenRegex.exec(furiganaHtml)) !== null) {
-    if (match[1]) {
-      // This is a <ruby> tag with reading in group 1
-      segments.push({ text: match[1], isParticle: false });
-    } else if (match[2]) {
-      // This is plain text in group 2
-      const text = match[2];
-      // Split plain text into particles and words
-      let current = '';
-      for (const char of text) {
-        if (particles.includes(char)) {
-          if (current) {
-            segments.push({ text: current, isParticle: false });
-            current = '';
-          }
-          segments.push({ text: char, isParticle: true });
-        } else {
-          current += char;
-        }
-      }
-      if (current) {
-        segments.push({ text: current, isParticle: false });
-      }
-    }
-  }
-  
-  return segments;
-}
-
-/**
  * Main function to convert Japanese text to romaji
+ * Uses kuromoji for proper tokenization
  * @param text - Original Japanese text (may contain kanji)
- * @param furiganaHtml - Optional pre-generated furigana HTML
  * @returns Romaji string with proper spacing
  */
-export async function generateRomaji(
-  text: string, 
-  furiganaHtml?: string | null
-): Promise<string> {
+export async function generateRomaji(text: string): Promise<string> {
   if (!text) return '';
 
-  // Check if we need to generate furigana
-  let hiraganaText: string;
-  const hasKanji = /[\u4e00-\u9faf]/.test(text);
-
-  let segments: Array<{ text: string; isParticle: boolean }>;
-
-  if (furiganaHtml) {
-    // Use furigana HTML structure to segment properly
-    segments = extractAndSegmentFurigana(furiganaHtml);
-  } else if (hasKanji) {
-    // Generate furigana for kanji
-    const { addFurigana } = await import('./elevenlabs.js');
-    const generated = await addFurigana(text);
-    segments = extractAndSegmentFurigana(generated);
-  } else {
-    // No kanji - segment plain text
-    const particles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'か', 'ね', 'よ'];
-    segments = [];
-    let current = '';
-    for (const char of text) {
-      if (particles.includes(char)) {
-        if (current) {
-          segments.push({ text: current, isParticle: false });
-          current = '';
-        }
-        segments.push({ text: char, isParticle: true });
-      } else {
-        current += char;
-      }
-    }
-    if (current) {
-      segments.push({ text: current, isParticle: false });
-    }
-  }
-
-  // Group consecutive non-particle segments to form complete words
-  const groupedSegments: Array<{ text: string; isParticle: boolean }> = [];
-  let currentGroup = '';
+  // Tokenize using kuromoji
+  const tokens = await tokenizeJapanese(text);
   
-  for (const seg of segments) {
-    if (seg.isParticle) {
-      // Flush current group before particle
-      if (currentGroup) {
-        groupedSegments.push({ text: currentGroup, isParticle: false });
-        currentGroup = '';
-      }
-      groupedSegments.push(seg);
-    } else {
-      // Accumulate non-particle text
-      currentGroup += seg.text;
-    }
-  }
-  // Flush remaining group
-  if (currentGroup) {
-    groupedSegments.push({ text: currentGroup, isParticle: false });
-  }
+  // Convert each token to romaji
+  const romajiParts = tokens.map(token => {
+    // Use reading if available (for kanji), otherwise surface form
+    const kana = token.reading || token.surface;
+    return convertKanaToRomaji(kana);
+  });
 
-  // Convert each group to romaji and join with spaces
-  const romajiParts = groupedSegments.map((seg) => convertKanaToRomaji(seg.text));
-  
-  // Join with spaces between segments
+  // Join with spaces
   const romaji = romajiParts.join(' ');
 
   // Fix particle pronunciations (ha -> wa, he -> e)

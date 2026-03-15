@@ -70,8 +70,8 @@ Your job is to PUSH the user to practice more, not just accept minimal answers.`
     textWithFurigana = await addFurigana(text);
   }
 
-  // Generate romaji using furigana HTML for correct kanji readings
-  const romaji = await generateRomaji(text, textWithFurigana);
+  // Generate romaji using kuromoji for proper tokenization
+  const romaji = await generateRomaji(text);
 
   return {
     text,
