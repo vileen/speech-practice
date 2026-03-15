@@ -628,7 +628,9 @@ export async function addFurigana(text: string): Promise<string> {
 
     if (reading) {
       const ruby = `<ruby>${kanjiWord}<rt>${reading}</rt></ruby>`;
-      result = result.replace(new RegExp(kanjiWord, 'g'), ruby);
+      // Zamień tylko jeśli nie jest już w <ruby> tagu
+      const regex = new RegExp(`(?<!<ruby>)${kanjiWord}(?!<rt>)`, 'g');
+      result = result.replace(regex, ruby);
       console.log(`[Furigana] Replaced "${kanjiWord}" with "${ruby}"`);
     }
   }
@@ -648,7 +650,9 @@ export function addFuriganaSync(text: string): string {
     const reading = furiganaCache.get(kanjiWord);
     if (reading) {
       const ruby = `<ruby>${kanjiWord}<rt>${reading}</rt></ruby>`;
-      result = result.replace(new RegExp(kanjiWord, 'g'), ruby);
+      // Zamień tylko jeśli nie jest już w <ruby> tagu
+      const regex = new RegExp(`(?<!<ruby>)${kanjiWord}(?!<rt>)`, 'g');
+      result = result.replace(regex, ruby);
     }
   }
   
