@@ -42,8 +42,8 @@ async function addFuriganaWithKuromoji(text: string): Promise<string> {
     if (/[\u4e00-\u9faf]/.test(surface) && readingKata) {
       const reading = katakanaToHiragana(readingKata);
       const ruby = `<ruby>${surface}<rt>${reading}</rt></ruby>`;
-      // Zamień pierwsze wystąpienie surface na ruby
-      result = result.replace(surface, ruby);
+      // Zamień wszystkie wystąpienia surface na ruby
+      result = result.replaceAll(surface, ruby);
     }
   }
   return result;
@@ -594,7 +594,7 @@ export async function addFurigana(text: string): Promise<string> {
         }
         if (reading) {
           const ruby = `<ruby>${kanji}<rt>${reading}</rt></ruby>`;
-          result = result.replace(kanji, ruby);
+          result = result.replaceAll(kanji, ruby);
         }
       }
       return result;

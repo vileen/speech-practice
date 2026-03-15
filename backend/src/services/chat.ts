@@ -55,13 +55,16 @@ Your job is to PUSH the user to practice more, not just accept minimal answers.`
     rawText = rawText.replace(/\s*TRANSLATION:.+$/, '').trim();
   }
   
-  // Extract plain text (remove any <ruby> tags that AI might have added)
-  // Plain text should have kanji, not furigana markup
-  const text = rawText.replace(/<ruby>[^<]*<rt>[^<]*<\/rt><\/ruby>/g, (match) => {
-    // Extract just the kanji part (before <rt>)
-    const kanjiMatch = match.match(/<ruby>([^<]*)<rt>/);
-    return kanjiMatch ? kanjiMatch[1] : match;
-  });
+  // Extract plain text (remove any <ruby> tags or furigana in parentheses that AI might have added)
+  // Plain text should have kanji only, not furigana markup
+  let text = rawText
+    // Remove <ruby> tags
+    .replace(/<ruby>[^<]*<rt>[^<]*<\/rt><\/ruby>/g, (match) => {
+      const kanjiMatch = match.match(/<ruby>([^<]*)<rt>/);
+      return kanjiMatch ? kanjiMatch[1] : match;
+    })
+    // Remove furigana in Japanese parentheses: 漢字（かんじ）
+    .replace(/([\u4e00-\u9faf]+)（[^）]+）/g, '$1');
   
   // Always ensure furigana is properly added using our system
   let textWithFurigana = text;
