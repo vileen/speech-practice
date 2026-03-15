@@ -150,31 +150,43 @@ function fixParticlePronunciations(romaji: string): string {
 /**
  * Merge grammatical suffixes with their base words using kuromoji POS tags
  * e.g., "shi nakere ba nari mase n" -> "shinakereba narimasen"
- * Particles (助詞) stay separate for readability
+ * Only standalone particles (は, を, が, etc.) stay separate
  */
-function mergeGrammaticalForms(tokens: Array<{ surface: string; reading: string; pos: string }>): string[] {
+function mergeGrammaticalForms(tokens: Array<{ surface: string; reading: string; pos: string; pos_detail_1?: string }>): string[] {
   const result: string[] = [];
   let currentWord = '';
+  let previousWasAuxiliary = false;
   
-  // POS tags that should be merged with previous word (auxiliary verbs, suffixes)
-  // Note: 助詞 (particles) are NOT included - they stay separate
-  const mergeablePos = ['助動詞', '接尾辞']; // auxiliary verbs, suffixes only
+  // Standalone particles that should always be separate
+  const standaloneParticles = ['は', 'が', 'を', 'に', 'で', 'と', 'の', 'も', 'へ', 'や'];
   
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
     const romaji = convertKanaToRomaji(token.reading || token.surface);
+    const isParticle = token.pos === '助詞';
+    const isAuxiliary = token.pos === '助動詞';
+    const isSuffix = token.pos === '接尾辞';
     
-    // If this is a mergeable token (auxiliary verb, suffix), merge with current word
-    if (mergeablePos.some(pos => token.pos.includes(pos))) {
+    // If this is a particle that follows an auxiliary verb, merge it
+    // e.g., "ba" in "shinakereba" (conditional form)
+    if (isParticle && previousWasAuxiliary && !standaloneParticles.includes(token.surface)) {
       currentWord += romaji;
-    } else {
-      // This is an independent token (main word, particle, etc.)
+      previousWasAuxiliary = false;
+    }
+    // If this is an auxiliary verb or suffix, merge with current word
+    else if (isAuxiliary || isSuffix) {
+      currentWord += romaji;
+      previousWasAuxiliary = true;
+    }
+    // This is a main word or standalone particle
+    else {
       // Flush previous word if exists
       if (currentWord) {
         result.push(currentWord);
       }
-      // Start new word - particles get their own slot
+      // Start new word
       currentWord = romaji;
+      previousWasAuxiliary = false;
     }
   }
   
