@@ -301,14 +301,15 @@ export function LessonPractice() {
               </div>
               <div className="session-right">
                 {language === 'japanese' && (
-                  <label className="furigana-toggle" style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.9em'}}>
-                    <input
-                      type="checkbox"
-                      checked={showFurigana}
-                      onChange={(e) => setShowFurigana(e.target.checked)}
-                    />
-                    <span>🈳 Furigana</span>
-                  </label>
+                  <button
+                    className="furigana-toggle"
+                    onClick={() => setShowFurigana(!showFurigana)}
+                    title={showFurigana ? 'Hide furigana' : 'Show furigana'}
+                    style={{display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9em'}}
+                  >
+                    <span>{showFurigana ? 'あ' : '漢'}</span>
+                    <span>Furigana</span>
+                  </button>
                 )}
                 <div className="global-volume" title={`Volume: ${Math.round(volume * 100)}%`}>
                   <span>{volume === 0 ? '🔇' : volume < 0.5 ? '🔉' : '🔊'}</span>
