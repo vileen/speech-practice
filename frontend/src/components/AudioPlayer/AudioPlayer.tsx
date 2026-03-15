@@ -139,6 +139,22 @@ export function AudioPlayer({ audioUrl, volume, isActive, onPlay: _onPlay, onSto
 
   return (
     <div className="audio-player">
+      <button 
+        className="play-btn"
+        onClick={() => {
+          if (isActive) {
+            onStop();
+          } else {
+            const audio = audioRef.current;
+            if (audio) {
+              _onPlay(audio);
+            }
+          }
+        }}
+        aria-label={isActive ? 'Pause' : 'Play'}
+      >
+        {isActive ? '⏸️' : '▶️'}
+      </button>
       <div 
         className="progress-bar-container"
         ref={progressBarRef}

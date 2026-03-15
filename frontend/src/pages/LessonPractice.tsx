@@ -4,7 +4,7 @@ import { AuthenticatedRoute } from '../App.js';
 import { API_URL, getPassword } from '../config/api.js';
 import type { Session } from '../types/index.js';
 import { translateLessonTitle } from '../translations.js';
-import { HighlightedText } from '../components/HighlightedText/index.js';
+
 import { AudioPlayer } from '../components/AudioPlayer/index.js';
 import { VoiceRecorder } from '../components/VoiceRecorder/index.js';
 
@@ -405,14 +405,8 @@ export function LessonPractice() {
                     ) : (
                       <>
                         <div className="jp-text">
-                          {showFurigana && msg.withFurigana && !playingAudio?.audio ? (
+                          {showFurigana && msg.withFurigana ? (
                             <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
-                          ) : playingAudio?.audio ? (
-                            <HighlightedText 
-                              text={msg.text}
-                              audioElement={playingAudio?.id === idx ? playingAudio.audio : null}
-                              isPlaying={playingAudio?.id === idx}
-                            />
                           ) : (
                             msg.text
                           )}
