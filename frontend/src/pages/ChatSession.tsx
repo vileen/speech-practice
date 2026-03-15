@@ -5,6 +5,7 @@ import { API_URL, getPassword } from '../config/api.js';
 import { translateLessonTitle } from '../translations.js';
 import { AudioPlayer } from '../components/AudioPlayer/index.js';
 import { VoiceRecorder } from '../components/VoiceRecorder/index.js';
+import { HighlightedText } from '../components/HighlightedText/index.js';
 import { useVolume } from '../hooks/useVolume.js';
 import { useShowFurigana } from '../hooks/useShowFurigana.js';
 import { useTTS } from '../hooks/useTTS.js';
@@ -194,8 +195,14 @@ export function ChatSession() {
                   </div>
                   <div className="text">
                     <div className="jp-text">
-                      {showFurigana && msg.withFurigana ? (
+                      {showFurigana && msg.withFurigana && !playingAudio?.audio ? (
                         <span dangerouslySetInnerHTML={{ __html: msg.withFurigana }} />
+                      ) : playingAudio?.audio && playingAudio?.id === idx ? (
+                        <HighlightedText
+                          text={msg.text}
+                          audioElement={playingAudio.audio}
+                          isPlaying={true}
+                        />
                       ) : (
                         msg.text
                       )}
