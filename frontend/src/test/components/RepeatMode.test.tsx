@@ -97,9 +97,14 @@ describe('RepeatMode API calls', () => {
       </MemoryRouter>
     );
 
-    // Wait for loading to complete
+    // Wait for loading to complete (initial audio fetch)
     await waitFor(() => {
       return container.querySelector('.next-btn') !== null;
+    }, { timeout: 3000 });
+
+    // Wait for initial fetch to complete
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
     }, { timeout: 3000 });
 
     // Clear mock to count fresh calls
@@ -114,7 +119,7 @@ describe('RepeatMode API calls', () => {
     // Should have fetched new phrase audio
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalled();
-    });
+    }, { timeout: 3000 });
 
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining('/api/repeat-after-me'),
