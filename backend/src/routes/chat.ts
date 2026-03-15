@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { pool } from '../db/pool.js';
 import { generateChatResponse } from '../services/chat.js';
-import { getLessonSystemPrompt } from '../services/lessons.js';
 import { checkPassword } from '../middleware/auth.js';
 
 const router = Router();
@@ -36,8 +35,8 @@ router.post('/', checkPassword, async (req, res) => {
     // Add user message
     messages.push({ role: 'user', content: message });
     
-    // Get lesson context if active
-    const lessonContext = await getLessonSystemPrompt(session_id);
+    // Get lesson context if active (stored in session.lesson_context)
+    const lessonContext = session.lesson_context;
     
     // Generate AI response
     const response = await generateChatResponse(messages, lessonContext || undefined);
