@@ -273,8 +273,8 @@ export async function generateRomaji(
     hiraganaText = text;
   }
 
-  // Segment into words and add spaces
-  const segmentedHiragana = segmentHiraganaWords(hiraganaText);
+  // Add spaces only around particles (not between every character)
+  const segmentedHiragana = addSpacesAroundParticles(hiraganaText);
 
   // Convert to romaji
   const romaji = convertKanaToRomaji(segmentedHiragana);
