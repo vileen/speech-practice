@@ -148,6 +148,45 @@ function fixParticlePronunciations(romaji: string): string {
 }
 
 /**
+ * Merge grammatical suffixes with their base words using kuromoji POS tags
+ * e.g., "shi nakere ba nari mase n" -> "shinakereba narimasen"
+ * Particles (助詞) stay separate for readability
+ */
+function mergeGrammaticalForms(tokens: Array<{ surface: string; reading: string; pos: string }>): string[] {
+  const result: string[] = [];
+  let currentWord = '';
+  
+  // POS tags that should be merged with previous word (auxiliary verbs, suffixes)
+  // Note: 助詞 (particles) are NOT included - they stay separate
+  const mergeablePos = ['助動詞', '接尾辞']; // auxiliary verbs, suffixes only
+  
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+    const romaji = convertKanaToRomaji(token.reading || token.surface);
+    
+    // If this is a mergeable token (auxiliary verb, suffix), merge with current word
+    if (mergeablePos.some(pos => token.pos.includes(pos))) {
+      currentWord += romaji;
+    } else {
+      // This is an independent token (main word, particle, etc.)
+      // Flush previous word if exists
+      if (currentWord) {
+        result.push(currentWord);
+      }
+      // Start new word - particles get their own slot
+      currentWord = romaji;
+    }
+  }
+  
+  // Flush last word
+  if (currentWord) {
+    result.push(currentWord);
+  }
+  
+  return result;
+}
+
+/**
  * Main function to convert Japanese text to romaji
  * Uses kuromoji for proper tokenization
  * @param text - Original Japanese text (may contain kanji)
@@ -159,15 +198,11 @@ export async function generateRomaji(text: string): Promise<string> {
   // Tokenize using kuromoji
   const tokens = await tokenizeJapanese(text);
   
-  // Convert each token to romaji
-  const romajiParts = tokens.map(token => {
-    // Use reading if available (for kanji), otherwise surface form
-    const kana = token.reading || token.surface;
-    return convertKanaToRomaji(kana);
-  });
+  // Merge grammatical forms for better readability
+  const mergedParts = mergeGrammaticalForms(tokens);
 
   // Join with spaces
-  const romaji = romajiParts.join(' ');
+  const romaji = mergedParts.join(' ');
 
   // Fix particle pronunciations (ha -> wa, he -> e)
   return fixParticlePronunciations(romaji).trim();
