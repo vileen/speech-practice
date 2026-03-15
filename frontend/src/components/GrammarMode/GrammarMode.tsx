@@ -174,8 +174,6 @@ export const GrammarMode: React.FC = () => {
       
       // Helper: Check if char is kanji
       const isKanji = (char: string) => /[\u4e00-\u9faf]/.test(char);
-      // Helper: Check if char is kana (hiragana or katakana)
-      const isKana = (char: string) => /[\u3040-\u309f\u30a0-\u30ff]/.test(char);
       
       // Step 1: Normalize (remove punctuation, whitespace)
       const normalize = (text: string) => text
