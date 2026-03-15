@@ -42,8 +42,15 @@ async function addFuriganaWithKuromoji(text: string): Promise<string> {
     if (/[\u4e00-\u9faf]/.test(surface) && readingKata) {
       const reading = katakanaToHiragana(readingKata);
       const ruby = `<ruby>${surface}<rt>${reading}</rt></ruby>`;
-      // Zamień wszystkie wystąpienia surface na ruby
-      result = result.replaceAll(surface, ruby);
+      
+      // Zamień TYLKO to konkretne wystąpienie (po pozycji w oryginalnym tekście)
+      // Używamy word_position z tokenu (1-indexed)
+      const wordPos = (token.word_position || 1) - 1;
+      
+      // Sprawdź czy na tej pozycji jest jeszcze plain text (nie w <ruby>)
+      if (result.substring(wordPos, wordPos + surface.length) === surface) {
+        result = result.substring(0, wordPos) + ruby + result.substring(wordPos + surface.length);
+      }
     }
   }
   return result;
