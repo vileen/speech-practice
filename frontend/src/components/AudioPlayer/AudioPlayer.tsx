@@ -6,6 +6,7 @@ interface AudioPlayerProps {
   volume: number;
   isActive: boolean;
   onPlay: (audio: HTMLAudioElement) => void;
+  onPause: () => void;
   onStop: () => void;
   onStopOthers: () => void;
 }
@@ -17,7 +18,7 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-export function AudioPlayer({ audioUrl, volume, isActive, onPlay: _onPlay, onStop, onStopOthers }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl, volume, isActive, onPlay: _onPlay, onPause, onStop, onStopOthers }: AudioPlayerProps) {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -139,15 +140,16 @@ export function AudioPlayer({ audioUrl, volume, isActive, onPlay: _onPlay, onSto
 
   return (
     <div className="audio-player">
-      <button 
+      <button
         className="play-btn"
         onClick={() => {
           const audio = audioRef.current;
           if (!audio) return;
-          
+
           if (isActive) {
             // Pause (preserve position)
             audio.pause();
+            onPause();
           } else {
             // Play from current position
             _onPlay(audio);

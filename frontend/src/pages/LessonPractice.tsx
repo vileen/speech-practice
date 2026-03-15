@@ -75,6 +75,11 @@ export function LessonPractice() {
     setPlayingAudio({ id: idx, audio });
   }, []);
 
+  const handleAudioPause = useCallback(() => {
+    // Set to null to show as paused, but AudioPlayer keeps its internal audio ref
+    setPlayingAudio(null);
+  }, []);
+
   const handleAudioStop = useCallback(() => {
     setPlayingAudio(null);
   }, []);
@@ -452,6 +457,7 @@ export function LessonPractice() {
                       volume={volume}
                       isActive={playingAudio?.id === idx}
                       onPlay={(audio) => handleAudioPlay(audio, idx)}
+                      onPause={handleAudioPause}
                       onStop={handleAudioStop}
                       onStopOthers={() => handleStopOthers(idx)}
                     />

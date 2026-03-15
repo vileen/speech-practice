@@ -209,11 +209,12 @@ export function ChatSession() {
                     </div>
                   </div>
                   {msg.audioUrl && (
-                    <AudioPlayer 
+                    <AudioPlayer
                       audioUrl={msg.audioUrl}
                       volume={volume}
                       isActive={playingAudio?.id === idx}
                       onPlay={(audio) => setPlayingAudio({ id: idx, audio })}
+                      onPause={() => setPlayingAudio(null)}
                       onStop={() => setPlayingAudio(null)}
                       onStopOthers={() => {}}
                     />

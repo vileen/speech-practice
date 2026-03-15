@@ -311,8 +311,30 @@ export async function generateRomaji(
     }
   }
 
-  // Convert each segment to romaji and join with spaces
-  const romajiParts = segments.map((seg) => convertKanaToRomaji(seg.text));
+  // Group consecutive non-particle segments to form complete words
+  const groupedSegments: Array<{ text: string; isParticle: boolean }> = [];
+  let currentGroup = '';
+  
+  for (const seg of segments) {
+    if (seg.isParticle) {
+      // Flush current group before particle
+      if (currentGroup) {
+        groupedSegments.push({ text: currentGroup, isParticle: false });
+        currentGroup = '';
+      }
+      groupedSegments.push(seg);
+    } else {
+      // Accumulate non-particle text
+      currentGroup += seg.text;
+    }
+  }
+  // Flush remaining group
+  if (currentGroup) {
+    groupedSegments.push({ text: currentGroup, isParticle: false });
+  }
+
+  // Convert each group to romaji and join with spaces
+  const romajiParts = groupedSegments.map((seg) => convertKanaToRomaji(seg.text));
   
   // Join with spaces between segments
   const romaji = romajiParts.join(' ');
