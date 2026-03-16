@@ -42,6 +42,9 @@ export function Home() {
             <button className="memory-mode-btn" onClick={() => navigate('/memory')}>
               🧠 Memory Mode
             </button>
+            <button className="kanji-mode-btn" onClick={() => navigate('/kanji')}>
+              🈁 Kanji Practice
+            </button>
             <button className="grammar-mode-btn" onClick={() => navigate('/grammar')}>
               📚 Grammar Drills
             </button>

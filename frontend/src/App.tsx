@@ -17,6 +17,7 @@ import { ChatSession } from './pages/ChatSession.js';
 import { LessonPractice } from './pages/LessonPractice.js';
 import { MemoryModeWrapper } from './pages/MemoryModeWrapper.js';
 import { GrammarMode } from './components/GrammarMode/index.js';
+import { KanjiPracticePage } from './pages/KanjiPracticePage.js';
 
 // Types
 
@@ -33,6 +34,7 @@ function App() {
         <Route path="/repeat/setup" element={<RepeatSetup />} />
         <Route path="/repeat" element={<RepeatMode />} />
         <Route path="/memory" element={<MemoryModeWrapper />} />
+        <Route path="/kanji" element={<KanjiPracticePage />} />
         <Route path="/grammar" element={<GrammarMode />} />
         <Route path="/lessons" element={<LessonList />} />
         <Route path="/lessons/:id" element={<LessonDetail />} />

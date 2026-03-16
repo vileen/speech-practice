@@ -11,6 +11,7 @@ import repeatRoutes from './repeat.js';
 import logsRoutes from './logs.js';
 import vocabularyRoutes from './vocabulary.js';
 import grammarRoutes from './grammar.js';
+import kanjiRoutes from './kanji.js';
 
 const router = Router();
 
@@ -27,5 +28,6 @@ router.use('/repeat-after-me', repeatRoutes);
 router.use('/logs', logsRoutes);
 router.use('/', vocabularyRoutes);
 router.use('/grammar', grammarRoutes);
+router.use('/kanji', kanjiRoutes);
 
 export default router;
