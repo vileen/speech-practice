@@ -31,7 +31,12 @@ export function LessonList() {
         }
         
         const data = await response.json();
-        setLessons(data.lessons || data);
+        const lessonsArray = data.lessons || data;
+        // Sort by date ascending (oldest first)
+        const sortedLessons = [...lessonsArray].sort((a, b) => 
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+        setLessons(sortedLessons);
       } catch (err) {
         console.error('Error fetching lessons:', err);
         setError('Failed to load lessons');
