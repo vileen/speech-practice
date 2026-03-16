@@ -16,11 +16,13 @@ export const ModeButton: React.FC<ModeButtonProps> = ({
   variant = 'default',
   borderColor 
 }) => {
+  const style = borderColor ? { '--border-color': borderColor } as React.CSSProperties : undefined;
+  
   return (
     <button 
       className={`mode-button ${variant}`}
       onClick={onClick}
-      style={borderColor ? { borderColor } : undefined}
+      style={style}
     >
       <span className="mode-button-icon">{icon}</span>
       <span className="mode-button-label">{label}</span>

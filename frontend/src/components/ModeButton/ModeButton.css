@@ -2,7 +2,7 @@
   width: 100%;
   min-height: 60px;
   padding: 1rem 1.5rem;
-  border: 2px solid #333;
+  border: 2px solid var(--border-color, #555);
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 500;
@@ -18,8 +18,7 @@
 }
 
 .mode-button:hover {
-  border-color: #e94560;
-  background: #1e2a3a;
+  background: var(--border-color, #555);
 }
 
 .mode-button:active {

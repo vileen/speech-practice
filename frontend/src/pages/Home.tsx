@@ -36,26 +36,31 @@ export function Home() {
               icon="🎯"
               label="Repeat After Me"
               onClick={() => navigate('/repeat/setup')}
+              borderColor="#e94560"
             />
             <ModeButton
               icon="📚"
               label="Lesson Mode"
               onClick={() => navigate('/lessons')}
+              borderColor="#4a9eff"
             />
             <ModeButton
               icon="🧠"
               label="Memory Mode"
               onClick={() => navigate('/memory')}
+              borderColor="#9b59b6"
             />
             <ModeButton
               icon="🈁"
               label="Kanji Practice"
               onClick={() => navigate('/kanji')}
+              borderColor="#27ae60"
             />
             <ModeButton
               icon="📖"
               label="Grammar Drills"
               onClick={() => navigate('/grammar')}
+              borderColor="#f39c12"
             />
           </div>
         </main>
