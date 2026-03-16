@@ -1,16 +1,10 @@
 .setup {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 400px;
   margin: 0 auto;
   padding: 0 1rem;
-}
-
-@media (max-width: 640px) {
-  .setup {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Mode Buttons Grid Layout */
@@ -44,6 +38,7 @@
 .start-btn {
   background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
   color: #fff;
+  order: -1; /* Start Chat na górze */
 }
 
 .start-btn:hover {
