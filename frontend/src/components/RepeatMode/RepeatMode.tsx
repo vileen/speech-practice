@@ -25,9 +25,9 @@ const PRACTICE_PHRASES: Record<string, PracticePhrase[]> = {
 };
 
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { VoiceRecorder } from '../VoiceRecorder/index.js';
 import { JapanesePhrase } from '../JapanesePhrase/index.js';
+import { Header } from '../Header/index.js';
 import { useFurigana } from '../../hooks/useFurigana';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { usePronunciationCheck } from '../../hooks/usePronunciationCheck';
@@ -39,7 +39,6 @@ function getPassword(): string {
 }
 
 export function RepeatMode() {
-  const navigate = useNavigate();
   const language = 'japanese';
   const phrases = PRACTICE_PHRASES[language];
   const [_gender, setGender] = useState<'male' | 'female'>('female');
@@ -136,10 +135,6 @@ export function RepeatMode() {
     await check(audioBlob, currentPhrase.text, language);
   }, [currentPhrase, language, check]);
 
-  const handleBack = () => {
-    navigate('/');
-  };
-
   // Fetch audio from API
   const fetchAndPlayAudio = useCallback(async () => {
     if (!currentPhrase) return;
@@ -192,14 +187,7 @@ export function RepeatMode() {
 
   return (
     <div className="app repeat-mode">
-      <header>
-        <h1>🎯 Repeat After Me</h1>
-        <div className="mode-controls">
-          <button className="mode-btn" onClick={handleBack}>
-            ← Back to Home
-          </button>
-        </div>
-      </header>
+      <Header title="Repeat After Me" icon="🎯" />
 
       <main className="repeat-main">
         <div className="phrase-card">

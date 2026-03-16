@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
+import { Header } from '../components/Header/index.js';
 
 export function RepeatSetup() {
   const navigate = useNavigate();
@@ -21,9 +22,7 @@ export function RepeatSetup() {
   return (
     <AuthenticatedRoute>
       <div className="app">
-        <header>
-          <h1>🎤 Speech Practice</h1>
-        </header>
+        <Header title="Speech Practice" icon="🎤" />
         <main>
           <div className="practice-setup">
             <h2>🎯 Repeat After Me Setup</h2>

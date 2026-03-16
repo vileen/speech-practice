@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
 import { API_URL } from '../config/api.js';
 import { translateLessonTitle } from '../translations.js';
+import { Header } from '../components/Header/index.js';
 
 export function LessonPracticeSetup() {
   const { id } = useParams<{ id: string }>();
@@ -55,9 +56,7 @@ export function LessonPracticeSetup() {
   return (
     <AuthenticatedRoute>
       <div className="app">
-        <header>
-          <h1>🎤 Speech Practice</h1>
-        </header>
+        <Header title="Speech Practice" icon="🎤" />
         <main>
           <div className="practice-setup">
             <h2>📚 Practice Setup</h2>

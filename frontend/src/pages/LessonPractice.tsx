@@ -8,6 +8,7 @@ import { translateLessonTitle } from '../translations.js';
 import { AudioPlayer } from '../components/AudioPlayer/index.js';
 import { VoiceRecorder } from '../components/VoiceRecorder/index.js';
 import { HighlightedText } from '../components/HighlightedText/index.js';
+import { Header } from '../components/Header/index.js';
 
 export function LessonPractice() {
   const { id } = useParams<{ id: string }>();
@@ -307,9 +308,7 @@ export function LessonPractice() {
   return (
     <AuthenticatedRoute>
       <div className="app">
-        <header>
-          <h1>🎤 Speech Practice</h1>
-        </header>
+        <Header title="Speech Practice" showBackButton={false} />
 
         {session && (
           <main>

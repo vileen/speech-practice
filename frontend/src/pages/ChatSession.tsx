@@ -10,6 +10,7 @@ import { useVolume } from '../hooks/useVolume.js';
 import { useShowFurigana } from '../hooks/useShowFurigana.js';
 import { useTTS } from '../hooks/useTTS.js';
 import { useChatSession } from '../hooks/useChatSession.js';
+import { Header } from '../components/Header/index.js';
 
 export function ChatSession() {
   const navigate = useNavigate();
@@ -159,9 +160,7 @@ export function ChatSession() {
   return (
     <AuthenticatedRoute>
       <div className="app">
-        <header>
-          <h1>Speech Practice</h1>
-        </header>
+        <Header title="Speech Practice" showBackButton={false} />
 
         {session && (
           <main>

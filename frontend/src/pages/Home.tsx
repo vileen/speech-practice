@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
+import { Header } from '../components/Header/index.js';
 
 const QUOTES = [
   "Either increase sacrifice or reduce desire.",
@@ -21,10 +22,7 @@ export function Home() {
   return (
     <AuthenticatedRoute>
       <div className="app">
-        <header>
-          <h1>🎤 Speech Practice</h1>
-        </header>
-        
+        <Header title="Speech Practice" icon="🎤" showBackButton={false} />
         <main>
           <div className="setup">
             <button className="start-btn" onClick={() => navigate('/chat/setup')}>
