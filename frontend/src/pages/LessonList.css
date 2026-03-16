@@ -36,7 +36,7 @@
 
 .lesson-number {
   display: flex;
-  align-items: center;
+  align-content: center;
   justify-content: center;
   width: 40px;
   height: 40px;
