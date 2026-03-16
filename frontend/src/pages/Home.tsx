@@ -36,7 +36,7 @@ export function Home() {
               icon="🎯"
               label="Repeat After Me"
               onClick={() => navigate('/repeat/setup')}
-              borderColor="#e94560"
+              borderColor="#ff6b6b"
             />
             <ModeButton
               icon="📚"
