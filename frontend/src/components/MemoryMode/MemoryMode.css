@@ -298,6 +298,17 @@
   margin-top: 15px;
 }
 
+.reveal-hint kbd {
+  display: inline-block;
+  background: rgba(233, 69, 96, 0.2);
+  border: 1px solid #e94560;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #e94560;
+  margin-top: 8px;
+}
+
 /* Answer Section */
 .answer-section {
   margin-bottom: 30px;
@@ -372,6 +383,25 @@
 .assessment-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-key {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-right: 6px;
+  font-weight: bold;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.keyboard-hint {
+  text-align: center;
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: 10px;
+  opacity: 0.7;
 }
 
 /* Complete Screen */

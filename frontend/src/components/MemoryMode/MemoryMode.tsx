@@ -56,6 +56,49 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     }
   }, [currentCard, review]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle shortcuts when in active session (not in setup/complete)
+      if (showSetup || isComplete) return;
+
+      const key = e.key;
+
+      if (!isRevealed) {
+        // Space reveals the answer
+        if (key === ' ' || key === 'Spacebar') {
+          e.preventDefault();
+          handleReveal();
+        }
+      } else {
+        // Rating shortcuts when answer is revealed
+        switch (key) {
+          case '1':
+          case ' ':
+          case 'Spacebar':
+            e.preventDefault();
+            handleReview(Rating.Again);
+            break;
+          case '2':
+            e.preventDefault();
+            handleReview(Rating.Hard);
+            break;
+          case '3':
+            e.preventDefault();
+            handleReview(Rating.Good);
+            break;
+          case '4':
+            e.preventDefault();
+            handleReview(Rating.Easy);
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSetup, isComplete, isRevealed, handleReveal, handleReview]);
+
   // Import cards when starting session
   const startSession = useCallback(async () => {
     setIsStarting(true);
@@ -296,6 +339,8 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
             </button>
             <p className="reveal-hint">
               Try to say the Japanese phrase out loud before revealing
+              <br />
+              <kbd>Space</kbd> to reveal
             </p>
           </div>
         ) : (
@@ -324,27 +369,32 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
                   className="assessment-btn again"
                   onClick={() => handleReview('again')}
                 >
+                  <span className="btn-key">1</span>
                   Again {previews && `(${formatInterval(previews.again)})`}
                 </button>
                 <button
                   className="assessment-btn hard"
                   onClick={() => handleReview('hard')}
                 >
+                  <span className="btn-key">2</span>
                   Hard {previews && `(${formatInterval(previews.hard)})`}
                 </button>
                 <button
                   className="assessment-btn good"
                   onClick={() => handleReview('good')}
                 >
+                  <span className="btn-key">3</span>
                   Good {previews && `(${formatInterval(previews.good)})`}
                 </button>
                 <button
                   className="assessment-btn easy"
                   onClick={() => handleReview('easy')}
                 >
+                  <span className="btn-key">4</span>
                   Easy {previews && `(${formatInterval(previews.easy)})`}
                 </button>
               </div>
+              <p className="keyboard-hint">Space or 1 · 2 · 3 · 4</p>
             </div>
           </div>
         )}
