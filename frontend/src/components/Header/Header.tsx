@@ -8,6 +8,7 @@ interface HeaderProps {
   showBackButton?: boolean;
   icon?: string;
   onBack?: () => void;
+  actions?: React.ReactNode;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,7 +16,8 @@ export const Header: React.FC<HeaderProps> = ({
   subtitle,
   showBackButton = true,
   icon,
-  onBack
+  onBack,
+  actions
 }) => {
   const navigate = useNavigate();
 
@@ -50,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className="header-right">
-        {/* Space for future actions */}
+        {actions}
       </div>
     </header>
   );
