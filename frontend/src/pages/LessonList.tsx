@@ -9,6 +9,7 @@ interface Lesson {
   title: string;
   date: string;
   topics: string[];
+  lessonNumber?: number;
 }
 
 type SortOrder = 'newest' | 'oldest';
@@ -47,7 +48,13 @@ export function LessonList() {
     fetchLessons();
   }, []);
 
-  const sortedLessons = [...lessons].sort((a, b) => {
+  // Assign lesson numbers based on chronological order (oldest = #1)
+  const lessonsWithNumbers = [...lessons]
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map((lesson, index) => ({ ...lesson, lessonNumber: index + 1 }));
+
+  // Then sort for display based on user preference
+  const sortedLessons = [...lessonsWithNumbers].sort((a, b) => {
     const dateA = new Date(a.date).getTime();
     const dateB = new Date(b.date).getTime();
     return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
@@ -119,13 +126,13 @@ export function LessonList() {
             <p className="no-lessons">No lessons available.</p>
           ) : (
             <div className="lessons-grid">
-              {sortedLessons.map((lesson, index) => (
+              {sortedLessons.map((lesson) => (
                 <button
                   key={lesson.id}
                   className="lesson-card"
                   onClick={() => navigate(`/lessons/${lesson.id}`)}
                 >
-                  <div className="lesson-number">#{index + 1}</div>
+                  <div className="lesson-number">#{lesson.lessonNumber}</div>
                   <div className="lesson-info">
                     <h3>{lesson.title}</h3>
                     <p className="lesson-date">{formatDate(lesson.date)}</p>
