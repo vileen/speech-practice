@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem calc((100vw - 1000px) / 2 + 1.5rem);
+  padding: 1rem 1.5rem;
   background: linear-gradient(135deg, #0f1623 0%, #1a1f2e 100%);
   border-bottom: 1px solid #333;
   position: sticky;
@@ -12,29 +12,24 @@
   box-sizing: border-box;
 }
 
-@media (max-width: 1040px) {
-  .app-header {
-    padding: 1rem 1.5rem;
-  }
-}
-
-.header-left,
-.header-right {
-  flex: 1;
+.header-left {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.header-left:empty,
-.header-right:empty {
-  flex: 0;
-  min-width: 0;
-}
-
 .header-center {
   flex: 1 1 auto;
   text-align: center;
+  padding: 0 1rem;
+}
+
+.header-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .app-header h1 {
@@ -67,6 +62,7 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .back-btn:hover {
