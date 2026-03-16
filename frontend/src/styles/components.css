@@ -295,7 +295,6 @@
 /* iPhone 15 Pro: 393px width in portrait */
 @media (max-width: 480px) {
   .app {
-    padding: 12px;
     max-width: 100%;
   }
 
@@ -539,13 +538,12 @@
   }
 }
 
-/* Safe area for iPhone notch/Dynamic Island */
+/* Safe area for iPhone notch/Dynamic Island - applied to main content only */
 @supports (padding: max(0px)) {
-  .app {
-    padding-left: max(12px, env(safe-area-inset-left));
-    padding-right: max(12px, env(safe-area-inset-right));
-    padding-top: max(12px, env(safe-area-inset-top));
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  .app > main {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
   }
 }
 
