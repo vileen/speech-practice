@@ -361,24 +361,25 @@ export const GrammarMode: React.FC = () => {
         onBack={currentPattern || dueCount > 0 ? handleHeaderBack : undefined}
         showBackButton={true}
         actions={
-          <button
-            className="furigana-toggle"
-            onClick={() => setShowFurigana(!showFurigana)}
-            title={showFurigana ? 'Hide furigana' : 'Show furigana'}
-          >
-            {showFurigana ? 'あ' : '漢'}
-          </button>
+          <>
+            {!currentPattern && (
+              <div className="grammar-stats">
+                {dueCount > 0 && (
+                  <span className="due-badge">{dueCount} due</span>
+                )}
+                <span>{patterns.length} patterns</span>
+              </div>
+            )}
+            <button
+              className="furigana-toggle"
+              onClick={() => setShowFurigana(!showFurigana)}
+              title={showFurigana ? 'Hide furigana' : 'Show furigana'}
+            >
+              {showFurigana ? 'あ' : '漢'}
+            </button>
+          </>
         }
       />
-
-      {!currentPattern && (
-        <div className="grammar-stats">
-          {dueCount > 0 && (
-            <span className="due-badge">{dueCount} due</span>
-          )}
-          <span>{patterns.length} patterns</span>
-        </div>
-      )}
 
       {!currentPattern ? (
         <div className="pattern-selection">
