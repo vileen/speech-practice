@@ -112,3 +112,30 @@
 .lesson-list-error button:hover {
   background: #c73e54;
 }
+
+.lesson-sort-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.lesson-sort-buttons button {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #888;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lesson-sort-buttons button:hover {
+  border-color: #666;
+  color: #fff;
+}
+
+.lesson-sort-buttons button.active {
+  background: #e94560;
+  border-color: #e94560;
+  color: #fff;
+}

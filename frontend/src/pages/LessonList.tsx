@@ -11,11 +11,14 @@ interface Lesson {
   topics: string[];
 }
 
+type SortOrder = 'newest' | 'oldest';
+
 export function LessonList() {
   const navigate = useNavigate();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -32,11 +35,7 @@ export function LessonList() {
         
         const data = await response.json();
         const lessonsArray = data.lessons || data;
-        // Sort by date ascending (oldest first)
-        const sortedLessons = [...lessonsArray].sort((a, b) => 
-          new Date(a.date).getTime() - new Date(b.date).getTime()
-        );
-        setLessons(sortedLessons);
+        setLessons(lessonsArray);
       } catch (err) {
         console.error('Error fetching lessons:', err);
         setError('Failed to load lessons');
@@ -48,6 +47,12 @@ export function LessonList() {
     fetchLessons();
   }, []);
 
+  const sortedLessons = [...lessons].sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+  });
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('pl-PL', {
@@ -56,6 +61,25 @@ export function LessonList() {
       day: 'numeric',
     });
   };
+
+  const sortButtons = (
+    <div className="lesson-sort-buttons">
+      <button
+        className={sortOrder === 'newest' ? 'active' : ''}
+        onClick={() => setSortOrder('newest')}
+        title="Newest first"
+      >
+        ↓ Newest
+      </button>
+      <button
+        className={sortOrder === 'oldest' ? 'active' : ''}
+        onClick={() => setSortOrder('oldest')}
+        title="Oldest first"
+      >
+        ↑ Oldest
+      </button>
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -86,16 +110,16 @@ export function LessonList() {
 
   return (
     <div className="app">
-      <Header title="Lessons" icon="📚" onBack={() => navigate('/')} />
+      <Header title="Lessons" icon="📚" onBack={() => navigate('/')} actions={sortButtons} />
       <main>
         <div className="lesson-list">
           <h2>Select a Lesson</h2>
-          
-          {lessons.length === 0 ? (
+
+          {sortedLessons.length === 0 ? (
             <p className="no-lessons">No lessons available.</p>
           ) : (
             <div className="lessons-grid">
-              {lessons.map((lesson, index) => (
+              {sortedLessons.map((lesson, index) => (
                 <button
                   key={lesson.id}
                   className="lesson-card"
