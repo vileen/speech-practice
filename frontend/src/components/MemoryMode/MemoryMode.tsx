@@ -51,16 +51,10 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     if (currentCard) {
       review(currentCard.phraseId, rating);
       setIsRevealed(false);
-      setTimeout(() => {
-        const next = getNextCard();
-        if (next && next.phraseId !== currentCard.phraseId) {
-          setCurrentCard(next);
-        } else {
-          setIsComplete(true);
-        }
-      }, 300);
+      // Don't manually set next card here - let the useEffect handle it
+      // This avoids race conditions and incorrect session end detection
     }
-  }, [currentCard, review, getNextCard]);
+  }, [currentCard, review]);
 
   // Import cards when starting session
   const startSession = useCallback(async () => {
