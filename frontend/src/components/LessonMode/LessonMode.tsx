@@ -36,7 +36,7 @@ interface LessonData {
 }
 
 export function LessonMode() {
-  const { lessonId } = useParams<{ lessonId: string }>();
+  const { id: lessonId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [lesson, setLesson] = useState<LessonData | null>(null);
   const [isLoading, setIsLoading] = useState(true);

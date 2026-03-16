@@ -16,6 +16,12 @@
   text-align: center;
 }
 
+.memory-header-chips {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .back-btn {
   background: transparent;
   border: 1px solid #0f3460;

@@ -43,7 +43,7 @@ const renderWithRouter = (lessonId: string = 'lesson-2026-03-01') => {
   return render(
     <MemoryRouter initialEntries={[`/lessons/${lessonId}`]}>
       <Routes>
-        <Route path="/lessons/:lessonId" element={<LessonMode />} />
+        <Route path="/lessons/:id" element={<LessonMode />} />
       </Routes>
     </MemoryRouter>
   );

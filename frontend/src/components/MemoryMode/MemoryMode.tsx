@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Rating } from '../../lib/fsrs.js';
 import { useMemoryProgress, MemoryCard } from '../../hooks/useMemoryProgress.js';
 import { JapanesePhrase } from '../JapanesePhrase/index.js';
+import { Header } from '../Header/index.js';
 import './MemoryMode.css';
 import type { Lesson } from '../../types/index.js';
 
@@ -11,6 +13,7 @@ interface MemoryModeProps {
 }
 
 export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
+  const navigate = useNavigate();
   const {
     cards,
     isLoading,
@@ -191,8 +194,13 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
 
   if (isLoading || isStarting) {
     return (
-      <div className="memory-mode-loading">
-        <div className="spinner">{isStarting ? 'Preparing cards...' : 'Loading...'}</div>
+      <div className="app">
+        <Header title="Memory Mode" icon="🧠" onBack={() => navigate('/')} />
+        <main>
+          <div className="memory-mode-loading">
+            <div className="spinner">{isStarting ? 'Preparing cards...' : 'Loading...'}</div>
+          </div>
+        </main>
       </div>
     );
   }
@@ -200,84 +208,89 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   // Setup screen
   if (showSetup) {
     return (
-      <div className="memory-mode-setup">
-        <div className="memory-card">
-          <h2>🧠 Memory Mode</h2>
-          <p className="description">
-            Test your recall by translating from English to Japanese.
-          </p>
-          <p className="subtitle">
-            Uses FSRS (Free Spaced Repetition Scheduler) to optimize your learning.
-          </p>
+      <div className="app">
+        <Header title="Memory Mode" icon="🧠" onBack={() => navigate('/')} />
+        <main>
+          <div className="memory-mode-setup">
+            <div className="memory-card">
+              <h2>🧠 Memory Mode</h2>
+              <p className="description">
+                Test your recall by translating from English to Japanese.
+              </p>
+              <p className="subtitle">
+                Uses FSRS (Free Spaced Repetition Scheduler) to optimize your learning.
+              </p>
 
-          {/* Stats */}
-          <div className="stats-grid">
-            <div className="stat-box">
-              <div className="stat-value">{stats.total}</div>
-              <div className="stat-label">Total Cards</div>
-            </div>
-            <div className="stat-box due">
-              <div className="stat-value">{stats.due}</div>
-              <div className="stat-label">Due Now</div>
-            </div>
-            <div className="stat-box new">
-              <div className="stat-value">{stats.new}</div>
-              <div className="stat-label">New</div>
-            </div>
-            <div className="stat-box review">
-              <div className="stat-value">{stats.review}</div>
-              <div className="stat-label">In Review</div>
-            </div>
-          </div>
-
-          {/* Lesson Selection */}
-          <div className="lesson-selection">
-            <h3>Select Lessons to Study</h3>
-            <div className="lesson-chips">
-              {import.meta.env.DEV && (
-                <div style={{fontSize: '12px', color: '#888', marginBottom: '10px'}}>
-                  Debug: lessons type={typeof lessons}, isArray={Array.isArray(lessons)?.toString()}, 
-                  length={lessons?.length}
+              {/* Stats */}
+              <div className="stats-grid">
+                <div className="stat-box">
+                  <div className="stat-value">{stats.total}</div>
+                  <div className="stat-label">Total Cards</div>
                 </div>
-              )}
-              {Array.isArray(lessons) && lessons.length > 0 ? (
-                [...lessons]
-                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                  .map((lesson, index) => (
-                    <button
-                      key={lesson.id}
-                      className={`lesson-chip ${selectedLessons.includes(lesson.id) ? 'selected' : ''}`}
-                      onClick={() => {
-                        if (selectedLessons.includes(lesson.id)) {
-                          setSelectedLessons(prev => prev.filter(id => id !== lesson.id));
-                        } else {
-                          setSelectedLessons(prev => [...prev, lesson.id]);
-                        }
-                      }}
-                    >
-                      <span className="lesson-number">#{index + 1}</span>
-                      <span className="lesson-title">{lesson.title || `Lesson ${lesson.id}`}</span>
-                    </button>
-                  ))
-              ) : (
-                <p className="no-lessons">No lessons available. Please check your connection.</p>
-              )}
+                <div className="stat-box due">
+                  <div className="stat-value">{stats.due}</div>
+                  <div className="stat-label">Due Now</div>
+                </div>
+                <div className="stat-box new">
+                  <div className="stat-value">{stats.new}</div>
+                  <div className="stat-label">New</div>
+                </div>
+                <div className="stat-box review">
+                  <div className="stat-value">{stats.review}</div>
+                  <div className="stat-label">In Review</div>
+                </div>
+              </div>
+
+              {/* Lesson Selection */}
+              <div className="lesson-selection">
+                <h3>Select Lessons to Study</h3>
+                <div className="lesson-chips">
+                  {import.meta.env.DEV && (
+                    <div style={{fontSize: '12px', color: '#888', marginBottom: '10px'}}>
+                      Debug: lessons type={typeof lessons}, isArray={Array.isArray(lessons)?.toString()},
+                      length={lessons?.length}
+                    </div>
+                  )}
+                  {Array.isArray(lessons) && lessons.length > 0 ? (
+                    [...lessons]
+                      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                      .map((lesson, index) => (
+                        <button
+                          key={lesson.id}
+                          className={`lesson-chip ${selectedLessons.includes(lesson.id) ? 'selected' : ''}`}
+                          onClick={() => {
+                            if (selectedLessons.includes(lesson.id)) {
+                              setSelectedLessons(prev => prev.filter(id => id !== lesson.id));
+                            } else {
+                              setSelectedLessons(prev => [...prev, lesson.id]);
+                            }
+                          }}
+                        >
+                          <span className="lesson-number">#{index + 1}</span>
+                          <span className="lesson-title">{lesson.title || `Lesson ${lesson.id}`}</span>
+                        </button>
+                      ))
+                  ) : (
+                    <p className="no-lessons">No lessons available. Please check your connection.</p>
+                  )}
+                </div>
+              </div>
+
+              <button
+                className="start-btn"
+                onClick={startSession}
+                disabled={selectedLessons.length === 0}
+                title={selectedLessons.length === 0 ? 'Select at least one lesson to study' : ''}
+              >
+                {stats.due > 0 ? `Study ${stats.due} Due Cards` : 'Start New Session'}
+              </button>
+
+              <p className={`hint ${selectedLessons.length > 0 ? 'hint-hidden' : ''}`}>
+                Select at least one lesson above to start studying.
+              </p>
             </div>
           </div>
-
-          <button
-            className="start-btn"
-            onClick={startSession}
-            disabled={selectedLessons.length === 0}
-            title={selectedLessons.length === 0 ? 'Select at least one lesson to study' : ''}
-          >
-            {stats.due > 0 ? `Study ${stats.due} Due Cards` : 'Start New Session'}
-          </button>
-
-          <p className={`hint ${selectedLessons.length > 0 ? 'hint-hidden' : ''}`}>
-            Select at least one lesson above to start studying.
-          </p>
-        </div>
+        </main>
       </div>
     );
   }
@@ -285,13 +298,18 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   // Complete screen
   if (isComplete) {
     return (
-      <div className="memory-mode-complete">
-        <div className="complete-icon">✓</div>
-        <h2>Session Complete!</h2>
-        <p>Great job. Come back when more cards are due for review.</p>
-        <button className="start-btn" onClick={resetSession}>
-          New Session
-        </button>
+      <div className="app">
+        <Header title="Memory Mode" icon="🧠" onBack={() => navigate('/')} />
+        <main>
+          <div className="memory-mode-complete">
+            <div className="complete-icon">✓</div>
+            <h2>Session Complete!</h2>
+            <p>Great job. Come back when more cards are due for review.</p>
+            <button className="start-btn" onClick={resetSession}>
+              New Session
+            </button>
+          </div>
+        </main>
       </div>
     );
   }
@@ -306,16 +324,21 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   }
 
   return (
-    <div className="memory-mode-study">
-      <div className="memory-card">
-        {/* Header */}
-        <div className="study-header">
-          <div className="chips">
+    <div className="app">
+      <Header
+        title="Memory Mode"
+        icon="🧠"
+        onBack={resetSession}
+        actions={
+          <div className="memory-header-chips">
             <span className="chip">{getTypeLabel(currentCard)}</span>
             <span className="chip status">{getCardStatus(currentCard)}</span>
           </div>
-          <button className="close-btn" onClick={resetSession}>✕</button>
-        </div>
+        }
+      />
+      <main>
+        <div className="memory-mode-study">
+          <div className="memory-card">
 
         {/* Progress */}
         <div className="progress-bar">
@@ -398,7 +421,9 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
             </div>
           </div>
         )}
-      </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

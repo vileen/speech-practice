@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { MemoryMode } from '../../components/MemoryMode/MemoryMode';
+
+const renderWithRouter = (component: React.ReactNode) => {
+  return render(<MemoryRouter>{component}</MemoryRouter>);
+};
 
 // Mock the hooks
 const mockReview = vi.fn();
@@ -74,18 +79,18 @@ describe('MemoryMode', () => {
 
   describe('Setup Screen', () => {
     it('should render setup screen with title', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       expect(screen.getByText('🧠 Memory Mode')).toBeInTheDocument();
     });
 
     it('should show description and subtitle', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       expect(screen.getByText(/Test your recall/i)).toBeInTheDocument();
       expect(screen.getByText(/FSRS/i)).toBeInTheDocument();
     });
 
     it('should display stats grid with correct labels', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       expect(screen.getByText('Total Cards')).toBeInTheDocument();
       expect(screen.getByText('Due Now')).toBeInTheDocument();
@@ -94,7 +99,7 @@ describe('MemoryMode', () => {
     });
 
     it('should render lesson selection chips', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       expect(screen.getByText('Select Lessons to Study')).toBeInTheDocument();
       expect(screen.getByText('Test Lesson 1')).toBeInTheDocument();
@@ -102,7 +107,7 @@ describe('MemoryMode', () => {
     });
 
     it('should select lesson when clicked', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       const lessonChip = screen.getByText('Test Lesson 1');
       fireEvent.click(lessonChip);
@@ -111,7 +116,7 @@ describe('MemoryMode', () => {
     });
 
     it('should deselect lesson when clicked again', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       const lessonChip = screen.getByText('Test Lesson 1');
       fireEvent.click(lessonChip);
@@ -122,7 +127,7 @@ describe('MemoryMode', () => {
     });
 
     it('should select multiple lessons', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       fireEvent.click(screen.getByText('Test Lesson 1'));
       fireEvent.click(screen.getByText('Test Lesson 2'));
@@ -132,7 +137,7 @@ describe('MemoryMode', () => {
     });
 
     it('should show hint when no lessons selected', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       const hint = screen.getByText(/Select at least one lesson/);
       expect(hint).toBeInTheDocument();
@@ -140,7 +145,7 @@ describe('MemoryMode', () => {
     });
 
     it('should hide hint when lessons selected', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       fireEvent.click(screen.getByText('Test Lesson 1'));
       
@@ -149,19 +154,19 @@ describe('MemoryMode', () => {
     });
 
     it('should handle empty lessons array', () => {
-      render(<MemoryMode lessons={[]} />);
+      renderWithRouter(<MemoryMode lessons={[]} />);
       
       expect(screen.getByText(/No lessons available/i)).toBeInTheDocument();
     });
 
     it('should handle undefined lessons gracefully', () => {
-      render(<MemoryMode lessons={undefined as any} />);
+      renderWithRouter(<MemoryMode lessons={undefined as any} />);
       
       expect(screen.getByText('🧠 Memory Mode')).toBeInTheDocument();
     });
 
     it('should handle null lessons gracefully', () => {
-      render(<MemoryMode lessons={null as any} />);
+      renderWithRouter(<MemoryMode lessons={null as any} />);
       
       expect(screen.getByText('🧠 Memory Mode')).toBeInTheDocument();
     });
@@ -169,21 +174,21 @@ describe('MemoryMode', () => {
 
   describe('Study Session', () => {
     it('should have start button', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       const startBtn = screen.getByRole('button', { name: /Study \d+ Due Cards|Start New Session/ });
       expect(startBtn).toBeInTheDocument();
     });
 
     it('should have clickable lesson chips', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       const lessonChip = screen.getByText('Test Lesson 1');
       expect(() => fireEvent.click(lessonChip)).not.toThrow();
     });
 
     it('should show correct stats values', () => {
-      render(<MemoryMode lessons={mockLessons} />);
+      renderWithRouter(<MemoryMode lessons={mockLessons} />);
       
       // Total should be 2, Due should be 2, New should be 1, Review should be 1
       const statValues = screen.getAllByText(/^[0-2]$/);
@@ -199,7 +204,7 @@ describe('MemoryMode', () => {
         grammar: [],
       }];
       
-      render(<MemoryMode lessons={lessonsWithoutVocab} />);
+      renderWithRouter(<MemoryMode lessons={lessonsWithoutVocab} />);
       
       expect(screen.getByText('Test Lesson 1')).toBeInTheDocument();
     });
