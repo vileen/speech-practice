@@ -7,30 +7,40 @@ interface HeaderProps {
   subtitle?: string;
   showBackButton?: boolean;
   icon?: string;
+  onBack?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ 
-  title, 
-  subtitle, 
+export const Header: React.FC<HeaderProps> = ({
+  title,
+  subtitle,
   showBackButton = true,
-  icon 
+  icon,
+  onBack
 }) => {
   const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <header className="app-header">
       <div className="header-left">
         {showBackButton && (
-          <button 
-            className="back-btn" 
-            onClick={() => navigate('/')}
-            aria-label="Back to home"
+          <button
+            className="back-btn"
+            onClick={handleBack}
+            aria-label="Back"
           >
             ← Back
           </button>
         )}
       </div>
-      
+
       <div className="header-center">
         <h1>
           {icon && <span className="header-icon">{icon}</span>}
@@ -38,9 +48,9 @@ export const Header: React.FC<HeaderProps> = ({
         </h1>
         {subtitle && <p className="header-subtitle">{subtitle}</p>}
       </div>
-      
+
       <div className="header-right">
-        {/* Space for future actions like settings */}
+        {/* Space for future actions */}
       </div>
     </header>
   );

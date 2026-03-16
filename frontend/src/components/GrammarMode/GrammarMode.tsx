@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFurigana } from '../../hooks/useFurigana';
+import { Header } from '../Header/index.js';
 import './GrammarMode.css';
 
 interface GrammarPattern {
@@ -344,50 +345,40 @@ export const GrammarMode: React.FC = () => {
     );
   };
 
+  const handleHeaderBack = () => {
+    if (currentPattern) {
+      setCurrentPattern(null);
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <div className="grammar-mode">
-      <header className="grammar-header">
-        {!currentPattern ? (
-          <>
-            <button className="back-btn" onClick={() => navigate('/')}>
-              ← Back
-            </button>
-            <h2>📚 Grammar Drills</h2>
-            <div className="grammar-header-actions">
-              <button 
-                className="furigana-toggle" 
-                onClick={() => setShowFurigana(!showFurigana)}
-                title={showFurigana ? 'Hide furigana' : 'Show furigana'}
-              >
-                {showFurigana ? 'あ' : '漢'}
-              </button>
-              <div className="grammar-stats">
-                {dueCount > 0 && (
-                  <span className="due-badge">{dueCount} due</span>
-                )}
-                <span>{patterns.length} patterns</span>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <button className="back-btn" onClick={() => setCurrentPattern(null)}>
-              ← Back
-            </button>
-            <h2>Grammar Drills</h2>
-            <div className="grammar-header-actions">
-              <button 
-                className="furigana-toggle" 
-                onClick={() => setShowFurigana(!showFurigana)}
-                title={showFurigana ? 'Hide furigana' : 'Show furigana'}
-              >
-                {showFurigana ? 'あ' : '漢'}
-              </button>
-              <div style={{ width: '60px' }}></div>
-            </div>
-          </>
+      <Header
+        title="Grammar Drills"
+        icon="📚"
+        onBack={currentPattern || dueCount > 0 ? handleHeaderBack : undefined}
+        showBackButton={true}
+      />
+
+      <div className="grammar-toolbar">
+        <button
+          className="furigana-toggle"
+          onClick={() => setShowFurigana(!showFurigana)}
+          title={showFurigana ? 'Hide furigana' : 'Show furigana'}
+        >
+          {showFurigana ? 'あ' : '漢'}
+        </button>
+        {!currentPattern && (
+          <div className="grammar-stats">
+            {dueCount > 0 && (
+              <span className="due-badge">{dueCount} due</span>
+            )}
+            <span>{patterns.length} patterns</span>
+          </div>
         )}
-      </header>
+      </div>
 
       {!currentPattern ? (
         <div className="pattern-selection">
