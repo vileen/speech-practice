@@ -1,8 +1,105 @@
 .setup {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Mode Buttons Grid Layout */
+.setup > button {
+  width: 100%;
+  min-height: 80px;
+  padding: 1.25rem 1.5rem;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.setup > button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.setup > button:active {
+  transform: translateY(0);
+}
+
+/* Individual Mode Button Colors */
+.start-btn {
+  background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
+  color: #fff;
+  grid-column: 1 / -1;
+  max-width: 400px;
+  justify-self: center;
+}
+
+.start-btn:hover {
+  background: linear-gradient(135deg, #f0506e 0%, #d8455c 100%);
+}
+
+.repeat-mode-btn {
+  background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+  color: #fff;
+  border-color: #e94560;
+}
+
+.repeat-mode-btn:hover {
+  background: linear-gradient(135deg, #164578 0%, #1e2f4d 100%);
+  border-color: #ff6b7a;
+}
+
+.lesson-mode-btn {
+  background: linear-gradient(135deg, #2d3a4f 0%, #1e2a3a 100%);
+  color: #fff;
+  border-color: #4a9eff;
+}
+
+.lesson-mode-btn:hover {
+  background: linear-gradient(135deg, #3a4a63 0%, #2a3a4f 100%);
+  border-color: #6ab2ff;
+}
+
+.memory-mode-btn {
+  background: linear-gradient(135deg, #2d1f3d 0%, #1a1225 100%);
+  color: #fff;
+  border-color: #9b59b6;
+}
+
+.memory-mode-btn:hover {
+  background: linear-gradient(135deg, #3d2a52 0%, #2a1d3a 100%);
+  border-color: #b07cc9;
+}
+
+.kanji-mode-btn {
+  background: linear-gradient(135deg, #1f3d2f 0%, #12251a 100%);
+  color: #fff;
+  border-color: #27ae60;
+}
+
+.kanji-mode-btn:hover {
+  background: linear-gradient(135deg, #2a523d 0%, #1d3a2a 100%);
+  border-color: #52d681;
+}
+
+.grammar-mode-btn {
+  background: linear-gradient(135deg, #3d2f1f 0%, #251a12 100%);
+  color: #fff;
+  border-color: #f39c12;
+}
+
+.grammar-mode-btn:hover {
+  background: linear-gradient(135deg, #523d2a 0%, #3a2a1d 100%);
+  border-color: #f5b041;
 }
 
 .language-select,

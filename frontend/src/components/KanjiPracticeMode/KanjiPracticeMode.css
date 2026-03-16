@@ -50,24 +50,30 @@
 }
 
 .stat-card {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #16213e 0%, #0f1623 100%);
+  border: 1px solid #333;
+  border-radius: 12px;
   padding: 1rem 1.5rem;
   min-width: 100px;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  border-color: #444;
+  transform: translateY(-2px);
 }
 
 .stat-value {
   display: block;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #4f46e5;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #27ae60;
 }
 
 .stat-label {
   display: block;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: #888;
   margin-top: 0.25rem;
 }
 
@@ -121,33 +127,38 @@
 }
 
 .kanji-practice-shortcuts kbd {
-  background: #fff;
-  border: 1px solid #d1d5db;
+  background: #16213e;
+  border: 1px solid #333;
   border-radius: 0.25rem;
   padding: 0.125rem 0.375rem;
   font-family: monospace;
   font-size: 0.75rem;
+  color: #fff;
 }
 
 .kanji-practice-start-btn {
-  background: #4f46e5;
+  background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 12px;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
 }
 
 .kanji-practice-start-btn:hover:not(:disabled) {
-  background: #4338ca;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
 }
 
 .kanji-practice-start-btn:disabled {
-  background: #9ca3af;
+  background: #333;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Main practice container */
@@ -334,88 +345,123 @@
 
 .kanji-reveal-btn {
   width: 100%;
-  background: #4f46e5;
+  background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  font-size: 1.125rem;
-  font-weight: 500;
+  border-radius: 12px;
+  padding: 1.25rem;
+  font-size: 1.25rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
 }
 
 .kanji-reveal-btn:hover {
-  background: #4338ca;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
 }
 
+.kanji-reveal-btn:active {
+  transform: translateY(0);
+}
+
+/* Rating Buttons - Dark Theme */
 .kanji-rating-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .rating-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.75rem 0.5rem;
+  padding: 1rem 0.5rem;
   border: 2px solid;
-  border-radius: 0.5rem;
-  background: white;
+  border-radius: 12px;
+  background: #16213e;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  min-height: 90px;
+  justify-content: center;
 }
 
 .rating-btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+.rating-btn:active {
+  transform: translateY(-1px);
+}
+
+/* Again - Red */
 .rating-btn.again {
-  border-color: #ef4444;
-  color: #dc2626;
+  border-color: #e94560;
+  color: #ff6b7a;
+  background: linear-gradient(135deg, #2a1a2e 0%, #1a0f1e 100%);
 }
 
 .rating-btn.again:hover {
-  background: #fef2f2;
+  background: linear-gradient(135deg, #3d1f2f 0%, #2a1a2e 100%);
+  border-color: #ff4757;
+  box-shadow: 0 4px 12px rgba(233, 69, 96, 0.3);
 }
 
+/* Hard - Orange */
 .rating-btn.hard {
-  border-color: #f97316;
-  color: #ea580c;
+  border-color: #f39c12;
+  color: #f5b041;
+  background: linear-gradient(135deg, #2e251a 0%, #1e1810 100%);
 }
 
 .rating-btn.hard:hover {
-  background: #fff7ed;
+  background: linear-gradient(135deg, #3d3020 0%, #2e251a 100%);
+  border-color: #f5b041;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
 }
 
+/* Good - Green */
 .rating-btn.good {
-  border-color: #22c55e;
-  color: #16a34a;
+  border-color: #27ae60;
+  color: #52d681;
+  background: linear-gradient(135deg, #1a2e1f 0%, #0f1e14 100%);
 }
 
 .rating-btn.good:hover {
-  background: #f0fdf4;
+  background: linear-gradient(135deg, #1f3d2a 0%, #1a2e1f 100%);
+  border-color: #52d681;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
 }
 
+/* Easy - Blue */
 .rating-btn.easy {
-  border-color: #3b82f6;
-  color: #2563eb;
+  border-color: #3498db;
+  color: #5dade2;
+  background: linear-gradient(135deg, #1a2a3d 0%, #0f1a25 100%);
 }
 
 .rating-btn.easy:hover {
-  background: #eff6ff;
+  background: linear-gradient(135deg, #1f3a52 0%, #1a2a3d 100%);
+  border-color: #5dade2;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
 .rating-key {
-  font-size: 0.75rem;
-  font-weight: 600;
-  opacity: 0.7;
+  font-size: 0.875rem;
+  font-weight: 700;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
 }
 
 .rating-label {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   margin-top: 0.25rem;
 }
 
@@ -423,27 +469,30 @@
   font-size: 0.75rem;
   opacity: 0.7;
   margin-top: 0.25rem;
+  font-weight: 500;
 }
 
 /* Navigation */
 .kanji-practice-nav {
   text-align: center;
+  margin-top: 1rem;
 }
 
 .nav-btn {
   background: transparent;
-  color: #6b7280;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  color: #888;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .nav-btn:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: #555;
 }
 
 /* Responsive */
