@@ -25,17 +25,18 @@ export const KanjiPracticeMode: React.FC = () => {
   const [hasImported, setHasImported] = useState(false);
   const [availableLessons, setAvailableLessons] = useState<string[]>([]);
 
-  // Auto-import kanji on mount (only once)
+  // Auto-import kanji on mount (only if no kanji in localStorage)
   useEffect(() => {
     const autoImport = async () => {
-      if (!hasImported && cards.length === 0) {
+      // Check localStorage directly to avoid race condition with hook loading
+      const stored = localStorage.getItem('speech-practice-kanji-progress');
+      if (!stored) {
         await importKanji();
-        setHasImported(true);
       }
+      setHasImported(true);
     };
     autoImport();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [importKanji]);
 
   // Load available lessons
   useEffect(() => {
