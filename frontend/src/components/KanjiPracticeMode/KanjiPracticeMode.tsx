@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Rating } from '../../lib/fsrs.js';
 import { useKanjiProgress, KanjiCard } from '../../hooks/useKanjiProgress.js';
+import { Header } from '../Header/index.js';
 import './KanjiPracticeMode.css';
 
 export const KanjiPracticeMode: React.FC = () => {
@@ -140,22 +141,26 @@ export const KanjiPracticeMode: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="kanji-practice-loading">
-        <div className="spinner" />
-        <p>Loading kanji...</p>
-      </div>
+      <>
+        <Header title="Kanji Practice" icon="🈁" />
+        <div className="kanji-practice-loading">
+          <div className="spinner" />
+          <p>Loading kanji...</p>
+        </div>
+      </>
     );
   }
 
   // Setup screen
   if (showSetup) {
     return (
-      <div className="kanji-practice-setup">
-        <h2>🈁 Kanji Practice Mode</h2>
-        <p className="kanji-practice-description">
-          Learn kanji using the Kodansha Kanji Learner's Course method. 
-          See the kanji, recall the meaning, then check your answer.
-        </p>
+      <>
+        <Header title="Kanji Practice" icon="🈁" subtitle="Kodansha Kanji Learner's Course" />
+        <div className="kanji-practice-setup">
+          <p className="kanji-practice-description">
+            Learn kanji using the Kodansha Kanji Learner's Course method.
+            See the kanji, recall the meaning, then check your answer.
+          </p>
 
         <div className="kanji-practice-stats">
           <div className="stat-card">
@@ -197,56 +202,65 @@ export const KanjiPracticeMode: React.FC = () => {
           </ul>
         </div>
 
-        <button 
+        <button
           className="kanji-practice-start-btn"
           onClick={handleStart}
           disabled={isStarting}
         >
           {isStarting ? 'Loading...' : `Start Practice (${stats.due} due)`}
         </button>
-      </div>
+        </div>
+      </>
     );
   }
 
   // Completion screen
   if (isComplete) {
     return (
-      <div className="kanji-practice-complete">
-        <h2>🎉 Practice Complete!</h2>
-        <p>You've reviewed all due kanji for now.</p>
-        
-        <div className="kanji-practice-stats">
-          <div className="stat-card">
-            <span className="stat-value">{stats.total}</span>
-            <span className="stat-label">Total Kanji</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-value">{stats.due}</span>
-            <span className="stat-label">Still Due</span>
-          </div>
-        </div>
+      <>
+        <Header title="Practice Complete" icon="🎉" showBackButton={false} />
+        <div className="kanji-practice-complete">
+          <h2>Practice Complete!</h2>
+          <p>You've reviewed all due kanji for now.</p>
 
-        <button className="kanji-practice-start-btn" onClick={handleReset}>
-          Practice More
-        </button>
-      </div>
+          <div className="kanji-practice-stats">
+            <div className="stat-card">
+              <span className="stat-value">{stats.total}</span>
+              <span className="stat-label">Total Kanji</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-value">{stats.due}</span>
+              <span className="stat-label">Still Due</span>
+            </div>
+          </div>
+
+          <button className="kanji-practice-start-btn" onClick={handleReset}>
+            Practice More
+          </button>
+        </div>
+      </>
     );
   }
 
   // Main practice screen
   if (!currentCard) {
     return (
-      <div className="kanji-practice-empty">
-        <p>No kanji available. Import some kanji first!</p>
-        <button className="kanji-practice-start-btn" onClick={handleReset}>
-          Back to Setup
-        </button>
-      </div>
+      <>
+        <Header title="Kanji Practice" icon="🈁" />
+        <div className="kanji-practice-empty">
+          <p>No kanji available. Import some kanji first!</p>
+          <button className="kanji-practice-start-btn" onClick={handleReset}>
+            Back to Setup
+          </button>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="kanji-practice-container">
+    <>
+      <Header title="Kanji Practice" icon="🈁" />
+      <div className="kanji-practice-container">
       {/* Progress bar */}
       <div className="kanji-practice-progress">
         <div className="progress-stats">
@@ -375,6 +389,7 @@ export const KanjiPracticeMode: React.FC = () => {
           End Session
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
