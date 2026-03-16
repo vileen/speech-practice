@@ -16,7 +16,7 @@
 
 .lesson-card {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
   padding: 20px;
   background: #16213e;
@@ -46,6 +46,7 @@
   font-size: 0.9rem;
   border-radius: 8px;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .lesson-info {
