@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AudioPlayer } from '../AudioPlayer/index.js';
 import { VoiceRecorder } from '../VoiceRecorder/index.js';
@@ -44,8 +44,9 @@ export function LessonMode() {
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showFurigana, setShowFurigana] = useState(true);
-  const [recordings, setRecordings] = useState<{[key: string]: Blob}>({});
+  const [, setRecordings] = useState<{[key: string]: Blob}>({});
   const [transcription, setTranscription] = useState<string>('');
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
   // Fetch lesson data
   useEffect(() => {
@@ -117,10 +118,6 @@ export function LessonMode() {
     setIsPlaying(true);
   };
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
   if (isLoading) {
     return (
       <div className="lesson-mode">
@@ -190,8 +187,10 @@ export function LessonMode() {
               {currentPhrase && (
                 <div className={`phrase ${currentPhrase.isUserMessage ? 'user' : 'assistant'}`}>
                   <HighlightedText 
-                    text={currentPhrase.japanese} 
-                    showFurigana={showFurigana}
+                    text={currentPhrase.japanese}
+                    reading={showFurigana ? currentPhrase.romaji || null : null}
+                    audioElement={audioElement}
+                    isPlaying={isPlaying}
                   />
                   <div className="translation">{currentPhrase.translation}</div>
                 </div>
@@ -200,19 +199,24 @@ export function LessonMode() {
 
             <div className="audio-controls">
               <AudioPlayer 
-                src={currentPhrase?.audioUrl || lesson.audioFile.url}
-                isPlaying={isPlaying}
-                onPlayPause={handlePlayPause}
-                onEnded={() => setIsPlaying(false)}
+                audioUrl={currentPhrase?.audioUrl || lesson.audioFile.url || ''}
+                volume={1}
+                isActive={isPlaying}
+                onPlay={(audio) => setAudioElement(audio)}
+                onPause={() => setIsPlaying(false)}
+                onStop={() => setIsPlaying(false)}
+                onStopOthers={() => {}}
               />
             </div>
 
             <div className="recording-section">
               <VoiceRecorder 
                 key={currentPhrase?.id}
-                phraseId={currentPhrase?.id}
-                onRecordingComplete={handleRecordingComplete}
-                previousRecording={recordings[currentPhrase?.id]}
+                onRecordingComplete={(blob) => currentPhrase?.id && handleRecordingComplete(currentPhrase.id, blob)}
+                isListening={false}
+                onStartListening={() => {}}
+                onStopListening={() => {}}
+                mode="push-to-talk"
               />
             </div>
 
