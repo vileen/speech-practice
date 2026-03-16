@@ -25,7 +25,7 @@ export const KanjiPracticeMode: React.FC = () => {
   const [hasImported, setHasImported] = useState(false);
   const [availableLessons, setAvailableLessons] = useState<string[]>([]);
 
-  // Auto-import kanji on mount
+  // Auto-import kanji on mount (only once)
   useEffect(() => {
     const autoImport = async () => {
       if (!hasImported && cards.length === 0) {
@@ -34,7 +34,8 @@ export const KanjiPracticeMode: React.FC = () => {
       }
     };
     autoImport();
-  }, [importKanji, cards.length, hasImported]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Load available lessons
   useEffect(() => {

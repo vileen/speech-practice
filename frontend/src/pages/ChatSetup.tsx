@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
 import { API_URL, getPassword } from '../config/api.js';
 import { Header } from '../components/Header/index.js';
@@ -88,10 +88,6 @@ export function ChatSetup() {
             >
               🚀 Start Chat
             </button>
-
-            <Link to="/" className="cancel-practice-btn">
-              ← Back to Home
-            </Link>
           </div>
         </main>
       </div>

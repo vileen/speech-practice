@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
 import { MemoryMode } from '../components/MemoryMode/index.js';
 import { API_URL, getPassword } from '../config/api.js';
 import type { Lesson } from '../types/index.js';
 
 export function MemoryModeWrapper() {
-  const navigate = useNavigate();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,19 +49,7 @@ export function MemoryModeWrapper() {
 
   return (
     <AuthenticatedRoute>
-      <div className="memory-mode-page">
-        <header className="memory-mode-header">
-          <button 
-            className="back-btn" 
-            onClick={() => navigate('/')}
-            aria-label="Go back"
-          >
-            ← Back
-          </button>
-          <h1>Memory Mode</h1>
-        </header>
-        <MemoryMode lessons={lessons} />
-      </div>
+      <MemoryMode lessons={lessons} />
     </AuthenticatedRoute>
   );
 }
