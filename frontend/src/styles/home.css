@@ -1,10 +1,16 @@
 .setup {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  max-width: 900px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 0 1rem;
+}
+
+@media (max-width: 640px) {
+  .setup {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Mode Buttons Grid Layout */
@@ -38,9 +44,6 @@
 .start-btn {
   background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
   color: #fff;
-  grid-column: 1 / -1;
-  max-width: 400px;
-  justify-self: center;
 }
 
 .start-btn:hover {
@@ -143,7 +146,6 @@
   accent-color: #e94560;
 }
 
-.start-btn,
 .end-btn {
   padding: 14px 32px;
   border: none;
@@ -151,17 +153,6 @@
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s;
-}
-
-.start-btn {
-  background: #e94560;
-  color: #fff;
-  width: 100%;
-  max-width: 300px;
-}
-
-.start-btn:hover {
-  background: #c73e54;
 }
 
 .end-btn {
