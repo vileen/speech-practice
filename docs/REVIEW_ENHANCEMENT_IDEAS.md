@@ -23,6 +23,7 @@ High-level overview of planned and implemented features. Each feature has a dedi
 | 13 | [Minimal Pairs](./featureIdeas/04-minimal-pairs.md) | ⏳ Planned | High | Medium | [Details](./featureIdeas/04-minimal-pairs.md) |
 | 14 | [Pomodoro Tracker](./featureIdeas/11-pomodoro-tracker.md) | ⏳ Planned | Medium | Medium | [Details](./featureIdeas/11-pomodoro-tracker.md) |
 | 15 | [Infrastructure & Security](./featureIdeas/15-infrastructure-security.md) | ✅ Complete | High | Critical | [Details](./featureIdeas/15-infrastructure-security.md) |
+| 16 | [**Kanji Practice Mode**](./featureIdeas/16-kanji-practice-mode.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/16-kanji-practice-mode.md) |
 
 ---
 
@@ -37,6 +38,7 @@ High-level overview of planned and implemented features. Each feature has a dedi
 - [06 - Interleaved Practice](./featureIdeas/06-interleaved-practice.md) - Mixed lesson review (43% better retention)
 - [07 - Grammar Drills](./featureIdeas/07-grammar-drills.md) - Pattern recognition & construction
 - [08 - Shadowing Mode](./featureIdeas/08-shadowing-mode.md) - Overlapping/delayed shadowing
+- [16 - Kanji Practice Mode](./featureIdeas/16-kanji-practice-mode.md) - KLC-based kanji learning with SRS
 
 ### Data & Progress
 - [09 - Vocabulary Table](./featureIdeas/09-vocabulary-table.md) - Normalized DB schema
@@ -61,4 +63,4 @@ See [docs/featureIdeas/README.md](./featureIdeas/README.md) for detailed index.
 ---
 
 *Created: 2026-02-28*  
-*Last updated: 2026-03-15*
+*Last updated: 2026-03-16*
