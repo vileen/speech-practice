@@ -77,19 +77,19 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
           case ' ':
           case 'Spacebar':
             e.preventDefault();
-            handleReview(Rating.Again);
+            handleReview('again');
             break;
           case '2':
             e.preventDefault();
-            handleReview(Rating.Hard);
+            handleReview('hard');
             break;
           case '3':
             e.preventDefault();
-            handleReview(Rating.Good);
+            handleReview('good');
             break;
           case '4':
             e.preventDefault();
-            handleReview(Rating.Easy);
+            handleReview('easy');
             break;
         }
       }
