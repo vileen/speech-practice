@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, createCard, reviewCard, getDueCards, Rating, getIntervalPreview } from '../lib/fsrs';
+import { API_URL } from '../config/api';
 
 const STORAGE_KEY = 'speech-practice-kanji-progress';
 
@@ -125,7 +126,7 @@ export function useKanjiProgress() {
       if (filters?.lessonId) params.append('lessonId', filters.lessonId);
       if (filters?.limit) params.append('limit', filters.limit.toString());
       
-      const response = await fetch(`/api/kanji?${params}`);
+      const response = await fetch(`${API_URL}/api/kanji?${params}`);
       if (!response.ok) throw new Error('Failed to fetch kanji');
       
       const kanjiList = await response.json();
