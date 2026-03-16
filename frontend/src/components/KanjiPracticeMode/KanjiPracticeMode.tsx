@@ -24,6 +24,17 @@ export const KanjiPracticeMode: React.FC = () => {
   const [hasImported, setHasImported] = useState(false);
   const [availableLessons, setAvailableLessons] = useState<string[]>([]);
 
+  // Auto-import kanji on mount
+  useEffect(() => {
+    const autoImport = async () => {
+      if (!hasImported && cards.length === 0) {
+        await importKanji();
+        setHasImported(true);
+      }
+    };
+    autoImport();
+  }, [importKanji, cards.length, hasImported]);
+
   // Load available lessons
   useEffect(() => {
     const lessons = getAvailableLessons();
