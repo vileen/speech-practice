@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
 import { Header } from '../components/Header/index.js';
+import { ModeButton } from '../components/ModeButton/index.js';
 
 const QUOTES = [
   "Either increase sacrifice or reduce desire.",
@@ -25,27 +26,37 @@ export function Home() {
         <Header title="Speech Practice" icon="🎤" showBackButton={false} />
         <main>
           <div className="setup">
-            <button className="start-btn" onClick={() => navigate('/chat/setup')}>
-              💬 Start Chat
-            </button>
-            
-            <button className="repeat-mode-btn" onClick={() => navigate('/repeat/setup')}>
-              🎯 Repeat After Me
-            </button>
-            
-            <button className="lesson-mode-btn" onClick={() => navigate('/lessons')}>
-              📚 Lesson Mode
-            </button>
-
-            <button className="memory-mode-btn" onClick={() => navigate('/memory')}>
-              🧠 Memory Mode
-            </button>
-            <button className="kanji-mode-btn" onClick={() => navigate('/kanji')}>
-              🈁 Kanji Practice
-            </button>
-            <button className="grammar-mode-btn" onClick={() => navigate('/grammar')}>
-              📚 Grammar Drills
-            </button>
+            <ModeButton
+              icon="💬"
+              label="Start Chat"
+              onClick={() => navigate('/chat/setup')}
+              variant="primary"
+            />
+            <ModeButton
+              icon="🎯"
+              label="Repeat After Me"
+              onClick={() => navigate('/repeat/setup')}
+            />
+            <ModeButton
+              icon="📚"
+              label="Lesson Mode"
+              onClick={() => navigate('/lessons')}
+            />
+            <ModeButton
+              icon="🧠"
+              label="Memory Mode"
+              onClick={() => navigate('/memory')}
+            />
+            <ModeButton
+              icon="🈁"
+              label="Kanji Practice"
+              onClick={() => navigate('/kanji')}
+            />
+            <ModeButton
+              icon="📖"
+              label="Grammar Drills"
+              onClick={() => navigate('/grammar')}
+            />
           </div>
         </main>
         

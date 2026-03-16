@@ -1,0 +1,45 @@
+.mode-button {
+  width: 100%;
+  min-height: 60px;
+  padding: 1rem 1.5rem;
+  border: 2px solid #333;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  background: #16213e;
+  color: #fff;
+}
+
+.mode-button:hover {
+  border-color: #e94560;
+  background: #1e2a3a;
+}
+
+.mode-button:active {
+  transform: scale(0.98);
+}
+
+.mode-button.primary {
+  background: #e94560;
+  border-color: #e94560;
+}
+
+.mode-button.primary:hover {
+  background: #c73e54;
+  border-color: #c73e54;
+}
+
+.mode-button-icon {
+  font-size: 1.25rem;
+}
+
+.mode-button-label {
+  flex: 1;
+}

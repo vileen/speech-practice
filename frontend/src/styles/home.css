@@ -7,47 +7,6 @@
   padding: 0 1rem;
 }
 
-/* Mode Buttons - Consistent Style */
-.setup > button {
-  width: 100%;
-  min-height: 60px;
-  padding: 1rem 1.5rem;
-  border: 2px solid #333;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  text-align: center;
-  background: #16213e;
-  color: #fff;
-}
-
-.setup > button:hover {
-  border-color: #e94560;
-  background: #1e2a3a;
-}
-
-.setup > button:active {
-  transform: scale(0.98);
-}
-
-/* Start Chat - Primary button style */
-.start-btn {
-  background: #e94560;
-  border-color: #e94560;
-  order: -1;
-}
-
-.start-btn:hover {
-  background: #c73e54;
-  border-color: #c73e54;
-}
-
 .language-select,
 .gender-select {
   display: flex;
