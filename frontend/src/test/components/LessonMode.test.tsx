@@ -1,47 +1,53 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { LessonMode } from '../../components/LessonMode/LessonMode';
 
-// Mock translations
-vi.mock('../../translations.js', () => ({
-  translateLessonTitle: (title: string) => title,
+// Mock AudioPlayer to avoid audio-related issues in tests
+vi.mock('../../components/AudioPlayer/index.js', () => ({
+  AudioPlayer: () => <div data-testid="audio-player">Audio Player</div>,
 }));
 
-const mockLessons = [
-  {
-    id: 'lesson-2026-03-01',
-    date: '2026-03-01',
-    title: 'Lesson 1: Basic Greetings',
-    order: 1,
-    topics: ['vocabulary', 'grammar'],
-    vocabCount: 5,
-    grammarCount: 2,
-  },
-];
+// Mock VoiceRecorder
+vi.mock('../../components/VoiceRecorder/index.js', () => ({
+  VoiceRecorder: () => <div data-testid="voice-recorder">Voice Recorder</div>,
+}));
+
+// Mock HighlightedText
+vi.mock('../../components/HighlightedText/index.js', () => ({
+  HighlightedText: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+}));
 
 const mockLessonDetail = {
   id: 'lesson-2026-03-01',
-  date: '2026-03-01',
   title: 'Lesson 1: Basic Greetings',
-  topics: ['vocabulary', 'grammar'],
-  vocabulary: [
-    { jp: 'こんにちは', reading: 'こんにちは', romaji: 'konnichiwa', en: 'Hello', type: 'expression' },
-  ],
-  grammar: [
+  date: '2026-03-01',
+  phrases: [
     {
-      pattern: '〜です',
-      explanation: 'Polite copula',
-      examples: [{ jp: '私は学生です', en: 'I am a student' }],
+      id: 'phrase-1',
+      japanese: 'こんにちは',
+      romaji: 'konnichiwa',
+      translation: 'Hello',
+      audioUrl: '/audio/1.mp3',
+      isUserMessage: false,
     },
   ],
-  practice_phrases: [
-    { jp: 'おはようございます', en: 'Good morning' },
-  ],
+  audioFile: {
+    filename: 'lesson.mp3',
+    duration: 60,
+    url: '/audio/lesson.mp3',
+  },
 };
 
-const mockOnBack = vi.fn();
-const mockOnStartLessonChat = vi.fn();
-const mockOnSelectLesson = vi.fn();
+const renderWithRouter = (lessonId: string = 'lesson-2026-03-01') => {
+  return render(
+    <MemoryRouter initialEntries={[`/lessons/${lessonId}`]}>
+      <Routes>
+        <Route path="/lessons/:lessonId" element={<LessonMode />} />
+      </Routes>
+    </MemoryRouter>
+  );
+};
 
 describe('LessonMode', () => {
   beforeEach(() => {
@@ -49,15 +55,15 @@ describe('LessonMode', () => {
     localStorage.clear();
     
     global.fetch = vi.fn().mockImplementation((url: string) => {
-      if (url.includes('/api/lessons/') && url.includes('?')) {
+      if (url.includes('/api/lessons/') && url.includes('/transcription')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ content: 'Test transcription' }),
+        } as Response);
+      } else if (url.includes('/api/lessons/')) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve(mockLessonDetail),
-        } as Response);
-      } else if (url.includes('/api/lessons')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockLessons),
         } as Response);
       }
       return Promise.reject(new Error('Unknown endpoint'));
@@ -65,34 +71,21 @@ describe('LessonMode', () => {
   });
 
   it('should render loading state initially', () => {
-    render(
-      <LessonMode
-        password="test-password"
-        onBack={mockOnBack}
-        onStartLessonChat={mockOnStartLessonChat}
-        onSelectLesson={mockOnSelectLesson}
-      />
-    );
+    renderWithRouter();
     
-    expect(screen.getByText(/Loading lessons/i)).toBeInTheDocument();
+    expect(screen.getByText(/Loading lesson/i)).toBeInTheDocument();
   });
 
-
-
-  it('should load lesson detail when selectedLessonId provided', async () => {
-    render(
-      <LessonMode
-        password="test-password"
-        onBack={mockOnBack}
-        onStartLessonChat={mockOnStartLessonChat}
-        selectedLessonId="lesson-2026-03-01"
-        onSelectLesson={mockOnSelectLesson}
-      />
-    );
+  it('should load and display lesson detail', async () => {
+    renderWithRouter();
     
     await waitFor(() => {
       expect(screen.getByText('Lesson 1: Basic Greetings')).toBeInTheDocument();
     }, { timeout: 3000 });
+    
+    // Check that phrases are rendered (use function matcher for partial text)
+    expect(screen.getByText((content) => content.includes('こんにちは'))).toBeInTheDocument();
+    expect(screen.getByText('Hello')).toBeInTheDocument();
   });
 
   it('should handle fetch error gracefully', async () => {
@@ -100,14 +93,7 @@ describe('LessonMode', () => {
     
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     
-    render(
-      <LessonMode
-        password="test-password"
-        onBack={mockOnBack}
-        onStartLessonChat={mockOnStartLessonChat}
-        onSelectLesson={mockOnSelectLesson}
-      />
-    );
+    renderWithRouter();
     
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalled();
