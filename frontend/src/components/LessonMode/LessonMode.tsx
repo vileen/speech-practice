@@ -259,11 +259,11 @@ export function LessonMode({
   };
 
   // Sort lessons
-  const sortedLessons = [...lessons].sort((a, b) => {
+  const sortedLessons = Array.isArray(lessons) ? [...lessons].sort((a, b) => {
     const dateA = new Date(a.date).getTime();
     const dateB = new Date(b.date).getTime();
     return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
-  });
+  }) : [];
 
   // Get badge class based on review count
   const getReviewBadgeClass = (reviewCount: number): string => {
