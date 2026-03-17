@@ -9,9 +9,13 @@ echo "Building frontend for GitHub Pages..."
 cd ~/Projects/speech-practice/frontend
 yarn build
 
-# Copy dist to docs folder (for GitHub Pages)
-rm -rf ../docs
-cp -r dist ../docs
+# Remove old build files from docs (preserve featureIdeas/, _redirects, etc.)
+echo "Cleaning old build files..."
+rm -f ../docs/index.html
+rm -f ../docs/assets/*.js ../docs/assets/*.css 2>/dev/null || true
+
+# Copy new dist files to docs folder
+cp -r dist/* ../docs/
 
 # Ensure no .env files are in docs
 echo "Cleaning up sensitive files..."
