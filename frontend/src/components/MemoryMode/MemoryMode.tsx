@@ -35,6 +35,12 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   const [isStarting, setIsStarting] = useState(false);
   const [hasImported, setHasImported] = useState(false);
 
+  // Calculate total vocabulary count from selected lessons
+  const selectedVocabCount = selectedLessons.reduce((total, lessonId) => {
+    const lesson = lessons?.find(l => l.id === lessonId);
+    return total + (lesson?.vocabCount || 0);
+  }, 0);
+
 
 
   // Get next card when needed (filtered by selected lessons)
@@ -286,7 +292,9 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
                 disabled={selectedLessons.length === 0}
                 title={selectedLessons.length === 0 ? 'Select at least one lesson to study' : ''}
               >
-                {stats.due > 0 ? `Study ${stats.due} Due Cards` : 'Start New Session'}
+                {stats.due > 0
+                  ? `Study ${stats.due} Due Cards${selectedVocabCount > 0 ? ` (+${selectedVocabCount} new)` : ''}`
+                  : `Start New Session${selectedVocabCount > 0 ? ` (${selectedVocabCount} words)` : ''}`}
               </button>
 
               <p className={`hint ${selectedLessons.length > 0 ? 'hint-hidden' : ''}`}>
