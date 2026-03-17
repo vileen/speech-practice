@@ -11,18 +11,55 @@
 [![Frontend Coverage](https://img.shields.io/codecov/c/github/vileen/speech-practice?flag=frontend&label=frontend%20cov)](https://codecov.io/gh/vileen/speech-practice)
 [![Backend Coverage](https://img.shields.io/codecov/c/github/vileen/speech-practice?flag=backend&label=backend%20cov)](https://codecov.io/gh/vileen/speech-practice)
 
-Japanese language learning app with AI conversation, speech recognition, and lesson-based practice.
+Japanese language learning app with AI conversation, speech recognition, SRS-based review, and kanji practice.
 
-## Features
+## ✨ Features
 
-- 🎙️ **Speech-to-Text** (OpenAI Whisper API)
-- 🔊 **Text-to-Speech** (ElevenLabs)
-- 📚 **Lesson Mode** — practice specific lessons with AI
-- 🎯 **Repeat After Me** — pronunciation training with feedback
-- 🧠 **Memory Mode** — SRS-based vocabulary review with FSRS algorithm
-- 💬 **AI Conversation** — practice speaking naturally
+### 🎙️ Speech & Audio
+- **Speech-to-Text** — OpenAI Whisper API for accurate Japanese transcription
+- **Text-to-Speech** — ElevenLabs voices for natural pronunciation
+- **Audio Playback** — Speed control and repeat functionality
 
-## Architecture
+### 📚 Learning Modes
+- **Lesson Mode** — Browse lessons with vocabulary, grammar, and practice phrases
+  - Tabbed interface: Overview / Vocabulary / Grammar / Practice
+  - Automatic furigana generation with caching
+  - Vocabulary review badges showing lesson cross-references
+  
+- **AI Conversation** — Practice speaking naturally with AI tutor
+  - Context-aware responses based on lesson content
+  - Real-time speech recognition and feedback
+  
+- **Repeat After Me** — Pronunciation training with feedback
+  - Compare your pronunciation with native audio
+  - Romaji display for reading assistance
+  
+- **Memory Mode** — SRS-based vocabulary review
+  - FSRS (Free Spaced Repetition Scheduler) algorithm
+  - Lesson-filtered card selection
+  - Persistent lesson selections across sessions
+  - Vocabulary count display on start button
+  - Interval preview for each rating (Again/Hard/Good/Easy)
+  
+- **Kanji Practice** — KLC-based kanji learning
+  - Kodansha Kanji Learner's Course (KLC) integration
+  - Mnemonics for each kanji
+  - RTK-style keywords and stories
+  - Progressive difficulty (grades 1-6, remaining)
+
+### 🎯 Smart Features
+- **Automatic Furigana** — Cached furigana generation for all Japanese text
+- **Weighted Quotes** — Motivational quotes with funny ones appearing 50% more often
+- **LocalStorage Persistence** — Lesson selections and settings remembered between sessions
+- **Responsive Design** — Mobile-first UI with iPhone optimizations
+
+### 🔒 Security & Quality
+- **Password Protection** — All API endpoints require authentication
+- **Pre-push Hooks** — Automated testing before every commit
+- **Regression Tests** — 24 tests protecting against fixed bugs
+- **TypeScript** — Full type safety across frontend and backend
+
+## 🏗️ Architecture
 
 ```
 Frontend (React + Vite) → Backend (Node/Express) → APIs (OpenAI, ElevenLabs)
@@ -31,7 +68,7 @@ Frontend (React + Vite) → Backend (Node/Express) → APIs (OpenAI, ElevenLabs)
                         (Local + Tunnel / Cloud / VPS)
 ```
 
-## Quick Start (Development)
+## 🚀 Quick Start (Development)
 
 ### Prerequisites
 - Node.js 18+
@@ -54,7 +91,7 @@ npm install
 npm run dev
 ```
 
-## Deployment
+## 📦 Deployment
 
 ### Frontend → GitHub Pages
 Automatic via GitHub Actions on every push to `main`.
@@ -89,7 +126,7 @@ cloudflared tunnel run speech-practice
 2. Set up reverse proxy (nginx/Caddy) with SSL
 3. Configure environment variables
 
-## Environment Variables
+## 🔧 Environment Variables
 
 ### Backend (.env.local)
 ```
@@ -105,44 +142,60 @@ ACCESS_PASSWORD=secure_password_here
 VITE_API_URL=https://your-backend-url.com
 ```
 
-## Security Notes
+## 🧪 Testing
 
-- Never commit `.env.local` or `.env` files
-- Backend requires `X-Password` header for all API requests
-- API keys are server-side only
-- Use strong password for `ACCESS_PASSWORD`
+### Run Tests
+```bash
+# Frontend
+cd frontend
+npm test
 
-## Development Notes
+# Backend
+cd backend
+npm test
 
-### Database Migrations
+# Both (pre-push hook)
+npm test  # Runs automatically before git push
+```
+
+### Regression Tests
+Located in `frontend/src/test/regression/` — these protect against previously fixed bugs. See `REGRESSION_TEST_POLICY.md` for guidelines.
+
+## 📝 Database
+
+### Schema Setup
 ```bash
 cd backend
 psql "$DATABASE_URL" -f src/db/schema.sql
 ```
 
 ### Adding New Lessons
-Lessons are stored in PostgreSQL database. To add a new lesson:
+```bash
+cd backend
+npx tsx scripts/import-lesson.ts YYYY-MM-DD
+```
 
-1. Create a JSON file with lesson data (vocabulary, grammar, practice_phrases)
-2. Run the import script:
-   ```bash
-   cd backend
-   npx tsx scripts/import-lesson.ts YYYY-MM-DD
-   ```
-3. Verify in database:
-   ```bash
-   psql "$DATABASE_URL" -c "SELECT id, title FROM lessons WHERE date = 'YYYY-MM-DD';"
-   ```
+### Checking Lesson Data
+```bash
+cd backend
+npx tsx scripts/check-lesson-data.ts YYYY-MM-DD
+```
 
-See `docs/ARCHITECTURE-DOCS.md` for detailed data structure.
-
-## Documentation
+## 📚 Documentation
 
 - `docs/ARCHITECTURE-DOCS.md` — System architecture and data flow
 - `docs/REVIEW_ENHANCEMENT_IDEAS.md` — Planned features and enhancements
 - `docs/PROGRESS_SUMMARY.md` — Recent changes and development log
+- `frontend/src/test/regression/README.md` — Regression test policy
 - `CONTRIBUTING.md` — Guidelines for contributors
 
-## License
+## 🔐 Security Notes
+
+- Never commit `.env.local` or `.env` files
+- Backend requires `X-Password` header for all API requests
+- API keys are server-side only
+- Use strong password for `ACCESS_PASSWORD`
+
+## 📄 License
 
 MIT
