@@ -485,10 +485,11 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   if (loading && lessons.length === 0) {
     return (
       <div className="lesson-mode">
-        <div className="lesson-header">
-          <button className="back-btn" onClick={onBack}>← Back</button>
-          <h2>📚 Lesson Mode</h2>
-        </div>
+        <Header
+          title="Lesson Mode"
+          icon="📚"
+          onBack={onBack}
+        />
         <div className="loading">Loading lessons...</div>
       </div>
     );
