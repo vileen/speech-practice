@@ -29,11 +29,19 @@ window.fetch = async function(
     // Log for debugging (remove in production)
     console.log(`🔐 API call: ${url}, has password: ${password ? 'yes' : 'no'}`);
     
-    // Merge headers - use lowercase for consistency
+    // Check if x-password is already set (avoid duplication)
+    const existingHeaders = (init?.headers as Record<string, string>) || {};
+    const existingPassword = existingHeaders['x-password'] || existingHeaders['X-Password'];
+    if (existingPassword) {
+      console.log('🔐 x-password already set, skipping');
+      return originalFetch(input, init);
+    }
+    
+    // Merge headers
     const newInit: RequestInit = {
       ...init,
       headers: {
-        ...(init?.headers || {}),
+        ...existingHeaders,
         'x-password': password,
       },
     };
