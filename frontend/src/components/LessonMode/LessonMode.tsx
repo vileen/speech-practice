@@ -526,7 +526,8 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
           }
         />
 
-        <div className="lesson-tabs">
+        <div className="lesson-detail">
+          <div className="lesson-tabs">
           <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>Overview</button>
           <button className={activeTab === 'vocab' ? 'active' : ''} onClick={() => setActiveTab('vocab')}>Vocabulary ({selectedLesson.vocabulary.length})</button>
           <button className={activeTab === 'grammar' ? 'active' : ''} onClick={() => setActiveTab('grammar')}>Grammar ({selectedLesson.grammar.length})</button>
@@ -644,8 +645,9 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
           )}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   // Sort lessons based on selected order
   const sortedLessons = Array.isArray(lessons) ? [...lessons].sort((a, b) => {
