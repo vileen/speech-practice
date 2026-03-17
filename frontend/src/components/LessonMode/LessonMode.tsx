@@ -200,7 +200,7 @@ export function LessonMode() {
 
             <div className="audio-controls">
               <AudioPlayer 
-                audioUrl={currentPhrase?.audioUrl || lesson.audioFile.url || ''}
+                audioUrl={currentPhrase?.audioUrl || lesson.audioFile?.url || ''}
                 volume={1}
                 isActive={isPlaying}
                 onPlay={(audio) => setAudioElement(audio)}
