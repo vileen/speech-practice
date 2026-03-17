@@ -22,14 +22,8 @@ console.log('🔌 API_URL configured:', API_URL);
 
 export const getPassword = () => localStorage.getItem('speech_practice_password') || '';
 
-// Helper for authenticated fetch
+// NOTE: Global fetch interceptor in lib/api-interceptor.ts automatically adds x-password header
+// This authFetch is kept for backward compatibility but is no longer necessary
 export const authFetch = (url: string, options: RequestInit = {}) => {
-  const password = getPassword();
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      'x-password': password,
-    },
-  });
+  return fetch(url, options);
 };

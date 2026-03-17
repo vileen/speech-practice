@@ -31,7 +31,7 @@ import { Header } from '../Header/index.js';
 import { useFurigana } from '../../hooks/useFurigana';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { usePronunciationCheck } from '../../hooks/usePronunciationCheck';
-import { API_URL, authFetch } from '../../config/api.js';
+import { API_URL } from '../../config/api.js';
 
 export function RepeatMode() {
   const language = 'japanese';
@@ -142,7 +142,7 @@ export function RepeatMode() {
 
     setIsFetchingAudio(true);
     try {
-      const response = await authFetch(`${API_URL}/api/repeat-after-me`, {
+      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

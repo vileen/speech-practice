@@ -199,14 +199,10 @@ export function useMemoryProgress() {
   }, [cards]);
 
   // Import unique vocabulary from lesson (words that first appeared in this lesson)
-  const importUniqueVocabulary = useCallback(async (lessonId: string, password: string) => {
+  const importUniqueVocabulary = useCallback(async (lessonId: string) => {
     const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
     
-    const response = await fetch(`${API_URL}/api/lessons/${lessonId}/unique-vocabulary`, {
-      headers: {
-        'X-Password': password,
-      },
-    });
+    const response = await fetch(`${API_URL}/api/lessons/${lessonId}/unique-vocabulary`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch unique vocabulary');

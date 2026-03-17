@@ -1,3 +1,6 @@
+// IMPORTANT: Must be imported FIRST to patch global fetch before any API calls
+import './lib/api-interceptor.js';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFurigana } from '../../hooks/useFurigana';
 import { Header } from '../Header/index.js';
-import { API_URL, authFetch } from '../../config/api.js';
+import { API_URL } from '../../config/api.js';
 import './GrammarMode.css';
 
 interface GrammarPattern {
@@ -91,7 +91,7 @@ export const GrammarMode: React.FC = () => {
 
   const loadPatterns = async () => {
     try {
-      const response = await authFetch(`${API_URL}/api/grammar/patterns`, {
+      const response = await fetch(`${API_URL}/api/grammar/patterns`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
@@ -113,7 +113,7 @@ export const GrammarMode: React.FC = () => {
 
   const loadDuePatterns = async () => {
     try {
-      const response = await authFetch(`${API_URL}/api/grammar/review`, {
+      const response = await fetch(`${API_URL}/api/grammar/review`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
@@ -127,7 +127,7 @@ export const GrammarMode: React.FC = () => {
 
   const startReview = async () => {
     try {
-      const response = await authFetch(`${API_URL}/api/grammar/review`, {
+      const response = await fetch(`${API_URL}/api/grammar/review`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
@@ -146,7 +146,7 @@ export const GrammarMode: React.FC = () => {
   const loadExercise = async (patternId: number) => {
     setState('loading');
     try {
-      const response = await authFetch(`${API_URL}/api/grammar/patterns/${patternId}/exercise`, {
+      const response = await fetch(`${API_URL}/api/grammar/patterns/${patternId}/exercise`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
@@ -244,7 +244,7 @@ export const GrammarMode: React.FC = () => {
     const result = isCorrect ? 'correct' : 'wrong';
 
     try {
-      const response = await authFetch(`${API_URL}/api/grammar/progress`, {
+      const response = await fetch(`${API_URL}/api/grammar/progress`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

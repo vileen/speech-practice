@@ -108,12 +108,11 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     
     // Import unique vocabulary from selected lessons FIRST
     let imported = 0;
-    const password = localStorage.getItem('speech_practice_password') || '';
     
     if (selectedLessons.length > 0) {
       for (const lessonId of selectedLessons) {
         try {
-          const result = await importUniqueVocabulary(lessonId, password);
+          const result = await importUniqueVocabulary(lessonId);
           imported += result.imported;
           console.log('MemoryMode: Imported', result.imported, 'unique cards from', lessonId, '(', result.unique, 'of', result.total, 'total)');
         } catch (err) {
