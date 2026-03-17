@@ -51,6 +51,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-password'],
 }));
 
+// Debug: log all requests
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - x-password: ${req.headers['x-password'] ? 'present' : 'missing'}`);
+  next();
+});
+
 app.use(express.json());
 
 // Ensure directories exist
