@@ -2,7 +2,11 @@
  * MEMORY MODE REGRESSION TESTS
  * 
  * ⚠️ WARNING: These tests verify critical bugs that have been fixed.
- * DO NOT modify these tests without explicit approval.
+ * DO NOT modify these tests without explicit user approval.
+ * 
+ * AI REMINDER: Changing regression tests is a SERIOUS step.
+ * ALWAYS ask the user before modifying, skipping, or deleting these tests.
+ * These are the last line of defense against re-introducing production bugs.
  * 
  * Purpose:
  * - Prevent regression of lesson selection persistence

@@ -1,3 +1,14 @@
+/**
+ * HEADER REGRESSION TESTS
+ *
+ * ⚠️ WARNING: These tests verify critical bugs that have been fixed.
+ * DO NOT modify these tests without explicit user approval.
+ *
+ * AI REMINDER: Changing regression tests is a SERIOUS step.
+ * ALWAYS ask the user before modifying, skipping, or deleting these tests.
+ * These are the last line of defense against re-introducing production bugs.
+ */
+
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';

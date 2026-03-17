@@ -2,7 +2,20 @@
 
 ## ⚠️ CRITICAL: Do Not Modify Without Approval
 
-Regression tests in this directory (`src/test/regression/`) verify bugs that have been fixed. These tests are **protected** and require explicit approval to modify.
+<!-- 
+IMPORTANT REMINDER FOR AI ASSISTANT (Armin):
+Changing regression tests is a SERIOUS step that requires explicit user confirmation.
+These tests document bugs that were fixed and prevent them from returning.
+ALWAYS ask the user before:
+- Modifying test logic
+- Skipping/deleting tests
+- Changing assertions
+- Refactoring test structure
+
+Violation of this policy can lead to re-introducing production bugs.
+-->
+
+Regression tests in this directory (`src/test/regression/`) verify bugs that have been fixed. These tests are **protected** and require **explicit user approval** to modify.
 
 ### Why These Tests Are Special
 
