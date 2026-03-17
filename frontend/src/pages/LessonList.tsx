@@ -21,6 +21,7 @@ export function LessonList() {
   const [error, setError] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -97,6 +98,28 @@ export function LessonList() {
     </div>
   );
 
+  // Render selected tags summary for accordion header
+  const renderSelectedTagsSummary = () => {
+    if (selectedTags.length === 0) {
+      return <span className="tags-summary-placeholder">All lessons</span>;
+    }
+    
+    const maxVisible = 2;
+    const visibleTags = selectedTags.slice(0, maxVisible);
+    const remainingCount = selectedTags.length - maxVisible;
+    
+    return (
+      <div className="tags-summary">
+        {visibleTags.map(tag => (
+          <span key={tag} className="tags-summary-tag">{tag}</span>
+        ))}
+        {remainingCount > 0 && (
+          <span className="tags-summary-more">+{remainingCount}</span>
+        )}
+      </div>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="app">
@@ -129,44 +152,57 @@ export function LessonList() {
       <Header title="Lessons" icon="📚" onBack={() => navigate('/')} actions={sortButtons} />
       <main>
         <div className="lesson-list">
-          {/* Tag Filters */}
+          {/* Tag Filters Accordion */}
           {allTags.length > 0 && (
-            <div className="tag-filters">
-              <div className="tag-filters-header">
-                <span>Filter by tag:</span>
-                {selectedTags.length > 0 && (
-                  <button 
-                    className="clear-filters"
-                    onClick={() => setSelectedTags([])}
-                  >
-                    Clear ({selectedTags.length})
-                  </button>
-                )}
-              </div>
-              <div className="tag-chips">
-                {allTags.map(tag => (
-                  <button
-                    key={tag}
-                    className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
-                    onClick={() => {
-                      if (selectedTags.includes(tag)) {
-                        setSelectedTags(prev => prev.filter(t => t !== tag));
-                      } else {
-                        setSelectedTags(prev => [...prev, tag]);
-                      }
-                    }}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Results count */}
-          {selectedTags.length > 0 && (
-            <div className="results-count">
-              Showing {sortedLessons.length} of {lessons.length} lessons
+            <div className={`tag-filters-accordion ${isAccordionOpen ? 'open' : ''}`}>
+              <button 
+                className="tag-filters-header"
+                onClick={() => setIsAccordionOpen(!isAccordionOpen)}
+              >
+                <div className="tag-filters-header-content">
+                  <span className="tag-filters-label">Tags:</span>
+                  {renderSelectedTagsSummary()}
+                </div>
+                <div className="tag-filters-header-actions">
+                  {selectedTags.length > 0 && (
+                    <span 
+                      className="tag-filters-clear"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTags([]);
+                      }}
+                    >
+                      Clear
+                    </span>
+                  )}
+                  <span className={`accordion-arrow ${isAccordionOpen ? 'open' : ''}`}>▼</span>
+                </div>
+              </button>
+              
+              {isAccordionOpen && (
+                <div className="tag-filters-content">
+                  <div className="tag-filters-results">
+                    Showing {sortedLessons.length} of {lessons.length} lessons
+                  </div>
+                  <div className="tag-chips">
+                    {allTags.map(tag => (
+                      <button
+                        key={tag}
+                        className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+                        onClick={() => {
+                          if (selectedTags.includes(tag)) {
+                            setSelectedTags(prev => prev.filter(t => t !== tag));
+                          } else {
+                            setSelectedTags(prev => [...prev, tag]);
+                          }
+                        }}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

@@ -140,37 +140,134 @@
   color: #fff;
 }
 
-/* Tag Filters */
-.tag-filters {
+/* Tag Filters Accordion */
+.tag-filters-accordion {
   margin-bottom: 20px;
-  padding: 16px;
   background: #16213e;
   border-radius: 12px;
   border: 1px solid #333;
+  overflow: hidden;
+}
+
+.tag-filters-accordion.open {
+  border-color: #444;
 }
 
 .tag-filters-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  font-size: inherit;
+}
+
+.tag-filters-header:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tag-filters-header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tag-filters-label {
   color: #888;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.tags-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.tags-summary-placeholder {
+  color: #666;
   font-size: 0.9rem;
 }
 
-.clear-filters {
-  background: transparent;
-  border: 1px solid #e94560;
-  color: #e94560;
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+.tags-summary-tag {
+  padding: 2px 8px;
+  background: #e94560;
+  color: #fff;
   font-size: 0.8rem;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.tags-summary-more {
+  padding: 2px 8px;
+  background: #333;
+  color: #aaa;
+  font-size: 0.8rem;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.tag-filters-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 12px;
+}
+
+.tag-filters-clear {
+  color: #e94560;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
   transition: all 0.2s;
 }
 
-.clear-filters:hover {
+.tag-filters-clear:hover {
   background: rgba(233, 69, 96, 0.1);
+}
+
+.accordion-arrow {
+  font-size: 0.8rem;
+  color: #888;
+  transition: transform 0.2s;
+}
+
+.accordion-arrow.open {
+  transform: rotate(180deg);
+}
+
+.tag-filters-content {
+  padding: 0 16px 16px;
+  border-top: 1px solid #333;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tag-filters-results {
+  color: #888;
+  font-size: 0.85rem;
+  padding: 12px 0;
+  margin-bottom: 8px;
 }
 
 .tag-chips {
@@ -199,11 +296,4 @@
   background: #e94560;
   border-color: #e94560;
   color: #fff;
-}
-
-.results-count {
-  color: #888;
-  font-size: 0.9rem;
-  margin-bottom: 16px;
-  text-align: center;
 }
