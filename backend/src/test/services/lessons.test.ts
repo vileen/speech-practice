@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { getLesson } from '../../services/lessons.js';
 
-describe('getLesson', () => {
+// Run DB tests only locally (not in CI)
+const describeDB = process.env.CI || process.env.SKIP_DB_TESTS ? describe.skip : describe;
+
+describeDB('getLesson', () => {
   it('should convert string practice_phrases to objects with jp field', async () => {
     const lesson = await getLesson('2026-03-16');
     
