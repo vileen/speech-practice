@@ -109,7 +109,7 @@ describe('LessonMode', () => {
       expect(screen.getByText(/Lessons/i)).toBeInTheDocument();
     });
     
-    const backButton = screen.getByText(/← Back/i);
+    const backButton = screen.getByText(/Back/i);
     fireEvent.click(backButton);
     
     expect(mockOnBack).toHaveBeenCalled();

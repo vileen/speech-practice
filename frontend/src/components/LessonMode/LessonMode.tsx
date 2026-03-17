@@ -63,6 +63,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showFurigana, setShowFurigana] = useState(() => {
     // Read from localStorage on initial load
     if (typeof window !== 'undefined') {
@@ -649,9 +650,6 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   );
 }
 
-  // Tag filtering
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  
   // Collect all unique tags from lessons
   const allTags = Array.isArray(lessons) 
     ? Array.from(new Set(lessons.flatMap(l => l.topics || []))).sort()
