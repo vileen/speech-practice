@@ -1,48 +1,64 @@
-# Regression Tests
+# Regression Test Policy
 
-This directory contains tests that verify previously fixed bugs don't reoccur.
+## ⚠️ CRITICAL: Do Not Modify Without Approval
 
-## Test Coverage
+Regression tests in this directory (`src/test/regression/`) verify bugs that have been fixed. These tests are **protected** and require explicit approval to modify.
 
-### LessonList.regression.test.tsx
-Tests for the Lessons page issues:
-- **Single column layout**: Prevents grid breaking into multiple columns
-- **Default sort to newest first**: Ensures newest lessons appear at top by default
-- **Consistent lesson numbers**: Verifies #1 always means oldest lesson, regardless of sort order
-- **English locale for dates**: Prevents Polish month names appearing (e.g., "stycznia")
-- **Sort buttons in header**: Ensures sorting controls are always available
-- **Lesson number vertical alignment**: Keeps number centered while text stays at top
+### Why These Tests Are Special
 
-### KanjiPractice.regression.test.tsx
-Tests for the Kanji practice page:
-- **No duplicate imports**: Prevents kanji count growing on every page refresh
-- **Import only on first visit**: Verifies kanji are only imported when localStorage is empty
-- **Stable kanji count**: Ensures count doesn't increase with multiple renders
+1. **They Document Bugs** - Each test explains what broke and why
+2. **They Prevent Regression** - Changing code shouldn't re-introduce old bugs
+3. **They Serve as Documentation** - New developers learn what not to do
 
-### Header.regression.test.tsx
-Tests for the Header component:
-- **Title centered without back button**: Prevents title shifting when no back button present
-- **Title centered with back button**: Ensures back button doesn't push title off-center
-- **Actions rendering**: Verifies action buttons appear in header-right
-- **Full width header**: Prevents padding issues causing gaps
+### Rules
 
-## Running Regression Tests
+1. **NEVER** skip or delete regression tests without code review
+2. **NEVER** change the test logic (what it's verifying)
+3. **ONLY** update tests if:
+   - The bug was intentionally re-introduced (rare)
+   - The component structure changed significantly (discuss first)
+   - The test is genuinely flaky (prove it first)
 
-```bash
-# Run all tests including regression
-yarn test
+### What To Do If a Regression Test Fails
 
-# Run only regression tests
-yarn test src/test/regression/
+1. **Don't** just fix the test
+2. **Investigate** - did the bug return?
+3. **Discuss** with the team if component behavior should change
+4. **Document** any intentional changes in commit message
 
-# Run specific regression test file
-yarn test src/test/regression/LessonList.regression.test.tsx
+### Current Regression Tests
+
+| Test File | Bug Fixed | Date |
+|-----------|-----------|------|
+| `LessonMode.regression.test.tsx` | Array iteration crash, undefined phrase fields, missing Header component | 2026-03-17 |
+| `MemoryMode.regression.test.tsx` | Lesson selection not persisted, vocab count not displayed | 2026-03-17 |
+
+### Adding New Regression Tests
+
+When fixing a bug that:
+- Caused a crash
+- Affected user experience significantly  
+- Was tricky to debug
+
+Add a regression test with:
+1. Clear comment explaining the bug
+2. The fix that was applied
+3. What the test verifies
+
+Template:
+```typescript
+/**
+ * REGRESSION TEST: [Short description]
+ * 
+ * Bug: [Detailed description of what broke]
+ * 
+ * Fix: [What was changed to fix it]
+ */
+it('should [what the test verifies]', () => {
+  // test code
+});
 ```
 
-## Adding New Regression Tests
+---
 
-When fixing a bug that could reoccur:
-1. Create a test in the appropriate file (or create a new one)
-2. Name the test descriptively: "should NOT [bad behavior]"
-3. Include a comment explaining what bug it prevents
-4. Update this README with the new test coverage
+**Remember: These tests are your safety net. Don't cut them.**
