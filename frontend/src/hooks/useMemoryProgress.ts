@@ -136,15 +136,27 @@ export function useMemoryProgress() {
     return getIntervalPreview(card, rating);
   }, [cards]);
 
-  // Get stats
-  const stats = {
-    total: cards.length,
-    new: cards.filter(c => c.state === 'new').length,
-    learning: cards.filter(c => c.state === 'learning').length,
-    review: cards.filter(c => c.state === 'review').length,
-    relearning: cards.filter(c => c.state === 'relearning').length,
-    due: dueCount,
-  };
+  // Get stats (all or filtered by lesson IDs)
+  const getStats = useCallback((lessonIds?: string[]) => {
+    const filteredCards = lessonIds && lessonIds.length > 0
+      ? cards.filter(c => lessonIds.includes(c.lessonId))
+      : cards;
+    
+    const now = new Date();
+    const filteredDue = filteredCards.filter(c => c.due <= now && c.state !== 'new').length;
+    
+    return {
+      total: filteredCards.length,
+      new: filteredCards.filter(c => c.state === 'new').length,
+      learning: filteredCards.filter(c => c.state === 'learning').length,
+      review: filteredCards.filter(c => c.state === 'review').length,
+      relearning: filteredCards.filter(c => c.state === 'relearning').length,
+      due: filteredDue,
+    };
+  }, [cards]);
+
+  // Default stats (all cards)
+  const stats = getStats();
 
   // Reset all progress (for testing/debug)
   const resetProgress = useCallback(() => {
@@ -244,6 +256,7 @@ export function useMemoryProgress() {
     isLoading,
     dueCount,
     stats,
+    getStats,
     addCard,
     review,
     getNextCard,

@@ -17,7 +17,7 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   const {
     cards,
     isLoading,
-    stats,
+    getStats,
     review,
     getNextCard,
     getPreview,
@@ -29,6 +29,9 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   const [showSetup, setShowSetup] = useState(true);
   const [selectedLessons, setSelectedLessons] = useState<string[]>([]);
   const [isComplete, setIsComplete] = useState(false);
+  
+  // Get filtered stats based on selected lessons
+  const stats = getStats(selectedLessons);
   const [isStarting, setIsStarting] = useState(false);
   const [hasImported, setHasImported] = useState(false);
 
@@ -135,6 +138,8 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
       console.log('MemoryMode: Next card:', next);
       if (next) {
         setCurrentCard(next);
+        // Scroll to top when card is loaded
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         setIsComplete(true);
       }
