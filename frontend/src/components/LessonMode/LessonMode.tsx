@@ -69,7 +69,6 @@ export function LessonMode({
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
-  const [_vocabWithSources, setVocabWithSources] = useState<any[]>([]);
   const [showFurigana, setShowFurigana] = useState(() => {
     // Read from localStorage on initial load
     if (typeof window !== 'undefined') {
@@ -222,22 +221,6 @@ export function LessonMode({
     fetchLessons();
   }, []);
 
-  // Fetch vocabulary with lesson sources
-  const fetchVocabWithSources = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/vocabulary-with-sources`);
-      if (!response.ok) throw new Error('Failed to fetch vocab with sources');
-      const data = await response.json();
-      setVocabWithSources(data);
-    } catch (error) {
-      console.error('Error fetching vocab with sources:', error);
-    }
-  };
-  
-  useEffect(() => {
-    fetchVocabWithSources();
-  }, []);
-
   // Handle lesson selection
   const handleSelectLesson = async (lessonId: string) => {
     onSelectLesson(lessonId);
@@ -281,27 +264,8 @@ export function LessonMode({
     return acc;
   }, {} as Record<string, typeof selectedLesson.vocabulary>);
 
-  // Fetch review counts for vocabulary
-  const [vocabReviews, setVocabReviews] = useState<Record<string, number>>({});
-  
-  useEffect(() => {
-    const fetchVocabReviews = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/vocabulary-reviews`);
-        if (!response.ok) throw new Error('Failed to fetch vocab reviews');
-        const data = await response.json();
-        // Convert array to record for quick lookup
-        const reviewsRecord: Record<string, number> = {};
-        data.forEach((item: { word: string; reviewCount: number }) => {
-          reviewsRecord[item.word] = item.reviewCount;
-        });
-        setVocabReviews(reviewsRecord);
-      } catch (error) {
-        console.error('Error fetching vocab reviews:', error);
-      }
-    };
-    fetchVocabReviews();
-  }, []);
+  // Vocabulary reviews - placeholder for future feature
+  const vocabReviews: Record<string, number> = {};
 
   if (loading) {
     return (
