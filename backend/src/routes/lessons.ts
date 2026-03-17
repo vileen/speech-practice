@@ -44,6 +44,8 @@ router.get('/memory', checkPassword, async (_req, res) => {
       title: row.title,
       order: row.order,
       topics: row.topics || [],
+      vocabCount: (row.vocabulary || []).length,
+      grammarCount: (row.grammar || []).length,
       vocabulary: row.vocabulary || [],
       grammar: row.grammar || []
     }));
