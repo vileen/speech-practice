@@ -1,15 +1,14 @@
 .lesson-mode {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 20px 20px;
+  padding: 0;
 }
 
-/* Full-width header wrapper */
-.lesson-mode > .app-header {
-  margin: 0 -20px 20px;
-  padding: 16px 20px;
-  background: #1a1a2e;
-  border-bottom: 2px solid #333;
+/* Content padding */
+.lesson-mode > .lessons-list,
+.lesson-mode > .lesson-detail,
+.lesson-mode > .loading {
+  padding: 0 20px 20px;
 }
 
 .lesson-header {
@@ -730,6 +729,15 @@ ruby.furigana-failed rt {
   }
 }
 
+/* Responsive content padding */
+@media (max-width: 480px) {
+  .lesson-mode > .lessons-list,
+  .lesson-mode > .lesson-detail,
+  .lesson-mode > .loading {
+    padding: 0 12px 12px;
+  }
+}
+
 /* Landscape mode on mobile */
 @media (max-height: 500px) and (orientation: landscape) {
   .lessons-list {
@@ -739,11 +747,12 @@ ruby.furigana-failed rt {
 
 /* Safe area for iPhone notch/Dynamic Island */
 @supports (padding: max(0px)) {
-  .lesson-mode {
-    padding-left: max(12px, env(safe-area-inset-left));
-    padding-right: max(12px, env(safe-area-inset-right));
-    padding-top: max(12px, env(safe-area-inset-top));
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  .lesson-mode > .lessons-list,
+  .lesson-mode > .lesson-detail,
+  .lesson-mode > .loading {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
   }
 }
 
