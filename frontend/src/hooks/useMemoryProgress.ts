@@ -102,11 +102,18 @@ export function useMemoryProgress() {
   }, []);
 
   // Get next card to review (due cards first, then new cards)
-  const getNextCard = useCallback((): MemoryCard | null => {
+  // Optional: filter by lesson IDs
+  const getNextCard = useCallback((lessonIds?: string[]): MemoryCard | null => {
     const now = new Date();
     
+    // Filter cards by lesson if specified
+    let filteredCards = cards;
+    if (lessonIds && lessonIds.length > 0) {
+      filteredCards = cards.filter(c => lessonIds.includes(c.lessonId));
+    }
+    
     // First, get due cards
-    const dueCards = cards.filter(c => c.due <= now && c.state !== 'new');
+    const dueCards = filteredCards.filter(c => c.due <= now && c.state !== 'new');
     if (dueCards.length > 0) {
       // Sort by due date (oldest first)
       dueCards.sort((a, b) => a.due.getTime() - b.due.getTime());
@@ -114,7 +121,7 @@ export function useMemoryProgress() {
     }
     
     // Then, get new cards
-    const newCards = cards.filter(c => c.state === 'new');
+    const newCards = filteredCards.filter(c => c.state === 'new');
     if (newCards.length > 0) {
       return newCards[0];
     }

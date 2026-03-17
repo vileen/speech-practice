@@ -34,17 +34,17 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
 
 
 
-  // Get next card when needed
+  // Get next card when needed (filtered by selected lessons)
   useEffect(() => {
     if (!showSetup && !isRevealed && !isComplete) {
-      const next = getNextCard();
+      const next = getNextCard(selectedLessons);
       if (next) {
         setCurrentCard(next);
       } else {
         setIsComplete(true);
       }
     }
-  }, [showSetup, isRevealed, isComplete, getNextCard, cards.length]);
+  }, [showSetup, isRevealed, isComplete, getNextCard, cards.length, selectedLessons]);
 
   const handleReveal = useCallback(() => {
     setIsRevealed(true);
@@ -131,8 +131,8 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   // Start session AFTER cards are imported (watch cards.length change)
   useEffect(() => {
     if (hasImported && !showSetup && !isComplete) {
-      console.log('MemoryMode: Cards imported, checking for next card. Total cards:', cards.length);
-      const next = getNextCard();
+      console.log('MemoryMode: Cards imported, checking for next card. Total cards:', cards.length, 'Selected lessons:', selectedLessons);
+      const next = getNextCard(selectedLessons);
       console.log('MemoryMode: Next card:', next);
       if (next) {
         setCurrentCard(next);
@@ -142,7 +142,7 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
       setIsStarting(false);
       setHasImported(false); // Reset for next time
     }
-  }, [cards.length, hasImported, showSetup, isComplete, getNextCard]);
+  }, [cards.length, hasImported, showSetup, isComplete, getNextCard, selectedLessons]);
 
   const resetSession = useCallback(() => {
     setShowSetup(true);
@@ -243,7 +243,7 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
 
               {/* Lesson Selection */}
               <div className="lesson-selection">
-                <h3>Select Lessons to Study</h3>
+                <h3>Select Lessons to Study <small>(only cards from selected lessons)</small></h3>
                 <div className="lesson-chips">
                   {import.meta.env.DEV && (
                     <div style={{fontSize: '12px', color: '#888', marginBottom: '10px'}}>
