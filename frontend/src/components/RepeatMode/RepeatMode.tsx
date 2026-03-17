@@ -31,12 +31,7 @@ import { Header } from '../Header/index.js';
 import { useFurigana } from '../../hooks/useFurigana';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
 import { usePronunciationCheck } from '../../hooks/usePronunciationCheck';
-
-const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
-
-function getPassword(): string {
-  return localStorage.getItem('speech_practice_password') || '';
-}
+import { API_URL, authFetch } from '../../config/api.js';
 
 export function RepeatMode() {
   const language = 'japanese';
@@ -147,11 +142,10 @@ export function RepeatMode() {
 
     setIsFetchingAudio(true);
     try {
-      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
+      const response = await authFetch(`${API_URL}/api/repeat-after-me`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Password': getPassword(),
         },
         body: JSON.stringify({
           target_text: currentPhrase.text,

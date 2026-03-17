@@ -31,6 +31,7 @@ export const appConfig = {
       'https://trunk-sticks-connect-currency.trycloudflare.com',
       'https://speech-practice-vileen.netlify.app',
       'https://magnificent-crumble-1f90e0.netlify.app',
+      'https://speech.vileen.pl',
     ] as string[],
     credentials: true,
   },

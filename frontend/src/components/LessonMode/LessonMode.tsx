@@ -4,7 +4,7 @@ import { AudioPlayer } from '../AudioPlayer/index.js';
 import { VoiceRecorder } from '../VoiceRecorder/index.js';
 import { HighlightedText } from '../HighlightedText/index.js';
 import { Header } from '../Header/index.js';
-import { API_URL } from '../../config/api.js';
+import { API_URL, authFetch } from '../../config/api.js';
 import './LessonMode.css';
 
 // Type definitions
@@ -55,7 +55,7 @@ export function LessonMode() {
       if (!lessonId) return;
       
       try {
-        const response = await fetch(`${API_URL}/api/lessons/${lessonId}`);
+        const response = await authFetch(`${API_URL}/api/lessons/${lessonId}`);
         if (!response.ok) throw new Error('Failed to fetch lesson');
         
         const data = await response.json();
@@ -63,7 +63,7 @@ export function LessonMode() {
         
         // Fetch transcription if available
         try {
-          const transResponse = await fetch(`${API_URL}/api/lessons/${lessonId}/transcription`);
+          const transResponse = await authFetch(`${API_URL}/api/lessons/${lessonId}/transcription`);
           if (transResponse.ok) {
             const transData = await transResponse.json();
             setTranscription(transData.content || '');
