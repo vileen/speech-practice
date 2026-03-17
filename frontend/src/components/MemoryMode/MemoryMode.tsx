@@ -27,8 +27,26 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   const [currentCard, setCurrentCard] = useState<MemoryCard | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [showSetup, setShowSetup] = useState(true);
-  const [selectedLessons, setSelectedLessons] = useState<string[]>([]);
+  const [selectedLessons, setSelectedLessons] = useState<string[]>(() => {
+    // Load from localStorage on init
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('memoryModeSelectedLessons');
+      try {
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  });
   const [isComplete, setIsComplete] = useState(false);
+
+  // Save selected lessons to localStorage when they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('memoryModeSelectedLessons', JSON.stringify(selectedLessons));
+    }
+  }, [selectedLessons]);
   
   // Get filtered stats based on selected lessons
   const stats = getStats(selectedLessons);
@@ -159,7 +177,7 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     setIsRevealed(false);
     setCurrentCard(null);
     setIsComplete(false);
-    setSelectedLessons([]);
+    // Keep selectedLessons - they are persisted in localStorage
     setHasImported(false);
   }, []);
 
