@@ -12,6 +12,7 @@ import logsRoutes from './logs.js';
 import vocabularyRoutes from './vocabulary.js';
 import grammarRoutes from './grammar.js';
 import kanjiRoutes from './kanji.js';
+import pdfRoutes from './pdf.js';
 
 const router = Router();
 
@@ -29,5 +30,6 @@ router.use('/logs', logsRoutes);
 router.use('/', vocabularyRoutes);
 router.use('/grammar', grammarRoutes);
 router.use('/kanji', kanjiRoutes);
+router.use('/pdf', pdfRoutes);
 
 export default router;
