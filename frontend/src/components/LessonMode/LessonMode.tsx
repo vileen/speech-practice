@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import './LessonMode.css';
 import { translateLessonTitle } from '../../translations.js';
 import { API_URL } from '../../config/api.js';
+import { Header } from '../Header/index.js';
 
 interface Lesson {
   id: string;
@@ -497,10 +498,11 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   if (loading && selectedLessonId && !selectedLesson) {
     return (
       <div className="lesson-mode">
-        <div className="lesson-header">
-          <button className="back-btn" onClick={handleBackToList}>← All Lessons</button>
-          <h2>📚 Loading Lesson...</h2>
-        </div>
+        <Header
+          title="Loading Lesson..."
+          icon="📚"
+          onBack={handleBackToList}
+        />
         <div className="loading">Loading lesson content...</div>
       </div>
     );
@@ -509,16 +511,19 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   if (selectedLesson) {
     return (
       <div className="lesson-mode">
-        <div className="lesson-header">
-          <button className="back-btn" onClick={handleBackToList}>← All Lessons</button>
-          <h2>{translateLessonTitle(selectedLesson.title)}</h2>
-          <button 
-            className="start-chat-btn"
-            onClick={() => onStartLessonChat(selectedLesson.id, translateLessonTitle(selectedLesson.title))}
-          >
-            💬 Practice Conversation
-          </button>
-        </div>
+        <Header
+          title={translateLessonTitle(selectedLesson.title)}
+          icon="📚"
+          onBack={handleBackToList}
+          actions={
+            <button
+              className="start-chat-btn"
+              onClick={() => onStartLessonChat(selectedLesson.id, translateLessonTitle(selectedLesson.title))}
+            >
+              💬 Practice Conversation
+            </button>
+          }
+        />
 
         <div className="lesson-tabs">
           <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>Overview</button>
@@ -650,25 +655,28 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
 
   return (
     <div className="lesson-mode">
-      <div className="lesson-header">
-        <button className="back-btn" onClick={onBack}>← Back</button>
-        <h2>📚 Lessons</h2>
-        <div className="sort-controls">
-          <button 
-            className={sortOrder === 'newest' ? 'active' : ''}
-            onClick={() => setSortOrder('newest')}
-          >
-            Newest
-          </button>
-          <button 
-            className={sortOrder === 'oldest' ? 'active' : ''}
-            onClick={() => setSortOrder('oldest')}
-          >
-            Oldest
-          </button>
-        </div>
-      </div>
-      
+      <Header
+        title="Lessons"
+        icon="📚"
+        onBack={onBack}
+        actions={
+          <div className="sort-controls">
+            <button
+              className={sortOrder === 'newest' ? 'active' : ''}
+              onClick={() => setSortOrder('newest')}
+            >
+              Newest
+            </button>
+            <button
+              className={sortOrder === 'oldest' ? 'active' : ''}
+              onClick={() => setSortOrder('oldest')}
+            >
+              Oldest
+            </button>
+          </div>
+        }
+      />
+
       <div className="lessons-list" ref={lessonsListRef}>
         {sortedLessons.map((lesson, index) => (
           <div 
