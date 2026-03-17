@@ -53,11 +53,11 @@ def check_java() -> bool:
 def convert_pdf(
     input_path: str,
     output_dir: str,
-    output_format: str = 'markdown',
-    use_hybrid: bool = False,
-    use_ocr: bool = False,
-    ocr_languages: str = 'eng',
-    hybrid_port: int = 5002
+    format: str = 'markdown',
+    hybrid: bool = False,
+    ocr: bool = False,
+    lang: str = 'eng',
+    port: int = 5002
 ) -> Dict:
     """
     Convert a single PDF file
@@ -107,13 +107,13 @@ os.makedirs("{output_dir}", exist_ok=True)
 opendataloader_pdf.convert(
     input_path=["{input_path}"],
     output_dir="{output_dir}",
-    format="{output_format}"
+    format="{format}"
 )
         '''
     ]
     
     # Add hybrid mode options
-    if use_hybrid:
+    if hybrid:
         cmd = [
             'python', '-c',
             f'''
@@ -125,9 +125,9 @@ os.makedirs("{output_dir}", exist_ok=True)
 opendataloader_pdf.convert(
     input_path=["{input_path}"],
     output_dir="{output_dir}",
-    format="{output_format}",
+    format="{format}",
     hybrid="docling-fast"{',
-    hybrid_mode="full"' if use_ocr else ''}
+    hybrid_mode="full"' if ocr else ''}
 )
             '''
         ]
@@ -174,11 +174,11 @@ opendataloader_pdf.convert(
 def batch_convert(
     input_paths: List[str],
     output_dir: str,
-    output_format: str = 'markdown',
-    use_hybrid: bool = False,
-    use_ocr: bool = False,
-    ocr_languages: str = 'eng',
-    hybrid_port: int = 5002
+    format: str = 'markdown',
+    hybrid: bool = False,
+    ocr: bool = False,
+    lang: str = 'eng',
+    port: int = 5002
 ) -> List[Dict]:
     """
     Convert multiple PDFs
@@ -211,11 +211,11 @@ def batch_convert(
         result = convert_pdf(
             input_path=str(pdf_file),
             output_dir=output_dir,
-            output_format=output_format,
-            use_hybrid=use_hybrid,
-            use_ocr=use_ocr,
-            ocr_languages=ocr_languages,
-            hybrid_port=hybrid_port
+            format=format,
+            hybrid=hybrid,
+            ocr=ocr,
+            lang=lang,
+            port=port
         )
         results.append(result)
     

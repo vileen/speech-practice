@@ -86,11 +86,11 @@ Examples:
         results = batch_convert(
             input_paths=args.inputs,
             output_dir=args.output_dir,
-            output_format=args.format,
-            use_hybrid=args.hybrid,
-            use_ocr=args.ocr,
-            ocr_languages=args.lang,
-            hybrid_port=args.port
+            format=args.format,
+            hybrid=args.hybrid,
+            ocr=args.ocr,
+            lang=args.lang,
+            port=args.port
         )
         
         print(f"\n✅ Converted {len(results)} file(s) to {args.output_dir}")
