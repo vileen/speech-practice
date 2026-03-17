@@ -655,10 +655,6 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
     ? Array.from(new Set(lessons.flatMap(l => l.topics || []))).sort()
     : [];
   
-  // DEBUG: Log tags
-  console.log('LessonMode DEBUG: lessons count:', lessons?.length);
-  console.log('LessonMode DEBUG: allTags:', allTags);
-  
   // Filter and sort lessons
   const filteredLessons = Array.isArray(lessons) 
     ? lessons.filter(lesson => {

@@ -20,6 +20,7 @@ export function LessonList() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -48,8 +49,16 @@ export function LessonList() {
     fetchLessons();
   }, []);
 
+  // Get all unique tags from lessons
+  const allTags = Array.from(new Set(lessons.flatMap(l => l.topics || []))).sort();
+
+  // Filter lessons by selected tags
+  const filteredLessons = selectedTags.length > 0
+    ? lessons.filter(lesson => selectedTags.some(tag => (lesson.topics || []).includes(tag)))
+    : lessons;
+
   // Assign lesson numbers based on chronological order (oldest = #1)
-  const lessonsWithNumbers = [...lessons]
+  const lessonsWithNumbers = [...filteredLessons]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map((lesson, index) => ({ ...lesson, lessonNumber: index + 1 }));
 
@@ -120,6 +129,47 @@ export function LessonList() {
       <Header title="Lessons" icon="📚" onBack={() => navigate('/')} actions={sortButtons} />
       <main>
         <div className="lesson-list">
+          {/* Tag Filters */}
+          {allTags.length > 0 && (
+            <div className="tag-filters">
+              <div className="tag-filters-header">
+                <span>Filter by tag:</span>
+                {selectedTags.length > 0 && (
+                  <button 
+                    className="clear-filters"
+                    onClick={() => setSelectedTags([])}
+                  >
+                    Clear ({selectedTags.length})
+                  </button>
+                )}
+              </div>
+              <div className="tag-chips">
+                {allTags.map(tag => (
+                  <button
+                    key={tag}
+                    className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+                    onClick={() => {
+                      if (selectedTags.includes(tag)) {
+                        setSelectedTags(prev => prev.filter(t => t !== tag));
+                      } else {
+                        setSelectedTags(prev => [...prev, tag]);
+                      }
+                    }}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Results count */}
+          {selectedTags.length > 0 && (
+            <div className="results-count">
+              Showing {sortedLessons.length} of {lessons.length} lessons
+            </div>
+          )}
+
           <h2>Select a Lesson</h2>
 
           {sortedLessons.length === 0 ? (
