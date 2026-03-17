@@ -26,7 +26,10 @@ window.fetch = async function(
   if (isApiUrl(url)) {
     const password = getPassword();
     
-    // Merge headers
+    // Log for debugging (remove in production)
+    console.log(`🔐 API call: ${url}, has password: ${password ? 'yes' : 'no'}`);
+    
+    // Merge headers - use lowercase for consistency
     const newInit: RequestInit = {
       ...init,
       headers: {

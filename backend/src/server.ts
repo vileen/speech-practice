@@ -48,6 +48,7 @@ validateConfig();
 app.use(cors({
   origin: appConfig.cors.origins,
   credentials: appConfig.cors.credentials,
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-password'],
 }));
 
 app.use(express.json());
