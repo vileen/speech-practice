@@ -14,6 +14,9 @@ const mockGetPreview = vi.fn().mockReturnValue(1);
 const mockImportFromLesson = vi.fn().mockReturnValue(2);
 const mockResetProgress = vi.fn();
 
+const mockStats = { total: 2, new: 1, learning: 1, review: 0, relearning: 0, due: 2 };
+const mockGetStats = vi.fn().mockReturnValue(mockStats);
+
 vi.mock('../../hooks/useMemoryProgress', () => ({
   useMemoryProgress: () => ({
     cards: [
@@ -21,7 +24,8 @@ vi.mock('../../hooks/useMemoryProgress', () => ({
       { phraseId: '2', en: 'teacher', jp: '先生', reading: 'せんせい', phraseType: 'vocabulary', state: 'learning', reps: 1 },
     ],
     isLoading: false,
-    stats: { total: 2, new: 1, learning: 1, review: 0, relearning: 0, due: 2 },
+    stats: mockStats,
+    getStats: mockGetStats,
     review: mockReview,
     getNextCard: mockGetNextCard,
     getPreview: mockGetPreview,
