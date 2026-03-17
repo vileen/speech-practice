@@ -41,6 +41,8 @@ function generateFurigana(text: string, reading: string | null | undefined): str
 
 // Split text into segments
 function splitText(text: string): string[] {
+  if (!text) return [];
+  
   const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
   
   if (hasJapanese) {
