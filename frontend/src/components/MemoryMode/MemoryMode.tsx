@@ -48,19 +48,39 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
     }
   }, [selectedLessons]);
   
+  // DEBUG: Log lessons prop changes
+  useEffect(() => {
+    console.log('MemoryMode DEBUG: lessons prop changed:', lessons);
+    console.log('MemoryMode DEBUG: lessons length:', lessons?.length);
+    if (lessons && lessons.length > 0) {
+      console.log('MemoryMode DEBUG: first lesson:', lessons[0]);
+      console.log('MemoryMode DEBUG: first lesson vocabCount:', lessons[0]?.vocabCount);
+    }
+  }, [lessons]);
+
   // Get filtered stats based on selected lessons
   const stats = getStats(selectedLessons);
   const [isStarting, setIsStarting] = useState(false);
   const [hasImported, setHasImported] = useState(false);
 
+  // DEBUG: Check if lessons prop is available
+  console.log('MemoryMode DEBUG: lessons prop =', lessons);
+  console.log('MemoryMode DEBUG: lessons?.length =', lessons?.length);
+  console.log('MemoryMode DEBUG: first lesson =', lessons?.[0]);
+  
   // Calculate total vocabulary count from selected lessons
   const selectedVocabCount = selectedLessons.reduce((total, lessonId) => {
-    const lesson = lessons?.find(l => l.id === lessonId);
-    console.log('MemoryMode: Finding lesson', lessonId, 'vocabCount:', lesson?.vocabCount);
+    console.log('MemoryMode DEBUG: Looking for lesson', lessonId);
+    console.log('MemoryMode DEBUG: lessons array =', lessons);
+    const lesson = lessons?.find(l => {
+      console.log('MemoryMode DEBUG: Checking lesson', l.id, 'against', lessonId);
+      return l.id === lessonId;
+    });
+    console.log('MemoryMode DEBUG: Found lesson', lessonId, 'vocabCount:', lesson?.vocabCount);
     return total + (lesson?.vocabCount || 0);
   }, 0);
   
-  console.log('MemoryMode: selectedVocabCount =', selectedVocabCount, 'selectedLessons:', selectedLessons);
+  console.log('MemoryMode DEBUG: selectedVocabCount =', selectedVocabCount, 'selectedLessons:', selectedLessons);
 
 
 
