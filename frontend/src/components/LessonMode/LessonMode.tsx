@@ -246,7 +246,7 @@ export function LessonMode() {
                   onClick={() => handlePlayPhrase(index)}
                 >
                   <span className="phrase-number">{index + 1}</span>
-                  <span className="phrase-text">{phrase.japanese.slice(0, 30)}...</span>
+                  <span className="phrase-text">{(phrase.japanese || '').slice(0, 30)}...</span>
                 </button>
               ))}
             </div>
