@@ -20,7 +20,11 @@ export function MemoryModeWrapper() {
         if (response.ok) {
           const data = await response.json();
           const lessonsArray = data.lessons || data;
-          console.log('MemoryMode: Fetched', lessonsArray.length, 'lessons with vocab/grammar');
+          console.log('MemoryMode: Fetched', lessonsArray.length, 'lessons');
+          // Debug: check if vocabCount exists
+          if (lessonsArray.length > 0) {
+            console.log('MemoryMode: First lesson vocabCount:', lessonsArray[0].vocabCount);
+          }
           setLessons(Array.isArray(lessonsArray) ? lessonsArray : []);
         } else {
           console.error('MemoryMode: Failed to fetch lessons:', response.status);

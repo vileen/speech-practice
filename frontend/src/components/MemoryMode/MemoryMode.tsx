@@ -56,8 +56,11 @@ export const MemoryMode: React.FC<MemoryModeProps> = ({ lessons }) => {
   // Calculate total vocabulary count from selected lessons
   const selectedVocabCount = selectedLessons.reduce((total, lessonId) => {
     const lesson = lessons?.find(l => l.id === lessonId);
+    console.log('MemoryMode: Finding lesson', lessonId, 'vocabCount:', lesson?.vocabCount);
     return total + (lesson?.vocabCount || 0);
   }, 0);
+  
+  console.log('MemoryMode: selectedVocabCount =', selectedVocabCount, 'selectedLessons:', selectedLessons);
 
 
 
