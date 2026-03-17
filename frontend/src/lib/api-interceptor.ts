@@ -46,3 +46,11 @@ window.fetch = async function(
 };
 
 console.log('🔐 API auth interceptor installed');
+
+// Debug: check if password is available
+const debugPassword = localStorage.getItem('speech_practice_password');
+console.log('🔐 Interceptor loaded, password exists:', !!debugPassword);
+
+// Make it global for debugging
+(window as any).__apiInterceptorLoaded = true;
+(window as any).__getInterceptorPassword = getPassword;
