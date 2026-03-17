@@ -38,6 +38,7 @@ interface LessonData {
   vocabulary: VocabItem[];
   grammar: GrammarPoint[];
   practice_phrases: PracticePhrase[];
+  phrases?: PracticePhrase[];  // Alias for frontend compatibility
 }
 
 interface LessonIndex {
@@ -154,8 +155,12 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
     });
   }
   
-  // Practice phrases
+  // Practice phrases - handle both string[] and PracticePhrase[] formats
   let practice_phrases = row.practice_phrases || [];
+  // Convert strings to PracticePhrase objects if needed
+  if (practice_phrases.length > 0 && typeof practice_phrases[0] === 'string') {
+    practice_phrases = practice_phrases.map((p: string) => ({ jp: p, en: '' }));
+  }
   if (practice_phrases.length > 0) {
     practice_phrases.forEach((p: PracticePhrase) => allTexts.push(p.jp));
   }
@@ -207,7 +212,8 @@ export async function getLesson(id: string, includeFurigana: boolean = false): P
     topics: row.topics || [],
     vocabulary: vocabulary,
     grammar: grammar,
-    practice_phrases: practice_phrases
+    practice_phrases: practice_phrases,
+    phrases: practice_phrases  // Alias for frontend compatibility
   };
 }
 
