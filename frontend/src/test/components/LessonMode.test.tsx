@@ -60,17 +60,7 @@ describe('LessonMode', () => {
       } else if (url.includes('/api/lessons')) {
         return Promise.resolve({
           ok: true,
-          json: () => Promise.resolve(mockLessons),
-        });
-      } else if (url.includes('/api/vocabulary-with-sources')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        });
-      } else if (url.includes('/api/vocabulary-reviews')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
+          json: () => Promise.resolve({ lessons: mockLessons }),
         });
       }
       return Promise.reject(new Error('Unknown endpoint'));
@@ -101,7 +91,7 @@ describe('LessonMode', () => {
     );
     
     await waitFor(() => {
-      expect(screen.getByText(/Your Lessons/i)).toBeInTheDocument();
+      expect(screen.getByText(/Lessons/i)).toBeInTheDocument();
     });
   });
 
@@ -116,10 +106,10 @@ describe('LessonMode', () => {
     );
     
     await waitFor(() => {
-      expect(screen.getByText(/Your Lessons/i)).toBeInTheDocument();
+      expect(screen.getByText(/Lessons/i)).toBeInTheDocument();
     });
     
-    const backButton = screen.getByText(/Back/i);
+    const backButton = screen.getByText(/← Back/i);
     fireEvent.click(backButton);
     
     expect(mockOnBack).toHaveBeenCalled();

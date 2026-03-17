@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import './LessonMode.css';
 import { translateLessonTitle } from '../../translations.js';
 import { API_URL } from '../../config/api.js';
-import { Header } from '../Header/index.js';
 
 interface Lesson {
   id: string;
@@ -57,13 +56,7 @@ interface LessonModeProps {
   onSelectLesson: (lessonId: string | null) => void;
 }
 
-export function LessonMode({
-  password: _password,
-  onBack,
-  onStartLessonChat,
-  selectedLessonId: _selectedLessonId,
-  onSelectLesson
-}: LessonModeProps) {
+export function LessonMode({ password, onBack, onStartLessonChat, selectedLessonId, onSelectLesson }: LessonModeProps) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selectedLesson, setSelectedLessonState] = useState<LessonDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -103,12 +96,33 @@ export function LessonMode({
         return parsed;
       }
     } catch (e) {
-      console.error('Failed to load furigana cache:', e);
+      console.error('Error loading furigana cache:', e);
     }
     return {};
   };
   
+  // Furigana cache with localStorage persistence
   const [furiganaCache, setFuriganaCache] = useState<Record<string, { furigana: string; timestamp: number; version: string }>>(loadFuriganaCacheFromStorage());
+  const [furiganaLoading, setFuriganaLoading] = useState<Record<string, boolean>>({});
+  const [furiganaFailed, setFuriganaFailed] = useState<Record<string, boolean>>({});
+  
+  // Use refs to avoid dependency loops in useEffect
+  const furiganaCacheRef = useRef<Record<string, { furigana: string; timestamp: number; version: string }>>({});
+  const furiganaLoadingRef = useRef<Record<string, boolean>>({});
+  const furiganaFailedRef = useRef<Record<string, boolean>>({});
+  
+  // Keep refs in sync with state
+  useEffect(() => {
+    furiganaCacheRef.current = furiganaCache;
+  }, [furiganaCache]);
+  
+  useEffect(() => {
+    furiganaLoadingRef.current = furiganaLoading;
+  }, [furiganaLoading]);
+  
+  useEffect(() => {
+    furiganaFailedRef.current = furiganaFailed;
+  }, [furiganaFailed]);
   
   // Save furigana cache to localStorage when it changes
   useEffect(() => {
@@ -118,401 +132,567 @@ export function LessonMode({
     }
   }, [furiganaCache]);
   
-  // Simple hash function for text
-  const hashText = (text: string): string => {
-    let hash = 0;
-    for (let i = 0; i < text.length; i++) {
-      const char = text.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
+  // Ref for scroll position
+  const lessonsListRef = useRef<HTMLDivElement>(null);
+  const scrollPositionRef = useRef<number>(0);
+
+  // Track last loaded lesson to avoid duplicate fetches
+  const lastLoadedLessonRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (selectedLessonId) {
+      // Only load if we haven't loaded this lesson yet
+      if (lastLoadedLessonRef.current !== selectedLessonId) {
+        lastLoadedLessonRef.current = selectedLessonId;
+        loadLessonDetail(selectedLessonId, false, false);
+      }
+    } else if (!selectedLessonId) {
+      // Go back to list when prop is null/undefined
+      lastLoadedLessonRef.current = null;
+      setSelectedLessonState(null);
+      // Restore scroll position when going back
+      setTimeout(() => {
+        if (lessonsListRef.current) {
+          lessonsListRef.current.scrollTop = scrollPositionRef.current;
+        }
+      }, 0);
     }
-    return hash.toString();
+  }, [selectedLessonId]); // Removed 'lessons' to prevent double-fetch
+
+  useEffect(() => {
+    // Only load lessons list if we're not viewing a specific lesson
+    if (!selectedLessonId) {
+      loadLessons();
+    }
+  }, []);
+
+
+  const loadLessons = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/lessons`, {
+        headers: { 'X-Password': password }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // Sort by date descending (most recent first)
+        const sorted = data.lessons.sort((a: Lesson, b: Lesson) => b.order - a.order);
+        setLessons(sorted);
+      }
+    } catch (error) {
+      console.error('Error loading lessons:', error);
+    } finally {
+      setLoading(false);
+    }
   };
-  
-  // Check if cache entry is valid (less than 24 hours old)
-  const isCacheValid = (entry: { timestamp: number }): boolean => {
-    const now = Date.now();
-    const oneDay = 24 * 60 * 60 * 1000;
-    return (now - entry.timestamp) < oneDay;
-  };
-  
-  // Fetch furigana with caching
-  const fetchFurigana = async (text: string): Promise<string | null> => {
-    const cacheKey = hashText(text);
+
+  const loadLessonDetail = async (id: string, saveScroll = true, notifyParent = true) => {
+    if (saveScroll && lessonsListRef.current) {
+      scrollPositionRef.current = lessonsListRef.current.scrollTop;
+    }
     
-    // Check cache first
-    const cached = furiganaCache[cacheKey];
-    if (cached && isCacheValid(cached)) {
+    setLoading(true);
+    try {
+      // Always fetch with furigana included (cached in DB)
+      const response = await fetch(`${API_URL}/api/lessons/${id}?furigana=true`, {
+        headers: { 'X-Password': password }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSelectedLessonState(data);
+        setActiveTab('overview');
+        // Notify parent of selection change (only for user clicks, not prop-driven loads)
+        if (notifyParent) {
+          onSelectLesson(id);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading lesson:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLessonClick = (lessonId: string) => {
+    // Just notify parent to navigate - the effect will handle loading
+    onSelectLesson(lessonId);
+  };
+
+  const handleBackToList = () => {
+    setSelectedLessonState(null);
+    onSelectLesson(null);
+  };
+
+  // Fetch furigana from backend - uses refs to avoid dependency loops
+  const fetchFurigana = useCallback(async (text: string): Promise<string> => {
+    // Check cache using ref to avoid dependency loop - new structure with metadata
+    const cached = furiganaCacheRef.current[text];
+    if (cached && cached.furigana) {
       return cached.furigana;
     }
+    
+    // Skip if already loading
+    if (furiganaLoadingRef.current[text]) {
+      return text;
+    }
+    
+    // Mark as loading
+    furiganaLoadingRef.current = { ...furiganaLoadingRef.current, [text]: true };
+    setFuriganaLoading({ ...furiganaLoadingRef.current });
     
     try {
       const response = await fetch(`${API_URL}/api/furigana`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Password': password,
         },
         body: JSON.stringify({ text }),
       });
       
-      if (!response.ok) throw new Error('Failed to fetch furigana');
-      
-      const data = await response.json();
-      
-      // Update cache
-      setFuriganaCache(prev => ({
-        ...prev,
-        [cacheKey]: {
-          furigana: data.with_furigana,
-          timestamp: Date.now(),
-          version: FURIGANA_CACHE_VERSION,
-        }
-      }));
-      
-      return data.with_furigana;
+      if (response.ok) {
+        const data = await response.json();
+        const withFurigana = data.with_furigana;
+        // Cache the result with metadata for versioning/invalidation
+        furiganaCacheRef.current = { 
+          ...furiganaCacheRef.current, 
+          [text]: { 
+            furigana: withFurigana, 
+            timestamp: Date.now(), 
+            version: FURIGANA_CACHE_VERSION 
+          } 
+        };
+        setFuriganaCache({ ...furiganaCacheRef.current });
+        return withFurigana;
+      } else {
+        // Mark as failed
+        furiganaFailedRef.current = { ...furiganaFailedRef.current, [text]: true };
+        setFuriganaFailed({ ...furiganaFailedRef.current });
+      }
     } catch (error) {
       console.error('Error fetching furigana:', error);
-      return null;
+      // Mark as failed
+      furiganaFailedRef.current = { ...furiganaFailedRef.current, [text]: true };
+      setFuriganaFailed({ ...furiganaFailedRef.current });
+    } finally {
+      furiganaLoadingRef.current = { ...furiganaLoadingRef.current, [text]: false };
+      setFuriganaLoading({ ...furiganaLoadingRef.current });
     }
-  };
-  
-  // Prefetch furigana for vocabulary and grammar
-  useEffect(() => {
-    if (selectedLesson && showFurigana) {
-      // Prefetch vocabulary furigana
-      selectedLesson.vocabulary.forEach(async (vocab) => {
-        if (!furiganaCache[hashText(vocab.jp)]) {
-          await fetchFurigana(vocab.jp);
-        }
-      });
-      
-      // Prefetch grammar pattern furigana
-      selectedLesson.grammar.forEach(async (grammar) => {
-        if (!furiganaCache[hashText(grammar.pattern)]) {
-          await fetchFurigana(grammar.pattern);
-        }
-      });
-    }
-  }, [selectedLesson, showFurigana]);
-  
-  // Get cached furigana
-  const getCachedFurigana = (text: string): string | null => {
-    const cached = furiganaCache[hashText(text)];
-    if (cached && isCacheValid(cached)) {
-      return cached.furigana;
-    }
-    return null;
-  };
+    
+    return text;
+  }, [password]);
 
-  // Fetch lesson data - either single lesson or list
+  // Fetch all furigana for a lesson when showFurigana is enabled
+  // Only runs when selectedLesson or showFurigana changes - NOT when cache changes
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (_selectedLessonId) {
-          // Fetch single lesson details
-          const response = await fetch(`${API_URL}/api/lessons/${_selectedLessonId}`);
-          if (!response.ok) throw new Error('Failed to fetch lesson details');
-          const data = await response.json();
-          setSelectedLessonState(data);
-          setActiveTab('overview');
+    if (!selectedLesson || !showFurigana) return;
+    
+    const textsToFetch: string[] = [];
+    
+    // Collect all Japanese text that needs furigana (check cache ref to avoid dependency loop)
+    selectedLesson.vocabulary.forEach(item => {
+      if (!furiganaCacheRef.current[item.jp]) textsToFetch.push(item.jp);
+    });
+    
+    selectedLesson.grammar.forEach(item => {
+      // Collect pattern text
+      if (!furiganaCacheRef.current[item.pattern]) textsToFetch.push(item.pattern);
+      // Collect explanation text (split by lines and filter for Japanese text)
+      (item.explanation || '').split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (!/[\u4e00-\u9faf]/.test(trimmed)) return; // Skip lines without kanji
+        if (furiganaCacheRef.current[trimmed]) return; // Skip already cached
+        
+        // Handle markdown table rows - extract cell contents
+        if (trimmed.startsWith('|')) {
+          const cells = trimmed.split('|').map(c => c.trim()).filter(c => c && !c.startsWith('-'));
+          cells.forEach(cell => {
+            if (/[\u4e00-\u9faf]/.test(cell) && !furiganaCacheRef.current[cell]) {
+              textsToFetch.push(cell);
+            }
+          });
         } else {
-          // Fetch all lessons list
-          const response = await fetch(`${API_URL}/api/lessons`);
-          if (!response.ok) throw new Error('Failed to fetch lessons');
-          const data = await response.json();
-          setLessons(data);
+          textsToFetch.push(trimmed);
         }
-      } catch (error) {
-        console.error('Error fetching lesson data:', error);
-      } finally {
-        setLoading(false);
+      });
+      // Collect examples
+      item.examples.forEach(ex => {
+        if (!furiganaCacheRef.current[ex.jp]) textsToFetch.push(ex.jp);
+      });
+    });
+    
+    selectedLesson.practice_phrases.forEach(phrase => {
+      if (!furiganaCacheRef.current[phrase.jp]) textsToFetch.push(phrase.jp);
+    });
+    
+    // Fetch furigana for all texts (with small delays to avoid overwhelming the API)
+    textsToFetch.forEach((text, index) => {
+      setTimeout(() => {
+        fetchFurigana(text);
+      }, index * 50); // 50ms delay between requests
+    });
+  }, [selectedLesson, showFurigana]); // Intentionally NOT including fetchFurigana or cache
+
+  // Generate furigana HTML from reading field
+  // Example: text="安い", reading="やす" -> "<ruby>安<rt>やす</rt></ruby>い"
+  const generateFuriganaFromReading = (text: string, reading: string | null | undefined): string | null => {
+    if (!reading || !text) return null;
+    
+    // Check if text has kanji
+    const kanjiRegex = /[\u4e00-\u9faf]/;
+    if (!kanjiRegex.test(text)) return null; // Pure hiragana/katakana - no furigana needed
+    
+    // Find the kanji portion (everything until first hiragana)
+    let kanjiEnd = 0;
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      // Kanji range
+      if (kanjiRegex.test(char)) {
+        kanjiEnd = i + 1;
+      } else if (/[ぁ-ん]/.test(char)) {
+        // Hiragana found - this is okurigana, stop here
+        break;
       }
-    };
-    fetchData();
-  }, [_selectedLessonId]);
-
-  // Handle lesson selection
-  const handleSelectLesson = async (lessonId: string) => {
-    onSelectLesson(lessonId);
-    try {
-      const response = await fetch(`${API_URL}/api/lessons/${lessonId}`);
-      if (!response.ok) throw new Error('Failed to fetch lesson details');
-      const data = await response.json();
-      setSelectedLessonState(data);
-      setActiveTab('overview');
-    } catch (error) {
-      console.error('Error fetching lesson details:', error);
     }
+    
+    const kanjiPart = text.substring(0, kanjiEnd);
+    const okurigana = text.substring(kanjiEnd);
+    
+    if (kanjiPart.length === 0) return null;
+    
+    // Generate ruby HTML
+    return `<ruby>${kanjiPart}<rt>${reading}</rt></ruby>${okurigana}`;
   };
 
-  const handleBackToLessons = () => {
-    onSelectLesson(null);
-    setSelectedLessonState(null);
-    setActiveTab('overview');
+  const renderFurigana = (text: string, reading?: string | null) => {
+    if (!showFurigana) return text;
+    
+    // Generate furigana from reading field (new approach - future-proof!)
+    if (reading) {
+      const furiganaHtml = generateFuriganaFromReading(text, reading);
+      if (furiganaHtml) {
+        return <span dangerouslySetInnerHTML={{ __html: furiganaHtml }} />;
+      }
+    }
+    
+    // Fallback: If we have cached furigana in memory, use it (legacy support)
+    const cached = furiganaCacheRef.current[text] || furiganaCache[text];
+    if (cached && cached.furigana) {
+      return <span dangerouslySetInnerHTML={{ __html: cached.furigana }} />;
+    }
+    
+    // Check if fetch failed
+    const failed = furiganaFailedRef.current[text] || furiganaFailed[text];
+    if (failed) {
+      // Show "failed" in red above each kanji
+      const kanjiRegex = /[\u4e00-\u9faf]/g;
+      const parts: JSX.Element[] = [];
+      let lastIndex = 0;
+      let match;
+      
+      while ((match = kanjiRegex.exec(text)) !== null) {
+        // Add text before kanji
+        if (match.index > lastIndex) {
+          parts.push(<span key={`text-${lastIndex}`}>{text.slice(lastIndex, match.index)}</span>);
+        }
+        // Add kanji with "failed" above
+        parts.push(
+          <ruby key={`kanji-${match.index}`} className="furigana-failed">
+            {match[0]}<rt>failed</rt>
+          </ruby>
+        );
+        lastIndex = match.index + 1;
+      }
+      // Add remaining text
+      if (lastIndex < text.length) {
+        parts.push(<span key={`text-${lastIndex}`}>{text.slice(lastIndex)}</span>);
+      }
+      
+      return <span>{parts}</span>;
+    }
+    
+    // Otherwise show plain text
+    return text;
   };
 
-  // Sort lessons
+  // Render explanation with support for both markdown and HTML tables, and furigana
+  const renderExplanationWithTables = (explanation: string) => {
+    // Handle undefined/null explanation
+    if (!explanation) {
+      return <div className="grammar-explanation">No explanation available</div>;
+    }
+    
+    // Check if explanation contains HTML table
+    if (explanation.includes('<table')) {
+      // For HTML tables, we still need to render them as-is
+      // But we should also try to apply furigana to text content
+      return <div className="grammar-explanation" dangerouslySetInnerHTML={{ __html: explanation }} />;
+    }
+
+    // Parse markdown tables
+    const lines = explanation.split('\n');
+    const elements: JSX.Element[] = [];
+    let currentTable: string[] = [];
+    let tableKey = 0;
+
+    const flushTable = () => {
+      if (currentTable.length === 0) return;
+
+      // Filter out separator lines (|-----|)
+      const dataRows = currentTable.filter(row => !row.trim().startsWith('|-'));
+      if (dataRows.length === 0) {
+        currentTable = [];
+        return;
+      }
+
+      elements.push(
+        <table key={`table-${tableKey++}`} className="grammar-table">
+          <tbody>
+            {dataRows.map((row, rowIdx) => {
+              const cells = row.split('|').map(c => c.trim()).filter(c => c);
+              return (
+                <tr key={rowIdx}>
+                  {cells.map((cell, cellIdx) => (
+                    <td key={cellIdx}>{renderFurigana(cell)}</td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      );
+      currentTable = [];
+    };
+
+    lines.forEach((line, i) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('|')) {
+        currentTable.push(line);
+      } else {
+        flushTable();
+        if (trimmed) {
+          elements.push(<p key={`p-${i}`}>{renderFurigana(line)}</p>);
+        } else {
+          elements.push(<br key={`br-${i}`} />);
+        }
+      }
+    });
+    flushTable();
+
+    return <>{elements}</>;
+  };
+
+  if (loading && lessons.length === 0) {
+    return (
+      <div className="lesson-mode">
+        <div className="lesson-header">
+          <button className="back-btn" onClick={onBack}>← Back</button>
+          <h2>📚 Lesson Mode</h2>
+        </div>
+        <div className="loading">Loading lessons...</div>
+      </div>
+    );
+  }
+
+  // Show loader when navigating to a specific lesson
+  if (loading && selectedLessonId && !selectedLesson) {
+    return (
+      <div className="lesson-mode">
+        <div className="lesson-header">
+          <button className="back-btn" onClick={handleBackToList}>← All Lessons</button>
+          <h2>📚 Loading Lesson...</h2>
+        </div>
+        <div className="loading">Loading lesson content...</div>
+      </div>
+    );
+  }
+
+  if (selectedLesson) {
+    return (
+      <div className="lesson-mode">
+        <div className="lesson-header">
+          <button className="back-btn" onClick={handleBackToList}>← All Lessons</button>
+          <h2>{translateLessonTitle(selectedLesson.title)}</h2>
+          <button 
+            className="start-chat-btn"
+            onClick={() => onStartLessonChat(selectedLesson.id, translateLessonTitle(selectedLesson.title))}
+          >
+            💬 Practice Conversation
+          </button>
+        </div>
+
+        <div className="lesson-tabs">
+          <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>Overview</button>
+          <button className={activeTab === 'vocab' ? 'active' : ''} onClick={() => setActiveTab('vocab')}>Vocabulary ({selectedLesson.vocabulary.length})</button>
+          <button className={activeTab === 'grammar' ? 'active' : ''} onClick={() => setActiveTab('grammar')}>Grammar ({selectedLesson.grammar.length})</button>
+          <button className={activeTab === 'practice' ? 'active' : ''} onClick={() => setActiveTab('practice')}>Practice ({selectedLesson.practice_phrases.length})</button>
+        </div>
+
+        <div className="furigana-toggle">
+          <label>
+            <input type="checkbox" checked={showFurigana} onChange={(e) => setShowFurigana(e.target.checked)} />
+            Show Furigana
+          </label>
+        </div>
+
+        <div className="lesson-content">
+          {activeTab === 'overview' && (
+            <div className="overview-tab">
+              <div className="info-card">
+                <h3>Lesson Info</h3>
+                <p><strong>Date:</strong> {formatDate(selectedLesson.date)}</p>
+                {selectedLesson.topics.length > 0 && (
+                  <p><strong>Topics:</strong> {selectedLesson.topics.join(', ')}</p>
+                )}
+              </div>
+              
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <span className="stat-number">{selectedLesson.vocabulary.length}</span>
+                  <span className="stat-label">Vocabulary Words</span>
+                </div>
+                <div className="stat-card">
+                  <span className="stat-number">{selectedLesson.grammar.length}</span>
+                  <span className="stat-label">Grammar Points</span>
+                </div>
+                <div className="stat-card">
+                  <span className="stat-number">{selectedLesson.practice_phrases.length}</span>
+                  <span className="stat-label">Practice Phrases</span>
+                </div>
+              </div>
+
+              <div className="quick-start">
+                <h3>Ready to practice?</h3>
+                <button 
+                  className="big-button"
+                  onClick={() => onStartLessonChat(selectedLesson.id, selectedLesson.title)}
+                >
+                  💬 Start Conversation Practice
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'vocab' && (
+            <div className="vocab-tab">
+              <div className="vocab-grid">
+                {(selectedLesson.vocabulary || []).map((item, idx) => (
+                  <div key={idx} className="vocab-card">
+                    <div className="vocab-card-header">
+                      <div className="jp-word">{renderFurigana(item.jp || (item as any).word || '', item.reading)}</div>
+                    </div>
+                      <div className="romaji">{item.romaji || item.reading}</div>
+                      <div className="meaning">{item.en || (item as any).meaning || 'No meaning'}</div>
+                      {item.type && <span className="type-tag">{item.type}</span>}
+                    </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'grammar' && (
+            <div className="grammar-tab">
+              {(selectedLesson.grammar || []).map((item, idx) => (
+                <div key={idx} className="grammar-card">
+                  <h3>{renderFurigana(item.pattern)}</h3>
+                  {item.romaji && <div className="romaji">{item.romaji}</div>}
+                  <div className="explanation">
+                    {renderExplanationWithTables(item.explanation)}
+                  </div>
+                  {(item.examples || []).length > 0 && (
+                    <div className="examples">
+                      <h4>Examples:</h4>
+                      {(item.examples || []).map((ex, exIdx) => (
+                        <div key={exIdx} className="example">
+                          <span className="jp">{renderFurigana(ex.jp || (ex as any).japanese || '', ex.furigana)}</span>
+                          <span className="en">{ex.en || (ex as any).english || 'No translation'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'practice' && (
+            <div className="practice-tab">
+              <div className="practice-list">
+                {(selectedLesson.practice_phrases || []).map((phrase, idx) => (
+                  <div key={idx} className="practice-item">
+                    <span className="number">{idx + 1}.</span>
+                    <div className="phrase-content">
+                      <span className="phrase-jp">
+                        {showFurigana && phrase.furigana ? (
+                          <span dangerouslySetInnerHTML={{ __html: phrase.furigana }} />
+                        ) : (
+                          renderFurigana(phrase.jp || (phrase as any).japanese || '', phrase.furigana)
+                        )}
+                      </span>
+                      {(phrase.romaji || (phrase as any).reading) && <span className="phrase-romaji">{phrase.romaji || (phrase as any).reading}</span>}
+                      <span className="phrase-en">{phrase.en || (phrase as any).english || 'No translation'}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Sort lessons based on selected order
   const sortedLessons = Array.isArray(lessons) ? [...lessons].sort((a, b) => {
     const dateA = new Date(a.date).getTime();
     const dateB = new Date(b.date).getTime();
     return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
   }) : [];
 
-  // Get badge class based on review count
-  const getReviewBadgeClass = (reviewCount: number): string => {
-    if (reviewCount >= 5) return 'badge-mastered';
-    if (reviewCount >= 3) return 'badge-advanced';
-    if (reviewCount >= 1) return 'badge-learning';
-    return 'badge-new';
-  };
-
-  // Group vocabulary by type
-  const groupedVocab = selectedLesson?.vocabulary.reduce((acc, vocab) => {
-    const type = vocab.type || 'Other';
-    if (!acc[type]) acc[type] = [];
-    acc[type].push(vocab);
-    return acc;
-  }, {} as Record<string, typeof selectedLesson.vocabulary>);
-
-  // Vocabulary reviews - placeholder for future feature
-  const vocabReviews: Record<string, number> = {};
-
-  if (loading) {
-    return (
-      <div className="lesson-mode">
-        <Header title="Lesson Mode" icon="📚" onBack={onBack} />
-        <div className="lesson-mode-content">
-          <div className="loading">Loading lessons...</div>
+  return (
+    <div className="lesson-mode">
+      <div className="lesson-header">
+        <button className="back-btn" onClick={onBack}>← Back</button>
+        <h2>📚 Lessons</h2>
+        <div className="sort-controls">
+          <button 
+            className={sortOrder === 'newest' ? 'active' : ''}
+            onClick={() => setSortOrder('newest')}
+          >
+            Newest
+          </button>
+          <button 
+            className={sortOrder === 'oldest' ? 'active' : ''}
+            onClick={() => setSortOrder('oldest')}
+          >
+            Oldest
+          </button>
         </div>
       </div>
-    );
-  }
-
-  // Lesson Detail View
-  if (selectedLesson) {
-    return (
-      <div className="lesson-mode">
-        <Header 
-          title={`Lesson ${selectedLesson.id}`} 
-          icon="📚" 
-          onBack={handleBackToLessons}
-          actions={
-            <button
-              className="furigana-toggle"
-              onClick={() => setShowFurigana(!showFurigana)}
-              title={showFurigana ? 'Ukryj furigana' : 'Pokaż furigana'}
-            >
-              {showFurigana ? 'あ' : '漢'}
-            </button>
-          }
-        />
-        <div className="lesson-mode-content">
-          <div className="lesson-detail">
-            <div className="lesson-header">
-              <div className="lesson-meta">
-                <span className="lesson-date">{formatDate(selectedLesson.date)}</span>
-                <span className="lesson-topics">{selectedLesson.topics.join(', ')}</span>
-              </div>
+      
+      <div className="lessons-list" ref={lessonsListRef}>
+        {sortedLessons.map((lesson, index) => (
+          <div 
+            key={lesson.id} 
+            className="lesson-card"
+            onClick={() => handleLessonClick(lesson.id)}
+          >
+            <div className="lesson-card-header">
+              <span className="lesson-date">{formatDate(lesson.date)}</span>
+              <span className="lesson-number">Lesson #{sortOrder === 'newest' ? sortedLessons.length - index : index + 1}</span>
+              <span className="lesson-title">{translateLessonTitle(lesson.title)}</span>
             </div>
-
-            {/* Tabs */}
-            <div className="lesson-tabs">
-              <button 
-                className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
-                onClick={() => setActiveTab('overview')}
-              >
-                Overview
-              </button>
-              <button 
-                className={`tab ${activeTab === 'vocab' ? 'active' : ''}`}
-                onClick={() => setActiveTab('vocab')}
-              >
-                Vocabulary ({selectedLesson.vocabulary.length})
-              </button>
-              <button 
-                className={`tab ${activeTab === 'grammar' ? 'active' : ''}`}
-                onClick={() => setActiveTab('grammar')}
-              >
-                Grammar ({selectedLesson.grammar.length})
-              </button>
-              <button 
-                className={`tab ${activeTab === 'practice' ? 'active' : ''}`}
-                onClick={() => setActiveTab('practice')}
-              >
-                Practice ({selectedLesson.practice_phrases.length})
-              </button>
+            <div className="lesson-card-stats">
+              <span>📝 {lesson.vocabCount} words</span>
+              <span>📖 {lesson.grammarCount} grammar</span>
             </div>
-
-            {/* Overview Tab */}
-            {activeTab === 'overview' && (
-              <div className="tab-content">
-                <div className="lesson-stats">
-                  <div className="stat-card">
-                    <div className="stat-number">{selectedLesson.vocabulary.length}</div>
-                    <div className="stat-label">Vocabulary</div>
-                  </div>
-                  <div className="stat-card">
-                    <div className="stat-number">{selectedLesson.grammar.length}</div>
-                    <div className="stat-label">Grammar Points</div>
-                  </div>
-                  <div className="stat-card">
-                    <div className="stat-number">{selectedLesson.practice_phrases.length}</div>
-                    <div className="stat-label">Practice Phrases</div>
-                  </div>
-                </div>
-                
-                <button 
-                  className="start-lesson-chat-btn"
-                  onClick={() => onStartLessonChat(selectedLesson.id, selectedLesson.title)}
-                >
-                  Start Lesson Chat
-                </button>
-              </div>
-            )}
-
-            {/* Vocabulary Tab */}
-            {activeTab === 'vocab' && (
-              <div className="tab-content">
-                {groupedVocab && Object.entries(groupedVocab).map(([type, vocabList]) => (
-                  <div key={type} className="vocab-group">
-                    <h4>{type}</h4>
-                    <div className="vocab-grid">
-                      {vocabList.map((vocab, index) => {
-                        const reviewCount = vocabReviews[vocab.jp] || 0;
-                        const furiganaHtml = showFurigana ? getCachedFurigana(vocab.jp) : null;
-                        return (
-                          <div key={index} className="vocab-item">
-                            <div className="vocab-main">
-                              {furiganaHtml ? (
-                                <span 
-                                  className="vocab-jp"
-                                  dangerouslySetInnerHTML={{ __html: furiganaHtml }}
-                                />
-                              ) : (
-                                <span className="vocab-jp">{vocab.jp}</span>
-                              )}
-                              <span className={`review-badge ${getReviewBadgeClass(reviewCount)}`}>
-                                {reviewCount}
-                              </span>
-                            </div>
-                            <div className="vocab-reading">{vocab.reading}</div>
-                            <div className="vocab-en">{vocab.en}</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Grammar Tab */}
-            {activeTab === 'grammar' && (
-              <div className="tab-content">
-                <div className="grammar-list">
-                  {selectedLesson.grammar.map((grammar, index) => {
-                    const furiganaHtml = showFurigana ? getCachedFurigana(grammar.pattern) : null;
-                    return (
-                      <div key={index} className="grammar-item">
-                        <div className="grammar-pattern">
-                          {furiganaHtml ? (
-                            <span dangerouslySetInnerHTML={{ __html: furiganaHtml }} />
-                          ) : (
-                            grammar.pattern
-                          )}
-                        </div>
-                        <div className="grammar-explanation">{grammar.explanation}</div>
-                        {grammar.examples && grammar.examples.length > 0 && (
-                          <div className="grammar-examples">
-                            {grammar.examples.map((example, exIndex) => {
-                              const exFuriganaHtml = showFurigana ? getCachedFurigana(example.jp) : null;
-                              return (
-                                <div key={exIndex} className="grammar-example">
-                                  {exFuriganaHtml ? (
-                                    <span dangerouslySetInnerHTML={{ __html: exFuriganaHtml }} />
-                                  ) : (
-                                    <span className="example-jp">{example.jp}</span>
-                                  )}
-                                  <span className="example-en">{example.en}</span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Practice Tab */}
-            {activeTab === 'practice' && (
-              <div className="tab-content">
-                <div className="practice-list">
-                  {selectedLesson.practice_phrases.map((phrase, index) => {
-                    const furiganaHtml = showFurigana ? getCachedFurigana(phrase.jp) : null;
-                    return (
-                      <div key={index} className="practice-item">
-                        <div className="practice-number">{index + 1}</div>
-                        <div className="practice-content">
-                          {furiganaHtml ? (
-                            <div className="practice-jp" dangerouslySetInnerHTML={{ __html: furiganaHtml }} />
-                          ) : (
-                            <div className="practice-jp">{phrase.jp}</div>
-                          )}
-                          <div className="practice-en">{phrase.en}</div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+            {lesson.topics.length > 0 && (
+              <div className="lesson-topics">
+                {lesson.topics.slice(0, 3).join(', ')}
+                {lesson.topics.length > 3 && '...'}
               </div>
             )}
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Lessons List View
-  return (
-    <div className="lesson-mode">
-      <Header title="Lesson Mode" icon="📚" onBack={onBack} />
-      <div className="lesson-mode-content">
-        <div className="lessons-list-header">
-          <h2>Your Lessons</h2>
-          <button 
-            className="sort-button"
-            onClick={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
-          >
-            {sortOrder === 'newest' ? '↓ Newest' : '↑ Oldest'}
-          </button>
-        </div>
-        
-        <div className="lessons-list">
-          {sortedLessons.map((lesson) => (
-            <div
-              key={lesson.id}
-              className="lesson-card"
-              onClick={() => handleSelectLesson(lesson.id)}
-            >
-              <div className="lesson-card-header">
-                <span className="lesson-number">Lesson {lesson.order}</span>
-                <span className="lesson-date">{formatDate(lesson.date)}</span>
-              </div>
-              <h3 className="lesson-title">{translateLessonTitle(lesson.title)}</h3>
-              <div className="lesson-topics-preview">
-                {lesson.topics.slice(0, 2).join(', ')}
-                {lesson.topics.length > 2 && '...'}
-              </div>
-              <div className="lesson-stats-preview">
-                <span className="stat">📝 {lesson.vocabCount}</span>
-                <span className="stat">📐 {lesson.grammarCount}</span>
-              </div>
-            </div>
-          ))}
-        </div>
+        ))}
       </div>
     </div>
   );
