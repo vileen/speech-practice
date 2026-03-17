@@ -204,22 +204,32 @@ export function LessonMode({
     return null;
   };
 
-  // Fetch all lessons
+  // Fetch lesson data - either single lesson or list
   useEffect(() => {
-    const fetchLessons = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/lessons`);
-        if (!response.ok) throw new Error('Failed to fetch lessons');
-        const data = await response.json();
-        setLessons(data);
+        if (_selectedLessonId) {
+          // Fetch single lesson details
+          const response = await fetch(`${API_URL}/api/lessons/${_selectedLessonId}`);
+          if (!response.ok) throw new Error('Failed to fetch lesson details');
+          const data = await response.json();
+          setSelectedLessonState(data);
+          setActiveTab('overview');
+        } else {
+          // Fetch all lessons list
+          const response = await fetch(`${API_URL}/api/lessons`);
+          if (!response.ok) throw new Error('Failed to fetch lessons');
+          const data = await response.json();
+          setLessons(data);
+        }
       } catch (error) {
-        console.error('Error fetching lessons:', error);
+        console.error('Error fetching lesson data:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchLessons();
-  }, []);
+    fetchData();
+  }, [_selectedLessonId]);
 
   // Handle lesson selection
   const handleSelectLesson = async (lessonId: string) => {
