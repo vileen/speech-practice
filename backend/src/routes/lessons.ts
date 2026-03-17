@@ -2,6 +2,9 @@ import { Router } from 'express';
 import { pool } from '../db/pool.js';
 import { getLessonIndex, getRecentLessons, getLesson, getLessonSystemPrompt } from '../services/lessons.js';
 import { checkPassword } from '../middleware/auth.js';
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+import { homedir } from 'os';
 
 const router = Router();
 
@@ -208,6 +211,31 @@ router.get('/:id/unique-vocabulary', checkPassword, async (req, res) => {
   } catch (error) {
     console.error('Error fetching unique vocabulary:', error);
     res.status(500).json({ error: 'Failed to fetch unique vocabulary' });
+  }
+});
+
+// Get lesson transcription
+router.get('/:id/transcription', checkPassword, async (req, res) => {
+  try {
+    const lessonId = req.params.id;
+    
+    // Path to transcription in Obsidian vault
+    const transcriptionPath = join(
+      homedir(),
+      'Library/Mobile Documents/iCloud~md~obsidian/Documents/Main/Skills/Japanese/Transcriptions',
+      `Lesson-${lessonId}-Transcription.md`
+    );
+    
+    if (!existsSync(transcriptionPath)) {
+      return res.status(404).json({ error: 'Transcription not found' });
+    }
+    
+    const content = readFileSync(transcriptionPath, 'utf-8');
+    
+    res.json({ content });
+  } catch (error) {
+    console.error('Error fetching transcription:', error);
+    res.status(500).json({ error: 'Failed to fetch transcription' });
   }
 });
 
