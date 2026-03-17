@@ -3,44 +3,22 @@ import { AuthenticatedRoute } from '../App.js';
 import { Header } from '../components/Header/index.js';
 import { ModeButton } from '../components/ModeButton/index.js';
 
-// Quotes with weights: funny quotes appear 50% more often (weight 1.5 vs 1)
-const QUOTES: { text: string; weight: number }[] = [
-  // Funny quotes (50% more likely)
-  { text: "Overthinking is just mental cardio.", weight: 1.5 },
-  { text: "I put the 'fun' in 'dysfunctional'.", weight: 1.5 },
-  { text: "Your heart is a muscle - train it with energy drinks.", weight: 1.5 },
-  { text: "Fuck it, we ball.", weight: 1.5 },
-  { text: "If I can't order ramen in Tokyo, I'm becoming a VTuber.", weight: 1.5 },
-  { text: "Learn kanji or your waifu stays 2D.", weight: 1.5 },
-  { text: "No study = watching anime with dub.", weight: 1.5 },
-  
-  // Standard quotes (weight 1)
-  { text: "Either increase sacrifice or reduce desire.", weight: 1 },
-  { text: "Retardmaxxing fixes everything.", weight: 1 },
-  { text: "Skill issue? Grind harder.", weight: 1 },
-  { text: "I will not be outworked.", weight: 1 },
-  { text: "Nobody cares about your process, only your output.", weight: 1 },
-  { text: "You have to be odd to be number 1.", weight: 1 },
+const QUOTES = [
+  "Either increase sacrifice or reduce desire.",
+  "Retardmaxxing fixes everything.",
+  "Skill issue? Grind harder.",
+  "Overthinking is just mental cardio.",
+  "I put the 'fun' in 'dysfunctional'.",
+  "I will not be outworked.",
+  "Your heart is a muscle - train it with energy drinks.",
+  "Fuck it, we ball.",
+  "Nobody cares about your process, only your output.",
+  "You have to be odd to be number 1.",
 ];
-
-// Weighted random selection
-function getRandomQuote(): string {
-  const totalWeight = QUOTES.reduce((sum, q) => sum + q.weight, 0);
-  let random = Math.random() * totalWeight;
-  
-  for (const quote of QUOTES) {
-    random -= quote.weight;
-    if (random <= 0) {
-      return quote.text;
-    }
-  }
-  
-  return QUOTES[QUOTES.length - 1].text;
-}
 
 export function Home() {
   const navigate = useNavigate();
-  const randomQuote = getRandomQuote();
+  const randomQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
 
   return (
     <AuthenticatedRoute>
