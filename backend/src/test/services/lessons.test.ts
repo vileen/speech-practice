@@ -1,31 +1,8 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { getLesson } from '../../services/lessons.js';
 
-// Check if database is available
-let dbAvailable = false;
-
 describe('getLesson', () => {
-  beforeAll(async () => {
-    try {
-      // Try to fetch a lesson to check DB connectivity
-      await getLesson('2026-03-16');
-      dbAvailable = true;
-    } catch (err: any) {
-      if (err.message?.includes('ECONNREFUSED') || err.message?.includes('database')) {
-        dbAvailable = false;
-        console.log('⚠️ Database not available, skipping integration tests');
-      } else {
-        dbAvailable = true;
-      }
-    }
-  });
-
   it('should convert string practice_phrases to objects with jp field', async () => {
-    if (!dbAvailable) {
-      console.log('⏭️ Skipping test - database not available');
-      return;
-    }
-    
     const lesson = await getLesson('2026-03-16');
     
     expect(lesson).toBeDefined();
@@ -41,11 +18,6 @@ describe('getLesson', () => {
   });
 
   it('should return phrases compatible with LessonMode', async () => {
-    if (!dbAvailable) {
-      console.log('⏭️ Skipping test - database not available');
-      return;
-    }
-    
     const lesson = await getLesson('2026-03-16');
     
     // LessonMode expects phrases array with objects containing japanese field
