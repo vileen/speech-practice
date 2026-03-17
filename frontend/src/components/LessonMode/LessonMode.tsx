@@ -649,12 +649,28 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
   );
 }
 
-  // Sort lessons based on selected order
-  const sortedLessons = Array.isArray(lessons) ? [...lessons].sort((a, b) => {
+  // Tag filtering
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  
+  // Collect all unique tags from lessons
+  const allTags = Array.isArray(lessons) 
+    ? Array.from(new Set(lessons.flatMap(l => l.topics || []))).sort()
+    : [];
+  
+  // Filter and sort lessons
+  const filteredLessons = Array.isArray(lessons) 
+    ? lessons.filter(lesson => {
+        if (selectedTags.length === 0) return true;
+        const lessonTags = lesson.topics || [];
+        return selectedTags.some(tag => lessonTags.includes(tag));
+      })
+    : [];
+  
+  const sortedLessons = [...filteredLessons].sort((a, b) => {
     const dateA = new Date(a.date).getTime();
     const dateB = new Date(b.date).getTime();
     return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
-  }) : [];
+  });
 
   return (
     <div className="lesson-mode">
@@ -679,6 +695,47 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
           </div>
         }
       />
+
+      {/* Tag Filters */}
+      {allTags.length > 0 && (
+        <div className="tag-filters">
+          <div className="tag-filters-header">
+            <span>Filter by tag:</span>
+            {selectedTags.length > 0 && (
+              <button 
+                className="clear-filters"
+                onClick={() => setSelectedTags([])}
+              >
+                Clear ({selectedTags.length})
+              </button>
+            )}
+          </div>
+          <div className="tag-chips">
+            {allTags.map(tag => (
+              <button
+                key={tag}
+                className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+                onClick={() => {
+                  if (selectedTags.includes(tag)) {
+                    setSelectedTags(prev => prev.filter(t => t !== tag));
+                  } else {
+                    setSelectedTags(prev => [...prev, tag]);
+                  }
+                }}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Results count */}
+      {selectedTags.length > 0 && (
+        <div className="results-count">
+          Showing {sortedLessons.length} of {lessons?.length || 0} lessons
+        </div>
+      )}
 
       <div className="lessons-list" ref={lessonsListRef}>
         {sortedLessons.map((lesson, index) => (
