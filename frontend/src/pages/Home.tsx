@@ -10,10 +10,7 @@ const QUOTES: { text: string; weight: number }[] = [
   { text: "I put the 'fun' in 'dysfunctional'.", weight: 1.5 },
   { text: "Your heart is a muscle - train it with energy drinks.", weight: 1.5 },
   { text: "Fuck it, we ball.", weight: 1.5 },
-  { text: "If I can't order ramen in Tokyo, I'm becoming a VTuber.", weight: 1.5 },
-  { text: "Learn kanji or your waifu stays 2D.", weight: 1.5 },
-  { text: "No study = watching anime with dub.", weight: 1.5 },
-  
+
   // Standard quotes (weight 1)
   { text: "Either increase sacrifice or reduce desire.", weight: 1 },
   { text: "Retardmaxxing fixes everything.", weight: 1 },
