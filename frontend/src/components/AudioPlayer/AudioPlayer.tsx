@@ -11,7 +11,7 @@ interface AudioPlayerProps {
   onStopOthers: () => void;
 }
 
-function formatTime(seconds: number): string {
+export function formatTime(seconds: number): string {
   if (!isFinite(seconds) || isNaN(seconds)) return '0:00';
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);

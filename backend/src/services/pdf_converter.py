@@ -19,7 +19,7 @@ def check_opendataloader() -> bool:
     """Check if OpenDataLoader is installed"""
     try:
         result = subprocess.run(
-            ['python', '-c', 'import opendataloader_pdf'],
+            ['python3', '-c', 'import opendataloader_pdf'],
             capture_output=True,
             text=True
         )
@@ -91,13 +91,13 @@ def convert_pdf(
         'json': 'json',
         'html': 'html',
         'text': 'txt'
-    }.get(output_format, 'md')
+    }.get(format, 'md')
     
     output_file = output_dir / f"{input_path.stem}.{output_ext}"
     
     # Build command
     cmd = [
-        'python', '-c',
+        'python3', '-c',
         f'''
 import opendataloader_pdf
 import os
@@ -114,8 +114,9 @@ opendataloader_pdf.convert(
     
     # Add hybrid mode options
     if hybrid:
+        hybrid_options = ',\n    hybrid_mode="full"' if ocr else ''
         cmd = [
-            'python', '-c',
+            'python3', '-c',
             f'''
 import opendataloader_pdf
 import os
@@ -126,8 +127,7 @@ opendataloader_pdf.convert(
     input_path=["{input_path}"],
     output_dir="{output_dir}",
     format="{format}",
-    hybrid="docling-fast"{',
-    hybrid_mode="full"' if ocr else ''}
+    hybrid="docling-fast"{hybrid_options}
 )
             '''
         ]
@@ -234,7 +234,7 @@ def get_pdf_info(input_path: str) -> Dict:
     """
     try:
         cmd = [
-            'python', '-c',
+            'python3', '-c',
             f'''
 import opendataloader_pdf
 import json
