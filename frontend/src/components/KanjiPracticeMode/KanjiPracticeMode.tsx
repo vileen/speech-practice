@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Rating } from '../../lib/fsrs.js';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Rating, getDueCards } from '../../lib/fsrs.js';
 import { useKanjiProgress, KanjiCard } from '../../hooks/useKanjiProgress.js';
 import { Header } from '../Header/index.js';
 import './KanjiPracticeMode.css';
@@ -24,6 +24,17 @@ export const KanjiPracticeMode: React.FC = () => {
   const [isStarting, setIsStarting] = useState(false);
   const [hasImported, setHasImported] = useState(false);
   const [availableLessons, setAvailableLessons] = useState<string[]>([]);
+
+  // Compute filtered due count based on selected lessons
+  const filteredDueCount = useMemo(() => {
+    const dueCards = getDueCards(cards) as KanjiCard[];
+    if (selectedLessons.length === 0) {
+      return dueCards.length;
+    }
+    return dueCards.filter((card) =>
+      card.lessonId && selectedLessons.includes(card.lessonId)
+    ).length;
+  }, [cards, selectedLessons]);
 
   // Auto-import kanji on mount (only if no kanji in localStorage)
   useEffect(() => {
@@ -209,7 +220,7 @@ export const KanjiPracticeMode: React.FC = () => {
           onClick={handleStart}
           disabled={isStarting}
         >
-          {isStarting ? 'Loading...' : `Start Practice (${stats.due} due)`}
+          {isStarting ? 'Loading...' : `Start Practice (${filteredDueCount} due)`}
         </button>
         </div>
       </>

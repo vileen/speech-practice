@@ -31,6 +31,53 @@ interface GrammarExercise {
 
 type ExerciseState = 'loading' | 'prompt' | 'input' | 'processing' | 'feedback';
 
+// Memoized PatternCard - defined outside GrammarMode to prevent rerenders
+const PatternCard: React.FC<{
+  pattern: GrammarPattern;
+  showFurigana: boolean;
+  onClick: () => void;
+}> = React.memo(({ pattern, showFurigana, onClick }) => {
+  const { furigana } = useFurigana(pattern.pattern, showFurigana);
+  
+  return (
+    <div className="pattern-card" onClick={onClick}>
+      <div className="pattern-header">
+        <span className="pattern-text">
+          {showFurigana && furigana ? (
+            <span dangerouslySetInnerHTML={{ __html: furigana }} />
+          ) : (
+            pattern.pattern
+          )}
+        </span>
+        <span className="pattern-level">{pattern.jlpt_level}</span>
+      </div>
+      <div className="pattern-category">{pattern.category}</div>
+      {(pattern.streak ?? 0) > 0 && (
+        <div className="pattern-streak">🔥 {pattern.streak}</div>
+      )}
+    </div>
+  );
+});
+
+// Memoized ExerciseDisplay - defined outside GrammarMode to prevent rerenders
+const ExerciseDisplay: React.FC<{
+  text: string;
+  showFurigana: boolean;
+  className?: string;
+}> = React.memo(({ text, showFurigana, className = '' }) => {
+  const { furigana } = useFurigana(text, showFurigana);
+  
+  return (
+    <span className={className}>
+      {showFurigana && furigana ? (
+        <span dangerouslySetInnerHTML={{ __html: furigana }} />
+      ) : (
+        text
+      )}
+    </span>
+  );
+});
+
 export const GrammarMode: React.FC = () => {
   const navigate = useNavigate();
   const [patterns, setPatterns] = useState<GrammarPattern[]>([]);
@@ -95,6 +142,30 @@ export const GrammarMode: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(FURIGANA_STORAGE_KEY, showFurigana.toString());
   }, [showFurigana]);
+
+  // Keyboard shortcut: Space to submit or go to next
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== ' ') return;
+      
+      // Don't trigger if user is typing in an input
+      const activeElement = document.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        return;
+      }
+      
+      e.preventDefault();
+      
+      if (state === 'input' && userAnswer.trim()) {
+        handleSubmit();
+      } else if (state === 'feedback') {
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [state, userAnswer]);
 
   const loadPatterns = async () => {
     try {
@@ -312,53 +383,6 @@ export const GrammarMode: React.FC = () => {
   };
 
   const filteredPatterns = patterns.filter(p => selectedCategories.includes(p.category));
-
-  // Sub-component for pattern cards with furigana
-  const PatternCard: React.FC<{
-    pattern: GrammarPattern;
-    showFurigana: boolean;
-    onClick: () => void;
-  }> = ({ pattern, showFurigana, onClick }) => {
-    const { furigana } = useFurigana(pattern.pattern, showFurigana);
-    
-    return (
-      <div className="pattern-card" onClick={onClick}>
-        <div className="pattern-header">
-          <span className="pattern-text">
-            {showFurigana && furigana ? (
-              <span dangerouslySetInnerHTML={{ __html: furigana }} />
-            ) : (
-              pattern.pattern
-            )}
-          </span>
-          <span className="pattern-level">{pattern.jlpt_level}</span>
-        </div>
-        <div className="pattern-category">{pattern.category}</div>
-        {(pattern.streak ?? 0) > 0 && (
-          <div className="pattern-streak">🔥 {pattern.streak}</div>
-        )}
-      </div>
-    );
-  };
-
-  // Sub-component for exercise display with furigana
-  const ExerciseDisplay: React.FC<{
-    text: string;
-    showFurigana: boolean;
-    className?: string;
-  }> = ({ text, showFurigana, className = '' }) => {
-    const { furigana } = useFurigana(text, showFurigana);
-    
-    return (
-      <span className={className}>
-        {showFurigana && furigana ? (
-          <span dangerouslySetInnerHTML={{ __html: furigana }} />
-        ) : (
-          text
-        )}
-      </span>
-    );
-  };
 
   const handleHeaderBack = () => {
     if (currentPattern) {
