@@ -26,33 +26,102 @@ function katakanaToHiragana(katakana: string): string {
   );
 }
 
+// Placeholder marker for blank spaces (＿＿)
+const BLANK_PLACEHOLDER = '＿＿';
+const TEMP_OKURIGANA = 'い'; // Use い as temp okurigana (most common for adjectives)
+
 // Główna funkcja Kuromoji do dodawania furigany
 async function addFuriganaWithKuromoji(text: string): Promise<string> {
+  // Pre-processing: replace ＿＿ with temporary okurigana to help Kuromoji tokenize correctly
+  // This fixes cases like "寒＿＿" where Kuromoji would read 寒 as かん instead of さむ
+  let modifiedText = text;
+  const blankInfos: { originalPos: number; tempPos: number; processed: boolean }[] = [];
+  
+  // Find all positions of ＿＿ and replace with temp okurigana
+  let pos = 0;
+  let offset = 0;
+  while ((pos = modifiedText.indexOf(BLANK_PLACEHOLDER, pos)) !== -1) {
+    const originalPos = pos;
+    modifiedText = modifiedText.substring(0, pos) + TEMP_OKURIGANA + modifiedText.substring(pos + BLANK_PLACEHOLDER.length);
+    blankInfos.push({ originalPos, tempPos: originalPos + offset, processed: false });
+    offset += TEMP_OKURIGANA.length - BLANK_PLACEHOLDER.length;
+    pos += TEMP_OKURIGANA.length;
+  }
+  
   const t = await getTokenizer();
-  const tokens = t.tokenize(text);
+  const tokens = t.tokenize(modifiedText);
 
-  let result = text;
+  let result = modifiedText;
   // Przetwarzaj od końca żeby nie psuć indeksów
   for (let i = tokens.length - 1; i >= 0; i--) {
     const token = tokens[i];
     const surface = token.surface_form;
     const readingKata = token.reading;
+    const wordPos = (token.word_position || 1) - 1;
+    const tokenEndPos = wordPos + surface.length;
+
+    // Check if this token is purely our temp okurigana (was tokenized separately)
+    // This happens in cases like "大＿＿い" -> "大いい" tokenized as "大" + "いい"
+    const blankInfo = blankInfos.find(bi => !bi.processed && bi.tempPos >= wordPos && bi.tempPos < tokenEndPos);
+    
+    if (blankInfo && !/[\u4e00-\u9faf]/.test(surface)) {
+      // This is a non-kanji token that contains our temp okurigana - replace with blank
+      // Find the temp okurigana within this token and replace just that part
+      const tempIndexInToken = blankInfo.tempPos - wordPos;
+      if (result.substring(wordPos + tempIndexInToken, wordPos + tempIndexInToken + TEMP_OKURIGANA.length) === TEMP_OKURIGANA) {
+        result = result.substring(0, wordPos + tempIndexInToken) + BLANK_PLACEHOLDER + result.substring(wordPos + tempIndexInToken + TEMP_OKURIGANA.length);
+        blankInfo.processed = true;
+      }
+      continue;
+    }
 
     // Jeśli ma kanji i czytanie
     if (/[\u4e00-\u9faf]/.test(surface) && readingKata) {
-      const reading = katakanaToHiragana(readingKata);
-      const ruby = `<ruby>${surface}<rt>${reading}</rt></ruby>`;
+      let reading = katakanaToHiragana(readingKata);
       
-      // Zamień TYLKO to konkretne wystąpienie (po pozycji w oryginalnym tekście)
-      // Używamy word_position z tokenu (1-indexed)
-      const wordPos = (token.word_position || 1) - 1;
+      // Check if this token's end position matches any unprocessed blank position + temp okurigana length
+      // This means the kanji was tokenized together with our temp okurigana
+      const matchedBlankIndex = blankInfos.findIndex(bi => !bi.processed && bi.tempPos + TEMP_OKURIGANA.length === tokenEndPos);
       
-      // Sprawdź czy na tej pozycji jest jeszcze plain text (nie w <ruby>)
-      if (result.substring(wordPos, wordPos + surface.length) === surface) {
-        result = result.substring(0, wordPos) + ruby + result.substring(wordPos + surface.length);
+      if (matchedBlankIndex !== -1 && surface.endsWith(TEMP_OKURIGANA)) {
+        // This token includes our temp okurigana - remove it from both surface and reading
+        const cleanSurface = surface.slice(0, -TEMP_OKURIGANA.length);
+        // The reading should end with the temp okurigana (い → い)
+        const cleanReading = reading.endsWith(TEMP_OKURIGANA) 
+          ? reading.slice(0, -TEMP_OKURIGANA.length) 
+          : reading;
+        const ruby = `<ruby>${cleanSurface}<rt>${cleanReading}</rt></ruby>${BLANK_PLACEHOLDER}`;
+        
+        // Replace at the correct position
+        if (result.substring(wordPos, wordPos + surface.length) === surface) {
+          result = result.substring(0, wordPos) + ruby + result.substring(wordPos + surface.length);
+          // Mark this blank as processed
+          blankInfos[matchedBlankIndex].processed = true;
+        }
+      } else {
+        // Standard processing
+        const ruby = `<ruby>${surface}<rt>${reading}</rt></ruby>`;
+        
+        // Zamień TYLKO to konkretne wystąpienie (po pozycji w oryginalnym tekście)
+        if (result.substring(wordPos, wordPos + surface.length) === surface) {
+          result = result.substring(0, wordPos) + ruby + result.substring(wordPos + surface.length);
+        }
       }
     }
   }
+  
+  // Post-processing: replace any remaining temp okurigana that wasn't processed
+  const remainingBlanks = blankInfos.filter(bi => !bi.processed);
+  for (const bi of remainingBlanks.sort((a, b) => b.tempPos - a.tempPos)) {
+    // Need to account for position shifts from earlier replacements
+    // Find the temp okurigana in current result
+    const currentTempPos = result.indexOf(TEMP_OKURIGANA, bi.tempPos - 5); // Search around expected position
+    if (currentTempPos !== -1 && result.substring(currentTempPos, currentTempPos + TEMP_OKURIGANA.length) === TEMP_OKURIGANA) {
+      result = result.substring(0, currentTempPos) + BLANK_PLACEHOLDER + result.substring(currentTempPos + TEMP_OKURIGANA.length);
+      bi.processed = true;
+    }
+  }
+  
   return result;
 }
 
