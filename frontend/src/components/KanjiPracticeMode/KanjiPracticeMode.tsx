@@ -47,14 +47,14 @@ export const KanjiPracticeMode: React.FC = () => {
   // Get next card when needed
   useEffect(() => {
     if (!showSetup && !isRevealed && !isComplete) {
-      const next = getNextCard();
+      const next = getNextCard(selectedLessons.length > 0 ? selectedLessons : undefined);
       if (next) {
         setCurrentCard(next);
       } else {
         setIsComplete(true);
       }
     }
-  }, [showSetup, isRevealed, isComplete, getNextCard, cards.length]);
+  }, [showSetup, isRevealed, isComplete, getNextCard, cards.length, selectedLessons]);
 
   const handleReveal = useCallback(() => {
     setIsRevealed(true);

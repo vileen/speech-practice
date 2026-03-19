@@ -103,13 +103,19 @@ export function useKanjiProgress() {
   }, []);
 
   // Get next due card
-  const getNextCard = useCallback((): KanjiCard | null => {
-    const due = getDueCards(cards);
-    if (due.length === 0) return null;
-    
+  const getNextCard = useCallback((lessonFilter?: string[]): KanjiCard | null => {
+    let dueCards = getDueCards(cards) as KanjiCard[];
+
+    // Filter by lesson if specified
+    if (lessonFilter && lessonFilter.length > 0) {
+      dueCards = dueCards.filter(card => card.lessonId && lessonFilter.includes(card.lessonId));
+    }
+
+    if (dueCards.length === 0) return null;
+
     // Pick random from due cards
-    const randomIndex = Math.floor(Math.random() * due.length);
-    return due[randomIndex] as KanjiCard;
+    const randomIndex = Math.floor(Math.random() * dueCards.length);
+    return dueCards[randomIndex];
   }, [cards]);
 
   // Get preview of what will happen with each rating
