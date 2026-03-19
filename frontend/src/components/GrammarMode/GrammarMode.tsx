@@ -56,6 +56,13 @@ export const GrammarMode: React.FC = () => {
     loadDuePatterns();
   }, []);
 
+  // Reload due patterns count when selected categories change
+  useEffect(() => {
+    if (patterns.length > 0) {
+      loadDuePatterns();
+    }
+  }, [selectedCategories]);
+
   // Load selected categories from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -132,10 +139,17 @@ export const GrammarMode: React.FC = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        if (data.patterns.length > 0) {
-          const firstPattern = data.patterns[0];
+        // Filter patterns by selected categories
+        const filteredPatterns = selectedCategories.length > 0
+          ? data.patterns.filter((p: GrammarPattern) => selectedCategories.includes(p.category))
+          : data.patterns;
+        
+        if (filteredPatterns.length > 0) {
+          const firstPattern = filteredPatterns[0];
           setCurrentPattern(firstPattern);
           await loadExercise(firstPattern.id);
+        } else {
+          alert('No patterns due for review in the selected categories. Try selecting different categories or browse patterns to learn new ones.');
         }
       }
     } catch (err) {
