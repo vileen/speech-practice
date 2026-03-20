@@ -222,7 +222,21 @@ export const GrammarMode: React.FC = () => {
           setCurrentPattern(firstPattern);
           await loadExercise(firstPattern.id);
         } else {
-          alert('No patterns due for review in the selected categories. Try selecting different categories or browse patterns to learn new ones.');
+          // Build helpful message showing which categories have due patterns
+          const dueCategoriesList = duePatterns.map(p => p.category);
+          const uniqueDueCategories = [...new Set(dueCategoriesList)];
+          const categoryCounts = uniqueDueCategories.map(cat => {
+            const count = duePatterns.filter(p => p.category === cat).length;
+            return `${cat} (${count})`;
+          });
+          
+          let message = 'No patterns due for review in the selected categories.';
+          if (duePatterns.length > 0 && categoryCounts.length > 0) {
+            message += `\n\nThe ${duePatterns.length} due patterns are from:\n${categoryCounts.join(', ')}`;
+          }
+          message += '\n\nTry selecting different categories or browse patterns to learn new ones.';
+          
+          alert(message);
         }
       }
     } catch (err) {
@@ -395,6 +409,17 @@ export const GrammarMode: React.FC = () => {
     ? duePatterns.filter(p => selectedCategories.includes(p.category)).length
     : 0;
 
+  // Calculate due patterns breakdown by category
+  const dueByCategory = React.useMemo(() => {
+    const breakdown: Record<string, number> = {};
+    duePatterns.forEach(p => {
+      breakdown[p.category] = (breakdown[p.category] || 0) + 1;
+    });
+    // Sort by count descending
+    return Object.entries(breakdown)
+      .sort((a, b) => b[1] - a[1]);
+  }, [duePatterns]);
+
   // Calculate total patterns count for selected categories
   const selectedPatternsCount = selectedCategories.length > 0
     ? patterns.filter(p => selectedCategories.includes(p.category)).length
@@ -440,7 +465,22 @@ export const GrammarMode: React.FC = () => {
         <div className="pattern-selection">
           {dueCount > 0 && (
             <div className="review-banner">
-              <span>🔥 {dueCount} patterns ready for review</span>
+              <div className="review-banner-content">
+                <span className="review-banner-title">🔥 {dueCount} patterns ready for review</span>
+                {dueByCategory.length > 0 && (
+                  <div className="due-categories">
+                    {dueByCategory.map(([category, count]) => (
+                      <span
+                        key={category}
+                        className={`due-category-pill ${selectedCategories.includes(category) ? 'selected' : ''}`}
+                        title={selectedCategories.includes(category) ? 'Selected' : 'Not selected'}
+                      >
+                        {category} ({count})
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div className="review-actions">
                 <button
                   className="review-btn practice-selected-btn"

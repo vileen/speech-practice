@@ -169,12 +169,16 @@ export const KanjiPracticeMode: React.FC = () => {
   // Get preview for current card with specific rating
   const getIntervalForRating = (rating: Rating): string => {
     if (!currentCard) return '';
-    const interval = getPreview(currentCard.kanjiId, rating);
-    if (interval === null) return '';
-    if (interval < 1) return '< 1m';
-    if (interval < 60) return `${Math.round(interval)}m`;
-    if (interval < 1440) return `${Math.round(interval / 60)}h`;
-    return `${Math.round(interval / 1440)}d`;
+    const intervalDays = getPreview(currentCard.kanjiId, rating);
+    if (intervalDays === null) return '';
+
+    // Convert days to minutes for small intervals (new cards)
+    const intervalMinutes = intervalDays * 24 * 60;
+
+    if (intervalMinutes < 1) return '< 1m';
+    if (intervalMinutes < 60) return `${Math.round(intervalMinutes)}m`;
+    if (intervalMinutes < 1440) return `${Math.round(intervalMinutes / 60)}h`;
+    return `${Math.round(intervalMinutes / 1440)}d`;
   };
 
   if (isLoading) {

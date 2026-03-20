@@ -75,7 +75,7 @@
 .review-banner {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   background: rgba(40, 167, 69, 0.2);
   border: 1px solid #28a745;
   padding: 16px 20px;
@@ -83,10 +83,42 @@
   margin-bottom: 20px;
 }
 
-.review-banner span {
+.review-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.review-banner-title {
   color: #28a745;
   font-weight: 500;
   font-size: 16px;
+}
+
+.due-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.due-category-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.4);
+  color: #aaa;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.due-category-pill.selected {
+  background: rgba(40, 167, 69, 0.3);
+  border-color: #28a745;
+  color: #28a745;
 }
 
 .review-actions {
