@@ -13,6 +13,7 @@ export const KanjiPracticeMode: React.FC = () => {
     getNextCard,
     getPreview,
     importKanji,
+    updateCard,
     getAvailableLessons,
   } = useKanjiProgress();
 
@@ -24,6 +25,8 @@ export const KanjiPracticeMode: React.FC = () => {
   const [isStarting, setIsStarting] = useState(false);
   const [hasImported, setHasImported] = useState(false);
   const [availableLessons, setAvailableLessons] = useState<string[]>([]);
+  const [isEditingMnemonic, setIsEditingMnemonic] = useState(false);
+  const [editedMnemonic, setEditedMnemonic] = useState('');
 
   // Compute filtered due count based on selected lessons
   const filteredDueCount = useMemo(() => {
@@ -75,8 +78,30 @@ export const KanjiPracticeMode: React.FC = () => {
     if (currentCard) {
       review(currentCard.kanjiId, rating);
       setIsRevealed(false);
+      setIsEditingMnemonic(false);
     }
   }, [currentCard, review]);
+
+  const handleEditMnemonic = useCallback(() => {
+    if (currentCard) {
+      setEditedMnemonic(currentCard.mnemonic || '');
+      setIsEditingMnemonic(true);
+    }
+  }, [currentCard]);
+
+  const handleSaveMnemonic = useCallback(() => {
+    if (currentCard) {
+      updateCard(currentCard.kanjiId, { mnemonic: editedMnemonic });
+      setIsEditingMnemonic(false);
+      // Update current card to reflect changes
+      setCurrentCard(prev => prev ? { ...prev, mnemonic: editedMnemonic } : null);
+    }
+  }, [currentCard, editedMnemonic, updateCard]);
+
+  const handleCancelEditMnemonic = useCallback(() => {
+    setIsEditingMnemonic(false);
+    setEditedMnemonic('');
+  }, []);
 
   const handleStart = async () => {
     setIsStarting(true);
@@ -307,20 +332,56 @@ export const KanjiPracticeMode: React.FC = () => {
 
             <div className="kanji-readings">
               <h3>Readings:</h3>
+              <div className="readings-legend">
+                <span className="legend-item">
+                  <span className="legend-badge kun">日本</span>
+                  <span className="legend-label">Kunyomi (Japanese)</span>
+                </span>
+                <span className="legend-item">
+                  <span className="legend-badge on">中文</span>
+                  <span className="legend-label">Onyomi (Chinese)</span>
+                </span>
+              </div>
               <div className="readings-list">
                 {currentCard.readings.filter(r => r.type === 'kun').map((r, idx) => (
-                  <span key={`kun-${idx}`} className="reading kun">{r.reading}</span>
+                  <span key={`kun-${idx}`} className="reading kun" title="Kunyomi (Japanese reading)">{r.reading}</span>
                 ))}
                 {currentCard.readings.filter(r => r.type === 'on').map((r, idx) => (
-                  <span key={`on-${idx}`} className="reading on">{r.reading}</span>
+                  <span key={`on-${idx}`} className="reading on" title="Onyomi (Chinese reading)">{r.reading}</span>
                 ))}
               </div>
             </div>
 
-            {currentCard.mnemonic && (
+            {(currentCard.mnemonic || isEditingMnemonic) && (
               <div className="kanji-mnemonic">
-                <h3>Mnemonic (KLC):</h3>
-                <p>{currentCard.mnemonic}</p>
+                <div className="mnemonic-header">
+                  <h3>Mnemonic (KLC):</h3>
+                  {!isEditingMnemonic && (
+                    <button 
+                      className="edit-mnemonic-btn"
+                      onClick={handleEditMnemonic}
+                      title="Edit mnemonic"
+                    >
+                      ✏️ Edit
+                    </button>
+                  )}
+                </div>
+                {isEditingMnemonic ? (
+                  <div className="mnemonic-edit-form">
+                    <textarea
+                      value={editedMnemonic}
+                      onChange={(e) => setEditedMnemonic(e.target.value)}
+                      placeholder="Enter your mnemonic..."
+                      rows={3}
+                    />
+                    <div className="mnemonic-edit-actions">
+                      <button onClick={handleSaveMnemonic} className="save-btn">Save</button>
+                      <button onClick={handleCancelEditMnemonic} className="cancel-btn">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <p>{currentCard.mnemonic}</p>
+                )}
               </div>
             )}
 

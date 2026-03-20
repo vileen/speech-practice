@@ -173,6 +173,16 @@ export function useKanjiProgress() {
     return cards.filter(card => card.lessonId === lessonId);
   }, [cards]);
 
+  // Update a card's fields (e.g., mnemonic)
+  const updateCard = useCallback((cardId: string, updates: Partial<Omit<KanjiCard, keyof Card>>) => {
+    setCards(prev => prev.map(card => {
+      if (card.kanjiId === cardId) {
+        return { ...card, ...updates };
+      }
+      return card;
+    }));
+  }, []);
+
   // Get stats
   const stats = {
     total: cards.length,
@@ -192,6 +202,7 @@ export function useKanjiProgress() {
     getPreview,
     importKanji,
     addCard,
+    updateCard,
     getAvailableLessons,
     getCardsByLesson,
   };

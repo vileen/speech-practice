@@ -251,6 +251,45 @@
   margin-bottom: 1.5rem;
 }
 
+.readings-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  background: #f9fafb;
+  border-radius: 0.375rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+}
+
+.legend-badge {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+.legend-badge.kun {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.legend-badge.on {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+.legend-label {
+  color: #6b7280;
+}
+
 .reading {
   display: inline-block;
   padding: 0.375rem 0.75rem;
@@ -273,6 +312,83 @@
   border-radius: 0.5rem;
   padding: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.mnemonic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.mnemonic-header h3 {
+  margin: 0;
+}
+
+.edit-mnemonic-btn {
+  background: transparent;
+  border: 1px solid #d4a373;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  color: #92400e;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-mnemonic-btn:hover {
+  background: rgba(146, 64, 14, 0.1);
+}
+
+.mnemonic-edit-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d4a373;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 0.5rem;
+}
+
+.mnemonic-edit-form textarea:focus {
+  outline: none;
+  border-color: #92400e;
+  box-shadow: 0 0 0 2px rgba(146, 64, 14, 0.1);
+}
+
+.mnemonic-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mnemonic-edit-actions .save-btn,
+.mnemonic-edit-actions .cancel-btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mnemonic-edit-actions .save-btn {
+  background: #92400e;
+  color: white;
+  border: none;
+}
+
+.mnemonic-edit-actions .save-btn:hover {
+  background: #78350f;
+}
+
+.mnemonic-edit-actions .cancel-btn {
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.mnemonic-edit-actions .cancel-btn:hover {
+  background: #f3f4f6;
 }
 
 .kanji-mnemonic p {

@@ -81,10 +81,10 @@ function nextInterval(s: number): number {
 function initInterval(rating: Rating): number {
   // For new cards, use minutes instead of days
   const intervals = {
-    again: 1,    // 1 minute
-    hard: 5,     // 5 minutes
-    good: 10,    // 10 minutes
-    easy: 4 * 24 * 60,  // 4 days (in minutes)
+    again: 1,     // 1 minute
+    hard: 5,      // 5 minutes
+    good: 10,     // 10 minutes
+    easy: 30,     // 30 minutes (not 4 days!)
   };
   return intervals[rating];
 }
