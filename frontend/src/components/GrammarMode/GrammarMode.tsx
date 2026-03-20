@@ -89,6 +89,7 @@ export const GrammarMode: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [dueCount, setDueCount] = useState(0);
+  const [duePatterns, setDuePatterns] = useState<GrammarPattern[]>([]);
   const [showFurigana, setShowFurigana] = useState(true);
 
   const STORAGE_KEY = 'grammar_selected_categories';
@@ -196,6 +197,7 @@ export const GrammarMode: React.FC = () => {
       });
       if (response.ok) {
         const data = await response.json();
+        setDuePatterns(data.patterns || []);
         setDueCount(data.count);
       }
     } catch (err) {
@@ -203,18 +205,18 @@ export const GrammarMode: React.FC = () => {
     }
   };
 
-  const startReview = async () => {
+  const startReview = async (useSelected: boolean = false) => {
     try {
       const response = await fetch(`${API_URL}/api/grammar/review`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
         const data = await response.json();
-        // Filter patterns by selected categories
-        const filteredPatterns = selectedCategories.length > 0
+        // Filter patterns by selected categories if useSelected is true
+        const filteredPatterns = (useSelected && selectedCategories.length > 0)
           ? data.patterns.filter((p: GrammarPattern) => selectedCategories.includes(p.category))
           : data.patterns;
-        
+
         if (filteredPatterns.length > 0) {
           const firstPattern = filteredPatterns[0];
           setCurrentPattern(firstPattern);
@@ -382,7 +384,21 @@ export const GrammarMode: React.FC = () => {
     setSelectedCategories([]);
   };
 
+  const clearCategorySelection = () => {
+    setSelectedCategories([]);
+  };
+
   const filteredPatterns = patterns.filter(p => selectedCategories.includes(p.category));
+
+  // Calculate due patterns count for selected categories
+  const selectedDueCount = selectedCategories.length > 0
+    ? duePatterns.filter(p => selectedCategories.includes(p.category)).length
+    : 0;
+
+  // Calculate total patterns count for selected categories
+  const selectedPatternsCount = selectedCategories.length > 0
+    ? patterns.filter(p => selectedCategories.includes(p.category)).length
+    : 0;
 
   const handleHeaderBack = () => {
     if (currentPattern) {
@@ -425,9 +441,18 @@ export const GrammarMode: React.FC = () => {
           {dueCount > 0 && (
             <div className="review-banner">
               <span>🔥 {dueCount} patterns ready for review</span>
-              <button className="review-btn" onClick={startReview}>
-                Start Review
-              </button>
+              <div className="review-actions">
+                <button
+                  className="review-btn practice-selected-btn"
+                  onClick={() => startReview(true)}
+                  disabled={selectedCategories.length === 0 || selectedDueCount === 0}
+                >
+                  Practice Selected ({selectedDueCount})
+                </button>
+                <button className="review-btn" onClick={() => startReview(false)}>
+                  Practice All
+                </button>
+              </div>
             </div>
           )}
           <div className="category-filter">
@@ -450,6 +475,30 @@ export const GrammarMode: React.FC = () => {
                 </label>
               ))}
             </div>
+            {selectedCategories.length > 0 && (
+              <div className="selected-categories">
+                <div className="selected-categories-header">
+                  <span className="selected-label">Selected ({selectedPatternsCount} patterns):</span>
+                  <button className="clear-categories-btn" onClick={clearCategorySelection}>
+                    All Categories
+                  </button>
+                </div>
+                <div className="selected-pills">
+                  {selectedCategories.map(cat => (
+                    <span key={cat} className="category-pill">
+                      {cat}
+                      <button
+                        className="remove-pill"
+                        onClick={() => toggleCategory(cat)}
+                        title={`Remove ${cat}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {selectedCategories.length === 0 ? (

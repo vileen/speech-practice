@@ -89,10 +89,15 @@
   font-size: 16px;
 }
 
+.review-actions {
+  display: flex;
+  gap: 12px;
+}
+
 .review-btn {
-  background: #28a745;
-  color: white;
-  border: none;
+  background: #0f3460;
+  color: #fff;
+  border: 1px solid #0f3460;
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
@@ -101,9 +106,29 @@
   font-weight: 500;
 }
 
-.review-btn:hover {
-  background: #34ce57;
+.review-btn:hover:not(:disabled) {
+  background: #1a4a7a;
+  border-color: #1a4a7a;
   transform: translateY(-1px);
+}
+
+.review-btn:disabled {
+  background: #333;
+  color: #666;
+  border-color: #333;
+  cursor: not-allowed;
+}
+
+.review-btn.practice-selected-btn {
+  background: #e94560;
+  border-color: #e94560;
+  color: white;
+}
+
+.review-btn.practice-selected-btn:hover:not(:disabled) {
+  background: #ff6b6b;
+  border-color: #ff6b6b;
+  box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
 }
 
 .category-filter {
@@ -184,6 +209,84 @@
   font-size: 14px;
   color: #fff;
   user-select: none;
+}
+
+/* Selected Categories */
+.selected-categories {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #0f3460;
+}
+
+.selected-categories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.selected-label {
+  font-size: 13px;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.clear-categories-btn {
+  background: transparent;
+  border: 1px solid #e94560;
+  color: #e94560;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.clear-categories-btn:hover {
+  background: #e94560;
+  color: #fff;
+}
+
+.selected-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(233, 69, 96, 0.15);
+  border: 1px solid rgba(233, 69, 96, 0.4);
+  color: #e94560;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.remove-pill {
+  background: none;
+  border: none;
+  color: #e94560;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 2px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.remove-pill:hover {
+  background: rgba(233, 69, 96, 0.2);
 }
 
 .no-selection {
