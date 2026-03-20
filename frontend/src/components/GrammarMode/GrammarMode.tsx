@@ -207,20 +207,34 @@ export const GrammarMode: React.FC = () => {
 
   const startReview = async (useSelected: boolean = false) => {
     try {
-      const response = await fetch(`${API_URL}/api/grammar/review`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        // Filter patterns by selected categories if useSelected is true
-        const filteredPatterns = (useSelected && selectedCategories.length > 0)
-          ? data.patterns.filter((p: GrammarPattern) => selectedCategories.includes(p.category))
-          : data.patterns;
+      let patternsToReview: GrammarPattern[] = [];
 
-        if (filteredPatterns.length > 0) {
-          const firstPattern = filteredPatterns[0];
-          setCurrentPattern(firstPattern);
-          await loadExercise(firstPattern.id);
+      if (useSelected && selectedCategories.length > 0) {
+        // Use ALL patterns from selected categories (not just due ones)
+        patternsToReview = patterns.filter(p => selectedCategories.includes(p.category));
+        // Shuffle patterns for variety
+        patternsToReview = [...patternsToReview].sort(() => Math.random() - 0.5);
+      } else {
+        // Use due patterns from API (original behavior)
+        const response = await fetch(`${API_URL}/api/grammar/review`, {
+          headers: { 'X-Password': password }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          patternsToReview = data.patterns || [];
+        }
+      }
+
+      if (patternsToReview.length > 0) {
+        const firstPattern = patternsToReview[0];
+        setCurrentPattern(firstPattern);
+        await loadExercise(firstPattern.id);
+      } else {
+        // Build helpful message
+        let message = 'No patterns available.';
+        if (useSelected) {
+          message = 'No patterns found in the selected categories.';
+          message += '\n\nTry selecting different categories.';
         } else {
           // Build helpful message showing which categories have due patterns
           const dueCategoriesList = duePatterns.map(p => p.category);
@@ -230,14 +244,14 @@ export const GrammarMode: React.FC = () => {
             return `${cat} (${count})`;
           });
           
-          let message = 'No patterns due for review in the selected categories.';
+          message = 'No patterns due for review.';
           if (duePatterns.length > 0 && categoryCounts.length > 0) {
             message += `\n\nThe ${duePatterns.length} due patterns are from:\n${categoryCounts.join(', ')}`;
           }
           message += '\n\nTry selecting different categories or browse patterns to learn new ones.';
-          
-          alert(message);
         }
+        
+        alert(message);
       }
     } catch (err) {
       console.error('Failed to start review:', err);
@@ -404,10 +418,7 @@ export const GrammarMode: React.FC = () => {
 
   const filteredPatterns = patterns.filter(p => selectedCategories.includes(p.category));
 
-  // Calculate due patterns count for selected categories
-  const selectedDueCount = selectedCategories.length > 0
-    ? duePatterns.filter(p => selectedCategories.includes(p.category)).length
-    : 0;
+
 
   // Calculate due patterns breakdown by category
   const dueByCategory = React.useMemo(() => {
@@ -485,9 +496,9 @@ export const GrammarMode: React.FC = () => {
                 <button
                   className="review-btn practice-selected-btn"
                   onClick={() => startReview(true)}
-                  disabled={selectedCategories.length === 0 || selectedDueCount === 0}
+                  disabled={selectedCategories.length === 0 || selectedPatternsCount === 0}
                 >
-                  Practice Selected ({selectedDueCount})
+                  Practice Selected ({selectedPatternsCount} patterns)
                 </button>
                 <button className="review-btn" onClick={() => startReview(false)}>
                   Practice All
