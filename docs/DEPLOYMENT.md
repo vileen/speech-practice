@@ -1,36 +1,41 @@
-# Deployment Notes
+# Deployment Guide
+
+Complete deployment instructions for speech-practice application.
+
+---
 
 ## Frontend Deployment (GitHub Pages)
 
-**IMPORTANT: NIE używać ręcznie `npx gh-pages -d dist`!**
+**Important:** Do NOT manually run `npx gh-pages -d dist`!
 
-Frontend jest automatycznie budowany i deployowany przez **GitHub Actions** przy każdym pushu do `main`.
+Frontend is automatically built and deployed by GitHub Actions on every push to main.
 
-### Workflow
 ```
-push do main → GitHub Actions → Build → Deploy do GitHub Pages
+push to main → GitHub Actions → Build → Deploy to GitHub Pages
 ```
 
-### Konfiguracja
-- Workflow: `.github/workflows/deploy-frontend.yml`
-- Trigger: `on: push: branches: [main]`
-- Build: `yarn build` (z env VITE_API_URL)
-- Deploy: `actions/deploy-pages@v4`
+- **Workflow:** `.github/workflows/deploy-frontend.yml`
+- **Trigger:** `on: push: branches: [main]`
+- **Build:** `yarn build` (with env VITE_API_URL)
+- **Deploy:** `actions/deploy-pages@v4`
 
-### Poprawny flow
+### Deploy Frontend
+
 ```bash
 cd ~/Projects/speech-practice
 git add .
 git commit -m "feat: ..."
 git push origin main
-# Gotowe! GitHub Actions zrobi resztę.
+# Done! GitHub Actions will handle the rest.
 ```
 
-### Sprawdzenie statusu deploy
-- Wejdź na: https://github.com/vileen/speech-practice/actions
-- Sprawdź czy workflow "Deploy to GitHub Pages" przeszedł zielonym
+### Check Deployment Status
 
-### Jeśli potrzebny redeploy
+1. Go to: https://github.com/vileen/speech-practice/actions
+2. Check if "Deploy to GitHub Pages" workflow passed (green)
+
+### Force Redeploy
+
 ```bash
 git commit --allow-empty -m "trigger: redeploy"
 git push origin main
@@ -38,42 +43,109 @@ git push origin main
 
 ---
 
-## Backend Deployment
+## Backend Deployment (Local + Cloudflare Tunnel)
 
-Backend (Node.js + Express) działa lokalnie na Mac Mini:
-- Port: 3001
-- URL lokalny: http://localhost:3001
-- URL publiczny: https://speech.vileen.pl (via Cloudflare Tunnel)
+Backend (Node.js + Express) runs locally on Mac Mini:
 
-### Restart backendu
+- **Port:** 3001
+- **Local URL:** http://localhost:3001
+- **Public URL:** https://speech.vileen.pl (via Cloudflare Tunnel)
+- **Process Manager:** PM2
+
+### Quick Deploy
+
+```bash
+# 1. Build backend
+cd ~/Projects/speech-practice/backend
+npm run build
+
+# 2. Restart PM2 process
+pm2 restart speech-practice
+pm2 save
+```
+
+### Verify Deployment
+
+```bash
+# Check process status
+pm2 status speech-practice
+
+# Test new endpoints
+curl https://speech.vileen.pl/api/grammar/confusion-stats
+curl "https://speech.vileen.pl/api/grammar/mixed-review?categories=I-Adjectives,Na-Adjectives&limit=10"
+```
+
+### Manual Start (if PM2 fails)
+
 ```bash
 cd ~/Projects/speech-practice/backend
 npm run build
-# Zabij stare procesy
 pkill -f "node dist/server.js"
-# Uruchom nowy
 node dist/server.js &
 ```
 
 ### Cloudflare Tunnel
+
 ```bash
+# Run tunnel manually (usually auto-started by LaunchAgent)
 cloudflared tunnel run speech-practice
 ```
-(uruchamiane automatycznie przez LaunchAgent)
 
 ---
 
-## Pamiętaj
-- ✅ Frontend: tylko `git push`, resztą zajmie się CI
-- ❌ NIE: `npx gh-pages -d dist` - to nadpisuje Actions!
+## Architecture
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   GitHub Pages  │     │   Mac Mini       │     │  Cloudflare     │
+│   (Frontend)    │◄────│   (Backend)      │◄────│  (Tunnel)       │
+│                 │     │   Port 3001      │     │                 │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+       ▲                        ▲                         ▲
+       │                        │                         │
+       ▼                        ▼                         ▼
+https://vileen.github.io   http://localhost:3001   https://speech.vileen.pl
+```
+
+- **Frontend:** Built by GitHub Actions, hosted on GitHub Pages
+- **Backend:** Built locally, managed by PM2, exposed via Cloudflare Tunnel
+- **Database:** PostgreSQL running locally on Mac Mini
 
 ---
 
-## Notka dla AI (Armin)
+## Troubleshooting
 
-Kiedy użytkownik prosi o deploy frontendu:
-1. ZAPYTAJ czy chce push do main (automatyczny deploy)
-2. NIE używaj `npx gh-pages` bez wyraźnej zgody
-3. Jeśli manualny deploy potrzebny - wyjaśnij dlaczego Actions jest lepsze
+| Issue | Solution |
+|-------|----------|
+| Frontend not updating | Check GitHub Actions status, wait 1-2 minutes |
+| 404 on new API endpoints | Backend not restarted after build - run `pm2 restart speech-practice` |
+| PM2 not found | `npm install -g pm2` |
+| Cloudflared tunnel down | `pm2 restart speech-practice-tunnel` |
+| Database connection error | Check PostgreSQL is running: `brew services start postgresql` |
+| Build fails | Run `npm install` in both frontend and backend directories |
 
-To samo dotyczy aktualizacji: wystarczy push do main, nie ma potrzeby ręcznego gh-pages.
+---
+
+## Last Deployed
+
+- **Frontend:** Auto-deployed on every push to main
+- **Backend:** 2026-03-21 01:23 GMT+1 - Grammar Anti-Confusion features
+
+---
+
+## Environment Variables
+
+### Frontend (`frontend/.env`)
+```
+VITE_API_URL=https://speech.vileen.pl
+```
+
+### Backend (`backend/.env.local`)
+```
+DATABASE_URL=postgresql://localhost:5432/speech_practice
+PASSWORD=your-password-here
+```
+
+---
+
+*Last updated: 2026-03-21*
