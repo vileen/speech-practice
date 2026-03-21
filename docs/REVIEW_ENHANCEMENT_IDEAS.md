@@ -24,7 +24,7 @@ High-level overview of planned and implemented features. Each feature has a dedi
 | 14 | [Pomodoro Tracker](./featureIdeas/11-pomodoro-tracker.md) | ⏳ Planned | Medium | Medium | [Details](./featureIdeas/11-pomodoro-tracker.md) |
 | 15 | [Infrastructure & Security](./featureIdeas/15-infrastructure-security.md) | ✅ Complete | High | Critical | [Details](./featureIdeas/15-infrastructure-security.md) |
 | 16 | [**Kanji Practice Mode**](./featureIdeas/16-kanji-practice-mode.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/16-kanji-practice-mode.md) |
-| **17** | [**Grammar Anti-Confusion**](./featureIdeas/17-grammar-anti-confusion.md) | 📋 **Planned** | Medium-High | Very High | [Details](./featureIdeas/17-grammar-anti-confusion.md) |
+| **17** | [**Grammar Anti-Confusion**](./featureIdeas/17-grammar-anti-confusion.md) | ✅ **Complete** | Medium-High | Very High | [Details](./featureIdeas/17-grammar-anti-confusion.md) |
 
 ---
 
