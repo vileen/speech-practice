@@ -39,6 +39,35 @@ interface ConfusionAlert {
 type ExerciseState = 'loading' | 'prompt' | 'input' | 'processing' | 'feedback';
 type ReviewMode = 'normal' | 'mixed';
 
+// Category Groups for Quick Select
+interface CategoryGroup {
+  name: string;
+  categories: string[];
+}
+
+const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
+  particles: {
+    name: 'Particles',
+    categories: ['は', 'が', 'を', 'に', 'で', 'へ', 'と', 'から', 'まで', 'の']
+  },
+  permission: {
+    name: 'Permission/Obligation',
+    categories: ['Permission', 'Prohibition', 'Obligation', 'Lack of Obligation']
+  },
+  adjectives: {
+    name: 'Adjectives',
+    categories: ['I-Adjectives', 'Na-Adjectives']
+  },
+  actions: {
+    name: 'Actions',
+    categories: ['Desire', 'Ability', 'Invitation', 'Suggestion']
+  },
+  all: {
+    name: 'All',
+    categories: [] // Populated dynamically based on available categories
+  }
+};
+
 // Memoized PatternCard - defined outside GrammarMode to prevent rerenders
 const PatternCard: React.FC<{
   pattern: GrammarPattern;
@@ -213,6 +242,10 @@ export const GrammarMode: React.FC = () => {
   const [confusionAlert, setConfusionAlert] = useState<ConfusionAlert | null>(null);
   const [reviewMode, setReviewMode] = useState<ReviewMode>('normal');
   const [confusionStats, setConfusionStats] = useState<{patternId: number, count: number}[]>([]);
+
+  // Category Groups accordion state
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
 
   const STORAGE_KEY = 'grammar_selected_categories';
   const FURIGANA_STORAGE_KEY = 'grammar_show_furigana';
@@ -626,7 +659,57 @@ export const GrammarMode: React.FC = () => {
 
   const clearCategorySelection = () => {
     setSelectedCategories([]);
+    setActiveGroup(null);
   };
+
+  // Check if a group's categories exactly match current selection
+  const isGroupActive = (groupKey: string): boolean => {
+    const group = CATEGORY_GROUPS[groupKey];
+    if (!group) return false;
+
+    const groupCategories = groupKey === 'all' 
+      ? categories 
+      : group.categories.filter(cat => categories.includes(cat));
+
+    if (groupCategories.length === 0) return false;
+    if (selectedCategories.length !== groupCategories.length) return false;
+
+    return groupCategories.every(cat => selectedCategories.includes(cat));
+  };
+
+  // Select categories from a group
+  const selectGroupCategories = (groupKey: string) => {
+    const group = CATEGORY_GROUPS[groupKey];
+    if (!group) return;
+
+    let groupCategories: string[];
+    if (groupKey === 'all') {
+      groupCategories = categories;
+    } else {
+      // Only include categories that actually exist in the data
+      groupCategories = group.categories.filter(cat => categories.includes(cat));
+    }
+
+    if (groupCategories.length === 0) {
+      alert(`No categories found for "${group.name}"`);
+      return;
+    }
+
+    setSelectedCategories(groupCategories);
+    setActiveGroup(groupKey);
+    setExpandedGroup(null); // Collapse accordion after selection
+  };
+
+  // Update active group when categories change manually
+  useEffect(() => {
+    for (const [key] of Object.entries(CATEGORY_GROUPS)) {
+      if (isGroupActive(key)) {
+        setActiveGroup(key);
+        return;
+      }
+    }
+    setActiveGroup(null);
+  }, [selectedCategories, categories]);
 
   const filteredPatterns = patterns.filter(p => selectedCategories.includes(p.category));
 
@@ -740,16 +823,59 @@ export const GrammarMode: React.FC = () => {
             <div className="mixed-review-content">
               <span className="mixed-review-title">🎯 Mixed Review Mode</span>
               <span className="mixed-review-desc">
-                Practice shuffled patterns from similar categories to improve discrimination
+                Practice shuffled patterns from selected categories to improve discrimination
               </span>
             </div>
             <button 
               className="mixed-review-btn"
-              onClick={() => startReview(true, true)}
-              disabled={selectedCategories.length === 0 || selectedPatternsCount === 0}
+              onClick={() => {
+                if (selectedCategories.length === 0) {
+                  alert('Please select at least one category first. Use Quick Select Groups or select categories manually.');
+                  return;
+                }
+                startReview(true, true);
+              }}
+              disabled={selectedPatternsCount === 0}
             >
               Start Mixed Review
             </button>
+          </div>
+
+          {/* Quick Select Groups Accordion */}
+          <div className="category-groups-accordion">
+            <div 
+              className="accordion-header"
+              onClick={() => setExpandedGroup(expandedGroup === 'groups' ? null : 'groups')}
+            >
+              <span className="accordion-icon">📁</span>
+              <span className="accordion-title">Quick Select Groups</span>
+              <span className="accordion-toggle">
+                {expandedGroup === 'groups' ? '▼' : '▶'}
+              </span>
+            </div>
+            
+            {expandedGroup === 'groups' && (
+              <div className="accordion-content">
+                {Object.entries(CATEGORY_GROUPS).map(([key, group]) => {
+                  const availableCount = key === 'all' 
+                    ? categories.length 
+                    : group.categories.filter(cat => categories.includes(cat)).length;
+                  const isActive = activeGroup === key;
+
+                  return (
+                    <div
+                      key={key}
+                      className={`group-item ${isActive ? 'active' : ''}`}
+                      onClick={() => selectGroupCategories(key)}
+                    >
+                      <span className="group-name">{group.name}</span>
+                      <span className="group-count">({availableCount})</span>
+                      {isActive && <span className="group-check">✓</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="category-filter">
