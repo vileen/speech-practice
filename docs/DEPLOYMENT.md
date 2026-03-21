@@ -129,7 +129,7 @@ https://vileen.github.io   http://localhost:3001   https://speech.vileen.pl
 ## Last Deployed
 
 - **Frontend:** Auto-deployed on every push to main
-- **Backend:** 2026-03-21 01:23 GMT+1 - Grammar Anti-Confusion features
+- **Backend:** 2026-03-21 02:41 GMT+1 - Grammar Anti-Confusion features complete (Discrimination Drills, Pattern Graph, Exercise Coverage)
 
 ---
 
