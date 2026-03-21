@@ -1,6 +1,6 @@
 # GrammarMode: Anti-Confusion Features
 
-**Status:** 📋 Planned
+**Status:** ✅ Partially Implemented (Phase 1 Complete)
 
 **Priority:** 8 (High - Critical for JLPT success)
 
@@ -26,6 +26,21 @@ GrammarMode currently treats each pattern as an isolated learning target. Howeve
 - Frustration leads to abandoned study sessions
 
 **Solution:** Build anti-confusion features that force users to **discriminate between similar patterns** during practice, not just memorize each in isolation.
+
+---
+
+## Implementation Status
+
+| Feature | Status | Date | Notes |
+|---------|--------|------|-------|
+| **Comparison Mode** | ✅ Complete | 2026-03-21 | Side-by-side view, "Compare" button on pattern cards |
+| **Confusion Tracking** | ✅ Complete | 2026-03-21 | Database schema, confusion events, real-time detection |
+| **Mixed Review Mode** | ✅ Complete | 2026-03-21 | With Quick Select Groups (Particles, Adjectives, etc.) |
+| **Category Groups** | ✅ Complete | 2026-03-21 | Accordion UI for selecting related categories |
+| **Confusion Alerts** | ✅ Complete | 2026-03-21 | Real-time warnings when user enters wrong pattern |
+| **Pattern Relationship Graph** | 📋 Planned | - | Visual map of pattern connections |
+| **Discrimination Drills** | 📋 Planned | - | Choose between 2-3 patterns for given context |
+| **Auto-Remediation** | 📋 Planned | - | Automatically schedule confused pairs more frequently |
 
 ---
 
