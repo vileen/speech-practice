@@ -240,7 +240,7 @@
   margin-bottom: 12px;
 }
 
-.pattern-graph-content {
+.pattern-graph-info {
   display: flex;
   flex-direction: column;
   gap: 6px;

@@ -1043,7 +1043,7 @@ export const GrammarMode: React.FC = () => {
 
           {/* Pattern Graph Button */}
           <div className="pattern-graph-banner">
-            <div className="pattern-graph-content">
+            <div className="pattern-graph-info">
               <span className="pattern-graph-title">🕸️ Pattern Relationship Graph</span>
               <span className="pattern-graph-desc">
                 Visual map showing how patterns connect - opposites, similarities, and your mastery status
