@@ -87,15 +87,15 @@ const NODE_COLORS = {
   unknown: '#747d8c',
 };
 
-// Legend labels in Polish
+// Legend labels in English
 const LEGEND_LABELS = {
-  opposite: 'Przeciwne',
-  similar: 'Podobne',
-  related: 'Powiązane',
-  mastered: 'Opanowane',
-  learning: 'W trakcie',
-  confused: 'Myli się',
-  unknown: 'Nie ćwiczone',
+  opposite: 'Opposite',
+  similar: 'Similar',
+  related: 'Related',
+  mastered: 'Mastered',
+  learning: 'Learning',
+  confused: 'Confused',
+  unknown: 'Not Practiced',
 };
 
 // Force-directed layout simulation
@@ -391,31 +391,31 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     <div className="pattern-graph-modal">
       <div className="pattern-graph-content">
         <div className="pattern-graph-header">
-          <h3>🕸️ Graf Powiązań Wzorców</h3>
+          <h3>🕸️ Pattern Relationship Graph</h3>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
         
         <div className="pattern-graph-controls">
           <div className="filter-section">
-            <span className="control-label">Filtr:</span>
+            <span className="control-label">Filter:</span>
             <div className="filter-buttons">
               <button 
                 className={filter === 'all' ? 'active' : ''}
                 onClick={() => setFilter('all')}
               >
-                Wszystkie
+                All
               </button>
               <button 
                 className={filter === 'confused' ? 'active' : ''}
                 onClick={() => setFilter('confused')}
               >
-                Myli się
+                Confused
               </button>
               <button 
                 className={filter === 'mastered' ? 'active' : ''}
                 onClick={() => setFilter('mastered')}
               >
-                Opanowane
+                Mastered
               </button>
             </div>
           </div>
@@ -655,7 +655,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                       onMouseLeave={() => setHoveredNode(null)}
                       style={{ 
                         cursor: 'pointer',
-                        transform: `translate(${node.x}px, ${node.y}px) scale(${isHovered ? 1.15 : 1})`,
+                        transform: `scale(${isHovered ? 1.15 : 1})`,
                         transformOrigin: 'center',
                         transition: 'transform 0.15s ease-out'
                       }}
@@ -726,7 +726,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                             {node.category}
                           </text>
                           <text x="12" y="60" fill={NODE_COLORS[node.masteryStatus]} fontSize="10" fontWeight="600">
-                            Celność: {Math.round(node.accuracy * 100)}%
+                            Accuracy: {Math.round(node.accuracy * 100)}%
                           </text>
                         </g>
                       )}
@@ -740,10 +740,10 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
 
         <div className="pattern-graph-footer">
           <p>
-            <strong>Widoczne:</strong> {filteredNodes.length} wzorców | 
-            <strong> Powiązania:</strong> {connections.filter(c => 
+            <strong>Visible:</strong> {filteredNodes.length} patterns | 
+            <strong> Connections:</strong> {connections.filter(c => 
               filteredNodes.find(n => n.id === c.from) && filteredNodes.find(n => n.id === c.to)
-            ).length} połączeń
+            ).length} connections
           </p>
         </div>
       </div>
