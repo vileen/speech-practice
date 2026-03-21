@@ -431,7 +431,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
         <div className="pattern-graph-main">
           <div className="pattern-graph-sidebar">
             <div className="legend-section-panel">
-              <h4>🔴 Rodzaj połączenia</h4>
+              <h4>🔴 Connection Type</h4>
               <div className="legend-items">
                 <div className="legend-item">
                   <div className="legend-line" style={{ backgroundColor: CONNECTION_COLORS.opposite }} />
@@ -449,7 +449,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
             </div>
             
             <div className="legend-section-panel">
-              <h4>🟢 Status wzorca</h4>
+              <h4>🟢 Mastery Status</h4>
               <div className="legend-items">
                 <div className="legend-item">
                   <div className="legend-dot" style={{ backgroundColor: NODE_COLORS.mastered }} />
@@ -471,12 +471,12 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
             </div>
             
             <div className="legend-tips">
-              <h4>💡 Wskazówki</h4>
+              <h4>💡 Tips</h4>
               <ul>
-                <li>Kliknij węzeł aby przećwiczyć</li>
-                <li>Kliknij linię aby porównać</li>
-                <li>Przeciągnij tło aby przesunąć</li>
-                <li>Scroll aby przybliżyć</li>
+                <li>Click node to practice pattern</li>
+                <li>Click connection to compare</li>
+                <li>Drag to pan the view</li>
+                <li>Use scroll to zoom in/out</li>
               </ul>
             </div>
           </div>
