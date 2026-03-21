@@ -37,37 +37,30 @@ function extractAudioFilename(audioField: string): string {
   return match ? match[1] : '';
 }
 
-function parseMeaning(meaningField: string): string {
-  // Extract English meaning from "romaji: english meaning" format
+function parseMeaning(meaningField: string): string | null {
   const cleaned = cleanHtml(meaningField);
   
-  // Take first line only
-  let firstLine = cleaned.split(/\n|<br>/i)[0];
+  // Get first segment (before <br><br> or double newline)
+  const firstSegment = cleaned.split(/<br>\s*<br>|\n\n/)[0] || cleaned;
   
-  // Extract what's AFTER the colon (English meaning)
-  const colonIndex = firstLine.indexOf(':');
-  if (colonIndex > 0 && colonIndex < 40) {
-    firstLine = firstLine.substring(colonIndex + 1).trim();
+  // Must have colon pattern: "word: meaning"
+  const colonMatch = firstSegment.match(/^[^:]*:\s*([^.!?<;]+)/);
+  if (!colonMatch) return null; // Skip cards without simple colon format
+  
+  let meaning = colonMatch[1].trim();
+  
+  // Skip if meaning looks like a description rather than translation
+  const skipWords = ['is a', 'is the', 'is an', 'is used', 'declares', 'means', 'refers'];
+  for (const sw of skipWords) {
+    if (meaning.toLowerCase().includes(sw)) return null;
   }
   
-  // Clean up - stop at first sentence-ending punctuation or context words
-  const stopWords = ['There', 'This', 'These', 'Throughout', 'Note', 'Again', 'See', 'For'];
-  for (const word of stopWords) {
-    const idx = firstLine.indexOf(' ' + word + ' ');
-    if (idx > 3) {
-      firstLine = firstLine.substring(0, idx).trim();
-    }
-  }
-  
-  // Remove trailing punctuation
-  firstLine = firstLine.replace(/[.!?;]+$/, '').trim();
+  // Clean up
+  meaning = meaning.replace(/\s*\([^)]*$/g, '').trim();
   
   // Limit length
-  if (firstLine.length > 50) {
-    firstLine = firstLine.substring(0, 47) + '...';
-  }
-  
-  return firstLine;
+  const words = meaning.split(/\s+/).slice(0, 4);
+  return words.join(' ').replace(/[;:,]+$/, '');
 }
 
 function isInstructionCard(card: JLabCard): boolean {
