@@ -48,7 +48,7 @@ interface CategoryGroup {
 const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
   particles: {
     name: 'Particles',
-    categories: ['は', 'が', 'を', 'に', 'で', 'へ', 'と', 'から', 'まで', 'の']
+    categories: ['Particles']
   },
   permission: {
     name: 'Permission/Obligation',
