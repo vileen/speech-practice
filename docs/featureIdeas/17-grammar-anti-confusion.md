@@ -34,13 +34,22 @@ GrammarMode currently treats each pattern as an isolated learning target. Howeve
 | Feature | Status | Date | Notes |
 |---------|--------|------|-------|
 | **Comparison Mode** | ✅ Complete | 2026-03-21 | Side-by-side view, "Compare" button on pattern cards |
-| **Confusion Tracking** | ✅ Complete | 2026-03-21 | Database schema, confusion events, real-time detection |
-| **Mixed Review Mode** | ✅ Complete | 2026-03-21 | With Quick Select Groups (Particles, Adjectives, etc.) |
-| **Category Groups** | ✅ Complete | 2026-03-21 | Accordion UI for selecting related categories |
-| **Confusion Alerts** | ✅ Complete | 2026-03-21 | Real-time warnings when user enters wrong pattern |
-| **Pattern Relationship Graph** | 📋 Planned | - | Visual map of pattern connections |
-| **Discrimination Drills** | 📋 Planned | - | Choose between 2-3 patterns for given context |
-| **Auto-Remediation** | 📋 Planned | - | Automatically schedule confused pairs more frequently |
+| **Confusion Tracking** | ✅ Complete | 2026-03-21 | Database schema, confusion events table, confusion_pairs column |
+| **Mixed Review Mode** | ✅ Complete | 2026-03-21 | Shuffled patterns from selected categories |
+| **Category Groups** | ✅ Complete | 2026-03-21 | Accordion UI with Particles, Adjectives, Permission/Obligation groups |
+| **Confusion Alerts** | ✅ Complete | 2026-03-21 | Real-time warning when user enters wrong pattern form |
+| **Confusion Badges** | ✅ Complete | 2026-03-21 | ⚠️ badge on pattern cards with confusion history |
+| **Backend API** | ✅ Complete | 2026-03-21 | `/related`, `/confusion`, `/confusion-stats`, `/mixed-review`, `/check-confusion` endpoints |
+| **Discrimination Drills** | 🚧 Partial | - | "Practice This" button exists, but no explicit "Choose A or B" drill mode yet |
+| **Pattern Relationship Graph** | 📋 Not Started | - | Visual map of pattern connections (hierarchy, opposites) |
+| **Auto-Remediation** | 📋 Not Started | - | Automatically increase frequency of confused pairs in reviews |
+
+### What's Missing for Full Implementation
+
+1. **Discrimination Drills** - UI where user sees context and must explicitly choose between 2-3 pattern buttons (not just construction)
+2. **Pattern Relationship Graph** - Visual network diagram showing pattern connections
+3. **Auto-Remediation** - SRS algorithm modification to prioritize confused pairs
+4. **Exercise Coverage** - Some patterns (like adjective forms) lack exercises entirely
 
 ---
 
