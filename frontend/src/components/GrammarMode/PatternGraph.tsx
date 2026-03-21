@@ -206,9 +206,12 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   
-  const dimensions = { width: 1200, height: 800 };
+  // Stable dimensions - never changes between renders
+  const dimensionsRef = useRef({ width: 1200, height: 800 });
+  const dimensions = dimensionsRef.current;
   
   // Calculate node positions using force-directed layout
+  // ONLY recalculates when patterns or confusionStats change - NOT on hover
   const nodes = useMemo((): PatternNode[] => {
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
@@ -268,7 +271,8 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     );
     
     return runForceLayout(initialNodes, connections, dimensions.width, dimensions.height);
-  }, [patterns, confusionStats, dimensions]);
+    // Note: hoveredNode is intentionally NOT in dependencies - hover should not recalculate layout
+  }, [patterns, confusionStats]);
 
   // Get connections for visible patterns
   const connections = useMemo((): PatternConnection[] => {
@@ -638,23 +642,28 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                 {filteredNodes.map(node => {
                   const isSelected = selectedNode === node.id;
                   const isHovered = hoveredNode === node.id;
-                  const radius = isSelected ? 38 : isHovered ? 35 : 30;
+                  const baseRadius = 30;
                   const gradientId = `gradient-${node.masteryStatus}`;
                   
                   return (
                     <g 
                       key={node.id}
                       transform={`translate(${node.x}, ${node.y})`}
-                      className={`node-group ${isSelected ? 'selected' : ''}`}
+                      className={`node-group ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
                       onClick={() => handleNodeClick(node.id)}
                       onMouseEnter={() => setHoveredNode(node.id)}
                       onMouseLeave={() => setHoveredNode(null)}
-                      style={{ cursor: 'pointer' }}
+                      style={{ 
+                        cursor: 'pointer',
+                        transform: `translate(${node.x}px, ${node.y}px) scale(${isHovered ? 1.15 : 1})`,
+                        transformOrigin: 'center',
+                        transition: 'transform 0.15s ease-out'
+                      }}
                     >
                       {/* Outer glow for selected */}
                       {isSelected && (
                         <circle
-                          r={radius + 8}
+                          r={baseRadius + 8}
                           fill="none"
                           stroke={NODE_COLORS[node.masteryStatus]}
                           strokeWidth="2"
@@ -665,7 +674,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                       
                       {/* Node circle */}
                       <circle
-                        r={radius}
+                        r={baseRadius}
                         fill={`url(#${gradientId})`}
                         stroke={isSelected ? '#fff' : 'transparent'}
                         strokeWidth={isSelected ? 3 : 0}
