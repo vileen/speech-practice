@@ -653,12 +653,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                       onClick={() => handleNodeClick(node.id)}
                       onMouseEnter={() => setHoveredNode(node.id)}
                       onMouseLeave={() => setHoveredNode(null)}
-                      style={{ 
-                        cursor: 'pointer',
-                        transform: `scale(${isHovered ? 1.15 : 1})`,
-                        transformOrigin: 'center',
-                        transition: 'transform 0.15s ease-out'
-                      }}
+                      style={{ cursor: 'pointer' }}
                     >
                       {/* Outer glow for selected */}
                       {isSelected && (
@@ -672,12 +667,23 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                         />
                       )}
                       
+                      {/* Hover glow effect */}
+                      {isHovered && (
+                        <circle
+                          r={baseRadius + 12}
+                          fill="none"
+                          stroke={NODE_COLORS[node.masteryStatus]}
+                          strokeWidth="3"
+                          strokeOpacity="0.3"
+                        />
+                      )}
+                      
                       {/* Node circle */}
                       <circle
-                        r={baseRadius}
+                        r={isHovered ? baseRadius + 5 : baseRadius}
                         fill={`url(#${gradientId})`}
-                        stroke={isSelected ? '#fff' : 'transparent'}
-                        strokeWidth={isSelected ? 3 : 0}
+                        stroke={isSelected ? '#fff' : (isHovered ? NODE_COLORS[node.masteryStatus] : 'transparent')}
+                        strokeWidth={isSelected ? 3 : (isHovered ? 2 : 0)}
                         filter="url(#node-shadow)"
                         className="node-circle"
                       />
