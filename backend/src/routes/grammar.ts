@@ -135,7 +135,7 @@ router.get('/patterns/:id/exercise', checkPassword, async (req, res) => {
 // Submit attempt and update progress
 router.post('/progress', checkPassword, async (req, res) => {
   try {
-    const { patternId, result, errorType, userSentence, exerciseId } = req.body;
+    const { patternId, result, errorType, userSentence, exerciseId, confusedWithPatternId } = req.body;
     
     // Record attempt
     await pool.query(
@@ -146,6 +146,26 @@ router.post('/progress', checkPassword, async (req, res) => {
     
     // Update progress with FSRS
     const progress = await updateProgress(patternId, result);
+    
+    // If confusion was detected, log it
+    if (confusedWithPatternId && result === 'wrong') {
+      await pool.query(
+        `INSERT INTO grammar_confusion_events (pattern_id, confused_with_pattern_id, user_sentence)
+         VALUES ($1, $2, $3)`,
+        [patternId, confusedWithPatternId, userSentence || null]
+      );
+      
+      // Update confusion_pairs in user_grammar_progress
+      await pool.query(
+        `UPDATE user_grammar_progress 
+         SET confusion_pairs = COALESCE(
+           (SELECT jsonb_agg(DISTINCT elem) FROM jsonb_array_elements(confusion_pairs || jsonb_build_array($2::int)) AS elem),
+           jsonb_build_array($2::int)
+         )
+         WHERE pattern_id = $1`,
+        [patternId, confusedWithPatternId]
+      );
+    }
     
     res.json({ success: true, progress });
   } catch (error) {
@@ -191,6 +211,245 @@ router.get('/stats', checkPassword, async (_req, res) => {
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
+
+// Get related patterns for comparison
+router.get('/patterns/:id/related', checkPassword, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get the pattern's related pattern IDs
+    const patternResult = await pool.query(
+      'SELECT related_patterns FROM grammar_patterns WHERE id = $1',
+      [id]
+    );
+    
+    if (patternResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Pattern not found' });
+    }
+    
+    const relatedIds = patternResult.rows[0].related_patterns || [];
+    
+    if (relatedIds.length === 0) {
+      return res.json({ patterns: [] });
+    }
+    
+    // Fetch the related patterns
+    const relatedResult = await pool.query(
+      'SELECT * FROM grammar_patterns WHERE id = ANY($1) ORDER BY category, id',
+      [relatedIds]
+    );
+    
+    res.json({ patterns: relatedResult.rows });
+  } catch (error) {
+    console.error('Error fetching related patterns:', error);
+    res.status(500).json({ error: 'Failed to fetch related patterns' });
+  }
+});
+
+// Log confusion event
+router.post('/confusion', checkPassword, async (req, res) => {
+  try {
+    const { patternId, confusedWithPatternId, userSentence } = req.body;
+    
+    // Validate required fields
+    if (!patternId || !confusedWithPatternId) {
+      return res.status(400).json({ error: 'patternId and confusedWithPatternId are required' });
+    }
+    
+    // Insert confusion event
+    const result = await pool.query(
+      `INSERT INTO grammar_confusion_events (pattern_id, confused_with_pattern_id, user_sentence)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [patternId, confusedWithPatternId, userSentence || null]
+    );
+    
+    // Update confusion_pairs in user_grammar_progress
+    await pool.query(
+      `UPDATE user_grammar_progress 
+       SET confusion_pairs = COALESCE(
+         (SELECT jsonb_agg(DISTINCT elem) FROM jsonb_array_elements(confusion_pairs || jsonb_build_array($2::int)) AS elem),
+         jsonb_build_array($2::int)
+       )
+       WHERE pattern_id = $1`,
+      [patternId, confusedWithPatternId]
+    );
+    
+    res.json({ success: true, event: result.rows[0] });
+  } catch (error) {
+    console.error('Error logging confusion:', error);
+    res.status(500).json({ error: 'Failed to log confusion event' });
+  }
+});
+
+// Get user's confusion stats
+router.get('/confusion-stats', checkPassword, async (_req, res) => {
+  try {
+    // Get confusion events with pattern details
+    const eventsResult = await pool.query(`
+      SELECT 
+        ce.*,
+        p1.pattern as pattern_name,
+        p2.pattern as confused_with_pattern_name
+      FROM grammar_confusion_events ce
+      JOIN grammar_patterns p1 ON ce.pattern_id = p1.id
+      JOIN grammar_patterns p2 ON ce.confused_with_pattern_id = p2.id
+      ORDER BY ce.created_at DESC
+      LIMIT 50
+    `);
+    
+    // Get confusion pair counts
+    const pairsResult = await pool.query(`
+      SELECT 
+        p1.pattern as pattern_name,
+        p2.pattern as confused_with_pattern_name,
+        COUNT(*) as count
+      FROM grammar_confusion_events ce
+      JOIN grammar_patterns p1 ON ce.pattern_id = p1.id
+      JOIN grammar_patterns p2 ON ce.confused_with_pattern_id = p2.id
+      GROUP BY p1.pattern, p2.pattern
+      ORDER BY count DESC
+      LIMIT 10
+    `);
+    
+    res.json({
+      recentEvents: eventsResult.rows,
+      topConfusions: pairsResult.rows
+    });
+  } catch (error) {
+    console.error('Error fetching confusion stats:', error);
+    res.status(500).json({ error: 'Failed to fetch confusion stats' });
+  }
+});
+
+// Check if user answer matches a related pattern (confusion detection)
+router.post('/check-confusion', checkPassword, async (req, res) => {
+  try {
+    const { patternId, userSentence } = req.body;
+    
+    if (!patternId || !userSentence) {
+      return res.status(400).json({ error: 'patternId and userSentence are required' });
+    }
+    
+    // Get related patterns
+    const patternResult = await pool.query(
+      'SELECT related_patterns FROM grammar_patterns WHERE id = $1',
+      [patternId]
+    );
+    
+    if (patternResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Pattern not found' });
+    }
+    
+    const relatedIds = patternResult.rows[0].related_patterns || [];
+    
+    if (relatedIds.length === 0) {
+      return res.json({ confusedWith: null });
+    }
+    
+    // Get patterns the user might have confused with
+    const relatedPatterns = await pool.query(
+      'SELECT id, pattern, category FROM grammar_patterns WHERE id = ANY($1)',
+      [relatedIds]
+    );
+    
+    // Simple heuristic: check if user's answer contains key markers of related patterns
+    const confusedWith = relatedPatterns.rows.find(p => {
+      const patternText = p.pattern.toLowerCase();
+      const userText = userSentence.toLowerCase();
+      
+      // Extract key markers from pattern (e.g., 〜てもいいです -> てもいい)
+      const markers = extractPatternMarkers(patternText);
+      
+      // Check if user's answer contains these markers
+      return markers.some(marker => userText.includes(marker));
+    });
+    
+    res.json({ 
+      confusedWith: confusedWith ? {
+        id: confusedWith.id,
+        pattern: confusedWith.pattern,
+        category: confusedWith.category
+      } : null
+    });
+  } catch (error) {
+    console.error('Error checking confusion:', error);
+    res.status(500).json({ error: 'Failed to check confusion' });
+  }
+});
+
+// Get mixed review patterns (shuffled from similar categories)
+router.get('/mixed-review', checkPassword, async (req, res) => {
+  try {
+    const { categories, limit = 10 } = req.query;
+    
+    let categoryList: string[] = [];
+    if (categories) {
+      categoryList = (categories as string).split(',');
+    }
+    
+    // Build query
+    let query = `
+      SELECT 
+        gp.*,
+        COALESCE(ugp.ease_factor, 2.5) as ease_factor,
+        COALESCE(ugp.interval_days, 1) as interval_days,
+        COALESCE(ugp.streak, 0) as streak,
+        COALESCE(ugp.total_attempts, 0) as total_attempts,
+        COALESCE(ugp.correct_attempts, 0) as correct_attempts,
+        COALESCE(ugp.confusion_pairs, '[]'::jsonb) as confusion_pairs
+      FROM grammar_patterns gp
+      LEFT JOIN user_grammar_progress ugp ON gp.id = ugp.pattern_id
+    `;
+    
+    const params: any[] = [];
+    
+    if (categoryList.length > 0) {
+      params.push(categoryList);
+      query += ` WHERE gp.category = ANY($${params.length})`;
+    }
+    
+    query += ` ORDER BY RANDOM() LIMIT $${params.length + 1}`;
+    params.push(parseInt(limit as string) || 10);
+    
+    const result = await pool.query(query, params);
+    
+    res.json({
+      count: result.rows.length,
+      patterns: result.rows
+    });
+  } catch (error) {
+    console.error('Error fetching mixed review:', error);
+    res.status(500).json({ error: 'Failed to fetch mixed review patterns' });
+  }
+});
+
+// Helper function to extract pattern markers for confusion detection
+function extractPatternMarkers(pattern: string): string[] {
+  const markers: string[] = [];
+  
+  // Common pattern markers
+  const commonPatterns: Record<string, string[]> = {
+    'てもいい': ['てもいい', 'てもいいです'],
+    'てはいけません': ['てはいけ', 'てはいけません', 'てはいけない'],
+    'なければなりません': ['なければ', 'なければなりません', 'なきゃ', 'ないと'],
+    'なくてもいい': ['なくてもいい', 'なくてもいいです'],
+    'は': ['は'],
+    'が': ['が'],
+    'に': ['に'],
+    'で': ['で'],
+    'くない': ['くない'],
+    'ではありません': ['ではありません', 'じゃありません', 'ではない'],
+  };
+  
+  for (const [key, values] of Object.entries(commonPatterns)) {
+    if (pattern.includes(key)) {
+      markers.push(...values);
+    }
+  }
+  
+  return markers;
+}
 
 // Helper function to update progress using simplified FSRS
 async function updateProgress(patternId: number, result: string) {

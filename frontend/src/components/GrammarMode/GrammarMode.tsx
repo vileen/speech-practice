@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFurigana } from '../../hooks/useFurigana';
+import { useFurigana } from '../../hooks/useFurigana.js';
 import { Header } from '../Header/index.js';
 import { API_URL } from '../../config/api.js';
 import './GrammarMode.css';
@@ -13,10 +13,12 @@ interface GrammarPattern {
   formation_rules: any[];
   examples: any[];
   common_mistakes: any[];
+  related_patterns?: number[];
   ease_factor?: number;
   streak?: number;
   total_attempts?: number;
   correct_attempts?: number;
+  confusion_pairs?: number[];
 }
 
 interface GrammarExercise {
@@ -29,18 +31,26 @@ interface GrammarExercise {
   difficulty: number;
 }
 
+interface ConfusionAlert {
+  confusedWith: GrammarPattern;
+  message: string;
+}
+
 type ExerciseState = 'loading' | 'prompt' | 'input' | 'processing' | 'feedback';
+type ReviewMode = 'normal' | 'mixed';
 
 // Memoized PatternCard - defined outside GrammarMode to prevent rerenders
 const PatternCard: React.FC<{
   pattern: GrammarPattern;
   showFurigana: boolean;
   onClick: () => void;
-}> = React.memo(({ pattern, showFurigana, onClick }) => {
+  onCompare?: () => void;
+  hasConfusion?: boolean;
+}> = React.memo(({ pattern, showFurigana, onClick, onCompare, hasConfusion }) => {
   const { furigana } = useFurigana(pattern.pattern, showFurigana);
   
   return (
-    <div className="pattern-card" onClick={onClick}>
+    <div className={`pattern-card ${hasConfusion ? 'has-confusion' : ''}`} onClick={onClick}>
       <div className="pattern-header">
         <span className="pattern-text">
           {showFurigana && furigana ? (
@@ -54,6 +64,18 @@ const PatternCard: React.FC<{
       <div className="pattern-category">{pattern.category}</div>
       {(pattern.streak ?? 0) > 0 && (
         <div className="pattern-streak">🔥 {pattern.streak}</div>
+      )}
+      {hasConfusion && (
+        <div className="confusion-badge">⚠️</div>
+      )}
+      {onCompare && pattern.related_patterns && pattern.related_patterns.length > 0 && (
+        <button 
+          className="compare-btn" 
+          onClick={(e) => { e.stopPropagation(); onCompare(); }}
+          title="Compare with similar patterns"
+        >
+          Compare
+        </button>
       )}
     </div>
   );
@@ -78,6 +100,100 @@ const ExerciseDisplay: React.FC<{
   );
 });
 
+// Comparison View Component
+const ComparisonView: React.FC<{
+  patterns: GrammarPattern[];
+  showFurigana: boolean;
+  onClose: () => void;
+  onSelectPattern: (pattern: GrammarPattern) => void;
+}> = ({ patterns, showFurigana, onClose, onSelectPattern }) => {
+  return (
+    <div className="comparison-modal">
+      <div className="comparison-content">
+        <div className="comparison-header">
+          <h3>🔍 Pattern Comparison</h3>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <div className="comparison-grid">
+          {patterns.map((pattern, index) => (
+            <div key={pattern.id} className="comparison-card">
+              <div className="comparison-index">{index + 1}</div>
+              <h4>
+                <ExerciseDisplay text={pattern.pattern} showFurigana={showFurigana} />
+              </h4>
+              <span className="comparison-category">{pattern.category}</span>
+              
+              <div className="formation-rules">
+                <h5>Formation:</h5>
+                <ul>
+                  {pattern.formation_rules?.map((rule, i) => (
+                    <li key={i}>
+                      <span className="step-num">{rule.step}.</span>
+                      <ExerciseDisplay text={rule.rule} showFurigana={showFurigana} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="examples">
+                <h5>Examples:</h5>
+                {pattern.examples?.slice(0, 2).map((ex, i) => (
+                  <div key={i} className="example">
+                    <p className="jp">
+                      <ExerciseDisplay text={ex.jp} showFurigana={showFurigana} />
+                    </p>
+                    <p className="en">{ex.en}</p>
+                  </div>
+                ))}
+              </div>
+              
+              {pattern.common_mistakes?.length > 0 && (
+                <div className="common-mistakes">
+                  <h5>⚠️ Common Mistakes:</h5>
+                  {pattern.common_mistakes?.slice(0, 1).map((m, i) => (
+                    <div key={i} className="mistake">
+                      <p className="mistake-name">{m.mistake}</p>
+                      <p className="mistake-expl">{m.explanation}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              <button 
+                className="practice-this-btn"
+                onClick={() => onSelectPattern(pattern)}
+              >
+                Practice This →
+              </button>
+            </div>
+          ))}
+        </div>
+        
+        {patterns.length === 2 && (
+          <div className="comparison-diff">
+            <h4>🎯 Key Differences</h4>
+            <div className="diff-grid">
+              <div className="diff-item">
+                <span className="diff-pattern">
+                  <ExerciseDisplay text={patterns[0].pattern} showFurigana={showFurigana} />
+                </span>
+                <span className="diff-desc">{patterns[0].category}</span>
+              </div>
+              <div className="diff-vs">vs</div>
+              <div className="diff-item">
+                <span className="diff-pattern">
+                  <ExerciseDisplay text={patterns[1].pattern} showFurigana={showFurigana} />
+                </span>
+                <span className="diff-desc">{patterns[1].category}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const GrammarMode: React.FC = () => {
   const navigate = useNavigate();
   const [patterns, setPatterns] = useState<GrammarPattern[]>([]);
@@ -91,10 +207,15 @@ export const GrammarMode: React.FC = () => {
   const [dueCount, setDueCount] = useState(0);
   const [duePatterns, setDuePatterns] = useState<GrammarPattern[]>([]);
   const [showFurigana, setShowFurigana] = useState(true);
+  
+  // Anti-confusion features
+  const [comparisonPatterns, setComparisonPatterns] = useState<GrammarPattern[] | null>(null);
+  const [confusionAlert, setConfusionAlert] = useState<ConfusionAlert | null>(null);
+  const [reviewMode, setReviewMode] = useState<ReviewMode>('normal');
+  const [confusionStats, setConfusionStats] = useState<{patternId: number, count: number}[]>([]);
 
   const STORAGE_KEY = 'grammar_selected_categories';
   const FURIGANA_STORAGE_KEY = 'grammar_show_furigana';
-
 
   const password = localStorage.getItem('speech_practice_password') || '';
 
@@ -102,6 +223,7 @@ export const GrammarMode: React.FC = () => {
   useEffect(() => {
     loadPatterns();
     loadDuePatterns();
+    loadConfusionStats();
   }, []);
 
   // Reload due patterns count when selected categories change
@@ -205,15 +327,54 @@ export const GrammarMode: React.FC = () => {
     }
   };
 
-  const startReview = async (useSelected: boolean = false) => {
+  const loadConfusionStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/grammar/confusion-stats`, {
+        headers: { 'X-Password': password }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // Count confusions per pattern
+        const counts: Record<number, number> = {};
+        data.topConfusions?.forEach((conf: any) => {
+          // Find pattern ID by name
+          const pattern = patterns.find(p => p.pattern === conf.pattern_name);
+          if (pattern) {
+            counts[pattern.id] = (counts[pattern.id] || 0) + parseInt(conf.count);
+          }
+        });
+        setConfusionStats(Object.entries(counts).map(([id, count]) => ({ 
+          patternId: parseInt(id), 
+          count 
+        })));
+      }
+    } catch (err) {
+      console.error('Failed to load confusion stats:', err);
+    }
+  };
+
+  const startReview = async (useSelected: boolean = false, mixed: boolean = false) => {
     try {
       let patternsToReview: GrammarPattern[] = [];
 
-      if (useSelected && selectedCategories.length > 0) {
+      if (mixed) {
+        // Mixed review mode - shuffle patterns from selected categories
+        const categoriesParam = selectedCategories.join(',');
+        const response = await fetch(
+          `${API_URL}/api/grammar/mixed-review?categories=${categoriesParam}&limit=10`,
+          { headers: { 'X-Password': password } }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          patternsToReview = data.patterns || [];
+        }
+        setReviewMode('mixed');
+      } else if (useSelected && selectedCategories.length > 0) {
         // Use ALL patterns from selected categories (not just due ones)
         patternsToReview = patterns.filter(p => selectedCategories.includes(p.category));
         // Shuffle patterns for variety
         patternsToReview = [...patternsToReview].sort(() => Math.random() - 0.5);
+        setReviewMode('normal');
       } else {
         // Use due patterns from API (original behavior)
         const response = await fetch(`${API_URL}/api/grammar/review`, {
@@ -223,6 +384,7 @@ export const GrammarMode: React.FC = () => {
           const data = await response.json();
           patternsToReview = data.patterns || [];
         }
+        setReviewMode('normal');
       }
 
       if (patternsToReview.length > 0) {
@@ -268,6 +430,7 @@ export const GrammarMode: React.FC = () => {
         const data = await response.json();
         setExercise(data.exercise);
         setUserAnswer('');
+        setConfusionAlert(null);
         setState('input');
       }
     } catch (err) {
@@ -280,10 +443,56 @@ export const GrammarMode: React.FC = () => {
     await loadExercise(pattern.id);
   };
 
+  const handleCompare = async (pattern: GrammarPattern) => {
+    try {
+      const response = await fetch(`${API_URL}/api/grammar/patterns/${pattern.id}/related`, {
+        headers: { 'X-Password': password }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setComparisonPatterns([pattern, ...data.patterns].slice(0, 3));
+      }
+    } catch (err) {
+      console.error('Failed to load related patterns:', err);
+    }
+  };
+
+  const checkForConfusion = async (userSentence: string, patternId: number): Promise<ConfusionAlert | null> => {
+    try {
+      const response = await fetch(`${API_URL}/api/grammar/check-confusion`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password': password
+        },
+        body: JSON.stringify({ patternId, userSentence })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.confusedWith) {
+          return {
+            confusedWith: data.confusedWith,
+            message: `⚠️ This looks like "${data.confusedWith.pattern}" (${data.confusedWith.category})!`
+          };
+        }
+      }
+    } catch (err) {
+      console.error('Failed to check confusion:', err);
+    }
+    return null;
+  };
+
   const handleSubmit = async () => {
     if (!userAnswer.trim()) return;
     
     setState('processing');
+
+    // Check for confusion before submitting
+    const confusion = await checkForConfusion(userAnswer, currentPattern?.id || 0);
+    if (confusion) {
+      setConfusionAlert(confusion);
+    }
 
     // Smart answer verification with Levenshtein distance and kanji strict + kana lenient
     const verifyAnswer = (user: string, correct: string): { isCorrect: boolean; similarity: number; issues: string[] } => {
@@ -370,6 +579,7 @@ export const GrammarMode: React.FC = () => {
           exerciseId: exercise?.id,
           userSentence: userAnswer,
           result: result,
+          confusedWithPatternId: confusion?.confusedWith?.id
         })
       });
 
@@ -379,10 +589,12 @@ export const GrammarMode: React.FC = () => {
           correct: isCorrect,
           userAnswer: userAnswer,
           correctAnswer: exercise?.correct_answer,
-          progress: data.progress
+          progress: data.progress,
+          confusion: confusion
         });
         setState('feedback');
         loadDuePatterns();
+        loadConfusionStats();
       }
     } catch (err) {
       console.error('Failed to submit:', err);
@@ -418,8 +630,6 @@ export const GrammarMode: React.FC = () => {
 
   const filteredPatterns = patterns.filter(p => selectedCategories.includes(p.category));
 
-
-
   // Calculate due patterns breakdown by category
   const dueByCategory = React.useMemo(() => {
     const breakdown: Record<string, number> = {};
@@ -435,6 +645,11 @@ export const GrammarMode: React.FC = () => {
   const selectedPatternsCount = selectedCategories.length > 0
     ? patterns.filter(p => selectedCategories.includes(p.category)).length
     : 0;
+
+  // Check if pattern has confusion history
+  const hasConfusion = (patternId: number) => {
+    return confusionStats.some(c => c.patternId === patternId && c.count > 0);
+  };
 
   const handleHeaderBack = () => {
     if (currentPattern) {
@@ -472,6 +687,19 @@ export const GrammarMode: React.FC = () => {
         }
       />
 
+      {/* Comparison Modal */}
+      {comparisonPatterns && (
+        <ComparisonView
+          patterns={comparisonPatterns}
+          showFurigana={showFurigana}
+          onClose={() => setComparisonPatterns(null)}
+          onSelectPattern={(pattern) => {
+            setComparisonPatterns(null);
+            startPattern(pattern);
+          }}
+        />
+      )}
+
       {!currentPattern ? (
         <div className="pattern-selection">
           {dueCount > 0 && (
@@ -506,6 +734,24 @@ export const GrammarMode: React.FC = () => {
               </div>
             </div>
           )}
+
+          {/* Mixed Review Banner */}
+          <div className="mixed-review-banner">
+            <div className="mixed-review-content">
+              <span className="mixed-review-title">🎯 Mixed Review Mode</span>
+              <span className="mixed-review-desc">
+                Practice shuffled patterns from similar categories to improve discrimination
+              </span>
+            </div>
+            <button 
+              className="mixed-review-btn"
+              onClick={() => startReview(true, true)}
+              disabled={selectedCategories.length === 0 || selectedPatternsCount === 0}
+            >
+              Start Mixed Review
+            </button>
+          </div>
+
           <div className="category-filter">
             <div className="category-filter-header">
               <label className="filter-label">Categories:</label>
@@ -564,6 +810,8 @@ export const GrammarMode: React.FC = () => {
                   pattern={pattern}
                   showFurigana={showFurigana}
                   onClick={() => startPattern(pattern)}
+                  onCompare={() => handleCompare(pattern)}
+                  hasConfusion={hasConfusion(pattern.id)}
                 />
               ))}
             </div>
@@ -571,17 +819,55 @@ export const GrammarMode: React.FC = () => {
         </div>
       ) : (
         <div className="exercise-container">
+          {/* Review Mode Indicator */}
+          {reviewMode === 'mixed' && (
+            <div className="mixed-mode-badge">🎯 Mixed Review Mode</div>
+          )}
+
           <div className="pattern-info">
             <h3>
               <ExerciseDisplay text={currentPattern.pattern} showFurigana={showFurigana} />
             </h3>
             <p className="category">{currentPattern.category}</p>
+            
+            {/* Confusion Warning */}
+            {currentPattern.confusion_pairs && currentPattern.confusion_pairs.length > 0 && (
+              <div className="confusion-warning">
+                ⚠️ Often confused with: {currentPattern.confusion_pairs.map(id => {
+                  const p = patterns.find(pt => pt.id === id);
+                  return p ? p.pattern : id;
+                }).join(', ')}
+                <button 
+                  className="compare-link"
+                  onClick={() => handleCompare(currentPattern)}
+                >
+                  Compare →
+                </button>
+              </div>
+            )}
           </div>
 
           {state === 'loading' && <div className="loading">Loading exercise...</div>}
 
           {state === 'input' && exercise && (
             <div className="exercise-prompt">
+              {/* Confusion Alert */}
+              {confusionAlert && (
+                <div className="confusion-alert">
+                  <div className="confusion-alert-icon">⚠️</div>
+                  <div className="confusion-alert-content">
+                    <p className="confusion-alert-title">Possible Confusion Detected!</p>
+                    <p className="confusion-alert-message">{confusionAlert.message}</p>
+                    <button 
+                      className="compare-alert-btn"
+                      onClick={() => handleCompare(currentPattern)}
+                    >
+                      Compare Patterns
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="prompt-type">{exercise.type.replace('_', ' ')}</div>
               <p className="prompt-text">
                 <ExerciseDisplay text={exercise.prompt} showFurigana={showFurigana} />
@@ -621,6 +907,23 @@ export const GrammarMode: React.FC = () => {
               <div className="feedback-result">
                 {feedback.correct ? '✅ Correct!' : '❌ Not quite'}
               </div>
+              
+              {/* Confusion Feedback */}
+              {feedback.confusion && (
+                <div className="confusion-feedback">
+                  <div className="confusion-feedback-icon">💡</div>
+                  <p>
+                    You used the pattern for <strong>{feedback.confusion.confusedWith.pattern}</strong>,
+                    but the exercise is asking for <strong>{currentPattern?.pattern}</strong>.
+                  </p>
+                  <button 
+                    className="compare-feedback-btn"
+                    onClick={() => handleCompare(currentPattern!)}
+                  >
+                    See Comparison
+                  </button>
+                </div>
+              )}
               
               <div className="answer-comparison">
                 <div className="your-answer">
