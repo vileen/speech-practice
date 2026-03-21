@@ -94,7 +94,7 @@ async function main() {
   
   for (const card of cards) {
     try {
-      const note = {
+      const note: any = {
         deckName: deckName,
         modelName: modelName,
         fields: {
@@ -104,15 +104,13 @@ async function main() {
         tags: [card.tags, 'JLab', 'Production'],
       };
       
-      // Add audio reference if present
+      // Add audio reference if present (only if file exists in collection.media)
       if (card.audio) {
         const audioMatch = card.audio.match(/\[sound:(.+?)\]/);
         if (audioMatch) {
-          note['audio'] = [{
-            url: '',  // Audio needs to be in collection.media already
-            filename: audioMatch[1],
-            fields: ['Back'],
-          }];
+          // Audio must already exist in Anki's collection.media folder
+          // We add it as [sound:filename.mp3] in the Back field
+          note.fields.Back += `<br>${card.audio}`;
         }
       }
       
@@ -122,7 +120,7 @@ async function main() {
       if (added % 50 === 0) {
         console.log(`  Progress: ${added}/${cards.length}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       failed++;
       if (failed <= 3) {
         console.log(`  ⚠️  Failed: ${error.message}`);

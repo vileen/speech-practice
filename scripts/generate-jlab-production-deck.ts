@@ -38,31 +38,36 @@ function extractAudioFilename(audioField: string): string {
 }
 
 function parseMeaning(meaningField: string): string {
-  // Extract just the core definition
+  // Extract English meaning from "romaji: english meaning" format
   const cleaned = cleanHtml(meaningField);
   
   // Take first line only
   let firstLine = cleaned.split(/\n|<br>/i)[0];
   
-  // Remove "word: definition" format
+  // Extract what's AFTER the colon (English meaning)
   const colonIndex = firstLine.indexOf(':');
-  if (colonIndex > 0 && colonIndex < 30) {
+  if (colonIndex > 0 && colonIndex < 40) {
     firstLine = firstLine.substring(colonIndex + 1).trim();
   }
   
-  // Extract just the first phrase/sentence (before any period that's not part of an abbreviation)
-  // Look for pattern like "word: definition" or just "definition"
-  const match = firstLine.match(/^([^.!?]+)/);
-  if (match) {
-    let result = match[1].trim();
-    // Limit length
-    if (result.length > 60) {
-      result = result.substring(0, 57) + '...';
+  // Clean up - stop at first sentence-ending punctuation or context words
+  const stopWords = ['There', 'This', 'These', 'Throughout', 'Note', 'Again', 'See', 'For'];
+  for (const word of stopWords) {
+    const idx = firstLine.indexOf(' ' + word + ' ');
+    if (idx > 3) {
+      firstLine = firstLine.substring(0, idx).trim();
     }
-    return result;
   }
   
-  return firstLine.length > 60 ? firstLine.substring(0, 57) + '...' : firstLine;
+  // Remove trailing punctuation
+  firstLine = firstLine.replace(/[.!?;]+$/, '').trim();
+  
+  // Limit length
+  if (firstLine.length > 50) {
+    firstLine = firstLine.substring(0, 47) + '...';
+  }
+  
+  return firstLine;
 }
 
 function isInstructionCard(card: JLabCard): boolean {
