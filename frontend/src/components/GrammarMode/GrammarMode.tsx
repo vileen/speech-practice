@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useFurigana } from '../../hooks/useFurigana.js';
 import { Header } from '../Header/index.js';
 import { API_URL } from '../../config/api.js';
+import { PatternGraph } from './PatternGraph.js';
 import './GrammarMode.css';
 
-interface GrammarPattern {
+export interface GrammarPattern {
   id: number;
   pattern: string;
   category: string;
@@ -23,21 +24,30 @@ interface GrammarPattern {
 
 interface GrammarExercise {
   id: number;
-  type: 'construction' | 'transformation' | 'error_correction' | 'fill_blank';
+  type: 'construction' | 'transformation' | 'error_correction' | 'fill_blank' | 'discrimination';
   prompt: string;
   context: string;
   correct_answer: string;
   hints: any[];
   difficulty: number;
+  options?: DiscriminationOption[];
 }
 
-interface ConfusionAlert {
+interface DiscriminationOption {
+  pattern_id: number;
+  pattern: string;
+  category: string;
+  is_correct: boolean;
+  explanation: string;
+}
+
+interface DiscriminationAlert {
   confusedWith: GrammarPattern;
   message: string;
 }
 
-type ExerciseState = 'loading' | 'prompt' | 'input' | 'processing' | 'feedback';
-type ReviewMode = 'normal' | 'mixed';
+type ExerciseState = 'loading' | 'prompt' | 'input' | 'processing' | 'feedback' | 'discrimination_select';
+type ReviewMode = 'normal' | 'mixed' | 'discrimination';
 
 // Category Groups for Quick Select
 interface CategoryGroup {
@@ -223,6 +233,67 @@ const ComparisonView: React.FC<{
   );
 };
 
+// Discrimination Drill Component
+const DiscriminationDrill: React.FC<{
+  exercise: GrammarExercise;
+  patterns: GrammarPattern[];
+  showFurigana: boolean;
+  onSelectOption: (option: DiscriminationOption, pattern: GrammarPattern) => void;
+}> = ({ exercise, patterns, showFurigana, onSelectOption }) => {
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  
+  if (!exercise.options || exercise.options.length === 0) {
+    return <div className="discrimination-error">No options available for this drill.</div>;
+  }
+  
+  return (
+    <div className="discrimination-drill">
+      <div className="discrimination-context">
+        <p className="discrimination-prompt">
+          <ExerciseDisplay text={exercise.prompt} showFurigana={showFurigana} />
+        </p>
+        {exercise.context && (
+          <p className="discrimination-hint">
+            <ExerciseDisplay text={exercise.context} showFurigana={showFurigana} />
+          </p>
+        )}
+      </div>
+      
+      <div className="discrimination-question">
+        <p>Choose the correct pattern:</p>
+      </div>
+      
+      <div className="discrimination-options">
+        {exercise.options.map((option, index) => {
+          const pattern = patterns.find(p => p.id === option.pattern_id);
+          if (!pattern) return null;
+          
+          const isSelected = selectedOption === option.pattern_id;
+          
+          return (
+            <button
+              key={option.pattern_id}
+              className={`discrimination-option ${isSelected ? 'selected' : ''}`}
+              onClick={() => {
+                setSelectedOption(option.pattern_id);
+                onSelectOption(option, pattern);
+              }}
+            >
+              <span className="option-letter">{String.fromCharCode(65 + index)}</span>
+              <div className="option-content">
+                <span className="option-pattern">
+                  <ExerciseDisplay text={option.pattern} showFurigana={showFurigana} />
+                </span>
+                <span className="option-category">{option.category}</span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 export const GrammarMode: React.FC = () => {
   const navigate = useNavigate();
   const [patterns, setPatterns] = useState<GrammarPattern[]>([]);
@@ -239,9 +310,14 @@ export const GrammarMode: React.FC = () => {
   
   // Anti-confusion features
   const [comparisonPatterns, setComparisonPatterns] = useState<GrammarPattern[] | null>(null);
-  const [confusionAlert, setConfusionAlert] = useState<ConfusionAlert | null>(null);
+  const [discriminationAlert, setDiscriminationAlert] = useState<DiscriminationAlert | null>(null);
   const [reviewMode, setReviewMode] = useState<ReviewMode>('normal');
   const [confusionStats, setConfusionStats] = useState<{patternId: number, count: number}[]>([]);
+  const [showPatternGraph, setShowPatternGraph] = useState(false);
+
+  // Discrimination drill state
+  const [selectedDiscriminationOption, setSelectedDiscriminationOption] = useState<DiscriminationOption | null>(null);
+  const [discriminationFeedback, setDiscriminationFeedback] = useState<{isCorrect: boolean; explanation: string} | null>(null);
 
   // Category Groups accordion state
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
@@ -453,6 +529,32 @@ export const GrammarMode: React.FC = () => {
     }
   };
 
+  const startDiscriminationDrill = async () => {
+    try {
+      // Get patterns from selected categories that have related patterns
+      const eligiblePatterns = patterns.filter(p => 
+        selectedCategories.includes(p.category) && 
+        p.related_patterns && 
+        p.related_patterns.length > 0
+      );
+      
+      if (eligiblePatterns.length === 0) {
+        alert('No patterns with relationships found in selected categories. Try selecting more categories.');
+        return;
+      }
+      
+      // Pick a random eligible pattern
+      const basePattern = eligiblePatterns[Math.floor(Math.random() * eligiblePatterns.length)];
+      setCurrentPattern(basePattern);
+      
+      // Load discrimination exercise
+      await loadDiscriminationExercise(basePattern.id);
+      setReviewMode('discrimination');
+    } catch (err) {
+      console.error('Failed to start discrimination drill:', err);
+    }
+  };
+
   const loadExercise = async (patternId: number) => {
     setState('loading');
     try {
@@ -463,11 +565,33 @@ export const GrammarMode: React.FC = () => {
         const data = await response.json();
         setExercise(data.exercise);
         setUserAnswer('');
-        setConfusionAlert(null);
+        setDiscriminationAlert(null);
+        setSelectedDiscriminationOption(null);
+        setDiscriminationFeedback(null);
         setState('input');
       }
     } catch (err) {
       console.error('Failed to load exercise:', err);
+    }
+  };
+
+  const loadDiscriminationExercise = async (patternId: number) => {
+    setState('loading');
+    try {
+      const response = await fetch(`${API_URL}/api/grammar/patterns/${patternId}/discrimination`, {
+        headers: { 'X-Password': password }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setExercise(data.exercise);
+        setUserAnswer('');
+        setDiscriminationAlert(null);
+        setSelectedDiscriminationOption(null);
+        setDiscriminationFeedback(null);
+        setState('discrimination_select');
+      }
+    } catch (err) {
+      console.error('Failed to load discrimination exercise:', err);
     }
   };
 
@@ -490,7 +614,45 @@ export const GrammarMode: React.FC = () => {
     }
   };
 
-  const checkForConfusion = async (userSentence: string, patternId: number): Promise<ConfusionAlert | null> => {
+  const handleDiscriminationSelect = async (option: DiscriminationOption, _pattern: GrammarPattern) => {
+    setSelectedDiscriminationOption(option);
+    
+    // Show immediate feedback
+    setDiscriminationFeedback({
+      isCorrect: option.is_correct,
+      explanation: option.explanation
+    });
+    
+    // If correct, move to construction phase
+    if (option.is_correct) {
+      setTimeout(() => {
+        setState('input');
+      }, 2000);
+    } else {
+      // Wrong choice - log confusion and show comparison option
+      if (currentPattern) {
+        try {
+          await fetch(`${API_URL}/api/grammar/confusion`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Password': password
+            },
+            body: JSON.stringify({
+              patternId: currentPattern.id,
+              confusedWithPatternId: option.pattern_id,
+              userSentence: `Discrimination error: selected ${option.pattern} instead of ${currentPattern.pattern}`
+            })
+          });
+          loadConfusionStats();
+        } catch (err) {
+          console.error('Failed to log confusion:', err);
+        }
+      }
+    }
+  };
+
+  const checkForConfusion = async (userSentence: string, patternId: number): Promise<DiscriminationAlert | null> => {
     try {
       const response = await fetch(`${API_URL}/api/grammar/check-confusion`, {
         method: 'POST',
@@ -524,7 +686,7 @@ export const GrammarMode: React.FC = () => {
     // Check for confusion before submitting
     const confusion = await checkForConfusion(userAnswer, currentPattern?.id || 0);
     if (confusion) {
-      setConfusionAlert(confusion);
+      setDiscriminationAlert(confusion);
     }
 
     // Smart answer verification with Levenshtein distance and kanji strict + kana lenient
@@ -636,7 +798,10 @@ export const GrammarMode: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (currentPattern) {
+    if (reviewMode === 'discrimination') {
+      // In discrimination mode, load a new discrimination exercise
+      startDiscriminationDrill();
+    } else if (currentPattern) {
       loadExercise(currentPattern.id);
     }
   };
@@ -737,6 +902,7 @@ export const GrammarMode: React.FC = () => {
   const handleHeaderBack = () => {
     if (currentPattern) {
       setCurrentPattern(null);
+      setReviewMode('normal');
     } else {
       navigate('/');
     }
@@ -780,6 +946,23 @@ export const GrammarMode: React.FC = () => {
             setComparisonPatterns(null);
             startPattern(pattern);
           }}
+        />
+      )}
+
+      {/* Pattern Graph Modal */}
+      {showPatternGraph && (
+        <PatternGraph
+          patterns={patterns}
+          confusionStats={confusionStats}
+          onSelectPattern={(pattern) => {
+            setShowPatternGraph(false);
+            startPattern(pattern);
+          }}
+          onComparePatterns={(pats) => {
+            setShowPatternGraph(false);
+            setComparisonPatterns(pats);
+          }}
+          onClose={() => setShowPatternGraph(false)}
         />
       )}
 
@@ -838,6 +1021,39 @@ export const GrammarMode: React.FC = () => {
               disabled={selectedPatternsCount === 0}
             >
               Start Mixed Review
+            </button>
+          </div>
+
+          {/* Discrimination Drill Banner */}
+          <div className="discrimination-banner">
+            <div className="discrimination-content">
+              <span className="discrimination-title">🎭 Discrimination Drills</span>
+              <span className="discrimination-desc">
+                Choose between similar patterns in context - trains you to pick the right one under pressure
+              </span>
+            </div>
+            <button 
+              className="discrimination-btn"
+              onClick={startDiscriminationDrill}
+              disabled={selectedPatternsCount === 0}
+            >
+              Start Discrimination Drill
+            </button>
+          </div>
+
+          {/* Pattern Graph Button */}
+          <div className="pattern-graph-banner">
+            <div className="pattern-graph-content">
+              <span className="pattern-graph-title">🕸️ Pattern Relationship Graph</span>
+              <span className="pattern-graph-desc">
+                Visual map showing how patterns connect - opposites, similarities, and your mastery status
+              </span>
+            </div>
+            <button 
+              className="pattern-graph-open-btn"
+              onClick={() => setShowPatternGraph(true)}
+            >
+              View Graph
             </button>
           </div>
 
@@ -949,6 +1165,9 @@ export const GrammarMode: React.FC = () => {
           {reviewMode === 'mixed' && (
             <div className="mixed-mode-badge">🎯 Mixed Review Mode</div>
           )}
+          {reviewMode === 'discrimination' && (
+            <div className="discrimination-mode-badge">🎭 Discrimination Drill</div>
+          )}
 
           <div className="pattern-info">
             <h3>
@@ -975,15 +1194,57 @@ export const GrammarMode: React.FC = () => {
 
           {state === 'loading' && <div className="loading">Loading exercise...</div>}
 
+          {state === 'discrimination_select' && exercise && (
+            <div className="discrimination-container">
+              <DiscriminationDrill
+                exercise={exercise}
+                patterns={patterns}
+                showFurigana={showFurigana}
+                onSelectOption={handleDiscriminationSelect}
+              />
+              
+              {discriminationFeedback && (
+                <div className={`discrimination-feedback ${discriminationFeedback.isCorrect ? 'correct' : 'incorrect'}`}>
+                  <div className="discrimination-feedback-icon">
+                    {discriminationFeedback.isCorrect ? '✅' : '❌'}
+                  </div>
+                  <div className="discrimination-feedback-content">
+                    <p className="discrimination-feedback-title">
+                      {discriminationFeedback.isCorrect ? 'Correct pattern!' : 'Wrong pattern!'}
+                    </p>
+                    <p className="discrimination-feedback-explanation">
+                      {discriminationFeedback.explanation}
+                    </p>
+                    {!discriminationFeedback.isCorrect && (
+                      <button 
+                        className="compare-btn-inline"
+                        onClick={() => {
+                          if (selectedDiscriminationOption && currentPattern) {
+                            const otherPattern = patterns.find(p => p.id === selectedDiscriminationOption.pattern_id);
+                            if (otherPattern) {
+                              setComparisonPatterns([currentPattern, otherPattern]);
+                            }
+                          }
+                        }}
+                      >
+                        Compare Patterns →
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {state === 'input' && exercise && (
             <div className="exercise-prompt">
               {/* Confusion Alert */}
-              {confusionAlert && (
+              {discriminationAlert && (
                 <div className="confusion-alert">
                   <div className="confusion-alert-icon">⚠️</div>
                   <div className="confusion-alert-content">
                     <p className="confusion-alert-title">Possible Confusion Detected!</p>
-                    <p className="confusion-alert-message">{confusionAlert.message}</p>
+                    <p className="confusion-alert-message">{discriminationAlert.message}</p>
                     <button 
                       className="compare-alert-btn"
                       onClick={() => handleCompare(currentPattern)}

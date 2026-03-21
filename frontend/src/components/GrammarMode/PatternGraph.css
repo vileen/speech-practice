@@ -1,0 +1,256 @@
+.pattern-graph-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.pattern-graph-content {
+  background: #1a1a2e;
+  border-radius: 16px;
+  max-width: 1000px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  border: 1px solid #0f3460;
+  display: flex;
+  flex-direction: column;
+}
+
+.pattern-graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #0f3460;
+  background: #16213e;
+}
+
+.pattern-graph-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #fff;
+}
+
+.pattern-graph-header .close-btn {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.pattern-graph-header .close-btn:hover {
+  background: rgba(233, 69, 96, 0.2);
+  color: #e94560;
+}
+
+.pattern-graph-controls {
+  padding: 16px 24px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #0f3460;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-buttons button {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  color: #aaa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-buttons button:hover {
+  border-color: #667eea;
+  color: #fff;
+}
+
+.filter-buttons button.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: #fff;
+}
+
+.graph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.legend-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legend-title {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #ccc;
+}
+
+.legend-line {
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.pattern-graph-container {
+  flex: 1;
+  overflow: auto;
+  background: #0f3460;
+  min-height: 400px;
+}
+
+.pattern-graph-container svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.connection-group {
+  pointer-events: all;
+}
+
+.connection-line {
+  transition: all 0.2s;
+}
+
+.connection-line:hover {
+  stroke-width: 4;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.node-group {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.node-group:hover .node-circle {
+  filter: drop-shadow(0 0 8px currentColor);
+  transform: scale(1.1);
+}
+
+.node-group.selected .node-circle {
+  filter: drop-shadow(0 0 12px currentColor);
+}
+
+.node-circle {
+  transform-origin: center;
+}
+
+.pattern-graph-footer {
+  padding: 16px 24px;
+  background: #16213e;
+  border-top: 1px solid #0f3460;
+}
+
+.pattern-graph-footer p {
+  margin: 0;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.pattern-graph-footer strong {
+  color: #fff;
+}
+
+/* Animation for nodes */
+@keyframes nodeAppear {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.node-group {
+  animation: nodeAppear 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pattern-graph-modal {
+    padding: 10px;
+  }
+  
+  .pattern-graph-content {
+    max-height: 95vh;
+  }
+  
+  .pattern-graph-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-buttons {
+    justify-content: center;
+  }
+  
+  .graph-legend {
+    justify-content: center;
+  }
+  
+  .legend-section {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Connection type tooltips */
+.connection-group:hover::after {
+  content: attr(data-type);
+  position: absolute;
+  background: #1a1a2e;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #fff;
+  border: 1px solid #0f3460;
+  pointer-events: none;
+  z-index: 10;
+}

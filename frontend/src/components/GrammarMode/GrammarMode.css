@@ -175,6 +175,106 @@
   margin-bottom: 12px;
 }
 
+/* Discrimination Drill Banner */
+.discrimination-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 160, 2, 0.15));
+  border: 1px solid #ffc107;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.discrimination-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.discrimination-title {
+  color: #ffc107;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.discrimination-desc {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.discrimination-btn {
+  background: #ffc107;
+  color: #1a1a2e;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.discrimination-btn:hover:not(:disabled) {
+  background: #ffca28;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.discrimination-btn:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Pattern Graph Banner */
+.pattern-graph-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.15), rgba(56, 189, 248, 0.15));
+  border: 1px solid #2dd4bf;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.pattern-graph-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pattern-graph-title {
+  color: #2dd4bf;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.pattern-graph-desc {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.pattern-graph-open-btn {
+  background: #2dd4bf;
+  color: #1a1a2e;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.pattern-graph-open-btn:hover {
+  background: #14b8a6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(45, 212, 191, 0.3);
+}
+
 /* Category Groups Accordion */
 .category-groups-accordion {
   background: #16213e;
@@ -314,6 +414,19 @@
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
+  text-align: center;
+  margin-bottom: 16px;
+  animation: pulse 2s infinite;
+}
+
+/* Discrimination Mode Badge */
+.discrimination-mode-badge {
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  color: #1a1a2e;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
   text-align: center;
   margin-bottom: 16px;
   animation: pulse 2s infinite;
@@ -966,6 +1079,186 @@
   color: white;
 }
 
+/* Discrimination Drill Styles */
+.discrimination-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.discrimination-drill {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.discrimination-context {
+  margin-bottom: 20px;
+}
+
+.discrimination-prompt {
+  font-size: 18px;
+  color: #fff;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.discrimination-hint {
+  font-size: 14px;
+  color: #aaa;
+  font-style: italic;
+  padding: 12px 16px;
+  background: #0f3460;
+  border-radius: 8px;
+  border-left: 3px solid #ffc107;
+}
+
+.discrimination-question {
+  margin-bottom: 20px;
+}
+
+.discrimination-question p {
+  font-size: 16px;
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.discrimination-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.discrimination-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #1a1a2e;
+  border: 2px solid #0f3460;
+  border-radius: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.discrimination-option:hover {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.discrimination-option.selected {
+  border-color: #ffc107;
+  background: rgba(255, 193, 7, 0.1);
+}
+
+.option-letter {
+  width: 36px;
+  height: 36px;
+  background: #0f3460;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.option-pattern {
+  font-size: 18px;
+  color: #fff;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.option-category {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.discrimination-feedback {
+  background: #16213e;
+  border: 2px solid;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.discrimination-feedback.correct {
+  border-color: #28a745;
+  background: rgba(40, 167, 69, 0.1);
+}
+
+.discrimination-feedback.incorrect {
+  border-color: #dc3545;
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.discrimination-feedback-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.discrimination-feedback-content {
+  flex: 1;
+}
+
+.discrimination-feedback-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.discrimination-feedback.correct .discrimination-feedback-title {
+  color: #28a745;
+}
+
+.discrimination-feedback.incorrect .discrimination-feedback-title {
+  color: #dc3545;
+}
+
+.discrimination-feedback-explanation {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.compare-btn-inline {
+  background: transparent;
+  border: 1px solid #667eea;
+  color: #667eea;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.compare-btn-inline:hover {
+  background: #667eea;
+  color: white;
+}
+
+.discrimination-error {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  font-size: 16px;
+}
+
 /* Exercise Container */
 .exercise-container {
   padding: 20px;
@@ -1242,7 +1535,9 @@
   }
   
   .review-banner,
-  .mixed-review-banner {
+  .mixed-review-banner,
+  .discrimination-banner,
+  .pattern-graph-banner {
     flex-direction: column;
     gap: 16px;
   }
@@ -1256,7 +1551,27 @@
     width: 100%;
   }
   
-  .mixed-review-btn {
+  .mixed-review-btn,
+  .discrimination-btn,
+  .pattern-graph-open-btn {
     width: 100%;
+  }
+
+  .discrimination-options {
+    gap: 10px;
+  }
+
+  .discrimination-option {
+    padding: 14px 16px;
+  }
+
+  .option-letter {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .option-pattern {
+    font-size: 16px;
   }
 }

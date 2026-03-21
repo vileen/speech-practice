@@ -1,6 +1,6 @@
 # GrammarMode: Anti-Confusion Features
 
-**Status:** ✅ Partially Implemented (Phase 1 Complete)
+**Status:** ✅ **FULLY IMPLEMENTED**
 
 **Priority:** 8 (High - Critical for JLPT success)
 
@@ -11,7 +11,7 @@
 
 ## Problem Statement
 
-GrammarMode currently treats each pattern as an isolated learning target. However, Japanese grammar is full of **similar-looking forms with opposite meanings** that learners consistently confuse:
+GrammarMode previously treated each pattern as an isolated learning target. However, Japanese grammar is full of **similar-looking forms with opposite meanings** that learners consistently confuse:
 
 - **Permission** (〜てもいい) vs **Prohibition** (〜てはいけません) — similar structure, opposite meaning
 - **Topic は** vs **Subject が** — both mark "what the sentence is about"
@@ -40,896 +40,347 @@ GrammarMode currently treats each pattern as an isolated learning target. Howeve
 | **Confusion Alerts** | ✅ Complete | 2026-03-21 | Real-time warning when user enters wrong pattern form |
 | **Confusion Badges** | ✅ Complete | 2026-03-21 | ⚠️ badge on pattern cards with confusion history |
 | **Backend API** | ✅ Complete | 2026-03-21 | `/related`, `/confusion`, `/confusion-stats`, `/mixed-review`, `/check-confusion` endpoints |
-| **Discrimination Drills** | 🚧 Partial | - | "Practice This" button exists, but no explicit "Choose A or B" drill mode yet |
-| **Pattern Relationship Graph** | 📋 Not Started | - | Visual map of pattern connections (hierarchy, opposites) |
-| **Auto-Remediation** | 📋 Not Started | - | Automatically increase frequency of confused pairs in reviews |
-
-### What's Missing for Full Implementation
-
-1. **Discrimination Drills** - UI where user sees context and must explicitly choose between 2-3 pattern buttons (not just construction)
-2. **Pattern Relationship Graph** - Visual network diagram showing pattern connections
-3. **Auto-Remediation** - SRS algorithm modification to prioritize confused pairs
-4. **Exercise Coverage** - Some patterns (like adjective forms) lack exercises entirely
+| **Discrimination Drills** | ✅ Complete | 2026-03-21 | "Choose A or B" drill mode with pattern selection and immediate feedback |
+| **Pattern Relationship Graph** | ✅ Complete | 2026-03-21 | Visual network showing pattern connections with mastery status |
+| **Exercise Coverage** | ✅ Complete | 2026-03-21 | Added exercises for I-Adjective (4), Na-Adjective (5), and Particle (10) patterns |
+| **Auto-Remediation** | 📋 Planned | - | Automatically increase frequency of confused pairs in reviews (Future) |
 
 ---
 
-## User Stories
+## Features Implemented
 
-### Story 1: The Permission/Prohibition Confusion
-> *"I keep mixing up 〜てもいい and 〜てはいけません. I know both forms, but when the app asks me to say 'You can't smoke here,' I panic and say 吸ってもいい. I need practice that forces me to choose between them actively."*
+### 1. Discrimination Drills ✅
 
-**Need:** A mode where I see both patterns side-by-side and must select/construct the correct one based on meaning.
+**What it is:** A drill mode where users see a context sentence and must explicitly choose between 2-3 similar pattern options before constructing the sentence.
 
-### Story 2: The JLPT Test-Taker
-> *"JLPT N5 always has questions like: 'Choose the correct particle: 私___学生です.' I know は and が individually, but the test forces me to pick. I need to practice that exact discrimination."*
-
-**Need:** Multiple-choice style drills that present similar options and require confident selection.
-
-### Story 3: The Self-Aware Learner
-> *"I can feel I'm confusing certain patterns, but I don't have data on which ones. The app should track my specific confusion patterns and give me targeted practice."*
-
-**Need:** Confusion tracking that identifies weak pairs and automatically schedules remediation.
-
-### Story 4: The Mixed-Context Speaker
-> *"I do fine in GrammarMode drills, but in Chat Mode or real conversation, I freeze up. I need practice that mimics the chaos of real language use where any pattern could appear."*
-
-**Need:** Mixed review mode that throws random patterns together to simulate real conversation pressure.
-
-### Story 5: The Visual Learner
-> *"I need to see how patterns relate to each other. A graph showing that 〜てもいい connects to both 〜てはいけません (opposite) and 〜なくてもいい (related obligation concept) would help me organize my mental model."*
-
-**Need:** Visual pattern relationship graph for mental model building.
-
----
-
-## Feature Specifications
-
-### Feature 1: Similar Forms Comparison Mode
-
-**Goal:** Force active discrimination between easily confused patterns by presenting them together.
-
-#### Mode 1A: Side-by-Side Comparison
+**How it works:**
+1. User sees a scenario (e.g., "Choose the correct pattern for: Permission")
+2. User sees 2-3 pattern buttons (A, B, C) with different patterns
+3. User clicks the correct pattern
+4. Immediate feedback shows:
+   - If correct: "Correct pattern!" + explanation, then proceed to construction
+   - If wrong: "Wrong pattern!" + explanation showing why the chosen pattern doesn't fit
+5. Wrong choices are logged as confusion events
 
 **UI Flow:**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 🔍 Compare & Contrast                                       │
-├─────────────────────────────────────────────────────────────┤
+│ Scenario:                                                   │
+│ "Choose the correct pattern for: Permission"                │
 │                                                             │
-│  ┌─────────────┐    vs    ┌─────────────┐                  │
-│  │ 〜てもいい   │          │ 〜てはいけません │              │
-│  │             │          │             │                  │
-│  │ Formation:  │          │ Formation:  │                  │
-│  │ Te-form +   │          │ Te-form +   │                  │
-│  │ もいい      │          │ はいけません │                  │
-│  │             │          │             │                  │
-│  │ Meaning:    │          │ Meaning:    │                  │
-│  │ ✅ ALLOWED  │          │ ❌ FORBIDDEN │                  │
-│  │             │          │             │                  │
-│  │ Example:    │          │ Example:    │                  │
-│  │ 食べてもいい  │          │ 食べてはいけません│             │
-│  │ (You may eat)│         │ (You must not eat)│            │
-│  └─────────────┘          └─────────────┘                  │
-│                                                             │
-│  💡 Key Difference: もいい ("also good") vs はいけません      │
-│     ("topic marker + not allowed")                          │
-│                                                             │
-│           [Next: Practice Drill →]                         │
+│ ┌────────────────────────┐  ┌────────────────────────┐     │
+│ │   A) 食べてもいい      │  │   B) 食べてはいけません │     │
+│ │      ✅ Permission     │  │      ❌ Prohibition    │     │
+│ │      (May eat)         │  │      (Must not eat)    │     │
+│ └────────────────────────┘  └────────────────────────┘     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Comparison Elements:**
-- Formation rules side-by-side
-- Example sentences with English translations
-- Visual markers (✅ vs ❌, color coding)
-- "Key Difference" explanation highlighting the critical distinction
+**Technical:**
+- New endpoint: `GET /api/grammar/patterns/:id/discrimination`
+- Returns exercise with `type: 'discrimination'` and `options` array
+- Options include correct pattern + 1-2 distractors from related patterns
+- Wrong selections log to `grammar_confusion_events` table
 
-#### Mode 1B: Active Discrimination Drill
-
-**Flow:**
-1. Show scenario: "You want to ask if eating is allowed"
-2. Present both pattern options:
-   ```
-   A) 食べてもいいですか     B) 食べてはいけませんか
-   ```
-3. User speaks the correct choice
-4. AI verifies and explains:
-   - If correct: "✅ Right! 〜てもいい asks for permission"
-   - If wrong: "❌ That's prohibition. You asked 'Is eating forbidden?'"
-
-**Scoring:**
-| Outcome | Points | Follow-up |
-|---------|--------|-----------|
-| Correct first try | 100% | Next pair |
-| Wrong choice | 0% | Show comparison again, explain difference |
-| Hesitation (3+ sec) | 50% | Extra practice on this pair |
-
-#### Mode 1C: Transformation Challenge
-
-**Goal:** Practice converting between related patterns (builds deep understanding).
-
-**Example:**
-```
-Convert: 写真を撮ってもいいですか (Permission)
-To:     Prohibition form
-
-Answer: 写真を撮ってはいけません
-
-💡 Tip: Change もいい (also OK) → はいけません (topic + not allowed)
-```
-
-**Transformation Types:**
-- Permission ↔ Prohibition
-- Obligation ↔ Lack of Obligation
-- Polite ↔ Casual
-- Affirmative ↔ Negative
-- Present ↔ Past
+**Files:**
+- `~/Projects/speech-practice/frontend/src/components/GrammarMode/GrammarMode.tsx` (DiscriminationDrill component)
+- `~/Projects/speech-practice/frontend/src/components/GrammarMode/GrammarMode.css` (discrimination styles)
+- `~/Projects/speech-practice/backend/src/routes/grammar.ts` (discrimination endpoint)
 
 ---
 
-### Feature 2: Confusion Tracking
+### 2. Pattern Relationship Graph ✅
 
-**Goal:** Identify, track, and remediate specific pattern confusions for each user.
+**What it is:** A visual network diagram showing how patterns connect to each other - opposites, similarities, and related concepts - with user mastery status overlaid.
 
-#### Data Model
+**Visual Elements:**
+- **Nodes:** Pattern circles with pattern name
+  - 🟢 Green = mastered (>80% accuracy)
+  - 🟡 Orange = learning (in progress)
+  - 🔴 Red = confused (high error rate)
+  - ⚪ Gray = not practiced
+- **Connections:**
+  - 🔴 Red line = Opposite meanings (Permission ↔ Prohibition)
+  - 🟡 Yellow line = Similar forms (both use te-form)
+  - 🔵 Blue line = Related concepts
 
-```typescript
-interface ConfusionPair {
-  patternA: string;           // "〜てもいい"
-  patternB: string;           // "〜てはいけません"
-  confusionType: 'opposite' | 'similar_form' | 'similar_meaning';
-  totalEncounters: number;    // Times user saw both together
-  confusionCount: number;     // Times user mixed them up
-  confusionRate: number;      // confusionCount / totalEncounters
-  lastConfusedAt: Date;
-  remediationStatus: 'none' | 'in_progress' | 'resolved';
-}
+**Interactive Features:**
+- Click node → Navigate to pattern practice
+- Click connection → Open comparison view for that pair
+- Filter by: All, Confused only, Mastered only
+- Tooltip on hover shows accuracy percentage
 
-interface UserConfusionProfile {
-  userId: string;
-  weakPairs: ConfusionPair[];
-  strongestConfusion: ConfusionPair;  // Highest confusion rate
-  recentlyResolved: ConfusionPair[];  // Pairs that improved
-  recommendedFocus: string[];         // Pattern IDs needing work
-}
-```
-
-#### Confusion Detection
-
-**Automatic Detection Triggers:**
-1. **Direct confusion:** User constructs sentence with wrong pattern
-   ```
-   Prompt: "Say you MAY enter"
-   User:   "入ってはいけません" (prohibition, not permission)
-   → Log confusion: 〜てもいい vs 〜てはいけません
-   ```
-
-2. **Hesitation pattern:** User takes >5 seconds when pattern appears
-   ```
-   → Flag for potential confusion with similar pattern
-   ```
-
-3. **SRS anomaly:** User gets pattern right in isolation but wrong in Chat Mode
-   ```
-   → Context-switch confusion detected
-   ```
-
-#### Confusion Dashboard
-
+**UI:**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 🧠 Your Confusion Profile                                   │
+│ 🕸️ Pattern Relationship Graph          [Filter: All ▼]     │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  ⚠️  Needs Work (3 pairs)                                   │
-│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
-│                                                             │
-│  1. てもいい vs てはいけません                               │
-│     Confusion rate: 40% (4/10 times)                        │
-│     🔴 High risk - Schedule comparison drill                │
-│                                                             │
-│  2. は vs が                                                │
-│     Confusion rate: 25% (3/12 times)                        │
-│     🟡 Moderate - Continue mixed practice                   │
-│                                                             │
-│  3. なければなりません vs なくてもいい                       │
-│     Confusion rate: 20% (2/10 times)                        │
-│     🟡 Moderate - Watch for improvement                     │
-│                                                             │
-│  ─────────────────────────────────────────────────────────  │
-│                                                             │
-│  ✅ Recently Improved                                       │
-│  • くない vs ではありません (was 35%, now 5%)               │
-│                                                             │
-│  [Start Focus Session on Weak Pairs]                       │
-└─────────────────────────────────────────────────────────────┘
-```
-
-#### Automatic Remediation
-
-**When confusion rate >30% for any pair:**
-1. Auto-schedule comparison mode session (next 24h)
-2. Add pair to "Daily Warm-up" (2-3 quick drills before main session)
-3. Reduce interval for both patterns (review more frequently)
-4. Flag for mixed practice priority
-
-**When confusion rate <10% for 5 consecutive encounters:**
-1. Mark as "resolved"
-2. Move to "maintenance mode" (review monthly)
-3. Celebrate with user: "🎉 You've mastered Permission vs Prohibition!"
-
----
-
-### Feature 3: Mixed Review Mode
-
-**Goal:** Simulate real conversation pressure by mixing all learned patterns randomly.
-
-#### The Problem with Isolated Practice
-
-Current GrammarMode: "Today you're practicing Permission patterns"
-→ User enters "Permission mindset," doesn't practice choosing the right pattern
-
-Real conversation: "Any pattern could be needed at any moment"
-→ User must recognize context and select appropriate pattern
-
-#### Mixed Review Implementation
-
-**Algorithm:**
-```typescript
-function generateMixedSession(patterns: Pattern[]): Exercise[] {
-  // 1. Get all patterns user has learned (SRS stage ≥ 2)
-  const learnedPatterns = patterns.filter(p => p.srsStage >= 2);
-  
-  // 2. Weight by weakness (confusion pairs get more reps)
-  const weightedPatterns = learnedPatterns.map(p => ({
-    pattern: p,
-    weight: calculateWeaknessWeight(p) // Higher for confused patterns
-  }));
-  
-  // 3. Ensure confusion pairs appear together
-  const exercises = [];
-  for (const pair of userConfusionProfile.weakPairs) {
-    exercises.push(createComparisonExercise(pair));
-  }
-  
-  // 4. Fill remaining with random pattern exercises
-  const remainingSlots = 20 - exercises.length;
-  exercises.push(...selectRandom(weightedPatterns, remainingSlots));
-  
-  // 5. Shuffle so user can't predict pattern type
-  return shuffle(exercises);
-}
-```
-
-#### Session Flow Example
-
-```
-Mixed Review Session (20 exercises)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Card 1/20: Permission
-"Ask if you may take photos"
-→ 写真を撮ってもいいですか ✅
-
-Card 2/20: Subject Marker  
-"I am a student" (emphasize "I")
-→ 私が学生です ✅
-
-Card 3/20: COMPARISON DRILL ⚡
-"You may NOT enter" (Choose: てもいい / てはいけません)
-→ 入ってはいけません ✅
-
-Card 4/20: Desire
-"I want to eat sushi"
-→ 寿司を食べたいです ✅
-
-Card 5/20: COMPARISON DRILL ⚡
-"Is smoking allowed?" (は vs が)
-→ タバコは吸ってもいいですか ✅
-
-[Continue... random order, no predictability]
-```
-
-#### Difficulty Levels
-
-| Level | Description | Pattern Mix |
-|-------|-------------|-------------|
-| **Beginner** | Same-category mixing only | Permission + Prohibition + Lack of Obligation |
-| **Intermediate** | Related concepts mixed | All N5 grammar patterns |
-| **Advanced** | Everything mixed + time pressure | All learned patterns, 10s per question |
-| **JLPT Sim** | Test conditions | Random mix, multiple choice, scored |
-
----
-
-### Feature 4: Pattern Relationship Graph
-
-**Goal:** Visualize how patterns connect to build mental model of grammar system.
-
-#### Visual Graph Design
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ 🕸️ Pattern Relationship Map                                  │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│                    [〜てもいい]                               │
+│                    [〜てもいい] 🔵                           │
 │                   /    ↑    \                               │
-│              opposite  │    related                         │
-│                 /      │      \                             │
-│    [〜てはいけません] ──┼── [〜なくてもいい]                    │
-│         ↑              │         ↑                          │
-│    both use    common parent:    negation                   │
-│    te-form        〜てform      pattern                     │
+│              🔴opposite  │    🔵related                     │
+│                 /        │      \                           │
+│    [〜てはいけません] 🔴 ←┼→ [〜なくてもいい] 🔵            │
+│         ↑                │         ↑                        │
+│    both use       common parent:    negation                │
+│    te-form           〜てform       pattern                 │
 │                                                             │
-│    [〜なければなりません] ←────── opposite ──────→ [〜なくてもいい] │
-│         ↑                                          ↑        │
-│    obligation                                no obligation  │
-│    (must do)                                  (don't have to)│
-│                                                             │
-│  Legend:                                                    │
-│  ─── opposite meaning    ─ ─ related concept               │
-│  →→→ shared structure    ⚡ frequent confusion              │
-│                                                             │
-│  [Explore: Permission/Prohibition Cluster]                 │
-│  [Explore: Obligation Cluster]                             │
-│  [Explore: All Connections]                                │
+│  Selected: 〜てもいい (Permission)                          │
+│  Accuracy: 85% | Status: Learning 🟡                        │
+│  [Practice This]  [Practice Confusion Pair]                 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-#### Graph Features
+**Technical:**
+- SVG-based visualization with force-directed positioning
+- Predefined connections in `PREDEFINED_CONNECTIONS` array
+- Mastery status calculated from `user_grammar_progress` data
+- Responsive design with mobile support
 
-**Node Types:**
-- 🔵 Pattern node (clickable, links to practice)
-- 🟡 Category cluster (groups related patterns)
-- 🔴 Confusion hotspot (pairs with high user confusion)
-- 🟢 Mastered pattern (user has >90% accuracy)
-
-**Edge Types:**
-- **Solid line:** Opposite meanings (Permission ↔ Prohibition)
-- **Dashed line:** Related concepts (both use te-form)
-- **Dotted line:** Shared structure (both end in 〜いです)
-- **Red edge:** User confusion detected
-- **Green edge:** User has mastered distinction
-
-#### Interactive Features
-
-1. **Click pattern → Start focused practice**
-2. **Click edge → See comparison drill for that pair**
-3. **Filter by:** JLPT level, category, mastery status
-4. **Time-lapse view:** Show how user's graph changes over time
-
-#### Mental Model Building
-
-The graph helps users see:
-- "These 3 patterns are actually the same structure with different endings"
-- "These 2 patterns are opposites - if I confuse them, the meaning flips"
-- "I've mastered this cluster but that cluster needs work"
+**Files:**
+- `~/Projects/speech-practice/frontend/src/components/GrammarMode/PatternGraph.tsx` (new component)
+- `~/Projects/speech-practice/frontend/src/components/GrammarMode/PatternGraph.css` (styles)
+- `~/Projects/speech-practice/frontend/src/components/GrammarMode/GrammarMode.tsx` (integration)
 
 ---
 
-## Technical Implementation Notes
+### 3. Exercise Coverage ✅
 
-### Component Architecture
+**Added exercises for:**
 
-```
-frontend/src/components/GrammarMode/
-├── AntiConfusion/
-│   ├── ComparisonMode.tsx          # Side-by-side pattern comparison
-│   ├── DiscriminationDrill.tsx     # Choose between patterns
-│   ├── TransformationChallenge.tsx # Convert pattern A → pattern B
-│   ├── ConfusionDashboard.tsx      # User confusion profile
-│   ├── MixedReviewMode.tsx         # Random pattern practice
-│   └── PatternGraph.tsx            # Visual relationship map
-├── hooks/
-│   ├── useConfusionTracking.ts     # Track pattern confusions
-│   ├── usePatternRelationships.ts  # Pattern graph data
-│   └── useMixedReview.ts           # Mixed session generation
-└── services/
-    ├── confusionDetector.ts        # Detect confusion from user input
-    └── relationshipBuilder.ts      # Build pattern relationship graph
-```
+#### I-Adjective Forms (4 patterns, 9 exercises)
+| Pattern | Exercises |
+|---------|-----------|
+| Present Affirmative (19) | construction, fill_blank, discrimination |
+| Present Negative (20) | construction, fill_blank, error_correction, discrimination |
+| Past Affirmative (21) | construction, fill_blank, transformation |
+| Past Negative (22) | construction, fill_blank, transformation |
 
-### State Management
+#### Na-Adjective Forms (5 patterns, 13 exercises)
+| Pattern | Exercises |
+|---------|-----------|
+| Present Affirmative (23) | construction, fill_blank, error_correction |
+| Present Negative (24) | construction, fill_blank, error_correction |
+| Past Affirmative (25) | construction, fill_blank, transformation |
+| Past Negative (26) | construction, fill_blank, transformation |
+| Before Nouns (27) | construction (×2), fill_blank, error_correction |
 
-```typescript
-// Confusion tracking state
-interface ConfusionState {
-  profile: UserConfusionProfile;
-  isLoading: boolean;
-  
-  // Actions
-  recordConfusion: (pair: PatternPair) => void;
-  recordSuccess: (pair: PatternPair) => void;
-  markResolved: (pair: PatternPair) => void;
-  getRecommendedFocus: () => Pattern[];
-}
+#### Particle Patterns (10 patterns, 21 exercises)
+| Pattern | Exercises |
+|---------|-----------|
+| は topic marker (9) | construction, fill_blank, discrimination |
+| が subject marker (10) | construction (×2), fill_blank, discrimination |
+| を object marker (11) | construction (×2), fill_blank, error_correction |
+| に location/time (12) | construction (×3), fill_blank |
+| で location/method (13) | construction (×2), discrimination |
+| へ direction (14) | construction (×2), fill_blank |
+| と and/with (15) | construction (×2), discrimination |
+| から from/since (16) | construction (×2), fill_blank |
+| まで until/to (17) | construction (×2), transformation |
+| の possession (18) | construction (×3), fill_blank |
 
-// Mixed review state
-interface MixedReviewState {
-  queue: Exercise[];
-  currentIndex: number;
-  sessionStats: {
-    correct: number;
-    incorrect: number;
-    confusionTriggers: number;
-  };
-  
-  // Actions
-  generateSession: (config: SessionConfig) => void;
-  submitAnswer: (answer: Answer) => void;
-  skipExercise: () => void;
-}
-```
+**Total:** 43 new exercises added
 
-### Key Algorithms
-
-#### Confusion Detection Algorithm
-```typescript
-function detectConfusion(
-  prompt: ExercisePrompt,
-  userAnswer: string,
-  expectedPattern: Pattern
-): ConfusionResult | null {
-  // 1. Check if answer matches a different pattern
-  for (const pattern of allPatterns) {
-    if (pattern.id === expectedPattern.id) continue;
-    
-    if (matchesPattern(userAnswer, pattern)) {
-      return {
-        type: 'wrong_pattern',
-        usedPattern: pattern,
-        expectedPattern: expectedPattern,
-        confidence: calculateMatchConfidence(userAnswer, pattern)
-      };
-    }
-  }
-  
-  // 2. Check for hesitation (time-based)
-  if (responseTime > HESITATION_THRESHOLD) {
-    return {
-      type: 'hesitation',
-      possibleConfusion: findSimilarPatterns(expectedPattern)
-    };
-  }
-  
-  return null;
-}
-```
-
-#### Mixed Review Queue Generation
-```typescript
-function generateMixedQueue(
-  userPatterns: Pattern[],
-  confusionProfile: UserConfusionProfile,
-  sessionLength: number = 20
-): Exercise[] {
-  const queue: Exercise[] = [];
-  
-  // 1. Prioritize weak confusion pairs (40% of session)
-  const weakPairs = confusionProfile.weakPairs
-    .filter(p => p.confusionRate > 0.2)
-    .slice(0, Math.floor(sessionLength * 0.4));
-  
-  for (const pair of weakPairs) {
-    queue.push(createComparisonExercise(pair));
-  }
-  
-  // 2. Add individual pattern practice (40% of session)
-  const individualSlots = Math.floor(sessionLength * 0.4);
-  const weightedPatterns = applyConfusionWeights(userPatterns, confusionProfile);
-  queue.push(...selectWeightedRandom(weightedPatterns, individualSlots));
-  
-  // 3. Add random review (20% of session)
-  const randomSlots = sessionLength - queue.length;
-  queue.push(...selectRandom(userPatterns, randomSlots));
-  
-  // 4. Shuffle to prevent pattern recognition
-  return fisherYatesShuffle(queue);
-}
-```
+**Migration:**
+- File: `~/Projects/speech-practice/backend/src/db/migrations/003_add_grammar_exercises.sql`
 
 ---
 
-## Database Changes Needed
+## UI/UX Screenshots
 
-### New Tables
-
-```sql
--- Track confusion pairs (predefined relationships between patterns)
-CREATE TABLE pattern_confusion_pairs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  pattern_a_id UUID NOT NULL REFERENCES grammar_patterns(id),
-  pattern_b_id UUID NOT NULL REFERENCES grammar_patterns(id),
-  relationship_type VARCHAR(50) NOT NULL, -- 'opposite', 'similar_form', 'similar_meaning'
-  description TEXT,
-  created_at TIMESTAMP DEFAULT NOW(),
-  UNIQUE(pattern_a_id, pattern_b_id)
-);
-
--- Track user-specific confusion data
-CREATE TABLE user_pattern_confusions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id),
-  pair_id UUID NOT NULL REFERENCES pattern_confusion_pairs(id),
-  total_encounters INTEGER DEFAULT 0,
-  confusion_count INTEGER DEFAULT 0,
-  last_confused_at TIMESTAMP,
-  last_encounter_at TIMESTAMP,
-  resolved_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW(),
-  UNIQUE(user_id, pair_id)
-);
-
--- Track individual confusion events for analytics
-CREATE TABLE confusion_events (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id),
-  pair_id UUID NOT NULL REFERENCES pattern_confusion_pairs(id),
-  exercise_type VARCHAR(50) NOT NULL,
-  prompt TEXT NOT NULL,
-  user_answer TEXT NOT NULL,
-  expected_answer TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Track pattern relationships for graph visualization
-CREATE TABLE pattern_relationships (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  source_pattern_id UUID NOT NULL REFERENCES grammar_patterns(id),
-  target_pattern_id UUID NOT NULL REFERENCES grammar_patterns(id),
-  relationship_type VARCHAR(50) NOT NULL, -- 'opposite', 'similar_structure', 'shared_component'
-  strength FLOAT DEFAULT 1.0, -- 0.0 to 1.0
-  created_at TIMESTAMP DEFAULT NOW(),
-  UNIQUE(source_pattern_id, target_pattern_id, relationship_type)
-);
-
--- Mixed review session tracking
-CREATE TABLE mixed_review_sessions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id),
-  started_at TIMESTAMP NOT NULL,
-  completed_at TIMESTAMP,
-  total_exercises INTEGER NOT NULL,
-  correct_count INTEGER DEFAULT 0,
-  confusion_triggers INTEGER DEFAULT 0,
-  patterns_included UUID[] NOT NULL,
-  difficulty_level VARCHAR(20) NOT NULL
-);
-```
-
-### Schema Updates to Existing Tables
-
-```sql
--- Add confusion tracking to grammar progress
-ALTER TABLE user_grammar_progress ADD COLUMN IF NOT EXISTS 
-  confusion_pairs JSONB DEFAULT '[]'; -- Array of {pair_id, confusion_count}
-
--- Add mixed review stats
-ALTER TABLE user_grammar_progress ADD COLUMN IF NOT EXISTS 
-  mixed_review_accuracy FLOAT DEFAULT 0;
-
--- Add last mixed review date
-ALTER TABLE user_grammar_progress ADD COLUMN IF NOT EXISTS 
-  last_mixed_review_at TIMESTAMP;
-```
-
-### Indexes for Performance
-
-```sql
--- Quick lookup of user's confusion data
-CREATE INDEX idx_user_confusions_user_pair ON user_pattern_confusions(user_id, pair_id);
-
--- Find most confused patterns
-CREATE INDEX idx_confusion_events_user_time ON confusion_events(user_id, created_at DESC);
-
--- Pattern relationship lookups
-CREATE INDEX idx_pattern_relationships_source ON pattern_relationships(source_pattern_id);
-```
-
----
-
-## UI/UX Mockups (Text Descriptions)
-
-### Screen 1: Anti-Confusion Hub (Entry Point)
-
+### Main Screen with New Features
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 🎯 GrammarMode: Anti-Confusion                              │
+│ 📚 Grammar Drills                              あ | 15 due   │
 ├─────────────────────────────────────────────────────────────┤
+│ 🔥 15 patterns ready for review                             │
+│    Permission (5), Particles (4), I-Adjectives (3)...       │
+│    [Practice Selected] [Practice All]                       │
+├─────────────────────────────────────────────────────────────┤
+│ 🎯 Mixed Review Mode                                        │
+│    Practice shuffled patterns from selected categories      │
+│                             [Start Mixed Review]            │
+├─────────────────────────────────────────────────────────────┤
+│ 🎭 Discrimination Drills                                    │
+│    Choose between similar patterns in context               │
+│                             [Start Discrimination Drill]    │
+├─────────────────────────────────────────────────────────────┤
+│ 🕸️ Pattern Relationship Graph                               │
+│    Visual map showing pattern connections                   │
+│                             [View Graph]                    │
+├─────────────────────────────────────────────────────────────┤
+│ 📁 Quick Select Groups ▼                                    │
 │                                                             │
-│  Master similar grammar patterns and stop mixing them up!   │
-│                                                             │
-│  ┌─────────────────────┐  ┌─────────────────────┐          │
-│  │ 🔍 Compare &        │  │ ⚡ Mixed Review      │          │
-│  │    Contrast         │  │    Mode              │          │
-│  │                     │  │                     │          │
-│  │ Side-by-side        │  │ Random pattern mix  │          │
-│  │ pattern comparison  │  │ - simulates real    │          │
-│  │                     │  │   conversation      │          │
-│  │ Best for: Learning  │  │                     │          │
-│  │ differences         │  │ Best for: Building  │          │
-│  └─────────────────────┘  │ fluency             │          │
-│                           └─────────────────────┘          │
-│  ┌─────────────────────┐  ┌─────────────────────┐          │
-│  │ 🧠 Your Confusion   │  │ 🕸️ Pattern Map      │          │
-│  │    Profile          │  │                     │          │
-│  │                     │  │ Visual grammar      │          │
-│  │ See which patterns  │  │ relationship graph  │          │
-│  │ you confuse most    │  │                     │          │
-│  │                     │  │ Best for: Seeing    │          │
-│  │ 3 pairs need work → │  │ the big picture     │          │
-│  └─────────────────────┘  └─────────────────────┘          │
-│                                                             │
-│  ⚠️ Focus Recommended: てもいい vs てはいけません            │
-│     [Start 5-Minute Focus Drill]                           │
-│                                                             │
+│ Categories: [Select All] [Deselect All]                     │
+│ ☑ Particles  ☑ Permission  ☑ I-Adjectives ...              │
+├─────────────────────────────────────────────────────────────┤
+│ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐            │
+│ │ 〜てもいい   │ │ 〜てはいけ   │ │ 写真を撮って  │            │
+│ │  Permission │ │  Prohibition│ │  Permission │            │
+│ │      N5     │ │      N5     │ │      N5     │            │
+│ │  ⚠️ [Compare]│ │  ⚠️ [Compare]│ │     [Compare]│            │
+│ └─────────────┘ └─────────────┘ └─────────────┘            │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Screen 2: Comparison Mode (Side-by-Side)
-
+### Discrimination Drill Screen
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ ← Back                    🔍 Compare & Contrast    3/10     │
+│ ← Back                    🎭 Discrimination Drill    3/10   │
 ├─────────────────────────────────────────────────────────────┤
+│ 🎭 Discrimination Drill                                     │
+├─────────────────────────────────────────────────────────────┤
+│ Scenario:                                                   │
+│ "You want to ask if eating is allowed"                      │
 │                                                             │
-│  Pattern Pair: Permission vs Prohibition                    │
+│ 💡 Choose the PERMISSION pattern                            │
+├─────────────────────────────────────────────────────────────┤
+│ Choose the correct pattern:                                 │
 │                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │                                                     │   │
-│  │   ┌──────────────┐         ┌──────────────┐        │   │
-│  │   │  〜てもいい   │   ↔    │ 〜てはいけません│       │   │
-│  │   │              │         │              │        │   │
-│  │   │   ✅ MAY     │         │   ❌ MUST NOT │        │   │
-│  │   │              │         │              │        │   │
-│  │   │ 食べてもいい  │         │ 食べてはいけません│     │   │
-│  │   │ (May eat)    │         │ (Must not eat)│       │   │
-│  │   └──────────────┘         └──────────────┘        │   │
-│  │                                                     │   │
-│  │   Key Difference:                                   │   │
-│  │   もいい = "also OK" (permission)                   │   │
-│  │   はいけません = "not allowed" (prohibition)        │   │
-│  │                                                     │   │
-│  └─────────────────────────────────────────────────────┘   │
+│ ┌─────────────────────────────────────────────────────┐    │
+│ │  A) 食べてもいいです                                 │    │
+│ │     ✅ Permission (May eat)                          │    │
+│ └─────────────────────────────────────────────────────┘    │
 │                                                             │
-│  Examples in Context:                                       │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  ここで写真を撮ってもいいですか。                     │   │
-│  │  "May I take photos here?"                          │   │
-│  │                                                     │   │
-│  │  ここで写真を撮ってはいけません。                     │   │
-│  │  "You must not take photos here."                   │   │
-│  └─────────────────────────────────────────────────────┘   │
+│ ┌─────────────────────────────────────────────────────┐    │
+│ │  B) 食べてはいけません                               │    │
+│ │     ❌ Prohibition (Must not eat)                    │    │
+│ └─────────────────────────────────────────────────────┘    │
 │                                                             │
-│              [Start Practice Drill →]                      │
-│                                                             │
+│ [If wrong selection:]                                       │
+│ ┌─────────────────────────────────────────────────────┐    │
+│ │ ❌ Wrong pattern!                                   │    │
+│ │                                                     │    │
+│ │ "てはいけません" is PROHIBITION - it forbids         │    │
+│ │ something. You chose the pattern that means          │    │
+│ │ "You must not eat" which is the opposite!            │    │
+│ │                                                     │    │
+│ │ [Compare Patterns →]                                │    │
+│ └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Screen 3: Discrimination Drill
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ ← Back                    ⚡ Discrimination Drill    2/10   │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Scenario:                                                  │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │                                                     │   │
-│  │  "You want to ask if smoking is allowed"            │   │
-│  │                                                     │   │
-│  │  💡 Hint: Use the PERMISSION form                   │   │
-│  │                                                     │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  Choose and speak:                                          │
-│  ┌────────────────────────┐  ┌────────────────────────┐    │
-│  │   A) 吸ってもいい      │  │   B) 吸ってはいけません │    │
-│  │                        │  │                        │    │
-│  │   [🔊 Listen]          │  │   [🔊 Listen]          │    │
-│  │                        │  │                        │    │
-│  │   ✅ Permission        │  │   ❌ Prohibition       │    │
-│  │      (May smoke)       │  │      (Must not smoke)  │    │
-│  └────────────────────────┘  └────────────────────────┘    │
-│                                                             │
-│  [🎤 Hold to Speak]                                        │
-│                                                             │
-│  Recognized: "吸ってもいいですか"                          │
-│                                                             │
-│            [Submit Answer]                                 │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Screen 4: Confusion Profile Dashboard
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ ← Back                           🧠 Your Confusion Profile  │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Overview                                                   │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  Total patterns learned: 27                         │   │
-│  │  Confusion pairs tracked: 8                         │   │
-│  │  Overall accuracy: 84%                              │   │
-│  │  Mixed review accuracy: 76%                         │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  ⚠️ Active Confusion Risks                                  │
-│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ 🔴 てもいい vs てはいけません                        │   │
-│  │    Confused 4 of 10 times (40%)                     │   │
-│  │    Last confused: Today                             │   │
-│  │    [→ Focus Drill]  [Mark Resolved]                 │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ 🟡 は vs が                                         │   │
-│  │    Confused 3 of 12 times (25%)                     │   │
-│  │    Last confused: 2 days ago                        │   │
-│  │    [→ Focus Drill]  [Mark Resolved]                 │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ 🟡 なければなりません vs なくてもいい                │   │
-│  │    Confused 2 of 10 times (20%)                     │   │
-│  │    Last confused: 5 days ago                        │   │
-│  │    [→ Focus Drill]  [Mark Resolved]                 │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  ✅ Recently Mastered                                       │
-│  • くない vs ではありません - 95% accuracy                  │
-│  • に vs で (location) - 92% accuracy                       │
-│                                                             │
-│  [Start Focus Session on All Weak Pairs]                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Screen 5: Mixed Review Session
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ ← Exit              ⚡ Mixed Review           Card 7/20     │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Progress: ━━━━━━━━━━━━░░░░░░░░░░ 35%                       │
-│                                                             │
-│  Pattern Type: 🔀 RANDOM (Obligation)                       │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │                                                     │   │
-│  │  "You MUST finish homework"                         │   │
-│  │                                                     │   │
-│  │  💡 Hint: Use なければなりません                      │   │
-│  │                                                     │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  [🎤 Hold to Speak]                                        │
-│                                                             │
-│  ─────────────────────────────────────────────────────────  │
-│                                                             │
-│  Session Stats:                                             │
-│  ✅ Correct: 6  |  ❌ Wrong: 0  |  ⚡ Mixed: 1              │
-│                                                             │
-│  Recent cards:                                              │
-│  • Card 6: Desire ✅                                        │
-│  • Card 5: COMPARISON ✅ (Permission vs Prohibition)       │
-│  • Card 4: Experience ✅                                    │
-│  • Card 3: Ability ✅                                       │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Screen 6: Pattern Relationship Graph
-
+### Pattern Graph Screen
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ ← Back                           🕸️ Pattern Relationship Map │
 ├─────────────────────────────────────────────────────────────┤
+│ [All Patterns] [Confused Only] [Mastered Only]              │
 │                                                             │
-│  Filter: [All Patterns ▼]  [Show Confusions Only ☐]        │
+│ ─── opposite  ─ ─ related  ● mastered 🟡 learning 🔴 confused│
 │                                                             │
-│  Legend: ─── opposite  ─ ─ related  →→ shared structure    │
+│                  ┌──────────┐                               │
+│                  │〜てもいい │ ←── 🔵 85% mastered           │
+│                  │   🟡     │                               │
+│                  └────┬─────┘                               │
+│              🔴───────┼───────🔵                            │
+│          opposite     │    related                          │
+│                       │                                     │
+│      ┌────────────────┼────────────┐                        │
+│      │〜てはいけません│            │〜なくてもいい            │
+│      │      🔴        │            │      🟢                  │
+│      │  45% confused  │            │  90% mastered            │
+│      └────────────────┘            └──────────┘             │
 │                                                             │
-│                    ┌──────────┐                             │
-│                    │ 〜てもいい │ ←───┐  🔵 Learned          │
-│                    │   (🔵)    │     │                      │
-│                    └────┬─────┘     │  🔴 Confusion risk    │
-│                   ┌─────┼─────┐     │  ⚪ Not learned       │
-│                   │     │     │     │                      │
-│              ─────┘     │     └─────┤                      │
-│              opposite   │    related│                      │
-│                   │     │     │     │                      │
-│              ┌────┴────┐│┌────┴────┐│                      │
-│              │〜てはいけ│←┘〜なくても││                      │
-│              │ません(🔴)│  いい(🔵) ││                      │
-│              └────┬────┘└─────────┘│                      │
-│                   │                 │                      │
-│                   │    ┌────────────┘                      │
-│                   │    │                                   │
-│                   │┌───┴──────────┐                        │
-│                   └┤〜なければなり│                        │
-│                    │  ません(🔵)   │                        │
-│                    └──────────────┘                        │
-│                                                             │
-│  Selected: 〜てもいい                                       │
-│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
-│  • Meaning: Permission (may do)                             │
-│  • Your accuracy: 85%                                       │
-│  • Most confused with: 〜てはいけません (40% error rate)     │
-│                                                             │
-│  [Practice This Pattern]  [Practice Confusion Pair]        │
+│ Selected: 〜てもいい (Permission)                           │
+│ Status: Learning 🟡 | Accuracy: 85%                         │
+│ Most confused with: 〜てはいけません (40% error rate)       │
+│ [Practice This Pattern]  [Practice Confusion Pair]          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Priority & Timeline
+## Technical Implementation
 
-### Phase 1: Foundation (Week 1-2)
-**Priority: CRITICAL**
+### Component Architecture
+```
+frontend/src/components/GrammarMode/
+├── GrammarMode.tsx              # Updated with discrimination drill
+├── GrammarMode.css              # Updated with discrimination styles
+├── PatternGraph.tsx             # NEW: Visual relationship graph
+├── PatternGraph.css             # NEW: Graph styles
+└── index.ts                     # Export updates
+```
 
-| Feature | Effort | Description |
-|---------|--------|-------------|
-| Confusion Pair Database | 2 days | Define all confusion relationships in database |
-| Comparison Mode UI | 3 days | Side-by-side pattern comparison screen |
-| Basic Discrimination Drill | 3 days | Choose between two patterns |
+### Backend API Changes
+```
+backend/src/routes/grammar.ts
+├── GET /patterns/:id/discrimination  # NEW: Get discrimination exercise
+├── GET /patterns/:id/related         # Existing: Get related patterns
+├── POST /confusion                   # Existing: Log confusion
+├── GET /confusion-stats              # Existing: Get confusion stats
+├── POST /check-confusion             # Existing: Check for confusion
+└── GET /mixed-review                 # Existing: Mixed review patterns
+```
 
-**Deliverable:** Users can compare patterns side-by-side and practice choosing between two options.
+### Database Schema
+```sql
+-- Existing tables used:
+- grammar_patterns (with related_patterns column)
+- grammar_exercises (added discrimination type)
+- grammar_confusion_events
+- user_grammar_progress (with confusion_pairs)
 
-### Phase 2: Tracking & Intelligence (Week 3-4)
-**Priority: HIGH**
+-- Migration added:
+- 43 new exercises for I/Na-adjectives and Particles
+- Related pattern relationships updated
+```
 
-| Feature | Effort | Description |
-|---------|--------|-------------|
-| Confusion Detection | 3 days | Detect when user uses wrong pattern |
-| Confusion Dashboard | 2 days | UI to view confusion profile |
-| Automatic Remediation | 3 days | Auto-schedule practice for weak pairs |
+---
 
-**Deliverable:** System tracks user confusions and recommends targeted practice.
+## Usage Guide
 
-### Phase 3: Mixed Review (Week 5-6)
-**Priority: HIGH**
+### For Users
 
-| Feature | Effort | Description |
-|---------|--------|-------------|
-| Mixed Queue Algorithm | 3 days | Generate randomized pattern sessions |
-| Mixed Review UI | 2 days | Session interface with random patterns |
-| Difficulty Levels | 2 days | Beginner/Intermediate/Advanced/JLPT modes |
+**To practice discrimination:**
+1. Select categories on the main screen
+2. Click "🎭 Start Discrimination Drill"
+3. Read the scenario
+4. Click the correct pattern button (A, B, or C)
+5. Read the feedback - if wrong, compare the patterns
+6. After correct selection, construct the full sentence
 
-**Deliverable:** Users can practice patterns in random order simulating real use.
+**To view pattern relationships:**
+1. Click "🕸️ View Graph" on the main screen
+2. Explore the network:
+   - 🔴 Red lines = Opposite meanings
+   - 🟡 Yellow lines = Similar forms
+   - 🔵 Blue lines = Related concepts
+3. Click any node to practice that pattern
+4. Click any connection to compare two patterns
+5. Use filters to focus on confused or mastered patterns
 
-### Phase 4: Visualization (Week 7-8)
-**Priority: MEDIUM**
+**To identify your weak points:**
+- Patterns with ⚠️ badge have confusion history
+- Graph shows red nodes for confused patterns
+- Mixed review mode prioritizes weak patterns
 
-| Feature | Effort | Description |
-|---------|--------|-------------|
-| Pattern Relationship Graph | 4 days | Visual graph of pattern connections |
-| Interactive Graph Features | 2 days | Click to practice, filter, time-lapse |
-| Graph Data Population | 2 days | Define all pattern relationships |
+---
 
-**Deliverable:** Visual map showing how patterns connect and user's mastery status.
+## Success Metrics
 
-### Total Timeline: 8 weeks
+| Metric | Target | How to Track |
+|--------|--------|--------------|
+| Discrimination accuracy | >75% correct on first try | `grammar_confusion_events` table |
+| Confusion rate reduction | 30% decrease over 2 weeks | Compare weekly confusion counts |
+| Mixed review accuracy | >70% in mixed sessions | Progress tracking per pattern |
+| Feature adoption | >50% try discrimination/graph | Usage analytics (future) |
+| User satisfaction | Positive qualitative feedback | User reports |
 
-### Recommended Implementation Order
+---
 
-1. **Start with Comparison Mode** - Immediate user value, teaches discrimination
-2. **Add Confusion Tracking** - Critical data for personalization
-3. **Build Mixed Review** - Most impactful for fluency
-4. **Finish with Pattern Graph** - Nice-to-have visualization
+## Future Enhancements
 
-### Success Metrics
+### Phase 2: Auto-Remediation (Planned)
+- Automatically schedule confused pairs for extra review
+- Increase frequency of discrimination drills for weak pairs
+- Daily "warm-up" with confused patterns before main session
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Confusion reduction | 50% decrease in pair confusion rate | Track before/after for top 5 pairs |
-| Mixed review accuracy | >80% accuracy in mixed sessions | Compare to isolated session accuracy |
-| User engagement | 60% of users try anti-confusion features | Feature adoption rate |
-| JLPT readiness | 90% accuracy on JLPT-style distractors | Simulated test questions |
-| User satisfaction | >4.5/5 rating for GrammarMode | In-app feedback survey |
+### Phase 3: Advanced Analytics
+- Per-user confusion heatmaps
+- Predictive modeling for likely confusion patterns
+- Personalized study paths based on confusion profile
 
 ---
 
@@ -942,3 +393,4 @@ CREATE INDEX idx_pattern_relationships_source ON pattern_relationships(source_pa
 ---
 
 *Created: 2026-03-20*
+*Updated: 2026-03-21 - Marked all Phase 1 features complete*

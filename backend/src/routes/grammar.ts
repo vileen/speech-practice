@@ -132,6 +132,153 @@ router.get('/patterns/:id/exercise', checkPassword, async (req, res) => {
   }
 });
 
+// Get discrimination exercise for a pattern
+router.get('/patterns/:id/discrimination', checkPassword, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get the base pattern
+    const patternResult = await pool.query(
+      'SELECT * FROM grammar_patterns WHERE id = $1',
+      [id]
+    );
+    
+    if (patternResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Pattern not found' });
+    }
+    
+    const basePattern = patternResult.rows[0];
+    
+    // Get related patterns
+    let relatedIds = basePattern.related_patterns || [];
+    
+    // If no related patterns defined, find patterns in the same category
+    if (relatedIds.length === 0) {
+      const categoryResult = await pool.query(
+        'SELECT id FROM grammar_patterns WHERE category = $1 AND id != $2 LIMIT 3',
+        [basePattern.category, id]
+      );
+      relatedIds = categoryResult.rows.map(r => r.id);
+    }
+    
+    // Get the actual related patterns
+    let distractorPatterns: any[] = [];
+    if (relatedIds.length > 0) {
+      const distractorResult = await pool.query(
+        'SELECT * FROM grammar_patterns WHERE id = ANY($1) LIMIT 2',
+        [relatedIds]
+      );
+      distractorPatterns = distractorResult.rows;
+    }
+    
+    // If we still don't have enough distractors, get patterns from similar categories
+    if (distractorPatterns.length < 2) {
+      const similarCategories = getSimilarCategories(basePattern.category);
+      const additionalResult = await pool.query(
+        `SELECT * FROM grammar_patterns 
+         WHERE category = ANY($1) AND id != $2 
+         AND NOT (id = ANY($3))
+         LIMIT ${2 - distractorPatterns.length}`,
+        [similarCategories, id, relatedIds]
+      );
+      distractorPatterns = [...distractorPatterns, ...additionalResult.rows];
+    }
+    
+    // Create options array with correct answer and distractors
+    const options = [
+      {
+        pattern_id: basePattern.id,
+        pattern: basePattern.pattern,
+        category: basePattern.category,
+        is_correct: true,
+        explanation: `Correct! "${basePattern.pattern}" is the ${basePattern.category} form.`,
+      },
+      ...distractorPatterns.map(p => ({
+        pattern_id: p.id,
+        pattern: p.pattern,
+        category: p.category,
+        is_correct: false,
+        explanation: getDiscriminationExplanation(basePattern, p),
+      }))
+    ];
+    
+    // Shuffle options
+    const shuffledOptions = options.sort(() => Math.random() - 0.5);
+    
+    // Get a random exercise for this pattern to use as the base
+    const exerciseResult = await pool.query(
+      'SELECT * FROM grammar_exercises WHERE pattern_id = $1 ORDER BY RANDOM() LIMIT 1',
+      [id]
+    );
+    
+    const baseExercise = exerciseResult.rows[0] || {
+      prompt: `Choose the correct pattern for: ${basePattern.category}`,
+      context: `Select the ${basePattern.category} form`,
+    };
+    
+    // Create the discrimination exercise
+    const exercise = {
+      id: `discrimination_${id}_${Date.now()}`,
+      type: 'discrimination',
+      prompt: baseExercise.prompt,
+      context: `Choose the ${basePattern.category} pattern`,
+      correct_answer: basePattern.pattern,
+      hints: [`Look for the ${basePattern.category} pattern`],
+      difficulty: 2,
+      options: shuffledOptions,
+    };
+    
+    res.json({ exercise });
+  } catch (error) {
+    console.error('Error fetching discrimination exercise:', error);
+    res.status(500).json({ error: 'Failed to fetch discrimination exercise' });
+  }
+});
+
+// Helper function to get similar categories for distractor selection
+function getSimilarCategories(category: string): string[] {
+  const categoryGroups: Record<string, string[]> = {
+    'Permission': ['Prohibition', 'Obligation', 'Lack of Obligation'],
+    'Prohibition': ['Permission', 'Obligation', 'Lack of Obligation'],
+    'Obligation': ['Permission', 'Prohibition', 'Lack of Obligation'],
+    'Lack of Obligation': ['Permission', 'Prohibition', 'Obligation'],
+    'I-Adjectives': ['Na-Adjectives'],
+    'Na-Adjectives': ['I-Adjectives'],
+    'Particles': ['Particles'],
+  };
+  
+  return categoryGroups[category] || [category];
+}
+
+// Helper function to generate discrimination explanation
+function getDiscriminationExplanation(correct: any, wrong: any): string {
+  if (correct.category === wrong.category) {
+    return `Both are ${correct.category}, but they have different specific uses.`;
+  }
+  
+  const explanations: Record<string, Record<string, string>> = {
+    'Permission': {
+      'Prohibition': 'Permission (てもいい) allows something, while Prohibition (てはいけません) forbids it. They have opposite meanings!',
+      'Obligation': 'Permission says "you may do", while Obligation says "you must do". Different concepts!',
+    },
+    'Prohibition': {
+      'Permission': 'Prohibition (てはいけません) forbids something, while Permission (てもいい) allows it. Opposite meanings!',
+      'Obligation': 'Prohibition says "must NOT do", while Obligation says "MUST do". Completely different!',
+    },
+    'Obligation': {
+      'Permission': 'Obligation says "must do" (required), while Permission says "may do" (optional). Different meanings!',
+      'Lack of Obligation': 'Obligation (なければなりません) requires action, while Lack of Obligation (なくてもいい) says it\'s not required.',
+    },
+    'Lack of Obligation': {
+      'Obligation': 'Lack of Obligation says "don\'t have to", while Obligation says "must". Opposite concepts!',
+      'Permission': 'Lack of Obligation removes a requirement, while Permission grants a choice.',
+    },
+  };
+  
+  return explanations[correct.category]?.[wrong.category] || 
+    `"${correct.pattern}" is ${correct.category}, while "${wrong.pattern}" is ${wrong.category}.`;
+}
+
 // Submit attempt and update progress
 router.post('/progress', checkPassword, async (req, res) => {
   try {
