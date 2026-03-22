@@ -92,6 +92,7 @@ data/furigana-cache.json
 *.backup
 backend/.env
 frontend/.env.production
+backend/backups/*.sql
 
 # Private operational docs (contains infrastructure details)
 docs/OPERATIONS.md
