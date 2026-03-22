@@ -644,9 +644,9 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                   const isHovered = hoveredNode === node.id;
                   const baseRadius = 30;
                   const gradientId = `gradient-${node.masteryStatus}`;
-                  
+
                   return (
-                    <g 
+                    <g
                       key={node.id}
                       transform={`translate(${node.x}, ${node.y})`}
                       className={`node-group ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
@@ -666,7 +666,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                           filter="url(#glow)"
                         />
                       )}
-                      
+
                       {/* Hover glow effect */}
                       {isHovered && (
                         <circle
@@ -677,7 +677,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                           strokeOpacity="0.3"
                         />
                       )}
-                      
+
                       {/* Node circle */}
                       <circle
                         r={isHovered ? baseRadius + 5 : baseRadius}
@@ -687,7 +687,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                         filter="url(#node-shadow)"
                         className="node-circle"
                       />
-                      
+
                       {/* Pattern text */}
                       <text
                         y={-4}
@@ -699,7 +699,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                       >
                         {node.pattern.length > 8 ? node.pattern.slice(0, 7) + '…' : node.pattern}
                       </text>
-                      
+
                       {/* Category text */}
                       <text
                         y={10}
@@ -710,32 +710,37 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                       >
                         {node.category.slice(0, 10)}
                       </text>
-                      
-                      {/* Tooltip */}
-                      {isHovered && (
-                        <g transform="translate(45, -40)">
-                          <rect
-                            x="0"
-                            y="0"
-                            width="160"
-                            height="75"
-                            rx="10"
-                            fill="#1a1a2e"
-                            stroke={NODE_COLORS[node.masteryStatus]}
-                            strokeWidth="2"
-                            filter="url(#node-shadow)"
-                          />
-                          <text x="12" y="22" fill="#fff" fontSize="13" fontWeight="600">
-                            {node.pattern}
-                          </text>
-                          <text x="12" y="42" fill="#aaa" fontSize="10">
-                            {node.category}
-                          </text>
-                          <text x="12" y="60" fill={NODE_COLORS[node.masteryStatus]} fontSize="10" fontWeight="600">
-                            Accuracy: {Math.round(node.accuracy * 100)}%
-                          </text>
-                        </g>
-                      )}
+                    </g>
+                  );
+                })}
+
+                {/* Tooltips - rendered in separate layer after all nodes for proper z-order */}
+                {filteredNodes.map(node => {
+                  const isHovered = hoveredNode === node.id;
+                  if (!isHovered) return null;
+
+                  return (
+                    <g key={`tooltip-${node.id}`} transform={`translate(${node.x + 45}, ${node.y - 40})`} style={{ pointerEvents: 'none' }}>
+                      <rect
+                        x="0"
+                        y="0"
+                        width="160"
+                        height="75"
+                        rx="10"
+                        fill="#1a1a2e"
+                        stroke={NODE_COLORS[node.masteryStatus]}
+                        strokeWidth="2"
+                        filter="url(#node-shadow)"
+                      />
+                      <text x="12" y="22" fill="#fff" fontSize="13" fontWeight="600">
+                        {node.pattern}
+                      </text>
+                      <text x="12" y="42" fill="#aaa" fontSize="10">
+                        {node.category}
+                      </text>
+                      <text x="12" y="60" fill={NODE_COLORS[node.masteryStatus]} fontSize="10" fontWeight="600">
+                        Accuracy: {Math.round(node.accuracy * 100)}%
+                      </text>
                     </g>
                   );
                 })}
