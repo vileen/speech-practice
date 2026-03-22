@@ -1,8 +1,7 @@
 # 📦 Migracja Bazy Danych — Speech Practice
 
-> **Data dumpu:** 2026-03-11  
-> **Rozmiar:** ~450KB  
-> **Liczba tabel:** 11
+> **Data dumpu:** *brak w repo — dodaj własny dump*  
+> **Lokalizacja:** `backend/backups/`
 
 ---
 
@@ -21,6 +20,18 @@
 | `messages` | Wiadomości w sesjach | historia |
 | `user_recordings` | Nagrania użytkownika | historia |
 | `furigana_cache` | Cache furigana (pre-computed) | ~400+ |
+
+---
+
+## 💾 Tworzenie Dumpu (Eksport)
+
+```bash
+# Eksport pełnej bazy
+pg_dump postgresql://localhost:5432/speech_practice > backend/backups/speech_practice_$(date +%Y-%m-%d).sql
+
+# Lub ze skompresowaniem
+pg_dump postgresql://localhost:5432/speech_practice | gzip > backend/backups/speech_practice_$(date +%Y-%m-%d).sql.gz
+```
 
 ---
 
@@ -44,11 +55,11 @@ psql postgresql://localhost:5432/speech_practice -c "SELECT 1;"
 
 ```bash
 # Upewnij się, że masz dump w katalogu projektu
-ls backend/backups/speech_practice_full_dump_2026-03-11.sql
+ls backend/backups/speech_practice_YYYY-MM-DD.sql
 
 # Przywróć bazę
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-psql postgresql://localhost:5432/speech_practice < backend/backups/speech_practice_full_dump_2026-03-11.sql
+psql postgresql://localhost:5432/speech_practice < backend/backups/speech_practice_YYYY-MM-DD.sql
 ```
 
 ### Krok 3: Weryfikacja
@@ -154,7 +165,7 @@ brew services start postgresql
 
 | Opcja | Kiedy użyć | Dane |
 |-------|-----------|------|
-| **Pełny dump** (ten plik) | Przenoszenie z Mac mini | Wszystko: patterny, kanji, postęp, historia |
+| **Pełny dump** | Przenoszenie z innego urządzenia | Wszystko: patterny, kanji, postęp, historia |
 | **Seed scripts** | Nowa instalacja bez historii | Tylko: patterny, kanji, ćwiczenia |
 | **Od zera** | Totalny reset | Nic — wszystko przez UI |
 
@@ -166,5 +177,6 @@ brew services start postgresql
 - **Furigana cache** jest zachowana — nie trzeba generować ponownie
 - **Historia sesji i nagrań** jest zachowana (ale można też zacząć od nowa)
 - **Hasło dostępu** do aplikacji jest w `.env.local`, nie w bazie
+- **Dumpi nie są commitowane do repo** — dodaj `.sql` do `.gitignore` lub przechowuj osobno
 
-*Ostatnia aktualizacja: 2026-03-11*
+*Ostatnia aktualizacja: 2026-03-22*
