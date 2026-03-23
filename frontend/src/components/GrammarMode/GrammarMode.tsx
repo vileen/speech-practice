@@ -162,12 +162,27 @@ const ComparisonView: React.FC<{
               </h4>
               <span className="comparison-category">{pattern.category}</span>
               
+              {/* What this counter counts */}
+              {pattern.formation_rules?.some((r: any) => r.counts) && (
+                <div className="counter-info">
+                  <span className="counter-label">Liczy:</span>
+                  <span className="counter-value">
+                    {pattern.formation_rules.find((r: any) => r.counts)?.counts}
+                  </span>
+                  {pattern.formation_rules.find((r: any) => r.usage)?.usage && (
+                    <span className="counter-usage">
+                      ({pattern.formation_rules.find((r: any) => r.usage)?.usage})
+                    </span>
+                  )}
+                </div>
+              )}
+              
               <div className="formation-rules">
                 <h5>Formation:</h5>
                 <ul>
-                  {pattern.formation_rules?.map((rule, i) => (
+                  {pattern.formation_rules?.filter((r: any) => r.rule).map((rule: any, i: number) => (
                     <li key={i}>
-                      <span className="step-num">{rule.step}.</span>
+                      {rule.step && <span className="step-num">{rule.step}.</span>}
                       <ExerciseDisplay text={rule.rule} showFurigana={showFurigana} />
                     </li>
                   ))}

@@ -810,7 +810,36 @@
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.counter-info {
+  margin: 0 0 12px 0;
+  padding: 8px 10px;
+  background: rgba(233, 69, 96, 0.1);
+  border-left: 3px solid #e94560;
+  border-radius: 0 6px 6px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.counter-label {
+  font-weight: 600;
+  color: #e94560;
+  margin-right: 4px;
+}
+
+.counter-value {
+  color: #fff;
+  font-weight: 500;
+}
+
+.counter-usage {
+  display: block;
+  margin-top: 4px;
+  color: #aaa;
+  font-size: 12px;
+  font-style: italic;
 }
 
 .formation-rules {
