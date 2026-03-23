@@ -9,7 +9,7 @@ router.get('/patterns', checkPassword, async (req, res) => {
   try {
     const { category, jlptLevel, groupBy } = req.query;
     
-    // Special handling for Counters - group by base_form
+    // Special handling for Counters - group by base_form (for CountersMode)
     if (groupBy === 'base_form' && category === 'Counters') {
       const result = await pool.query(`
         SELECT 
@@ -37,12 +37,13 @@ router.get('/patterns', checkPassword, async (req, res) => {
         patterns: result.rows.map(row => ({
           ...row,
           isCounterGroup: true,
-          displayPattern: row.pattern // Keep original base_form name
+          displayPattern: row.pattern
         }))
       });
     }
     
-    let query = 'SELECT * FROM grammar_patterns WHERE 1=1';
+    // Normal query - exclude Counters (they have their own module)
+    let query = "SELECT * FROM grammar_patterns WHERE category != 'Counters'";
     const params: any[] = [];
     
     if (category) {
@@ -117,7 +118,8 @@ router.get('/review', checkPassword, async (_req, res) => {
         COALESCE(ugp.correct_attempts, 0) as correct_attempts
       FROM grammar_patterns gp
       LEFT JOIN user_grammar_progress ugp ON gp.id = ugp.pattern_id
-      WHERE ugp.next_review_at IS NULL OR ugp.next_review_at <= NOW()
+      WHERE gp.category != 'Counters' 
+        AND (ugp.next_review_at IS NULL OR ugp.next_review_at <= NOW())
       ORDER BY 
         CASE WHEN ugp.next_review_at IS NULL THEN 0 ELSE 1 END,
         ugp.next_review_at NULLS FIRST,
@@ -293,6 +295,7 @@ router.get('/patterns/:id/discrimination', checkPassword, async (req, res) => {
       const additionalResult = await pool.query(
         `SELECT * FROM grammar_patterns 
          WHERE category = ANY($1) AND id != $2 
+         AND category != 'Counters'
          AND NOT (id = ANY($3))
          LIMIT ${2 - distractorPatterns.length}`,
         [similarCategories, id, relatedIds]
@@ -461,6 +464,7 @@ router.get('/stats', checkPassword, async (_req, res) => {
           ELSE 0 END) as avg_accuracy
       FROM grammar_patterns gp
       LEFT JOIN user_grammar_progress ugp ON gp.id = ugp.pattern_id
+      WHERE gp.category != 'Counters'
       GROUP BY gp.category
       ORDER BY pattern_count DESC
     `);
@@ -496,9 +500,9 @@ router.get('/patterns/:id/related', checkPassword, async (req, res) => {
       return res.json({ patterns: [] });
     }
     
-    // Fetch the related patterns
+    // Fetch the related patterns (exclude counters)
     const relatedResult = await pool.query(
-      'SELECT * FROM grammar_patterns WHERE id = ANY($1) ORDER BY category, id',
+      "SELECT * FROM grammar_patterns WHERE id = ANY($1) AND category != 'Counters' ORDER BY category, id",
       [relatedIds]
     );
     
@@ -557,6 +561,7 @@ router.get('/confusion-stats', checkPassword, async (_req, res) => {
       FROM grammar_confusion_events ce
       JOIN grammar_patterns p1 ON ce.pattern_id = p1.id
       JOIN grammar_patterns p2 ON ce.confused_with_pattern_id = p2.id
+      WHERE p1.category != 'Counters' AND p2.category != 'Counters'
       ORDER BY ce.created_at DESC
       LIMIT 50
     `);
@@ -570,6 +575,7 @@ router.get('/confusion-stats', checkPassword, async (_req, res) => {
       FROM grammar_confusion_events ce
       JOIN grammar_patterns p1 ON ce.pattern_id = p1.id
       JOIN grammar_patterns p2 ON ce.confused_with_pattern_id = p2.id
+      WHERE p1.category != 'Counters' AND p2.category != 'Counters'
       GROUP BY p1.pattern, p2.pattern
       ORDER BY count DESC
       LIMIT 10
