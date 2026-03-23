@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { GrammarPattern } from './GrammarMode';
 import './PatternGraph.css';
 
@@ -17,8 +17,17 @@ interface PatternNode {
 interface PatternConnection {
   from: number;
   to: number;
-  type: 'opposite' | 'similar' | 'related';
+  type: 'opposite' | 'similar' | 'related' | 'confused';
   strength: number;
+}
+
+interface ApiRelationship {
+  id: number;
+  from_pattern_id: number;
+  to_pattern_id: number;
+  relationship_type: 'opposite' | 'similar' | 'related' | 'confused';
+  strength: number;
+  description?: string;
 }
 
 interface PatternGraphProps {
@@ -29,54 +38,12 @@ interface PatternGraphProps {
   onClose: () => void;
 }
 
-// Predefined pattern relationships based on the documentation
-const PREDEFINED_CONNECTIONS: PatternConnection[] = [
-  // Permission/Prohibition opposites
-  { from: 1, to: 2, type: 'opposite', strength: 1.0 },
-  { from: 2, to: 1, type: 'opposite', strength: 1.0 },
-  
-  // Obligation/Lack of Obligation opposites
-  { from: 5, to: 6, type: 'opposite', strength: 1.0 },
-  { from: 6, to: 5, type: 'opposite', strength: 1.0 },
-  
-  // Related obligation patterns
-  { from: 1, to: 6, type: 'related', strength: 0.7 },
-  { from: 6, to: 1, type: 'related', strength: 0.7 },
-  { from: 2, to: 5, type: 'related', strength: 0.7 },
-  { from: 5, to: 2, type: 'related', strength: 0.7 },
-  
-  // Similar forms (both use te-form)
-  { from: 1, to: 2, type: 'similar', strength: 0.9 },
-  { from: 5, to: 6, type: 'similar', strength: 0.8 },
-  
-  // Particle contrasts
-  { from: 9, to: 10, type: 'opposite', strength: 0.9 },
-  { from: 10, to: 9, type: 'opposite', strength: 0.9 },
-  { from: 11, to: 12, type: 'opposite', strength: 0.8 },
-  { from: 12, to: 11, type: 'opposite', strength: 0.8 },
-  
-  // I-adjective forms
-  { from: 19, to: 20, type: 'opposite', strength: 0.9 },
-  { from: 20, to: 19, type: 'opposite', strength: 0.9 },
-  { from: 21, to: 22, type: 'opposite', strength: 0.9 },
-  { from: 22, to: 21, type: 'opposite', strength: 0.9 },
-  { from: 19, to: 21, type: 'similar', strength: 0.8 },
-  { from: 20, to: 22, type: 'similar', strength: 0.8 },
-  
-  // Na-adjective forms
-  { from: 23, to: 24, type: 'opposite', strength: 0.9 },
-  { from: 24, to: 23, type: 'opposite', strength: 0.9 },
-  { from: 25, to: 26, type: 'opposite', strength: 0.9 },
-  { from: 26, to: 25, type: 'opposite', strength: 0.9 },
-  { from: 23, to: 25, type: 'similar', strength: 0.8 },
-  { from: 24, to: 26, type: 'similar', strength: 0.8 },
-];
-
 // Color schemes for different connection types
-const CONNECTION_COLORS = {
+const CONNECTION_COLORS: Record<string, string> = {
   opposite: '#ff4757',
   similar: '#ffa502',
   related: '#3742fa',
+  confused: '#ff00ff',  // Magenta for confused (high confusion risk)
 };
 
 // Node colors based on mastery
@@ -88,13 +55,13 @@ const NODE_COLORS = {
 };
 
 // Legend labels in English
-const LEGEND_LABELS = {
+const LEGEND_LABELS: Record<string, string> = {
   opposite: 'Opposite',
   similar: 'Similar',
   related: 'Related',
+  confused: 'Confused',
   mastered: 'Mastered',
   learning: 'Learning',
-  confused: 'Confused',
   unknown: 'Not Practiced',
 };
 
@@ -198,17 +165,58 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
   const [hoveredNode, setHoveredNode] = useState<number | null>(null);
   const [hoveredConnection, setHoveredConnection] = useState<PatternConnection | null>(null);
   const [filter, setFilter] = useState<'all' | 'confused' | 'mastered'>('all');
-  
+
+  // Connections from database
+  const [connections, setConnections] = useState<PatternConnection[]>([]);
+  const [loadingConnections, setLoadingConnections] = useState(true);
+
   // Zoom and pan state
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
-  
+
   // Stable dimensions - never changes between renders
   const dimensionsRef = useRef({ width: 1200, height: 800 });
   const dimensions = dimensionsRef.current;
+
+  // Fetch relationships from API
+  useEffect(() => {
+    const fetchRelationships = async () => {
+      try {
+        setLoadingConnections(true);
+        const password = localStorage.getItem('speechPracticePassword') || '';
+        const response = await fetch('/api/grammar/relationships', {
+          headers: {
+            'X-Password': password,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch relationships');
+        }
+
+        const data = await response.json();
+        const apiConnections: PatternConnection[] = data.relationships.map((rel: ApiRelationship) => ({
+          from: rel.from_pattern_id,
+          to: rel.to_pattern_id,
+          type: rel.relationship_type,
+          strength: rel.strength,
+        }));
+
+        setConnections(apiConnections);
+      } catch (error) {
+        console.error('Error fetching pattern relationships:', error);
+        // Fallback to empty array - will still render nodes without connections
+        setConnections([]);
+      } finally {
+        setLoadingConnections(false);
+      }
+    };
+
+    fetchRelationships();
+  }, []);
   
   // Calculate node positions using force-directed layout
   // ONLY recalculates when patterns or confusionStats change - NOT on hover
@@ -265,22 +273,22 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
       };
     });
     
-    // Run force-directed layout
-    const connections = PREDEFINED_CONNECTIONS.filter(
+    // Run force-directed layout with connections from database
+    const visibleConnections = connections.filter(
       conn => patterns.some(p => p.id === conn.from) && patterns.some(p => p.id === conn.to)
     );
-    
-    return runForceLayout(initialNodes, connections, dimensions.width, dimensions.height);
-    // Note: hoveredNode is intentionally NOT in dependencies - hover should not recalculate layout
-  }, [patterns, confusionStats]);
 
-  // Get connections for visible patterns
-  const connections = useMemo((): PatternConnection[] => {
+    return runForceLayout(initialNodes, visibleConnections, dimensions.width, dimensions.height);
+    // Note: hoveredNode is intentionally NOT in dependencies - hover should not recalculate layout
+  }, [patterns, confusionStats, connections]);
+
+  // Get connections for visible patterns (from database)
+  const visibleConnections = useMemo((): PatternConnection[] => {
     const patternIds = new Set(patterns.map(p => p.id));
-    return PREDEFINED_CONNECTIONS.filter(
+    return connections.filter(
       conn => patternIds.has(conn.from) && patternIds.has(conn.to)
     );
-  }, [patterns]);
+  }, [patterns, connections]);
 
   // Filter nodes
   const filteredNodes = useMemo(() => {
@@ -445,6 +453,10 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                   <div className="legend-line" style={{ backgroundColor: CONNECTION_COLORS.related }} />
                   <span>{LEGEND_LABELS.related}</span>
                 </div>
+                <div className="legend-item">
+                  <div className="legend-line" style={{ backgroundColor: CONNECTION_COLORS.confused }} />
+                  <span>{LEGEND_LABELS.confused}</span>
+                </div>
               </div>
             </div>
             
@@ -469,6 +481,13 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                 </div>
               </div>
             </div>
+            
+            {loadingConnections && (
+              <div className="legend-section-panel">
+                <h4>⏳ Loading...</h4>
+                <p style={{ fontSize: '12px', color: '#aaa' }}>Fetching pattern relationships...</p>
+              </div>
+            )}
             
             <div className="legend-tips">
               <h4>💡 Tips</h4>
@@ -559,7 +578,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                 ))}
                 
                 {/* Connections */}
-                {connections.map((conn, i) => {
+                {visibleConnections.map((conn, i) => {
                   const fromNode = getNode(conn.from);
                   const toNode = getNode(conn.to);
                   if (!fromNode || !toNode) return null;

@@ -677,4 +677,115 @@ async function updateProgress(patternId: number, result: string) {
   }
 }
 
+// Get pattern relationships for PatternGraph
+router.get('/relationships', checkPassword, async (req, res) => {
+  try {
+    const { category, patternId } = req.query;
+    
+    let query = `
+      SELECT 
+        pr.id,
+        pr.from_pattern_id,
+        pr.to_pattern_id,
+        pr.relationship_type,
+        pr.strength,
+        pr.description,
+        fp.pattern as from_pattern,
+        fp.category as from_category,
+        fp.jlpt_level as from_jlpt,
+        tp.pattern as to_pattern,
+        tp.category as to_category,
+        tp.jlpt_level as to_jlpt
+      FROM pattern_relationships pr
+      JOIN grammar_patterns fp ON pr.from_pattern_id = fp.id
+      JOIN grammar_patterns tp ON pr.to_pattern_id = tp.id
+      WHERE 1=1
+    `;
+    const params: any[] = [];
+    
+    if (category) {
+      params.push(category);
+      query += ` AND (fp.category = $${params.length} OR tp.category = $${params.length})`;
+    }
+    
+    if (patternId) {
+      params.push(patternId);
+      query += ` AND (pr.from_pattern_id = $${params.length} OR pr.to_pattern_id = $${params.length})`;
+    }
+    
+    query += ' ORDER BY pr.relationship_type, pr.strength DESC';
+    
+    const result = await pool.query(query, params);
+    
+    res.json({
+      count: result.rows.length,
+      relationships: result.rows
+    });
+  } catch (error) {
+    console.error('Error fetching pattern relationships:', error);
+    res.status(500).json({ error: 'Failed to fetch pattern relationships' });
+  }
+});
+
+// Get relationships for a specific pattern
+router.get('/patterns/:id/relationships', checkPassword, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type } = req.query;
+    
+    let query = `
+      SELECT 
+        pr.id,
+        pr.from_pattern_id,
+        pr.to_pattern_id,
+        pr.relationship_type,
+        pr.strength,
+        pr.description,
+        fp.pattern as from_pattern,
+        fp.category as from_category,
+        tp.pattern as to_pattern,
+        tp.category as to_category
+      FROM pattern_relationships pr
+      JOIN grammar_patterns fp ON pr.from_pattern_id = fp.id
+      JOIN grammar_patterns tp ON pr.to_pattern_id = tp.id
+      WHERE pr.from_pattern_id = $1 OR pr.to_pattern_id = $1
+    `;
+    const params: any[] = [id];
+    
+    if (type) {
+      params.push(type);
+      query += ` AND pr.relationship_type = $${params.length}`;
+    }
+    
+    query += ' ORDER BY pr.strength DESC';
+    
+    const result = await pool.query(query, params);
+    
+    // Normalize so the requested pattern is always "from"
+    const normalized = result.rows.map((row: any) => {
+      if (row.to_pattern_id === parseInt(id)) {
+        // Swap direction
+        return {
+          ...row,
+          from_pattern_id: row.to_pattern_id,
+          to_pattern_id: row.from_pattern_id,
+          from_pattern: row.to_pattern,
+          from_category: row.to_category,
+          to_pattern: row.from_pattern,
+          to_category: row.from_category,
+        };
+      }
+      return row;
+    });
+    
+    res.json({
+      count: normalized.length,
+      relationships: normalized
+    });
+  } catch (error) {
+    console.error('Error fetching pattern relationships:', error);
+    res.status(500).json({ error: 'Failed to fetch pattern relationships' });
+  }
+});
+
 export default router;
