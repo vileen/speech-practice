@@ -81,6 +81,12 @@ export function Home() {
               onClick={() => navigate('/grammar')}
               borderColor="#f39c12"
             />
+            <ModeButton
+              icon="📊"
+              label="Liczniki"
+              onClick={() => navigate('/counters')}
+              borderColor="#e94560"
+            />
           </div>
         </main>
         
