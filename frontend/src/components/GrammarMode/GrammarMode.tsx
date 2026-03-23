@@ -20,6 +20,10 @@ export interface GrammarPattern {
   total_attempts?: number;
   correct_attempts?: number;
   confusion_pairs?: number[];
+  base_form?: string;           // For counter grouping
+  variants?: GrammarPattern[];  // Variants when this is a counter group
+  variant_count?: number;       // Number of variants
+  isCounterGroup?: boolean;     // Flag for counter base forms
 }
 
 interface GrammarExercise {
@@ -416,14 +420,31 @@ export const GrammarMode: React.FC = () => {
 
   const loadPatterns = async () => {
     try {
+      // Load regular patterns
       const response = await fetch(`${API_URL}/api/grammar/patterns`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
         const data = await response.json();
-        setPatterns(data.patterns);
+        
+        // Load counters grouped by base_form
+        const countersResponse = await fetch(`${API_URL}/api/grammar/patterns?category=Counters&groupBy=base_form`, {
+          headers: { 'X-Password': password }
+        });
+        
+        let allPatterns = data.patterns;
+        if (countersResponse.ok) {
+          const countersData = await countersResponse.json();
+          // Replace individual counters with grouped ones
+          allPatterns = [
+            ...data.patterns.filter((p: GrammarPattern) => p.category !== 'Counters'),
+            ...countersData.patterns
+          ];
+        }
+        
+        setPatterns(allPatterns);
         // Extract unique categories
-        const cats = [...new Set(data.patterns.map((p: GrammarPattern) => p.category))] as string[];
+        const cats = [...new Set(allPatterns.map((p: GrammarPattern) => p.category))] as string[];
         setCategories(cats);
         // Select all categories by default if nothing saved
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -449,6 +470,22 @@ export const GrammarMode: React.FC = () => {
     } catch (err) {
       console.error('Failed to load due patterns:', err);
     }
+  };
+
+  // Load counter variants when user clicks on a counter group
+  const loadCounterVariants = async (baseForm: string): Promise<GrammarPattern[]> => {
+    try {
+      const response = await fetch(`${API_URL}/api/grammar/counters/${encodeURIComponent(baseForm)}/variants`, {
+        headers: { 'X-Password': password }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.variants || [];
+      }
+    } catch (err) {
+      console.error('Failed to load counter variants:', err);
+    }
+    return [];
   };
 
   const loadConfusionStats = async () => {
@@ -611,6 +648,21 @@ export const GrammarMode: React.FC = () => {
   };
 
   const startPattern = async (pattern: GrammarPattern) => {
+    // If this is a counter group, load variants first
+    if (pattern.isCounterGroup && pattern.pattern) {
+      const variants = await loadCounterVariants(pattern.pattern);
+      // For counter groups, pick a random variant to practice
+      if (variants.length > 0) {
+        const randomVariant = variants[Math.floor(Math.random() * variants.length)];
+        setCurrentPattern({
+          ...randomVariant,
+          base_form: pattern.pattern,
+          variants: variants
+        });
+        await loadExercise(randomVariant.id);
+        return;
+      }
+    }
     setCurrentPattern(pattern);
     await loadExercise(pattern.id);
   };

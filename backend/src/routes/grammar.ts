@@ -7,7 +7,40 @@ const router = Router();
 // Get all grammar patterns (optionally filtered by category or JLPT level)
 router.get('/patterns', checkPassword, async (req, res) => {
   try {
-    const { category, jlptLevel } = req.query;
+    const { category, jlptLevel, groupBy } = req.query;
+    
+    // Special handling for Counters - group by base_form
+    if (groupBy === 'base_form' && category === 'Counters') {
+      const result = await pool.query(`
+        SELECT 
+          MIN(id) as id,
+          base_form as pattern,
+          category,
+          MIN(jlpt_level) as jlpt_level,
+          jsonb_agg(
+            jsonb_build_object(
+              'id', id,
+              'pattern', pattern,
+              'formation_rules', formation_rules,
+              'examples', examples
+            ) ORDER BY pattern
+          ) FILTER (WHERE base_form IS NOT NULL) as variants,
+          COUNT(*) as variant_count
+        FROM grammar_patterns
+        WHERE category = 'Counters' AND base_form IS NOT NULL
+        GROUP BY base_form, category
+        ORDER BY base_form
+      `);
+      
+      return res.json({
+        count: result.rows.length,
+        patterns: result.rows.map(row => ({
+          ...row,
+          isCounterGroup: true,
+          displayPattern: row.pattern // Keep original base_form name
+        }))
+      });
+    }
     
     let query = 'SELECT * FROM grammar_patterns WHERE 1=1';
     const params: any[] = [];
@@ -100,6 +133,36 @@ router.get('/review', checkPassword, async (_req, res) => {
   } catch (error) {
     console.error('Error fetching review patterns:', error);
     res.status(500).json({ error: 'Failed to fetch review patterns' });
+  }
+});
+
+// Get counter variants by base_form (e.g., all variants of 〜本)
+router.get('/counters/:baseForm/variants', checkPassword, async (req, res) => {
+  try {
+    const { baseForm } = req.params;
+    
+    const result = await pool.query(`
+      SELECT 
+        gp.*,
+        COALESCE(ugp.ease_factor, 2.5) as ease_factor,
+        COALESCE(ugp.interval_days, 1) as interval_days,
+        COALESCE(ugp.streak, 0) as streak,
+        COALESCE(ugp.total_attempts, 0) as total_attempts,
+        COALESCE(ugp.correct_attempts, 0) as correct_attempts
+      FROM grammar_patterns gp
+      LEFT JOIN user_grammar_progress ugp ON gp.id = ugp.pattern_id
+      WHERE gp.category = 'Counters' AND gp.base_form = $1
+      ORDER BY gp.pattern
+    `, [baseForm]);
+    
+    res.json({
+      baseForm,
+      count: result.rows.length,
+      variants: result.rows
+    });
+  } catch (error) {
+    console.error('Error fetching counter variants:', error);
+    res.status(500).json({ error: 'Failed to fetch counter variants' });
   }
 });
 
