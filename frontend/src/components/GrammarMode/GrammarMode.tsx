@@ -1124,6 +1124,19 @@ export const GrammarMode: React.FC = () => {
             </button>
           </div>
 
+          {/* Verb Conjugation Link */}
+          <div className="verb-conjugation-banner" onClick={() => navigate('/verbs')}>
+            <div className="verb-conjugation-info">
+              <span className="verb-conjugation-title">🔥 Verb Conjugation</span>
+              <span className="verb-conjugation-desc">
+                Master Japanese verb conjugations - Godan, Ichidan, and Irregular verbs with SRS practice
+              </span>
+            </div>
+            <button className="verb-conjugation-open-btn">
+              Practice Verbs →
+            </button>
+          </div>
+
           {/* Quick Select Groups Accordion */}
           <div className="category-groups-accordion">
             <div 
