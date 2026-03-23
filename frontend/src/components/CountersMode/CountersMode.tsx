@@ -21,7 +21,13 @@ interface CounterGroup {
   description: string;
 }
 
-type Mode = 'menu' | 'study' | 'quiz' | 'review';
+type Mode = 'menu' | 'study' | 'quiz' | 'mixed' | 'review';
+
+interface MixedQuestion {
+  pattern: CounterPattern;
+  group: CounterGroup;
+  number: number;
+}
 
 export function CountersMode() {
   const navigate = useNavigate();
@@ -33,6 +39,10 @@ export function CountersMode() {
   const [currentPattern, setCurrentPattern] = useState<CounterPattern | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  // Mixed quiz state
+  const [mixedQuestions, setMixedQuestions] = useState<MixedQuestion[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
     loadCounterGroups();
@@ -77,7 +87,53 @@ export function CountersMode() {
   };
 
   const handleAnswer = (_known: boolean) => {
-    pickRandomPattern();
+    if (mode === 'mixed') {
+      nextMixedQuestion();
+    } else {
+      pickRandomPattern();
+    }
+  };
+
+  // Generate mixed quiz questions from all groups
+  const startMixedQuiz = () => {
+    const questions: MixedQuestion[] = [];
+    const targetCount = 20;
+    
+    // Get all available patterns from all groups
+    const allPatterns: { pattern: CounterPattern; group: CounterGroup }[] = [];
+    counterGroups.forEach(group => {
+      group.patterns.forEach(pattern => {
+        allPatterns.push({ pattern, group });
+      });
+    });
+    
+    // Shuffle and pick 20 (or all if less than 20)
+    const shuffled = allPatterns.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, Math.min(targetCount, shuffled.length));
+    
+    // Create questions with random numbers (1-10)
+    selected.forEach(({ pattern, group }) => {
+      questions.push({
+        pattern,
+        group,
+        number: Math.floor(Math.random() * 10) + 1
+      });
+    });
+    
+    setMixedQuestions(questions);
+    setCurrentQuestionIndex(0);
+    setMode('mixed');
+    setShowAnswer(false);
+  };
+
+  const nextMixedQuestion = () => {
+    if (currentQuestionIndex < mixedQuestions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setShowAnswer(false);
+    } else {
+      // Quiz complete - back to menu
+      setMode('menu');
+    }
   };
 
   if (mode === 'menu') {
@@ -111,6 +167,17 @@ export function CountersMode() {
               <span className="desc">3 small objects (apples)</span>
             </div>
           </div>
+        </div>
+
+        {/* Mixed Quiz Banner */}
+        <div className="mixed-quiz-banner" onClick={startMixedQuiz}>
+          <div className="mixed-quiz-info">
+            <span className="mixed-quiz-title">🎯 Mixed Quiz</span>
+            <span className="mixed-quiz-desc">
+              Test your knowledge with 20 random counters from all groups
+            </span>
+          </div>
+          <button className="mixed-quiz-btn">Start →</button>
         </div>
 
         {loading ? (
@@ -215,6 +282,53 @@ export function CountersMode() {
                 <div className="answer-pattern">{currentPattern.pattern}</div>
                 {currentPattern.examples?.[0] && (
                   <p className="answer-example">{currentPattern.examples[0].jp}</p>
+                )}
+                
+                <div className="answer-buttons">
+                  <button className="wrong-btn" onClick={() => handleAnswer(false)}>
+                    ❌ Didn't know
+                  </button>
+                  <button className="correct-btn" onClick={() => handleAnswer(true)}>
+                    ✅ Knew it
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === 'mixed' && mixedQuestions.length > 0) {
+    const currentQ = mixedQuestions[currentQuestionIndex];
+    const progress = `${currentQuestionIndex + 1} / ${mixedQuestions.length}`;
+    
+    return (
+      <div className="counters-mode">
+        <header className="counters-header">
+          <button className="back-btn" onClick={() => setMode('menu')}>← Menu</button>
+          <h1>🎯 Mixed Quiz</h1>
+          <span className="quiz-progress">{progress}</span>
+        </header>
+
+        <div className="quiz-container">
+          <div className="quiz-card">
+            <div className="quiz-category">{currentQ.group.baseForm} — {currentQ.group.counts}</div>
+            
+            <div className="quiz-question">
+              <p className="question-text">How do you say "{currentQ.number} {currentQ.group.counts}"?</p>
+            </div>
+
+            {!showAnswer ? (
+              <button className="show-answer-btn" onClick={() => setShowAnswer(true)}>
+                Show Answer
+              </button>
+            ) : (
+              <div className="quiz-answer">
+                <div className="answer-pattern">{currentQ.pattern.pattern}</div>
+                {currentQ.pattern.examples?.[0] && (
+                  <p className="answer-example">{currentQ.pattern.examples[0].jp}</p>
                 )}
                 
                 <div className="answer-buttons">

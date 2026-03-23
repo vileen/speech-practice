@@ -355,3 +355,71 @@
   padding: 60px;
   color: #888;
 }
+
+/* Mixed Quiz Banner */
+.mixed-quiz-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
+  border: 1px solid #ffc107;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin: 20px auto;
+  max-width: 800px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mixed-quiz-banner:hover {
+  border-color: #ff9800;
+  transform: translateY(-2px);
+}
+
+.mixed-quiz-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mixed-quiz-title {
+  color: #ffc107;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.mixed-quiz-desc {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.mixed-quiz-btn {
+  background: #ffc107;
+  color: #1a1a2e;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.mixed-quiz-btn:hover {
+  background: #ff9800;
+  transform: translateY(-1px);
+}
+
+/* Quiz Progress */
+.quiz-progress {
+  color: #aaa;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.quiz-category {
+  color: #e94560;
+  font-size: 14px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
