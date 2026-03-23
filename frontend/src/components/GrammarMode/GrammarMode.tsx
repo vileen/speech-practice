@@ -475,7 +475,7 @@ export const GrammarMode: React.FC = () => {
   // Load counter variants when user clicks on a counter group
   const loadCounterVariants = async (baseForm: string): Promise<GrammarPattern[]> => {
     try {
-      const response = await fetch(`${API_URL}/api/grammar/counters/${encodeURIComponent(baseForm)}/variants`, {
+      const response = await fetch(`${API_URL}/api/counters/${encodeURIComponent(baseForm)}/variants`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
