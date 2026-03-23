@@ -147,4 +147,187 @@
 
 ---
 
-*Last updated: 2026-03-10*
+## Roadmap: Solid Foundation for Japanese Learning
+
+**Current State (March 2026):**
+- ✅ Counters: Comprehensive (94 patterns, 90 exercises)
+- ⚠️ Core Grammar: Thin (4-5 patterns per category)
+- ✅ Infrastructure: SRS, Audio, Furigana, Pattern Graph
+- ⚠️ Content Gaps: Verbs, Reading, Speaking drills
+
+### Phase 1: Core Grammar Expansion (Priority: HIGH)
+**Goal:** Bring all grammar categories to Counters-level depth
+
+| Category | Current | Target | Status |
+|----------|---------|--------|--------|
+| TE-form | 0 | 20 patterns | 🔴 Missing |
+| Permission/Prohibition | 4 each | 15 each | 🟡 Thin |
+| Obligation | 4 | 15 | 🟡 Thin |
+| I/Na Adjectives | 4 each | 12 each | 🟡 Thin |
+| Particles | 20 | 30 | 🟡 Partial |
+| Verb Conjugation | 0 | 25 patterns | 🔴 Missing |
+
+**Deliverables:**
+- SQL files for pattern/exercise data
+- Discrimination drills for similar forms
+- Pattern graph relationships
+- **Timeline:** 2-3 weeks
+
+### Phase 2: Verb Mastery System (Priority: HIGH)
+**Goal:** Systematic verb conjugation practice
+
+**Components:**
+1. **Verb Database** (~100 common verbs)
+   - Group I/II/III classification
+   - Transitive/intransitive pairs
+   - JLPT level tagging
+
+2. **Conjugation Modes:**
+   - Dictionary → Masu form
+   - Dictionary → Te-form
+   - Dictionary → Nai-form
+   - Dictionary → Ta-form
+   - Dictionary → Conditional
+   - Dictionary → Potential
+   - Dictionary → Passive/Causative
+
+3. **Practice Types:**
+   - Recognition (which form is this?)
+   - Construction (conjugate to X)
+   - Transformation (change from A to B)
+   - Error correction (spot the wrong conjugation)
+
+**Deliverables:**
+- `verbs` table with full metadata
+- `verb_conjugations` reference table
+- Conjugation engine (backend rule-based)
+- Dedicated VerbMode component
+- **Timeline:** 3-4 weeks
+
+### Phase 3: Reading Comprehension (Priority: MEDIUM)
+**Goal:** Graded reading with comprehension checks
+
+**Components:**
+1. **Reading Passages Table**
+   - Level: N5 → N3
+   - Length: 100-500 characters
+   - Topic categories (daily life, work, culture)
+   - Furigana toggle
+
+2. **Question Types:**
+   - Main idea
+   - Detail extraction
+   - Inference
+   - Vocabulary in context
+   - Grammar pattern identification
+
+3. **Integration:**
+   - Link unknown words to SRS
+   - Highlight grammar patterns from learned set
+   - Track reading speed (characters/minute)
+
+**Deliverables:**
+- 20 graded passages (5 N5, 8 N4, 7 N3)
+- Reading mode UI with side-by-side questions
+- Progress tracking per level
+- **Timeline:** 2-3 weeks
+
+### Phase 4: Speaking Drills (Priority: MEDIUM)
+**Goal:** Structured speaking beyond free conversation
+
+**Components:**
+1. **Shadowing Mode**
+   - Native audio playback
+   - Record → Compare waveform
+   - Pronunciation scoring (basic)
+
+2. **Response Drills**
+   - Cue card style prompts
+   - Time-limited responses (10-30s)
+   - AI evaluation of completeness
+
+3. **Conversation Templates**
+   - Common scenarios (restaurant, shopping, etc.)
+   - Turn-based practice
+   - Suggested responses for guidance
+
+**Deliverables:**
+- Shadowing interface with audio recording
+- Response drill engine
+- 10 conversation templates
+- **Timeline:** 3-4 weeks
+
+### Phase 5: Kanji Expansion (Priority: LOW)
+**Goal:** Support up to N3 level (~650 kanji)
+
+**Components:**
+1. **Kanji Database Expansion**
+   - Current: 102
+   - Target: 650 (N5: 80, N4: 170, N3: 400)
+
+2. **Kanji Mode Enhancements:**
+   - Radical-based learning
+   - Stroke order animations
+   - Similar kanji discrimination
+   - Kanji → Vocabulary connections
+
+3. **Reading Integration:**
+   - Hover kanji for meaning/reading
+   - Click to add to SRS queue
+
+**Deliverables:**
+- Kanji import scripts
+- Enhanced KanjiMode UI
+- Radical reference table
+- **Timeline:** 4-6 weeks (ongoing)
+
+### Phase 6: Polish & Integration (Priority: MEDIUM)
+**Goal:** Seamless experience across modes
+
+**Components:**
+1. **Unified SRS:**
+   - Grammar + Kanji + Vocabulary in one queue
+   - Cross-category scheduling
+
+2. **Progress Dashboard:**
+   - Visual progress by JLPT level
+   - Weak points identification
+   - Study streak tracking
+
+3. **Interleaved Practice:**
+   - Daily review mixing all categories
+   - Adaptive difficulty based on performance
+
+4. **Mobile Optimization:**
+   - Responsive design pass
+   - Touch-friendly Pattern Graph
+   - Offline mode for reviews
+
+**Deliverables:**
+- Unified review mode
+- Progress dashboard component
+- Mobile CSS overhaul
+- **Timeline:** 3-4 weeks
+
+---
+
+## Implementation Priority
+
+**Immediate (Do First):**
+1. TE-form patterns (foundation for many grammar points)
+2. Basic verb conjugation (dictionary → masu/te/nai)
+
+**Next:**
+3. Expand core grammar categories
+4. Reading passages (N5 level first)
+
+**Later:**
+5. Speaking drills
+6. Kanji expansion
+7. Polish/integration
+
+**Estimated Total:** 4-6 months to solid N3 foundation
+
+---
+
+*Last updated: 2026-03-23*
