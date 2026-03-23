@@ -18,6 +18,7 @@ import { LessonPractice } from './pages/LessonPractice.js';
 import { MemoryModeWrapper } from './pages/MemoryModeWrapper.js';
 import { GrammarMode } from './components/GrammarMode/index.js';
 import { CountersMode } from './components/CountersMode/CountersMode.js';
+import { VerbMode } from './components/VerbMode/VerbMode.js';
 import { KanjiPracticePage } from './pages/KanjiPracticePage.js';
 
 // Types
@@ -38,6 +39,7 @@ function App() {
         <Route path="/kanji" element={<KanjiPracticePage />} />
         <Route path="/grammar" element={<GrammarMode />} />
         <Route path="/counters" element={<CountersMode />} />
+        <Route path="/verbs" element={<VerbMode />} />
         <Route path="/lessons" element={<LessonList />} />
         <Route path="/lessons/:id" element={<LessonDetail />} />
         <Route path="/lessons/:id/setup" element={<LessonPracticeSetup />} />

@@ -87,6 +87,12 @@ export function Home() {
               onClick={() => navigate('/counters')}
               borderColor="#e94560"
             />
+            <ModeButton
+              icon="🔥"
+              label="Verb Conjugation"
+              onClick={() => navigate('/verbs')}
+              borderColor="#ff4757"
+            />
           </div>
         </main>
         
