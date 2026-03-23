@@ -12,7 +12,6 @@ import logsRoutes from './logs.js';
 import vocabularyRoutes from './vocabulary.js';
 import grammarRoutes from './grammar.js';
 import kanjiRoutes from './kanji.js';
-import verbRoutes from './verbs.js';
 import countersRoutes from './counters.js';
 import pdfRoutes from './pdf.js';
 
@@ -32,7 +31,6 @@ router.use('/logs', logsRoutes);
 router.use('/', vocabularyRoutes);
 router.use('/grammar', grammarRoutes);
 router.use('/kanji', kanjiRoutes);
-router.use('/verbs', verbRoutes);
 router.use('/counters', countersRoutes);
 router.use('/pdf', pdfRoutes);
 
