@@ -79,11 +79,11 @@ const runForceLayout = (
   const centerY = height / 2;
   
   // Constants for forces
-  const REPULSION_FORCE = 8000;
-  const ATTRACTION_FORCE = 0.008;
-  const CENTER_FORCE = 0.0005;
-  const MIN_DISTANCE = 120;
-  const DAMPING = 0.9;
+  const REPULSION_FORCE = 15000;  // Increased for better separation
+  const ATTRACTION_FORCE = 0.006; // Slightly reduced
+  const CENTER_FORCE = 0.0003;    // Reduced to allow more spread
+  const MIN_DISTANCE = 140;       // Increased minimum distance between nodes
+  const DAMPING = 0.92;           // Slightly higher damping for stability
   
   for (let iter = 0; iter < iterations; iter++) {
     // Repulsion between all nodes (collision detection)
@@ -177,6 +177,10 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+
+  // Node drag state
+  const [draggedNode, setDraggedNode] = useState<number | null>(null);
+  const [nodePositions, setNodePositions] = useState<Map<number, { x: number; y: number }>>(new Map());
 
   // Stable dimensions - never changes between renders
   const dimensionsRef = useRef({ width: 1200, height: 800 });
@@ -274,9 +278,18 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
       conn => patterns.some(p => p.id === conn.from) && patterns.some(p => p.id === conn.to)
     );
 
-    return runForceLayout(initialNodes, visibleConnections, dimensions.width, dimensions.height);
+    const layoutNodes = runForceLayout(initialNodes, visibleConnections, dimensions.width, dimensions.height, 150);
+    
+    // Apply manual positions for dragged nodes
+    return layoutNodes.map(node => {
+      const manualPos = nodePositions.get(node.id);
+      if (manualPos) {
+        return { ...node, x: manualPos.x, y: manualPos.y };
+      }
+      return node;
+    });
     // Note: hoveredNode is intentionally NOT in dependencies - hover should not recalculate layout
-  }, [patterns, confusionStats, connections]);
+  }, [patterns, confusionStats, connections, nodePositions]);
 
   // Get connections for visible patterns (from database)
   const visibleConnections = useMemo((): PatternConnection[] => {
@@ -352,7 +365,48 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
+    setDraggedNode(null);
   }, []);
+
+  // Node drag handlers
+  const handleNodeMouseDown = useCallback((e: React.MouseEvent, nodeId: number, nodeX: number, nodeY: number) => {
+    e.stopPropagation(); // Prevent pan drag
+    setDraggedNode(nodeId);
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (rect) {
+      // Calculate mouse position in SVG coordinates accounting for zoom and pan
+      const svgX = (e.clientX - rect.left - pan.x) / zoom;
+      const svgY = (e.clientY - rect.top - pan.y) / zoom;
+      setDragStart({ x: svgX - nodeX, y: svgY - nodeY });
+    }
+  }, [pan, zoom]);
+
+  const handleNodeMouseMove = useCallback((e: React.MouseEvent) => {
+    if (draggedNode !== null) {
+      const rect = svgRef.current?.getBoundingClientRect();
+      if (rect) {
+        const svgX = (e.clientX - rect.left - pan.x) / zoom;
+        const svgY = (e.clientY - rect.top - pan.y) / zoom;
+        const newX = svgX - dragStart.x;
+        const newY = svgY - dragStart.y;
+        
+        setNodePositions(prev => {
+          const next = new Map(prev);
+          next.set(draggedNode, { x: newX, y: newY });
+          return next;
+        });
+      }
+    }
+  }, [draggedNode, dragStart, pan, zoom]);
+
+  // Merge node drag with pan in handleMouseMove
+  const handleMouseMoveMerged = useCallback((e: React.MouseEvent) => {
+    if (draggedNode !== null) {
+      handleNodeMouseMove(e);
+    } else if (isDragging) {
+      handleMouseMove(e);
+    }
+  }, [draggedNode, isDragging, handleNodeMouseMove, handleMouseMove]);
 
   // Get node by ID
   const getNode = (id: number) => nodes.find(n => n.id === id);
@@ -500,7 +554,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
             className="pattern-graph-container"
             ref={containerRef}
             onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
+            onMouseMove={handleMouseMoveMerged}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
           >
@@ -666,9 +720,10 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                       transform={`translate(${node.x}, ${node.y})`}
                       className={`node-group ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
                       onClick={() => handleNodeClick(node.id)}
+                      onMouseDown={(e) => handleNodeMouseDown(e, node.id, node.x, node.y)}
                       onMouseEnter={() => setHoveredNode(node.id)}
                       onMouseLeave={() => setHoveredNode(null)}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: draggedNode === node.id ? 'grabbing' : 'pointer' }}
                     >
                       {/* Outer glow for selected */}
                       {isSelected && (
