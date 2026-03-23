@@ -187,12 +187,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     const fetchRelationships = async () => {
       try {
         setLoadingConnections(true);
-        const password = localStorage.getItem('speechPracticePassword') || '';
-        const response = await fetch(`${API_URL}/api/grammar/relationships`, {
-          headers: {
-            'X-Password': password,
-          },
-        });
+        const response = await fetch(`${API_URL}/api/grammar/relationships`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch relationships');
