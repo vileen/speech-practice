@@ -55,6 +55,64 @@ High-level overview of planned and implemented features. Each feature has a dedi
 
 ---
 
+## Roadmap: Solid Foundation for Japanese Learning
+
+6-phase roadmap to build a comprehensive Japanese learning platform beyond conversation practice.
+
+### Phase 1: Grammar Foundation (✅ Complete)
+**Goal:** Core grammar patterns with SRS-based drilling
+- ✅ Grammar pattern database (~220 patterns across 12 categories)
+- ✅ Pattern recognition & construction exercises
+- ✅ Error tracking & confusion prevention
+- ✅ Pattern relationship graph for visual learning
+- ✅ Counter patterns module (separate from grammar)
+
+**Deliverables:** GrammarMode, CountersMode, PatternGraph
+
+### Phase 2: Verb Mastery (⏳ Planned)
+**Goal:** Complete verb conjugation system
+- Verb database with conjugation metadata
+- Conjugation engine (rule-based)
+- VerbMode component for drill practice
+- Integration with grammar patterns
+
+**Timeline:** 3-4 weeks
+
+### Phase 3: Reading Comprehension (⏳ Planned)
+**Goal:** Graded reading with comprehension checks
+- Reading passages table (N5 → N3)
+- Question types: main idea, detail, inference
+- Link unknown words to SRS
+- Track reading speed
+
+**Timeline:** 2-3 weeks
+
+### Phase 4: Speaking Drills (⏳ Planned)
+**Goal:** Structured speaking beyond free conversation
+- Shadowing mode with waveform comparison
+- Response drills with time limits
+- Conversation templates for common scenarios
+
+**Timeline:** 3-4 weeks
+
+### Phase 5: Kanji Expansion (🚧 In Progress)
+**Goal:** Support up to N3 level (~650 kanji)
+- Expand from 102 → 650 kanji (N5: 80, N4: 170, N3: 400)
+- Radical-based learning
+- Kanji → Vocabulary connections
+
+**Timeline:** 4-6 weeks (ongoing)
+
+### Phase 6: Polish & Integration (⏳ Planned)
+**Goal:** Seamless experience across modes
+- Unified SRS (Grammar + Kanji + Vocabulary)
+- Progress dashboard by JLPT level
+- Interleaved practice mixing all categories
+
+**Timeline:** 2-3 weeks
+
+---
+
 ## Philosophy
 
 > Ideas for improving the material review process after lessons.
