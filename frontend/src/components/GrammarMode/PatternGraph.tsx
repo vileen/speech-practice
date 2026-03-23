@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { GrammarPattern } from './GrammarMode';
+import { API_URL } from '../../config/api.js';
 import './PatternGraph.css';
 
 interface PatternNode {
@@ -187,7 +188,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
       try {
         setLoadingConnections(true);
         const password = localStorage.getItem('speechPracticePassword') || '';
-        const response = await fetch('/api/grammar/relationships', {
+        const response = await fetch(`${API_URL}/api/grammar/relationships`, {
           headers: {
             'X-Password': password,
           },
