@@ -815,7 +815,7 @@ router.get('/relationships', checkPassword, async (req, res) => {
       FROM pattern_relationships pr
       JOIN grammar_patterns fp ON pr.from_pattern_id = fp.id
       JOIN grammar_patterns tp ON pr.to_pattern_id = tp.id
-      WHERE 1=1
+      WHERE fp.category != 'Counters' AND tp.category != 'Counters'
     `;
     const params: any[] = [];
     

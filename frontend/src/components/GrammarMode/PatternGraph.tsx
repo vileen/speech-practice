@@ -72,37 +72,44 @@ const runForceLayout = (
   connections: PatternConnection[],
   width: number,
   height: number,
-  iterations: number = 100
+  iterations: number = 150
 ): PatternNode[] => {
-  const nodes = initialNodes.map(n => ({ ...n, vx: 0, vy: 0 }));
+  const nodes = initialNodes.map(n => ({ 
+    ...n, 
+    vx: 0, 
+    vy: 0,
+    // Add small random jitter to prevent perfect stacking
+    x: n.x + (Math.random() - 0.5) * 20,
+    y: n.y + (Math.random() - 0.5) * 20
+  }));
+  
   const centerX = width / 2;
   const centerY = height / 2;
   
   // Constants for forces
-  const REPULSION_FORCE = 15000;  // Increased for better separation
-  const ATTRACTION_FORCE = 0.006; // Slightly reduced
-  const CENTER_FORCE = 0.0003;    // Reduced to allow more spread
-  const MIN_DISTANCE = 140;       // Increased minimum distance between nodes
-  const DAMPING = 0.92;           // Slightly higher damping for stability
+  const REPULSION_FORCE = 20000;  // Strong repulsion
+  const ATTRACTION_FORCE = 0.005;
+  const CENTER_FORCE = 0.001;
+  const DAMPING = 0.9;
+  const PADDING = 100;
   
   for (let iter = 0; iter < iterations; iter++) {
-    // Repulsion between all nodes (collision detection)
+    // Repulsion between ALL nodes (not just close ones)
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const dx = nodes[j].x - nodes[i].x;
         const dy = nodes[j].y - nodes[i].y;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
         
-        if (dist < MIN_DISTANCE) {
-          const force = REPULSION_FORCE / (dist * dist);
-          const fx = (dx / dist) * force;
-          const fy = (dy / dist) * force;
-          
-          nodes[i].vx -= fx;
-          nodes[i].vy -= fy;
-          nodes[j].vx += fx;
-          nodes[j].vy += fy;
-        }
+        // Apply repulsion to all nodes, stronger when close
+        const force = REPULSION_FORCE / (dist * dist + 1000); // +1000 prevents infinity
+        const fx = (dx / dist) * force;
+        const fy = (dy / dist) * force;
+        
+        nodes[i].vx -= fx;
+        nodes[i].vy -= fy;
+        nodes[j].vx += fx;
+        nodes[j].vy += fy;
       }
     }
     
@@ -115,7 +122,7 @@ const runForceLayout = (
       const dx = toNode.x - fromNode.x;
       const dy = toNode.y - fromNode.y;
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      const targetDist = 180;
+      const targetDist = 200;
       
       const force = (dist - targetDist) * ATTRACTION_FORCE * conn.strength;
       const fx = (dx / dist) * force;
@@ -127,12 +134,20 @@ const runForceLayout = (
       toNode.vy -= fy;
     });
     
-    // Centering force
+    // Centering force (gentle)
     nodes.forEach(node => {
       const dx = centerX - node.x;
       const dy = centerY - node.y;
       node.vx += dx * CENTER_FORCE;
       node.vy += dy * CENTER_FORCE;
+    });
+    
+    // Soft boundary force (push back from edges)
+    nodes.forEach(node => {
+      if (node.x < PADDING) node.vx += (PADDING - node.x) * 0.05;
+      if (node.x > width - PADDING) node.vx -= (node.x - (width - PADDING)) * 0.05;
+      if (node.y < PADDING) node.vy += (PADDING - node.y) * 0.05;
+      if (node.y > height - PADDING) node.vy -= (node.y - (height - PADDING)) * 0.05;
     });
     
     // Apply velocities with damping
@@ -142,10 +157,10 @@ const runForceLayout = (
       node.x += node.vx;
       node.y += node.vy;
       
-      // Keep within bounds with padding
-      const padding = 80;
-      node.x = Math.max(padding, Math.min(width - padding, node.x));
-      node.y = Math.max(padding, Math.min(height - padding, node.y));
+      // Hard boundary as last resort
+      const hardMargin = 60;
+      node.x = Math.max(hardMargin, Math.min(width - hardMargin, node.x));
+      node.y = Math.max(hardMargin, Math.min(height - hardMargin, node.y));
     });
   }
   
