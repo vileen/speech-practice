@@ -17,7 +17,7 @@ interface CounterGroup {
   baseForm: string;
   count: number;
   patterns: CounterPattern[];
-  counts: string; // What it counts (people, objects, etc.)
+  counts: string;
   description: string;
 }
 
@@ -34,7 +34,6 @@ export function CountersMode() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Load all counter groups
   useEffect(() => {
     loadCounterGroups();
   }, []);
@@ -59,7 +58,6 @@ export function CountersMode() {
   const startStudy = (group: CounterGroup) => {
     setSelectedGroup(group);
     setMode('study');
-    // Pick first pattern or random
     if (group.patterns.length > 0) {
       setCurrentPattern(group.patterns[0]);
     }
@@ -79,7 +77,6 @@ export function CountersMode() {
   };
 
   const handleAnswer = (_known: boolean) => {
-    // TODO: Send to backend for SRS tracking
     pickRandomPattern();
   };
 
@@ -88,39 +85,39 @@ export function CountersMode() {
       <div className="counters-mode">
         <header className="counters-header">
           <button className="back-btn" onClick={() => navigate('/')}>← Back</button>
-          <h1>📊 Liczniki Japońskie</h1>
+          <h1>📊 Japanese Counters</h1>
           <div className="counters-stats">
-            <span>{counterGroups.length} grup liczników</span>
+            <span>{counterGroups.length} counter groups</span>
           </div>
         </header>
 
         <div className="counters-intro">
-          <h2>Co to są liczniki?</h2>
+          <h2>What are counters?</h2>
           <p>
-            W japońskim liczniki (数詞 - sūshi) to specjalne słowa używane do liczenia rzeczy. 
-            W zależności od tego co liczysz (osoby, przedmioty, minuty), używasz innego licznika.
+            In Japanese, counters (数詞 - sūshi) are special words used to count things. 
+            Depending on what you're counting (people, objects, minutes), you use a different counter.
           </p>
           <div className="counter-examples">
             <div className="counter-example">
               <span className="jp">ひとり</span> 
-              <span className="desc">1 osoba</span>
+              <span className="desc">1 person</span>
             </div>
             <div className="counter-example">
               <span className="jp">いっぽん</span> 
-              <span className="desc">1 długi przedmiot (ołówek)</span>
+              <span className="desc">1 long object (pencil)</span>
             </div>
             <div className="counter-example">
               <span className="jp">さんこ</span> 
-              <span className="desc">3 małe przedmioty (jabłka)</span>
+              <span className="desc">3 small objects (apples)</span>
             </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="loading">Ładowanie liczników...</div>
+          <div className="loading">Loading counters...</div>
         ) : (
           <div className="counter-groups">
-            <h2>Wybierz grupę do nauki:</h2>
+            <h2>Select a group to study:</h2>
             <div className="groups-grid">
               {counterGroups.map(group => (
                 <div 
@@ -132,8 +129,8 @@ export function CountersMode() {
                   <p className="group-counts">{group.counts}</p>
                   <p className="group-desc">{group.description}</p>
                   <div className="group-meta">
-                    <span>{group.count} wariantów</span>
-                    <button className="study-btn">Ucz się →</button>
+                    <span>{group.count} variants</span>
+                    <button className="study-btn">Study →</button>
                   </div>
                 </div>
               ))}
@@ -158,13 +155,13 @@ export function CountersMode() {
             <div className="counter-pattern-large">{currentPattern.pattern}</div>
             
             <div className="counter-info-section">
-              <h3>Liczy: {selectedGroup.counts}</h3>
+              <h3>Counts: {selectedGroup.counts}</h3>
               <p>{selectedGroup.description}</p>
             </div>
 
             {currentPattern.examples?.length > 0 && (
               <div className="counter-examples-section">
-                <h4>Przykłady:</h4>
+                <h4>Examples:</h4>
                 {currentPattern.examples.slice(0, 2).map((ex: any, i: number) => (
                   <div key={i} className="example-item">
                     <p className="jp">{ex.jp}</p>
@@ -179,14 +176,14 @@ export function CountersMode() {
                 const idx = selectedGroup.patterns.indexOf(currentPattern);
                 if (idx > 0) setCurrentPattern(selectedGroup.patterns[idx - 1]);
               }} disabled={selectedGroup.patterns.indexOf(currentPattern) === 0}>
-                ← Poprzedni
+                ← Previous
               </button>
               <span>{selectedGroup.patterns.indexOf(currentPattern) + 1} / {selectedGroup.patterns.length}</span>
               <button onClick={() => {
                 const idx = selectedGroup.patterns.indexOf(currentPattern);
                 if (idx < selectedGroup.patterns.length - 1) setCurrentPattern(selectedGroup.patterns[idx + 1]);
               }} disabled={selectedGroup.patterns.indexOf(currentPattern) === selectedGroup.patterns.length - 1}>
-                Następny →
+                Next →
               </button>
             </div>
           </div>
@@ -206,12 +203,12 @@ export function CountersMode() {
         <div className="quiz-container">
           <div className="quiz-card">
             <div className="quiz-question">
-              <p className="question-text">Jak powiesz "{Math.floor(Math.random() * 10) + 1} {selectedGroup.counts}"?</p>
+              <p className="question-text">How do you say "{Math.floor(Math.random() * 10) + 1} {selectedGroup.counts}"?</p>
             </div>
 
             {!showAnswer ? (
               <button className="show-answer-btn" onClick={() => setShowAnswer(true)}>
-                Pokaż odpowiedź
+                Show Answer
               </button>
             ) : (
               <div className="quiz-answer">
@@ -222,10 +219,10 @@ export function CountersMode() {
                 
                 <div className="answer-buttons">
                   <button className="wrong-btn" onClick={() => handleAnswer(false)}>
-                    ❌ Nie wiedziałem
+                    ❌ Didn't know
                   </button>
                   <button className="correct-btn" onClick={() => handleAnswer(true)}>
-                    ✅ Wiedziałem
+                    ✅ Knew it
                   </button>
                 </div>
               </div>

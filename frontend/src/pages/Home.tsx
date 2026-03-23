@@ -83,7 +83,7 @@ export function Home() {
             />
             <ModeButton
               icon="📊"
-              label="Liczniki"
+              label="Counters"
               onClick={() => navigate('/counters')}
               borderColor="#e94560"
             />
