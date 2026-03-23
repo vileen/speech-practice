@@ -196,6 +196,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
   // Node drag state
   const [draggedNode, setDraggedNode] = useState<number | null>(null);
   const [nodePositions, setNodePositions] = useState<Map<number, { x: number; y: number }>>(new Map());
+  const isDraggingRef = useRef(false); // Prevent layout recalculation during drag
 
   // Stable dimensions - never changes between renders
   const dimensionsRef = useRef({ width: 1200, height: 800 });
@@ -300,16 +301,20 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
 
     const layoutNodes = runForceLayout(initialNodes, visibleConnections, dimensions.width, dimensions.height, 150);
     
-    // Apply manual positions for dragged nodes
-    return layoutNodes.map(node => {
-      const manualPos = nodePositions.get(node.id);
-      if (manualPos) {
-        return { ...node, x: manualPos.x, y: manualPos.y };
-      }
-      return node;
-    });
+    // Apply manual positions for dragged nodes (only if not currently dragging)
+    if (!isDraggingRef.current) {
+      return layoutNodes.map(node => {
+        const manualPos = nodePositions.get(node.id);
+        if (manualPos) {
+          return { ...node, x: manualPos.x, y: manualPos.y };
+        }
+        return node;
+      });
+    }
+    return layoutNodes;
     // Note: hoveredNode is intentionally NOT in dependencies - hover should not recalculate layout
-  }, [grammarPatterns, confusionStats, connections, nodePositions]);
+    // Note: nodePositions is intentionally NOT in dependencies - prevents layout reset during drag
+  }, [grammarPatterns, confusionStats, connections]);
 
   // Get connections for visible patterns (from database)
   const visibleConnections = useMemo((): PatternConnection[] => {
@@ -394,6 +399,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
+    isDraggingRef.current = false; // Clear layout prevention flag
     // Don't reset draggedNode here - let the click handler decide
     // Small delay to allow click event to fire first
     setTimeout(() => setDraggedNode(null), 50);
@@ -403,6 +409,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
   const handleNodeMouseDown = useCallback((e: React.MouseEvent, nodeId: number, nodeX: number, nodeY: number) => {
     e.stopPropagation(); // Prevent pan drag
     setDraggedNode(nodeId);
+    isDraggingRef.current = true; // Flag to prevent layout recalculation
     wasDraggingRef.current = false; // Reset drag flag
     dragStartPosRef.current = { x: e.clientX, y: e.clientY }; // Track start position
     const rect = svgRef.current?.getBoundingClientRect();
