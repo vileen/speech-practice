@@ -140,7 +140,7 @@ export function CountersMode() {
     return (
       <div className="counters-mode">
         <header className="counters-header">
-          <button className="back-btn" onClick={() => navigate('/grammar')}>← Back</button>
+          <button className="back-btn" onClick={() => navigate('/')}>← Back</button>
           <h1>📊 Japanese Counters</h1>
           <div className="counters-stats">
             <span>{counterGroups.length} counter groups</span>
