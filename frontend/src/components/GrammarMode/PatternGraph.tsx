@@ -305,8 +305,17 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     return nodes.filter(n => n.masteryStatus === filter);
   }, [nodes, filter]);
 
-  // Handle node click
+  // Track if user was dragging (to prevent click after drag)
+  const dragThresholdRef = useRef(5); // pixels
+  const dragStartPosRef = useRef({ x: 0, y: 0 });
+  const wasDraggingRef = useRef(false);
+
+  // Handle node click - only if not dragging
   const handleNodeClick = useCallback((nodeId: number) => {
+    if (wasDraggingRef.current) {
+      wasDraggingRef.current = false; // Reset
+      return; // Don't open practice after drag
+    }
     setSelectedNode(nodeId);
     setSelectedConnection(null);
     const pattern = patterns.find(p => p.id === nodeId);
@@ -365,13 +374,17 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-    setDraggedNode(null);
+    // Don't reset draggedNode here - let the click handler decide
+    // Small delay to allow click event to fire first
+    setTimeout(() => setDraggedNode(null), 50);
   }, []);
 
   // Node drag handlers
   const handleNodeMouseDown = useCallback((e: React.MouseEvent, nodeId: number, nodeX: number, nodeY: number) => {
     e.stopPropagation(); // Prevent pan drag
     setDraggedNode(nodeId);
+    wasDraggingRef.current = false; // Reset drag flag
+    dragStartPosRef.current = { x: e.clientX, y: e.clientY }; // Track start position
     const rect = svgRef.current?.getBoundingClientRect();
     if (rect) {
       // Calculate mouse position in SVG coordinates accounting for zoom and pan
@@ -383,6 +396,13 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
 
   const handleNodeMouseMove = useCallback((e: React.MouseEvent) => {
     if (draggedNode !== null) {
+      // Check if moved enough to count as drag
+      const dx = Math.abs(e.clientX - dragStartPosRef.current.x);
+      const dy = Math.abs(e.clientY - dragStartPosRef.current.y);
+      if (dx > dragThresholdRef.current || dy > dragThresholdRef.current) {
+        wasDraggingRef.current = true;
+      }
+      
       const rect = svgRef.current?.getBoundingClientRect();
       if (rect) {
         const svgX = (e.clientX - rect.left - pan.x) / zoom;
