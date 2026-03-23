@@ -130,7 +130,7 @@ export function VerbMode() {
     return (
       <div className="verb-mode">
         <header className="verb-header">
-          <button className="back-btn" onClick={() => navigate('/')}>← Back</button>
+          <button className="back-btn" onClick={() => navigate('/grammar')}>← Back</button>
           <h1>🔥 Verb Conjugation</h1>
           <div className="verb-stats">
             <span>{verbs.length} verbs</span>
