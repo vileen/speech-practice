@@ -186,6 +186,11 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
   const dimensionsRef = useRef({ width: 1200, height: 800 });
   const dimensions = dimensionsRef.current;
 
+  // Filter out counters - they have their own module (CountersMode)
+  const grammarPatterns = useMemo(() => {
+    return patterns.filter(p => p.category !== 'Counters');
+  }, [patterns]);
+
   // Fetch relationships from API
   useEffect(() => {
     const fetchRelationships = async () => {
@@ -225,10 +230,10 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     const centerY = dimensions.height / 2;
     
     // Group patterns by category for initial placement
-    const categories = [...new Set(patterns.map(p => p.category))];
+    const categories = [...new Set(grammarPatterns.map(p => p.category))];
     const categoryRadius = Math.min(dimensions.width, dimensions.height) * 0.25;
     
-    const initialNodes: PatternNode[] = patterns.map((pattern) => {
+    const initialNodes: PatternNode[] = grammarPatterns.map((pattern) => {
       const confusionCount = confusionStats.find(c => c.patternId === pattern.id)?.count || 0;
       const totalAttempts = pattern.total_attempts || 0;
       const correctAttempts = pattern.correct_attempts || 0;
@@ -247,7 +252,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
       
       // Initial position in a circle grouped by category
       const catIndex = categories.indexOf(pattern.category);
-      const patternsInCategory = patterns.filter(p => p.category === pattern.category);
+      const patternsInCategory = grammarPatterns.filter(p => p.category === pattern.category);
       const indexInCategory = patternsInCategory.findIndex(p => p.id === pattern.id);
       const totalInCategory = patternsInCategory.length;
       
@@ -275,7 +280,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     
     // Run force-directed layout with connections from database
     const visibleConnections = connections.filter(
-      conn => patterns.some(p => p.id === conn.from) && patterns.some(p => p.id === conn.to)
+      conn => grammarPatterns.some(p => p.id === conn.from) && grammarPatterns.some(p => p.id === conn.to)
     );
 
     const layoutNodes = runForceLayout(initialNodes, visibleConnections, dimensions.width, dimensions.height, 150);
@@ -289,15 +294,15 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
       return node;
     });
     // Note: hoveredNode is intentionally NOT in dependencies - hover should not recalculate layout
-  }, [patterns, confusionStats, connections, nodePositions]);
+  }, [grammarPatterns, confusionStats, connections, nodePositions]);
 
   // Get connections for visible patterns (from database)
   const visibleConnections = useMemo((): PatternConnection[] => {
-    const patternIds = new Set(patterns.map(p => p.id));
+    const patternIds = new Set(grammarPatterns.map(p => p.id));
     return connections.filter(
       conn => patternIds.has(conn.from) && patternIds.has(conn.to)
     );
-  }, [patterns, connections]);
+  }, [grammarPatterns, connections]);
 
   // Filter nodes
   const filteredNodes = useMemo(() => {
@@ -318,22 +323,22 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     }
     setSelectedNode(nodeId);
     setSelectedConnection(null);
-    const pattern = patterns.find(p => p.id === nodeId);
+    const pattern = grammarPatterns.find(p => p.id === nodeId);
     if (pattern) {
       onSelectPattern(pattern);
     }
-  }, [patterns, onSelectPattern]);
+  }, [grammarPatterns, onSelectPattern]);
 
   // Handle connection click
   const handleConnectionClick = useCallback((conn: PatternConnection) => {
     setSelectedConnection(conn);
     setSelectedNode(null);
-    const fromPattern = patterns.find(p => p.id === conn.from);
-    const toPattern = patterns.find(p => p.id === conn.to);
+    const fromPattern = grammarPatterns.find(p => p.id === conn.from);
+    const toPattern = grammarPatterns.find(p => p.id === conn.to);
     if (fromPattern && toPattern) {
       onComparePatterns([fromPattern, toPattern]);
     }
-  }, [patterns, onComparePatterns]);
+  }, [grammarPatterns, onComparePatterns]);
 
   // Zoom handlers
   const handleWheel = useCallback((e: React.WheelEvent) => {
@@ -455,7 +460,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
 
   // Get categories for background labels
   const categories = useMemo(() => {
-    const cats = [...new Set(patterns.map(p => p.category))];
+    const cats = [...new Set(grammarPatterns.map(p => p.category))];
     return cats.map(cat => {
       const catNodes = nodes.filter(n => n.category === cat);
       if (catNodes.length === 0) return null;
@@ -463,7 +468,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
       const avgY = catNodes.reduce((sum, n) => sum + n.y, 0) / catNodes.length;
       return { name: cat, x: avgX, y: avgY };
     }).filter(Boolean) as { name: string; x: number; y: number }[];
-  }, [patterns, nodes]);
+  }, [grammarPatterns, nodes]);
 
   return (
     <div className="pattern-graph-modal">
