@@ -42,7 +42,7 @@ export function CountersMode() {
   const loadCounterGroups = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/counters/groups`, {
+      const response = await fetch(`${API_URL}/api/grammar/counters/groups`, {
         headers: { 'X-Password': password }
       });
       if (response.ok) {
