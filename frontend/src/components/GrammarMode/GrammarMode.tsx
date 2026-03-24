@@ -428,23 +428,11 @@ export const GrammarMode: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         
-        // Load counters grouped by base_form
-        const countersResponse = await fetch(`${API_URL}/api/grammar/patterns?category=Counters&groupBy=base_form`, {
-          headers: { 'X-Password': password }
-        });
-        
-        let allPatterns = data.patterns;
-        if (countersResponse.ok) {
-          const countersData = await countersResponse.json();
-          // Replace individual counters with grouped ones
-          allPatterns = [
-            ...data.patterns.filter((p: GrammarPattern) => p.category !== 'Counters'),
-            ...countersData.patterns
-          ];
-        }
+        // Filter out Counters - they have their own mode (CountersMode)
+        const allPatterns = data.patterns.filter((p: GrammarPattern) => p.category !== 'Counters');
         
         setPatterns(allPatterns);
-        // Extract unique categories
+        // Extract unique categories (excluding Counters)
         const cats = [...new Set(allPatterns.map((p: GrammarPattern) => p.category))] as string[];
         setCategories(cats);
         // Select all categories by default if nothing saved
