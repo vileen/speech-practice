@@ -721,11 +721,13 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                             const match = path.match(/Q ([\d.]+) ([\d.]+)/);
                             const cx = match ? parseFloat(match[1]) : (fromNode.x + toNode.x) / 2;
                             const cy = match ? parseFloat(match[2]) : (fromNode.y + toNode.y) / 2;
+                            // Offset label 25px above the connection midpoint
+                            const labelY = cy - 25;
                             return (
                               <>
                                 <rect
                                   x={cx - 35}
-                                  y={cy - 12}
+                                  y={labelY - 12}
                                   width="70"
                                   height="24"
                                   rx="12"
@@ -735,7 +737,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                                 />
                                 <text
                                   x={cx}
-                                  y={cy + 4}
+                                  y={labelY + 4}
                                   textAnchor="middle"
                                   fill="#fff"
                                   fontSize="10"
