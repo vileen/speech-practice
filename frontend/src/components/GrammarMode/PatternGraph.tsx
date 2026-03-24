@@ -299,20 +299,11 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
       conn => grammarPatterns.some(p => p.id === conn.from) && grammarPatterns.some(p => p.id === conn.to)
     );
 
-    const layoutNodes = runForceLayout(initialNodes, visibleConnections, dimensions.width, dimensions.height, 150);
-    
-    // Apply manual positions for nodes that have been dragged
-    // This is done unconditionally - manual positions always override layout
-    return layoutNodes.map(node => {
-      const manualPos = nodePositions.get(node.id);
-      if (manualPos) {
-        return { ...node, x: manualPos.x, y: manualPos.y, vx: 0, vy: 0 };
-      }
-      return node;
-    });
-    // Note: hoveredNode is intentionally NOT in dependencies - hover should not recalculate layout
-    // Note: nodePositions IS in dependencies - nodes should update when dragged
-  }, [grammarPatterns, confusionStats, connections, nodePositions]);
+    return runForceLayout(initialNodes, visibleConnections, dimensions.width, dimensions.height, 150);
+    // Note: hoveredNode and nodePositions are intentionally NOT in dependencies
+    // nodePositions updates are applied at render time, not via recalculating layout
+    // This prevents all nodes from moving when dragging one node
+  }, [grammarPatterns, confusionStats, connections]);
 
   // Get connections for visible patterns (from database)
   const visibleConnections = useMemo((): PatternConnection[] => {
@@ -322,11 +313,18 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     );
   }, [grammarPatterns, connections]);
 
-  // Filter nodes
+  // Filter nodes and apply manual positions
   const filteredNodes = useMemo(() => {
-    if (filter === 'all') return nodes;
-    return nodes.filter(n => n.masteryStatus === filter);
-  }, [nodes, filter]);
+    const baseNodes = filter === 'all' ? nodes : nodes.filter(n => n.masteryStatus === filter);
+    // Apply manual positions from nodePositions
+    return baseNodes.map(node => {
+      const manualPos = nodePositions.get(node.id);
+      if (manualPos) {
+        return { ...node, x: manualPos.x, y: manualPos.y };
+      }
+      return node;
+    });
+  }, [nodes, filter, nodePositions]);
 
   // Track if user was dragging (to prevent click after drag)
   const dragThresholdRef = useRef(5); // pixels
