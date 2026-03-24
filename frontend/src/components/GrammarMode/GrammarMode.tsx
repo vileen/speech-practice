@@ -333,6 +333,7 @@ export const GrammarMode: React.FC = () => {
   const [reviewMode, setReviewMode] = useState<ReviewMode>('normal');
   const [confusionStats, setConfusionStats] = useState<{patternId: number, count: number}[]>([]);
   const [showPatternGraph, setShowPatternGraph] = useState(false);
+  const [returnToGraph, setReturnToGraph] = useState(false); // Track if we should return to graph after comparison
 
   // Discrimination drill state
   const [selectedDiscriminationOption, setSelectedDiscriminationOption] = useState<DiscriminationOption | null>(null);
@@ -970,6 +971,11 @@ export const GrammarMode: React.FC = () => {
     if (currentPattern) {
       setCurrentPattern(null);
       setReviewMode('normal');
+      // Return to graph if we came from there
+      if (returnToGraph) {
+        setReturnToGraph(false);
+        setShowPatternGraph(true);
+      }
     } else {
       navigate('/');
     }
@@ -1008,9 +1014,16 @@ export const GrammarMode: React.FC = () => {
         <ComparisonView
           patterns={comparisonPatterns}
           showFurigana={showFurigana}
-          onClose={() => setComparisonPatterns(null)}
+          onClose={() => {
+            setComparisonPatterns(null);
+            if (returnToGraph) {
+              setReturnToGraph(false);
+              setShowPatternGraph(true);
+            }
+          }}
           onSelectPattern={(pattern) => {
             setComparisonPatterns(null);
+            setReturnToGraph(false); // Don't return to graph if pattern selected
             startPattern(pattern);
           }}
         />
@@ -1023,10 +1036,12 @@ export const GrammarMode: React.FC = () => {
           confusionStats={confusionStats}
           onSelectPattern={(pattern) => {
             setShowPatternGraph(false);
+            setReturnToGraph(false);
             startPattern(pattern);
           }}
           onComparePatterns={(pats) => {
             setShowPatternGraph(false);
+            setReturnToGraph(true); // Will return to graph after comparison
             setComparisonPatterns(pats);
           }}
           onClose={() => setShowPatternGraph(false)}

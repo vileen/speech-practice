@@ -87,11 +87,11 @@ const runForceLayout = (
   const centerY = height / 2;
   
   // Constants for forces
-  const REPULSION_FORCE = 20000;  // Strong repulsion
-  const ATTRACTION_FORCE = 0.005;
-  const CENTER_FORCE = 0.001;
-  const DAMPING = 0.9;
-  const PADDING = 100;
+  const REPULSION_FORCE = 15000;
+  const ATTRACTION_FORCE = 0.008;
+  const CENTER_FORCE = 0.003;  // Stronger center force to keep nodes in middle
+  const DAMPING = 0.85;
+  const PADDING = 150;  // Larger padding to keep away from edges
   
   for (let iter = 0; iter < iterations; iter++) {
     // Repulsion between ALL nodes (not just close ones)
@@ -301,20 +301,18 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
 
     const layoutNodes = runForceLayout(initialNodes, visibleConnections, dimensions.width, dimensions.height, 150);
     
-    // Apply manual positions for dragged nodes (only if not currently dragging)
-    if (!isDraggingRef.current) {
-      return layoutNodes.map(node => {
-        const manualPos = nodePositions.get(node.id);
-        if (manualPos) {
-          return { ...node, x: manualPos.x, y: manualPos.y };
-        }
-        return node;
-      });
-    }
-    return layoutNodes;
+    // Apply manual positions for nodes that have been dragged
+    // This is done unconditionally - manual positions always override layout
+    return layoutNodes.map(node => {
+      const manualPos = nodePositions.get(node.id);
+      if (manualPos) {
+        return { ...node, x: manualPos.x, y: manualPos.y, vx: 0, vy: 0 };
+      }
+      return node;
+    });
     // Note: hoveredNode is intentionally NOT in dependencies - hover should not recalculate layout
-    // Note: nodePositions is intentionally NOT in dependencies - prevents layout reset during drag
-  }, [grammarPatterns, confusionStats, connections]);
+    // Note: nodePositions IS in dependencies - nodes should update when dragged
+  }, [grammarPatterns, confusionStats, connections, nodePositions]);
 
   // Get connections for visible patterns (from database)
   const visibleConnections = useMemo((): PatternConnection[] => {
