@@ -711,43 +711,6 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                         onMouseLeave={() => setHoveredConnection(null)}
                         style={{ cursor: 'pointer' }}
                       />
-                      {/* Connection label on hover */}
-                      {(isHovered || isSelected) && (
-                        <g>
-                          {(() => {
-                            const path = getConnectionPath(conn);
-                            const match = path.match(/Q ([\d.]+) ([\d.]+)/);
-                            const cx = match ? parseFloat(match[1]) : (fromNode.x + toNode.x) / 2;
-                            const cy = match ? parseFloat(match[2]) : (fromNode.y + toNode.y) / 2;
-                            // Offset label 25px above the connection midpoint
-                            const labelY = cy - 25;
-                            return (
-                              <>
-                                <rect
-                                  x={cx - 35}
-                                  y={labelY - 12}
-                                  width="70"
-                                  height="24"
-                                  rx="12"
-                                  fill="#1a1a2e"
-                                  stroke={CONNECTION_COLORS[conn.type]}
-                                  strokeWidth="1"
-                                />
-                                <text
-                                  x={cx}
-                                  y={labelY + 4}
-                                  textAnchor="middle"
-                                  fill="#fff"
-                                  fontSize="10"
-                                  fontWeight="600"
-                                >
-                                  {LEGEND_LABELS[conn.type]}
-                                </text>
-                              </>
-                            );
-                          })()}
-                        </g>
-                      )}
                     </g>
                   );
                 })}
@@ -829,6 +792,57 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
                   );
                 })}
 
+                {/* Connection labels - rendered after nodes for proper z-order */}
+                {visibleConnections.map((conn, i) => {
+                  const fromNode = getNode(conn.from);
+                  const toNode = getNode(conn.to);
+                  if (!fromNode || !toNode) return null;
+                  
+                  if (!filteredNodes.find(n => n.id === conn.from) || 
+                      !filteredNodes.find(n => n.id === conn.to)) {
+                    return null;
+                  }
+                  
+                  const isSelected = selectedConnection?.from === conn.from && 
+                                    selectedConnection?.to === conn.to;
+                  const isHovered = hoveredConnection?.from === conn.from && 
+                                   hoveredConnection?.to === conn.to;
+                  
+                  if (!isHovered && !isSelected) return null;
+                  
+                  const path = getConnectionPath(conn);
+                  const match = path.match(/Q ([\d.]+) ([\d.]+)/);
+                  const cx = match ? parseFloat(match[1]) : (fromNode.x + toNode.x) / 2;
+                  const cy = match ? parseFloat(match[2]) : (fromNode.y + toNode.y) / 2;
+                  // Offset label 25px above the connection midpoint
+                  const labelY = cy - 25;
+                  
+                  return (
+                    <g key={`label-${conn.from}-${conn.to}-${i}`} style={{ pointerEvents: 'none' }}>
+                      <rect
+                        x={cx - 35}
+                        y={labelY - 12}
+                        width="70"
+                        height="24"
+                        rx="12"
+                        fill="#1a1a2e"
+                        stroke={CONNECTION_COLORS[conn.type]}
+                        strokeWidth="1"
+                      />
+                      <text
+                        x={cx}
+                        y={labelY + 4}
+                        textAnchor="middle"
+                        fill="#fff"
+                        fontSize="10"
+                        fontWeight="600"
+                      >
+                        {LEGEND_LABELS[conn.type]}
+                      </text>
+                    </g>
+                  );
+                })}
+                
                 {/* Tooltips - rendered in separate layer after all nodes for proper z-order */}
                 {filteredNodes.map(node => {
                   const isHovered = hoveredNode === node.id;
