@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthenticatedRoute } from '../App.js';
 import { Header } from '../components/Header/index.js';
 import { ModeButton } from '../components/ModeButton/index.js';
+import './Home.css';
 
 // Quotes with weights: funny quotes appear 50% more often (weight 1.5 vs 1)
 const QUOTES: { text: string; weight: number }[] = [
@@ -35,83 +36,67 @@ function getRandomQuote(): string {
   return QUOTES[QUOTES.length - 1].text;
 }
 
+// Mode categories for organized display
+const MODE_CATEGORIES = [
+  {
+    title: "Core Practice",
+    modes: [
+      { icon: "💬", label: "Start Chat", path: "/chat/setup", color: "#e94560", primary: true },
+      { icon: "🎯", label: "Repeat After Me", path: "/repeat/setup", color: "#ff6b6b" },
+      { icon: "📚", label: "Lesson Mode", path: "/lessons", color: "#4a9eff" },
+    ]
+  },
+  {
+    title: "Review & Memory",
+    modes: [
+      { icon: "🧠", label: "Memory Mode", path: "/memory", color: "#9b59b6" },
+      { icon: "📈", label: "Progress Dashboard", path: "/progress", color: "#10ac84" },
+    ]
+  },
+  {
+    title: "Drills & Exercises",
+    modes: [
+      { icon: "📖", label: "Grammar Drills", path: "/grammar", color: "#f39c12" },
+      { icon: "📝", label: "Verb Conjugation", path: "/verbs", color: "#00d2d3" },
+      { icon: "📊", label: "Counters", path: "/counters", color: "#e94560" },
+      { icon: "🈁", label: "Kanji Practice", path: "/kanji", color: "#27ae60" },
+    ]
+  },
+  {
+    title: "Reading & Speaking",
+    modes: [
+      { icon: "📰", label: "Reading Practice", path: "/reading", color: "#5f27cd" },
+      { icon: "🎙️", label: "Speaking Drills", path: "/speaking", color: "#ff9f43" },
+    ]
+  },
+];
+
 export function Home() {
   const navigate = useNavigate();
   const randomQuote = getRandomQuote();
 
   return (
     <AuthenticatedRoute>
-      <div className="app">
+      <div className="app home-page">
         <Header title="Speech Practice" icon="🎤" showBackButton={false} />
-        <main>
-          <div className="setup">
-            <ModeButton
-              icon="💬"
-              label="Start Chat"
-              onClick={() => navigate('/chat/setup')}
-              variant="primary"
-            />
-            <ModeButton
-              icon="🎯"
-              label="Repeat After Me"
-              onClick={() => navigate('/repeat/setup')}
-              borderColor="#ff6b6b"
-            />
-            <ModeButton
-              icon="📚"
-              label="Lesson Mode"
-              onClick={() => navigate('/lessons')}
-              borderColor="#4a9eff"
-            />
-            <ModeButton
-              icon="🧠"
-              label="Memory Mode"
-              onClick={() => navigate('/memory')}
-              borderColor="#9b59b6"
-            />
-            <ModeButton
-              icon="🈁"
-              label="Kanji Practice"
-              onClick={() => navigate('/kanji')}
-              borderColor="#27ae60"
-            />
-            <ModeButton
-              icon="📖"
-              label="Grammar Drills"
-              onClick={() => navigate('/grammar')}
-              borderColor="#f39c12"
-            />
-            <ModeButton
-              icon="📊"
-              label="Counters"
-              onClick={() => navigate('/counters')}
-              borderColor="#e94560"
-            />
-            <ModeButton
-              icon="📝"
-              label="Verb Conjugation"
-              onClick={() => navigate('/verbs')}
-              borderColor="#00d2d3"
-            />
-            <ModeButton
-              icon="📰"
-              label="Reading Practice"
-              onClick={() => navigate('/reading')}
-              borderColor="#5f27cd"
-            />
-            <ModeButton
-              icon="🎙️"
-              label="Speaking Drills"
-              onClick={() => navigate('/speaking')}
-              borderColor="#ff9f43"
-            />
-            <ModeButton
-              icon="📈"
-              label="Progress Dashboard"
-              onClick={() => navigate('/progress')}
-              borderColor="#10ac84"
-            />
-          </div>
+        <main className="home-container">
+          {MODE_CATEGORIES.map((category) => (
+            <section key={category.title} className="mode-category">
+              <h2 className="category-title">{category.title}</h2>
+              <div className="mode-grid">
+                {category.modes.map((mode) => (
+                  <ModeButton
+                    key={mode.path}
+                    icon={mode.icon}
+                    label={mode.label}
+                    onClick={() => navigate(mode.path)}
+                    variant={mode.primary ? 'primary' : 'default'}
+                    borderColor={mode.color}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
         </main>
         
         <footer className="quote-footer">
