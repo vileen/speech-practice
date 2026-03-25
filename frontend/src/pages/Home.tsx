@@ -87,6 +87,30 @@ export function Home() {
               onClick={() => navigate('/counters')}
               borderColor="#e94560"
             />
+            <ModeButton
+              icon="📝"
+              label="Verb Conjugation"
+              onClick={() => navigate('/verbs')}
+              borderColor="#00d2d3"
+            />
+            <ModeButton
+              icon="📰"
+              label="Reading Practice"
+              onClick={() => navigate('/reading')}
+              borderColor="#5f27cd"
+            />
+            <ModeButton
+              icon="🎙️"
+              label="Speaking Drills"
+              onClick={() => navigate('/speaking')}
+              borderColor="#ff9f43"
+            />
+            <ModeButton
+              icon="📈"
+              label="Progress Dashboard"
+              onClick={() => navigate('/progress')}
+              borderColor="#10ac84"
+            />
           </div>
         </main>
         

@@ -19,6 +19,10 @@ import { MemoryModeWrapper } from './pages/MemoryModeWrapper.js';
 import { GrammarMode } from './components/GrammarMode/index.js';
 import { CountersMode } from './components/CountersMode/CountersMode.js';
 import { KanjiPracticePage } from './pages/KanjiPracticePage.js';
+import { VerbMode } from './components/VerbMode/index.js';
+import { ReadingMode } from './components/ReadingMode/ReadingMode.js';
+import { SpeakingMode } from './components/SpeakingMode/SpeakingMode.js';
+import { ProgressDashboard } from './components/ProgressDashboard/ProgressDashboard.js';
 
 // Types
 
@@ -38,6 +42,10 @@ function App() {
         <Route path="/kanji" element={<KanjiPracticePage />} />
         <Route path="/grammar" element={<GrammarMode />} />
         <Route path="/counters" element={<CountersMode />} />
+        <Route path="/verbs" element={<VerbMode />} />
+        <Route path="/reading" element={<ReadingMode />} />
+        <Route path="/speaking" element={<SpeakingMode />} />
+        <Route path="/progress" element={<ProgressDashboard />} />
         <Route path="/lessons" element={<LessonList />} />
         <Route path="/lessons/:id" element={<LessonDetail />} />
         <Route path="/lessons/:id/setup" element={<LessonPracticeSetup />} />
