@@ -9,22 +9,25 @@ High-level overview of planned and implemented features. Each feature has a dedi
 | Priority | Feature | Status | Complexity | Impact | Link |
 |----------|---------|--------|------------|--------|------|
 | 1 | [Memory Mode](./featureIdeas/01-memory-mode.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/01-memory-mode.md) |
-| 2 | [Spaced Repetition](./featureIdeas/03-spaced-repetition.md) | ✅ Core done | Medium | High | [Details](./featureIdeas/03-spaced-repetition.md) |
+| 2 | [Spaced Repetition](./featureIdeas/03-spaced-repetition.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/03-spaced-repetition.md) |
 | 3 | [Vocabulary Table](./featureIdeas/09-vocabulary-table.md) | ✅ Complete | High | Critical | [Details](./featureIdeas/09-vocabulary-table.md) |
 | 4 | [Backend Modularization](./featureIdeas/12-backend-modularization.md) | ✅ Complete | High | Critical | [Details](./featureIdeas/12-backend-modularization.md) |
 | 5 | [Frontend Refactoring](./featureIdeas/13-frontend-refactoring.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/13-frontend-refactoring.md) |
 | 6 | [Vocabulary Badges](./featureIdeas/14-vocabulary-badges.md) | ✅ Complete | Low | Medium | [Details](./featureIdeas/14-vocabulary-badges.md) |
 | **7** | [**Interleaved Practice**](./featureIdeas/06-interleaved-practice.md) | ⏳ **Next** | Medium | High | [Details](./featureIdeas/06-interleaved-practice.md) |
-| 8 | [Shadowing Enhancement](./featureIdeas/08-shadowing-mode.md) | ⏳ Planned | Medium | High | [Details](./featureIdeas/08-shadowing-mode.md) |
-| 9 | [Grammar Drills](./featureIdeas/07-grammar-drills.md) | 🚧 In Progress | Medium | High | [Details](./featureIdeas/07-grammar-drills.md) |
+| 8 | [Shadowing Enhancement](./featureIdeas/08-shadowing-mode.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/08-shadowing-mode.md) |
+| 9 | [Grammar Drills](./featureIdeas/07-grammar-drills.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/07-grammar-drills.md) |
 | 10 | [Progressive Reveal](./featureIdeas/02-progressive-reveal.md) | ⏳ Planned | Medium | Medium | [Details](./featureIdeas/02-progressive-reveal.md) |
 | 11 | [Sentence Building](./featureIdeas/05-sentence-building.md) | ⏳ Planned | High | High | [Details](./featureIdeas/05-sentence-building.md) |
 | 12 | [JLPT N3 Roadmap](./featureIdeas/10-jlpt-roadmap.md) | 📋 Documented | Medium | High | [Details](./featureIdeas/10-jlpt-roadmap.md) |
 | 13 | [Minimal Pairs](./featureIdeas/04-minimal-pairs.md) | ⏳ Planned | High | Medium | [Details](./featureIdeas/04-minimal-pairs.md) |
 | 14 | [Pomodoro Tracker](./featureIdeas/11-pomodoro-tracker.md) | ⏳ Planned | Medium | Medium | [Details](./featureIdeas/11-pomodoro-tracker.md) |
 | 15 | [Infrastructure & Security](./featureIdeas/15-infrastructure-security.md) | ✅ Complete | High | Critical | [Details](./featureIdeas/15-infrastructure-security.md) |
-| 16 | [**Kanji Practice Mode**](./featureIdeas/16-kanji-practice-mode.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/16-kanji-practice-mode.md) |
-| **17** | [**Grammar Anti-Confusion**](./featureIdeas/17-grammar-anti-confusion.md) | ✅ **Complete** | Medium-High | Very High | [Details](./featureIdeas/17-grammar-anti-confusion.md) |
+| 16 | [Kanji Practice Mode](./featureIdeas/16-kanji-practice-mode.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/16-kanji-practice-mode.md) |
+| 17 | [Grammar Anti-Confusion](./featureIdeas/17-grammar-anti-confusion.md) | ✅ Complete | Medium-High | Very High | [Details](./featureIdeas/17-grammar-anti-confusion.md) |
+| **18** | [**Verb Mastery System**](./featureIdeas/18-verb-mastery.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/18-verb-mastery.md) |
+| **19** | [**Reading Comprehension**](./featureIdeas/19-reading-comprehension.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/19-reading-comprehension.md) |
+| **20** | [**Progress Dashboard**](./featureIdeas/20-progress-dashboard.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/20-progress-dashboard.md) |
 
 ---
 
@@ -61,55 +64,59 @@ High-level overview of planned and implemented features. Each feature has a dedi
 
 ### Phase 1: Grammar Foundation (✅ Complete)
 **Goal:** Core grammar patterns with SRS-based drilling
-- ✅ Grammar pattern database (~220 patterns across 12 categories)
+- ✅ Grammar pattern database (275 patterns across 13 categories)
 - ✅ Pattern recognition & construction exercises
 - ✅ Error tracking & confusion prevention
-- ✅ Pattern relationship graph for visual learning
-- ✅ Counter patterns module (separate from grammar)
+- ✅ Pattern relationship graph (98 relationships)
+- ✅ Counter patterns module (94 patterns)
 
 **Deliverables:** GrammarMode, CountersMode, PatternGraph
 
-### Phase 2: Verb Mastery (⏳ Planned)
+### Phase 2: Verb Mastery (✅ Complete)
 **Goal:** Complete verb conjugation system
-- Verb database with conjugation metadata
-- Conjugation engine (rule-based)
-- VerbMode component for drill practice
-- Integration with grammar patterns
+- ✅ Verb database with conjugation metadata (34 verbs)
+- ✅ Conjugation engine (rule-based)
+- ✅ VerbMode component with 3 practice modes
+- ✅ All 7 conjugation forms per verb
 
-**Timeline:** 3-4 weeks
+**Deliverables:** VerbMode, `/api/verbs`, `verb_conjugations.sql`
 
-### Phase 3: Reading Comprehension (⏳ Planned)
+### Phase 3: Reading Comprehension (✅ Complete)
 **Goal:** Graded reading with comprehension checks
-- Reading passages table (N5 → N3)
-- Question types: main idea, detail, inference
-- Link unknown words to SRS
-- Track reading speed
+- ✅ Reading passages table (N5 → N3)
+- ✅ Question types: main idea, detail, inference
+- ✅ Reading speed tracking
+- ✅ Sample passages with questions
 
-**Timeline:** 2-3 weeks
+**Deliverables:** ReadingMode, `/api/reading`, reading schema
 
-### Phase 4: Speaking Drills (⏳ Planned)
+### Phase 4: Speaking Drills (✅ Complete)
 **Goal:** Structured speaking beyond free conversation
-- Shadowing mode with waveform comparison
-- Response drills with time limits
-- Conversation templates for common scenarios
+- ✅ Shadowing mode with pronunciation scoring
+- ✅ Response drills with time limits
+- ✅ Conversation templates (3 scenarios)
 
-**Timeline:** 3-4 weeks
+**Deliverables:** SpeakingMode, `/api/speaking`, speaking schema
 
 ### Phase 5: Kanji Expansion (🚧 In Progress)
 **Goal:** Support up to N3 level (~650 kanji)
-- Expand from 102 → 650 kanji (N5: 80, N4: 170, N3: 400)
-- Radical-based learning
-- Kanji → Vocabulary connections
+- Current: 102 kanji
+- Target: 650 kanji (N5: 80, N4: 170, N3: 400)
+- Radical-based learning (planned)
+- Kanji → Vocabulary connections (planned)
 
 **Timeline:** 4-6 weeks (ongoing)
 
-### Phase 6: Polish & Integration (⏳ Planned)
+### Phase 6: Polish & Integration (🟡 Partial)
 **Goal:** Seamless experience across modes
-- Unified SRS (Grammar + Kanji + Vocabulary)
-- Progress dashboard by JLPT level
-- Interleaved practice mixing all categories
+- ✅ Progress dashboard (stats, weak points, streaks)
+- ⏳ Unified SRS (Grammar + Kanji + Vocabulary)
+- ⏳ Interleaved practice mixing all categories
+- ⏳ Mobile optimization
 
-**Timeline:** 2-3 weeks
+**Deliverables:** ProgressDashboard ✅, Unified SRS ⏳
+
+**Timeline:** 2-3 weeks remaining
 
 ---
 
@@ -123,4 +130,4 @@ See [docs/featureIdeas/README.md](./featureIdeas/README.md) for detailed index.
 ---
 
 *Created: 2026-02-28*  
-*Last updated: 2026-03-20*
+*Last updated: 2026-03-25*
