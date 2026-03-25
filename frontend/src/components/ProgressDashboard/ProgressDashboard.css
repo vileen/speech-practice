@@ -1,9 +1,21 @@
 /* Progress Dashboard Styles */
 
-.progress-dashboard {
+/* App wrapper */
+.app {
   min-height: 100vh;
   background: #1a1a2e;
   color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-dashboard {
+  flex: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Header */

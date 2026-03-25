@@ -521,7 +521,7 @@ export const ReadingMode: React.FC = () => {
   };
 
   return (
-    <div className="reading-mode">
+    <div className="app">
       <Header
         title="Reading Practice"
         icon="📖"
@@ -542,10 +542,12 @@ export const ReadingMode: React.FC = () => {
         }
       />
       
-      {viewState === 'list' && renderPassageList()}
-      {viewState === 'reading' && renderReadingView()}
-      {viewState === 'questions' && renderQuestionsView()}
-      {viewState === 'results' && renderResultsView()}
+      <main className="reading-mode-container">
+        {viewState === 'list' && renderPassageList()}
+        {viewState === 'reading' && renderReadingView()}
+        {viewState === 'questions' && renderQuestionsView()}
+        {viewState === 'results' && renderResultsView()}
+      </main>
     </div>
   );
 };

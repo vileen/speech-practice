@@ -504,7 +504,7 @@ export const VerbMode: React.FC = () => {
   // Selection screen
   if (state === 'selection') {
     return (
-      <div className="verb-mode">
+      <div className="app">
         <Header
           title="Verb Conjugation Practice"
           icon="🎯"
@@ -521,7 +521,8 @@ export const VerbMode: React.FC = () => {
           }
         />
 
-        <div className="verb-selection">
+        <main className="verb-mode-container">
+          <div className="verb-selection">
           {/* Practice Type Selection */}
           <div className="practice-type-section">
             <h3>Practice Type</h3>
@@ -623,13 +624,14 @@ export const VerbMode: React.FC = () => {
             Start Practice →
           </button>
         </div>
+        </main>
       </div>
     );
   }
 
   // Exercise screen
   return (
-    <div className="verb-mode">
+    <div className="app">
       <Header
         title="Verb Conjugation"
         icon="🎯"
@@ -651,7 +653,8 @@ export const VerbMode: React.FC = () => {
         }
       />
 
-      <div className="exercise-container">
+      <main className="verb-mode-container">
+        <div className="exercise-container">
         {state === 'loading' && (
           <div className="loading">Loading exercise...</div>
         )}
@@ -793,7 +796,8 @@ export const VerbMode: React.FC = () => {
             </button>
           </div>
         )}
-      </div>
+        </div>
+      </main>
     </div>
   );
 };
