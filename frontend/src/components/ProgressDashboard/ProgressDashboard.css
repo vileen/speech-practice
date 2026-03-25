@@ -1,6 +1,46 @@
 /* Progress Dashboard Styles */
 
 .progress-dashboard {
+  min-height: 100vh;
+  background: #1a1a2e;
+  color: #fff;
+}
+
+/* Header */
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #2a2a4e;
+}
+
+.progress-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #fff;
+  flex: 1;
+  text-align: center;
+}
+
+.back-btn {
+  background: rgba(233, 69, 96, 0.2);
+  border: 1px solid #e94560;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #e94560;
+}
+
+/* Content */
+.progress-content {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -16,9 +56,15 @@
 .stat-card {
   background: #16213e;
   border-radius: 12px;
-  padding: 16px;
+  padding: 20px;
   text-align: center;
-  border: 1px solid #1e3a5f;
+  border: 1px solid #0f3460;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  border-color: #e94560;
+  transform: translateY(-2px);
 }
 
 .stat-value {
@@ -30,7 +76,7 @@
 
 .stat-label {
   font-size: 14px;
-  color: #8892b0;
+  color: #aaa;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -40,7 +86,13 @@
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 24px;
-  border: 1px solid #1e3a5f;
+  border: 1px solid #0f3460;
+}
+
+.jlpt-progress h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #fff;
 }
 
 .jlpt-level {
@@ -52,18 +104,23 @@
   justify-content: space-between;
   margin-bottom: 8px;
   font-weight: 600;
+  color: #fff;
+}
+
+.jlpt-label span:last-child {
+  color: #4a9eff;
 }
 
 .progress-bar {
   height: 12px;
-  background: #0a0e14;
+  background: #0f3460;
   border-radius: 6px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4a9eff, #667eea);
+  background: linear-gradient(90deg, #e94560, #ff6b6b);
   border-radius: 6px;
   transition: width 0.3s ease;
 }
@@ -73,7 +130,13 @@
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 24px;
-  border: 1px solid #1e3a5f;
+  border: 1px solid #0f3460;
+}
+
+.weak-points-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #fff;
 }
 
 .weak-point-item {
@@ -81,9 +144,18 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: #0a0e14;
+  background: #1a1a2e;
   border-radius: 8px;
   margin-bottom: 8px;
+  border: 1px solid #0f3460;
+}
+
+.weak-point-item:last-child {
+  margin-bottom: 0;
+}
+
+.weak-point-item span:first-child {
+  color: #ccc;
 }
 
 .accuracy-badge {
@@ -96,18 +168,32 @@
 .accuracy-low {
   background: rgba(233, 69, 96, 0.2);
   color: #e94560;
+  border: 1px solid rgba(233, 69, 96, 0.4);
 }
 
 .accuracy-medium {
-  background: rgba(255, 165, 2, 0.2);
-  color: #ffa502;
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+.accuracy-high {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.4);
 }
 
 .activity-chart {
   background: #16213e;
   border-radius: 12px;
   padding: 20px;
-  border: 1px solid #1e3a5f;
+  border: 1px solid #0f3460;
+}
+
+.activity-chart h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #fff;
 }
 
 .activity-bar {
@@ -128,7 +214,7 @@
 
 .activity-bar-fill {
   width: 100%;
-  background: linear-gradient(to top, #4a9eff, #667eea);
+  background: linear-gradient(to top, #e94560, #ff6b6b);
   border-radius: 4px 4px 0 0;
   min-height: 4px;
   transition: height 0.3s ease;
@@ -136,5 +222,32 @@
 
 .activity-label {
   font-size: 12px;
-  color: #8892b0;
+  color: #aaa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .progress-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .progress-header h1 {
+    font-size: 1.2rem;
+    order: -1;
+    width: 100%;
+    text-align: center;
+  }
+
+  .overview-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .activity-bar {
+    height: 100px;
+  }
 }
