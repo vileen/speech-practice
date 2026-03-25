@@ -451,11 +451,11 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     }
   }, [draggedNode, isDragging, handleNodeMouseMove, handleMouseMove]);
 
-  // Get node by ID
-  const getNode = (id: number) => nodes.find(n => n.id === id);
+  // Get node by ID - uses filteredNodes to get current positions (including dragged)
+  const getNode = useCallback((id: number) => filteredNodes.find(n => n.id === id), [filteredNodes]);
 
   // Get connection path
-  const getConnectionPath = (conn: PatternConnection): string => {
+  const getConnectionPath = useCallback((conn: PatternConnection): string => {
     const fromNode = getNode(conn.from);
     const toNode = getNode(conn.to);
     if (!fromNode || !toNode) return '';
@@ -474,7 +474,7 @@ export const PatternGraph: React.FC<PatternGraphProps> = ({
     const controlY = midY + perpY;
     
     return `M ${fromNode.x} ${fromNode.y} Q ${controlX} ${controlY} ${toNode.x} ${toNode.y}`;
-  };
+  }, [getNode]);
 
   // Get categories for background labels
   const categories = useMemo(() => {
