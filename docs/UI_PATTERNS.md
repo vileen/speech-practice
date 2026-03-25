@@ -679,19 +679,18 @@ export default ComponentMode;
 
 ## 6. API Patterns
 
-### Fetch Pattern with Password Header
+### IMPORTANT: Use API Interceptor for All API Calls
+
+The app uses a centralized API interceptor (`src/lib/api-interceptor.ts`) that automatically adds the `X-Password` header to all API requests. **Do NOT manually add the password header** - use the interceptor instead.
 
 ```tsx
+// ✅ CORRECT - Uses interceptor automatically
 import { API_URL } from '../../config/api.js';
 
-const password = localStorage.getItem('speech_practice_password') || '';
-
-// GET request
 const loadData = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/endpoint`, {
-      headers: { 'X-Password': password }
-    });
+    const response = await fetch(`${API_URL}/api/endpoint`);
+    // Interceptor automatically adds X-Password header
     if (response.ok) {
       const data = await response.json();
       return data;
@@ -701,14 +700,14 @@ const loadData = async () => {
   }
 };
 
-// POST request
+// ✅ CORRECT - POST with interceptor
 const submitData = async (payload: any) => {
   try {
     const response = await fetch(`${API_URL}/api/endpoint`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Password': password
+        // X-Password is added automatically by interceptor
       },
       body: JSON.stringify(payload)
     });
@@ -721,6 +720,58 @@ const submitData = async (payload: any) => {
   }
 };
 ```
+
+### How the Interceptor Works
+
+The interceptor is initialized in `App.tsx` and patches the global `fetch` function to:
+1. Detect API calls (URLs containing `/api` or matching the API_URL)
+2. Automatically inject the `X-Password` header from localStorage
+3. Preserve any existing headers
+
+```tsx
+// src/lib/api-interceptor.ts
+export function installApiInterceptor() {
+  const originalFetch = window.fetch;
+  
+  window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = input.toString();
+    
+    // Only intercept API calls
+    if (isApiUrl(url)) {
+      const password = localStorage.getItem('speech_practice_password') || '';
+      
+      init = init || {};
+      init.headers = {
+        ...init.headers,
+        'X-Password': password
+      };
+    }
+    
+    return originalFetch(input, init);
+  };
+}
+```
+
+### Legacy: Manual Password Header (Not Recommended)
+
+Only use this pattern if the interceptor is not available:
+
+```tsx
+// ❌ NOT RECOMMENDED - Only if interceptor fails
+const password = localStorage.getItem('speech_practice_password') || '';
+
+const response = await fetch(`${API_URL}/api/endpoint`, {
+  headers: { 'X-Password': password }
+});
+```
+
+### Troubleshooting Interceptor Issues
+
+If API calls return 401 Unauthorized:
+1. Check that the interceptor is installed in App.tsx
+2. Verify password exists in localStorage
+3. Check browser console for interceptor debug logs
+4. Ensure API_URL is correctly configured
 
 ### Loading State Pattern
 
