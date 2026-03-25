@@ -14,6 +14,7 @@ import grammarRoutes from './grammar.js';
 import kanjiRoutes from './kanji.js';
 import countersRoutes from './counters.js';
 import pdfRoutes from './pdf.js';
+import verbsRouter from './verbs.js';
 
 const router = Router();
 
@@ -33,5 +34,6 @@ router.use('/grammar', grammarRoutes);
 router.use('/kanji', kanjiRoutes);
 router.use('/counters', countersRoutes);
 router.use('/pdf', pdfRoutes);
+router.use('/verbs', verbsRouter);
 
 export default router;
