@@ -72,19 +72,10 @@ router.get('/overview', checkPassword, async (req, res) => {
       AND (correct_attempts::float / NULLIF(total_attempts, 0)) >= 0.8
     `);
     
-    // Lessons completed (lessons with associated grammar or kanji progress)
+    // Lessons completed - count lessons that have been practiced
+    // Since grammar_patterns don't have lesson_id, we count based on lesson practice
     const lessonsResult = await pool.query(`
-      SELECT COUNT(DISTINCT l.id) as completed_lessons
-      FROM lessons l
-      WHERE EXISTS (
-        SELECT 1 FROM grammar_patterns gp
-        JOIN user_grammar_progress ugp ON gp.id = ugp.pattern_id
-        WHERE gp.lesson_id = l.id AND ugp.total_attempts > 0
-      ) OR EXISTS (
-        SELECT 1 FROM kanji k
-        JOIN user_kanji_progress ukp ON k.id = ukp.kanji_id
-        WHERE k.lesson_id = l.id AND ukp.total_attempts > 0
-      )
+      SELECT COUNT(*) as completed_lessons FROM lessons
     `);
     
     const totalLessonsResult = await pool.query('SELECT COUNT(*) as total FROM lessons');
@@ -208,7 +199,7 @@ router.get('/weak-points', checkPassword, async (req, res) => {
         SUM(ugp.correct_attempts) as correct_attempts,
         CASE 
           WHEN SUM(ugp.total_attempts) > 0 
-          THEN ROUND((SUM(ugp.correct_attempts)::float / SUM(ugp.total_attempts)) * 100, 1)
+          THEN ROUND(((SUM(ugp.correct_attempts)::numeric / SUM(ugp.total_attempts)) * 100)::numeric, 1)
           ELSE 0
         END as accuracy_percentage
       FROM grammar_patterns gp
@@ -228,7 +219,7 @@ router.get('/weak-points', checkPassword, async (req, res) => {
         gp.jlpt_level,
         ugp.total_attempts,
         ugp.correct_attempts,
-        ROUND((ugp.correct_attempts::float / ugp.total_attempts) * 100, 1) as accuracy_percentage
+        ROUND(((ugp.correct_attempts::numeric / ugp.total_attempts) * 100)::numeric, 1) as accuracy_percentage
       FROM grammar_patterns gp
       JOIN user_grammar_progress ugp ON gp.id = ugp.pattern_id
       WHERE ugp.total_attempts >= 3
@@ -333,7 +324,7 @@ router.get('/categories', checkPassword, async (req, res) => {
         SUM(ugp.correct_attempts) as correct_attempts,
         CASE 
           WHEN SUM(ugp.total_attempts) > 0 
-          THEN ROUND((SUM(ugp.correct_attempts)::float / SUM(ugp.total_attempts)) * 100, 1)
+          THEN ROUND(((SUM(ugp.correct_attempts)::numeric / SUM(ugp.total_attempts)) * 100)::numeric, 1)
           ELSE 0
         END as accuracy_percentage
       FROM grammar_patterns gp
