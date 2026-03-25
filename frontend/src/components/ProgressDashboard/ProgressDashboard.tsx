@@ -97,14 +97,6 @@ export const ProgressDashboard: React.FC = () => {
   const [activity, setActivity] = useState<ActivityDay[]>([]);
   const [categories, setCategories] = useState<CategoryBreakdown[]>([]);
 
-  const getAuthHeaders = () => {
-    const password = localStorage.getItem('speech_practice_password');
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': password ? `Bearer ${password}` : ''
-    };
-  };
-
   useEffect(() => {
     const fetchAllData = async () => {
       try {
@@ -112,11 +104,11 @@ export const ProgressDashboard: React.FC = () => {
         setError(null);
 
         const [overviewRes, levelsRes, weakPointsRes, activityRes, categoriesRes] = await Promise.all([
-          fetch(`${API_URL}/progress/overview`, { headers: getAuthHeaders() }),
-          fetch(`${API_URL}/progress/by-level`, { headers: getAuthHeaders() }),
-          fetch(`${API_URL}/progress/weak-points`, { headers: getAuthHeaders() }),
-          fetch(`${API_URL}/progress/activity`, { headers: getAuthHeaders() }),
-          fetch(`${API_URL}/progress/categories`, { headers: getAuthHeaders() })
+          fetch(`${API_URL}/api/progress/overview`),
+          fetch(`${API_URL}/api/progress/by-level`),
+          fetch(`${API_URL}/api/progress/weak-points`),
+          fetch(`${API_URL}/api/progress/activity`),
+          fetch(`${API_URL}/api/progress/categories`)
         ]);
 
         if (!overviewRes.ok) throw new Error('Failed to fetch overview');
