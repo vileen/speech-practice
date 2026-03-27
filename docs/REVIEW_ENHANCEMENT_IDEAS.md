@@ -28,6 +28,9 @@ High-level overview of planned and implemented features. Each feature has a dedi
 | **18** | [**Verb Mastery System**](./featureIdeas/18-verb-mastery.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/18-verb-mastery.md) |
 | **19** | [**Reading Comprehension**](./featureIdeas/19-reading-comprehension.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/19-reading-comprehension.md) |
 | **20** | [**Progress Dashboard**](./featureIdeas/20-progress-dashboard.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/20-progress-dashboard.md) |
+| **21** | [**Kanji Writing Practice**](./featureIdeas/21-kanji-writing.md) | 📋 **Missing** | Medium | Very High | Handwriting recognition for kanji |
+| **22** | [**Speech Recognition Feedback**](./featureIdeas/22-speech-feedback.md) | 📋 **Missing** | High | Very High | AI pronunciation assessment |
+| **23** | [**Listening Comprehension**](./featureIdeas/23-listening-comprehension.md) | 📋 **Missing** | Medium | High | Audio-only comprehension quizzes |
 
 ---
 
@@ -44,6 +47,9 @@ High-level overview of planned and implemented features. Each feature has a dedi
 - [08 - Shadowing Mode](./featureIdeas/08-shadowing-mode.md) - Overlapping/delayed shadowing
 - [16 - Kanji Practice Mode](./featureIdeas/16-kanji-practice-mode.md) - KLC-based kanji learning with SRS
 - [17 - Grammar Anti-Confusion](./featureIdeas/17-grammar-anti-confusion.md) - Prevent confusing similar grammar forms
+- [21 - Kanji Writing Practice](./featureIdeas/21-kanji-writing.md) - Handwriting recognition & stroke order
+- [22 - Speech Recognition Feedback](./featureIdeas/22-speech-feedback.md) - AI pronunciation scoring
+- [23 - Listening Comprehension](./featureIdeas/23-listening-comprehension.md) - Audio-only comprehension checks
 
 ### Data & Progress
 - [09 - Vocabulary Table](./featureIdeas/09-vocabulary-table.md) - Normalized DB schema
@@ -118,6 +124,50 @@ High-level overview of planned and implemented features. Each feature has a dedi
 
 **Timeline:** 2-3 weeks remaining
 
+### Phase 7: Missing Critical Foundations (📋 Not Started)
+**Goal:** Complete the 4 core skills (currently missing Writing & Speaking Feedback)
+
+| Skill | Status | Gap |
+|-------|--------|-----|
+| **Listening** | ✅ Complete | Audio player, lessons, shadowing |
+| **Speaking** | 🟡 Partial | Recording works, but NO pronunciation feedback |
+| **Reading** | ✅ Complete | Furigana, comprehension quizzes |
+| **Writing** | ❌ Missing | NO kanji handwriting practice |
+
+**Missing Critical Features:**
+
+1. **Kanji Writing Practice (#21)** - Handwriting Recognition
+   - Canvas for drawing kanji
+   - Stroke order validation
+   - Shape recognition (Canvas API + ML or rule-based)
+   - Progress tracking per kanji
+   - **Impact:** Writing reinforces visual memory and motor skills - ESSENTIAL for retention
+   - **Complexity:** Medium (Canvas API + recognition algorithm)
+
+2. **Speech Recognition Feedback (#22)** - Pronunciation Assessment
+   - Record user's speech
+   - Compare with native audio (ASR + phonetic comparison)
+   - Score: pitch accent, rhythm, intonation
+   - Error highlighting
+   - **Impact:** Users currently don't know if they pronounce correctly
+   - **Complexity:** High (requires ASR: Whisper API or Google Speech-to-Text)
+
+3. **Listening Comprehension (#23)** - Audio-Only Quizzes
+   - Listen to audio (no transcript visible)
+   - Answer comprehension questions
+   - Gradual difficulty (slow → natural speed)
+   - **Impact:** Current listening has visual support - need pure audio comprehension
+   - **Complexity:** Medium (reuse reading comprehension infrastructure)
+
+**Why These Matter:**
+> Without writing practice: You can read but can't write from memory (weak retention)
+> Without speech feedback: You practice speaking but reinforce wrong pronunciation
+> Without pure listening: You rely on visual cues, struggle in real conversations
+
+**Deliverables:** WritingMode, SpeechAssessment API, ListeningMode
+
+**Timeline:** 6-8 weeks (can parallelize)
+
 ---
 
 ## Philosophy
@@ -130,4 +180,24 @@ See [docs/featureIdeas/README.md](./featureIdeas/README.md) for detailed index.
 ---
 
 *Created: 2026-02-28*  
-*Last updated: 2026-03-25*
+*Last updated: 2026-03-27*
+
+---
+
+## Summary: Are Foundations Solid?
+
+**Yes, with caveats.**
+
+The app provides **strong foundations** for:
+- ✅ Grammar acquisition (275 patterns, drills, relationships)
+- ✅ Vocabulary learning (SRS, lessons, Anki integration)
+- ✅ Reading comprehension (graded passages, questions)
+- ✅ Listening exposure (audio lessons, shadowing)
+- ✅ Kanji recognition (KLC-based, 102 kanji, expanding)
+
+**But critically missing for "solid" foundations:**
+- ❌ **Writing practice** - No kanji handwriting (motor memory gap)
+- ❌ **Speaking feedback** - Record but no assessment (reinforces errors)
+- ❌ **Pure listening** - Always has visual support (real-world gap)
+
+**Recommendation:** Phase 7 features are NOT optional enhancements. They're required for a complete learning platform. Prioritize #21 (writing) and #22 (speech feedback) before adding more content.
