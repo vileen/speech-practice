@@ -1,0 +1,290 @@
+.speech-feedback {
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Score Section */
+.score-section {
+  text-align: center;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.score-section.excellent {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 2px solid #28a745;
+}
+
+.score-section.good {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  border: 2px solid #17a2b8;
+}
+
+.score-section.fair {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+  border: 2px solid #ffc107;
+}
+
+.score-section.needs-work {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border: 2px solid #dc3545;
+}
+
+.score-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.score-value {
+  font-size: 36px;
+  font-weight: bold;
+  color: #333;
+}
+
+.score-percent {
+  font-size: 18px;
+  color: #666;
+  margin-left: 2px;
+}
+
+.score-message {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.score-description {
+  color: #555;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Playback Section */
+.playback-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.playback-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.playback-button:hover {
+  background: #5a6268;
+}
+
+.playback-button.playing {
+  background: #dc3545;
+}
+
+/* Comparison Section */
+.comparison-section {
+  margin-bottom: 20px;
+}
+
+.comparison-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.transcript-box {
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.transcript-box.user {
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+}
+
+.transcript-box.expected {
+  background: #e8f5e9;
+  border-left: 4px solid #4caf50;
+}
+
+.transcript-box .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.transcript-text {
+  font-size: 18px;
+  margin: 0;
+  color: #333;
+  line-height: 1.5;
+}
+
+.romaji-text {
+  font-size: 14px;
+  color: #666;
+  margin: 4px 0 0 0;
+  font-style: italic;
+}
+
+/* Errors Section */
+.errors-section {
+  margin-bottom: 20px;
+}
+
+.errors-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.error-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.error-item {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.error-item.omission {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.error-item.insertion {
+  background: #f8d7da;
+  border-left: 4px solid #dc3545;
+}
+
+.error-item.substitution {
+  background: #d1ecf1;
+  border-left: 4px solid #17a2b8;
+}
+
+.error-type {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.error-detail {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Suggestions Section */
+.suggestions-section {
+  margin-bottom: 20px;
+}
+
+.suggestions-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.suggestion-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestion-list li {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Action Buttons */
+.feedback-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding-top: 16px;
+  border-top: 1px solid #dee2e6;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .speech-feedback {
+    padding: 16px;
+  }
+
+  .score-circle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .score-value {
+    font-size: 28px;
+  }
+
+  .transcript-text {
+    font-size: 16px;
+  }
+
+  .feedback-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

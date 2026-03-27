@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { VoiceRecorder } from '../VoiceRecorder/VoiceRecorder';
-import { usePronunciationCheck } from '../../hooks/usePronunciationCheck';
+import { useSpeechAssessment } from '../../hooks/useSpeechAssessment';
+import { SpeechFeedback } from '../SpeechFeedback/SpeechFeedback';
 import { Header } from '../Header/index.js';
 import { API_URL } from '../../config/api.js';
 import './SpeakingMode.css';
@@ -84,8 +85,10 @@ const ShadowingMode: React.FC = () => {
   const [exercises, setExercises] = useState<ShadowingExercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<ShadowingExercise | null>(null);
   const [loading, setLoading] = useState(true);
-  const [_audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const { result, check, isChecking } = usePronunciationCheck();
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [showAssessment, setShowAssessment] = useState(false);
+
+  const { result: assessmentResult, isAssessing, assessPronunciation, reset: resetAssessment } = useSpeechAssessment();
 
   useEffect(() => {
     fetchExercises();
@@ -105,9 +108,25 @@ const ShadowingMode: React.FC = () => {
 
   const handleRecordingComplete = async (blob: Blob) => {
     setAudioBlob(blob);
+    setShowAssessment(false);
     if (selectedExercise) {
-      await check(blob, selectedExercise.japanese_text, 'japanese');
+      // Use the new speech assessment API
+      await assessPronunciation(blob, selectedExercise.japanese_text);
+      setShowAssessment(true);
     }
+  };
+
+  const handleRetry = () => {
+    setAudioBlob(null);
+    setShowAssessment(false);
+    resetAssessment();
+  };
+
+  const handleContinue = () => {
+    setSelectedExercise(null);
+    setAudioBlob(null);
+    setShowAssessment(false);
+    resetAssessment();
   };
 
   const playNativeAudio = () => {
@@ -150,6 +169,8 @@ const ShadowingMode: React.FC = () => {
       <button className="back-button" onClick={() => {
         setSelectedExercise(null);
         setAudioBlob(null);
+        setShowAssessment(false);
+        resetAssessment();
       }}>
         ← Back to List
       </button>
@@ -171,22 +192,26 @@ const ShadowingMode: React.FC = () => {
 
       <div className="recording-section">
         <h3>Your Turn - Record Yourself</h3>
-        <VoiceRecorder
-          onRecordingComplete={handleRecordingComplete}
-          isListening={false}
-          onStartListening={() => {}}
-          onStopListening={() => {}}
-          mode="push-to-talk"
-        />
         
-        {isChecking && <p>Analyzing pronunciation...</p>}
+        {!showAssessment && (
+          <VoiceRecorder
+            onRecordingComplete={handleRecordingComplete}
+            isListening={false}
+            onStartListening={() => {}}
+            onStopListening={() => {}}
+            mode="push-to-talk"
+          />
+        )}
         
-        {result && (
-          <div className="score-display">
-            <h4>Pronunciation Score</h4>
-            <div className="score-value">{result.score}%</div>
-            <p>{result.score >= 80 ? 'Great job!' : result.score >= 60 ? 'Good attempt!' : 'Keep practicing!'}</p>
-          </div>
+        {isAssessing && <p>🎙️ Transcribing and analyzing your pronunciation...</p>}
+        
+        {assessmentResult && showAssessment && (
+          <SpeechFeedback
+            assessment={assessmentResult}
+            audioBlob={audioBlob}
+            onRetry={handleRetry}
+            onContinue={handleContinue}
+          />
         )}
       </div>
     </div>

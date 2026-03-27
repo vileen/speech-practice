@@ -59,6 +59,21 @@ CREATE TABLE IF NOT EXISTS furigana_cache (
 -- Index for quick lookup
 CREATE INDEX IF NOT EXISTS idx_furigana_original ON furigana_cache(original_text);
 
+-- Speech assessments table - stores pronunciation assessment results
+CREATE TABLE IF NOT EXISTS speech_assessments (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT,
+  target_phrase TEXT NOT NULL,
+  user_transcript TEXT NOT NULL,
+  accuracy_score INTEGER,
+  feedback JSONB,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for speech assessments
+CREATE INDEX IF NOT EXISTS idx_speech_assessments_user ON speech_assessments(user_id);
+CREATE INDEX IF NOT EXISTS idx_speech_assessments_created ON speech_assessments(created_at DESC);
+
 -- Grammar patterns library
 CREATE TABLE IF NOT EXISTS grammar_patterns (
   id SERIAL PRIMARY KEY,

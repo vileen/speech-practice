@@ -22,6 +22,7 @@ import { KanjiPracticePage } from './pages/KanjiPracticePage.js';
 import { VerbMode } from './components/VerbMode/index.js';
 import { ReadingMode } from './components/ReadingMode/ReadingMode.js';
 import { SpeakingMode } from './components/SpeakingMode/SpeakingMode.js';
+import { ListeningMode } from './components/ListeningMode/ListeningMode.js';
 import { ProgressDashboard } from './components/ProgressDashboard/ProgressDashboard.js';
 
 // Types
@@ -45,6 +46,7 @@ function App() {
         <Route path="/verbs" element={<VerbMode />} />
         <Route path="/reading" element={<ReadingMode />} />
         <Route path="/speaking" element={<SpeakingMode />} />
+        <Route path="/listening" element={<ListeningMode />} />
         <Route path="/progress" element={<ProgressDashboard />} />
         <Route path="/lessons" element={<LessonList />} />
         <Route path="/lessons/:id" element={<LessonDetail />} />

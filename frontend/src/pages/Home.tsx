@@ -63,9 +63,10 @@ const MODE_CATEGORIES = [
     ]
   },
   {
-    title: "Reading & Speaking",
+    title: "Reading, Listening & Speaking",
     modes: [
       { icon: "📰", label: "Reading Practice", path: "/reading", color: "#5f27cd" },
+      { icon: "🎧", label: "Listening Practice", path: "/listening", color: "#00d2d3" },
       { icon: "🎙️", label: "Speaking Drills", path: "/speaking", color: "#ff9f43" },
     ]
   },

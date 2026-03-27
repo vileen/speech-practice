@@ -17,6 +17,8 @@ import pdfRoutes from './pdf.js';
 import verbsRouter from './verbs.js';
 import readingRouter from './reading.js';
 import speakingRouter from './speaking.js';
+import listeningRouter from './listening.js';
+import speechRouter from './speech.js';
 import progressRouter from './progress.js';
 
 const router = Router();
@@ -40,6 +42,8 @@ router.use('/pdf', pdfRoutes);
 router.use('/verbs', verbsRouter);
 router.use('/reading', readingRouter);
 router.use('/speaking', speakingRouter);
+router.use('/listening', listeningRouter);
+router.use('/speech', speechRouter);
 router.use('/progress', progressRouter);
 
 export default router;
