@@ -29,8 +29,8 @@ High-level overview of planned and implemented features. Each feature has a dedi
 | **19** | [**Reading Comprehension**](./featureIdeas/19-reading-comprehension.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/19-reading-comprehension.md) |
 | **20** | [**Progress Dashboard**](./featureIdeas/20-progress-dashboard.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/20-progress-dashboard.md) |
 | **21** | [**Kanji Writing Practice**](./featureIdeas/21-kanji-writing.md) | 📋 **Missing** | Medium | Very High | Handwriting recognition for kanji |
-| **22** | [**Speech Recognition Feedback**](./featureIdeas/22-speech-feedback.md) | 📋 **Missing** | High | Very High | AI pronunciation assessment |
-| **23** | [**Listening Comprehension**](./featureIdeas/23-listening-comprehension.md) | 📋 **Missing** | Medium | High | Audio-only comprehension quizzes |
+| **22** | [**Speech Recognition Feedback**](./featureIdeas/22-speech-feedback.md) | ✅ **Complete** | High | Very High | AI pronunciation assessment |
+| **23** | [**Listening Comprehension**](./featureIdeas/23-listening-comprehension.md) | ✅ **Complete** | Medium | High | Audio-only comprehension quizzes |
 
 ---
 
@@ -129,8 +129,8 @@ High-level overview of planned and implemented features. Each feature has a dedi
 
 | Skill | Status | Gap |
 |-------|--------|-----|
-| **Listening** | ✅ Complete | Audio player, lessons, shadowing |
-| **Speaking** | 🟡 Partial | Recording works, but NO pronunciation feedback |
+| **Listening** | ✅ Complete | Audio player, lessons, shadowing, comprehension quizzes |
+| **Speaking** | ✅ Complete | Recording with AI pronunciation feedback |
 | **Reading** | ✅ Complete | Furigana, comprehension quizzes |
 | **Writing** | ❌ Missing | NO kanji handwriting practice |
 
@@ -144,27 +144,27 @@ High-level overview of planned and implemented features. Each feature has a dedi
    - **Impact:** Writing reinforces visual memory and motor skills - ESSENTIAL for retention
    - **Complexity:** Medium (Canvas API + recognition algorithm)
 
-2. **Speech Recognition Feedback (#22)** - Pronunciation Assessment
+2. **Speech Recognition Feedback (#22)** - Pronunciation Assessment ✅
    - Record user's speech
    - Compare with native audio (ASR + phonetic comparison)
    - Score: pitch accent, rhythm, intonation
    - Error highlighting
-   - **Impact:** Users currently don't know if they pronounce correctly
-   - **Complexity:** High (requires ASR: Whisper API or Google Speech-to-Text)
+   - **Status:** Implemented with OpenAI Whisper API
+   - **Deliverables:** `/api/speech/assess`, `SpeechFeedback` component
 
-3. **Listening Comprehension (#23)** - Audio-Only Quizzes
+3. **Listening Comprehension (#23)** - Audio-Only Quizzes ✅
    - Listen to audio (no transcript visible)
    - Answer comprehension questions
    - Gradual difficulty (slow → natural speed)
-   - **Impact:** Current listening has visual support - need pure audio comprehension
-   - **Complexity:** Medium (reuse reading comprehension infrastructure)
+   - **Status:** Implemented with 5 sample passages
+   - **Deliverables:** `ListeningMode`, `/api/listening` routes
 
 **Why These Matter:**
 > Without writing practice: You can read but can't write from memory (weak retention)
 > Without speech feedback: You practice speaking but reinforce wrong pronunciation
 > Without pure listening: You rely on visual cues, struggle in real conversations
 
-**Deliverables:** WritingMode, SpeechAssessment API, ListeningMode
+**Deliverables:** WritingMode (remaining)
 
 **Timeline:** 6-8 weeks (can parallelize)
 
@@ -180,7 +180,7 @@ See [docs/featureIdeas/README.md](./featureIdeas/README.md) for detailed index.
 ---
 
 *Created: 2026-02-28*  
-*Last updated: 2026-03-27*
+*Last updated: 2026-03-27 (Features #22, #23 completed)*
 
 ---
 
@@ -197,7 +197,7 @@ The app provides **strong foundations** for:
 
 **But critically missing for "solid" foundations:**
 - ❌ **Writing practice** - No kanji handwriting (motor memory gap)
-- ❌ **Speaking feedback** - Record but no assessment (reinforces errors)
-- ❌ **Pure listening** - Always has visual support (real-world gap)
+- ✅ **Speaking feedback** - AI pronunciation assessment with Whisper API
+- ✅ **Pure listening** - Audio-only comprehension quizzes
 
 **Recommendation:** Phase 7 features are NOT optional enhancements. They're required for a complete learning platform. Prioritize #21 (writing) and #22 (speech feedback) before adding more content.

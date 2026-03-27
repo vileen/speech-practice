@@ -330,6 +330,41 @@
 
 ---
 
+### Phase 7: Core Skills Completion (Priority: HIGH) ✅ COMPLETE (except Writing)
+**Goal:** Complete the 4 core language skills
+
+| Skill | Status | Implementation |
+|-------|--------|----------------|
+| **Listening** | ✅ Complete | Audio lessons, shadowing, comprehension quizzes |
+| **Speaking** | ✅ Complete | AI pronunciation feedback with Whisper API |
+| **Reading** | ✅ Complete | Furigana, graded passages, comprehension checks |
+| **Writing** | ❌ Missing | Kanji handwriting practice (planned) |
+
+**Completed Features (March 2026):**
+
+1. **Speech Recognition Feedback (#22)**
+   - OpenAI Whisper API integration
+   - `POST /api/speech/assess` endpoint
+   - Levenshtein distance comparison
+   - Visual score display with error highlighting
+   - Integrated into SpeakingMode shadowing
+
+2. **Listening Comprehension (#23)**
+   - `listening_passages` table with 5 sample passages (N5/N4)
+   - `listening_questions` table with 20 questions
+   - Audio-only quizzes (transcript hidden)
+   - Speed control (0.75x/1x/1.25x)
+   - Results with transcript reveal
+
+**Deliverables:**
+- ✅ `SpeechAssessment` service & API
+- ✅ `SpeechFeedback` component
+- ✅ `ListeningMode` component
+- ✅ `/api/listening` routes
+- ⏳ WritingMode (Phase 8)
+
+---
+
 ## Implementation Priority
 
 **✅ COMPLETED (March 2026):**
