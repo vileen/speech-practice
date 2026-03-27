@@ -6,61 +6,72 @@ High-level overview of planned and implemented features. Each feature has a dedi
 
 ## Priority / Implementation Order
 
-| Priority | Feature | Status | Complexity | Impact | Link |
+| Priority | Feature | Status | Complexity | Impact | Summary |
 |----------|---------|--------|------------|--------|------|
-| 1 | [Memory Mode](./featureIdeas/01-memory-mode.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/01-memory-mode.md) |
-| 2 | [Spaced Repetition](./featureIdeas/03-spaced-repetition.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/03-spaced-repetition.md) |
-| 3 | [Vocabulary Table](./featureIdeas/09-vocabulary-table.md) | ✅ Complete | High | Critical | [Details](./featureIdeas/09-vocabulary-table.md) |
-| 4 | [Backend Modularization](./featureIdeas/12-backend-modularization.md) | ✅ Complete | High | Critical | [Details](./featureIdeas/12-backend-modularization.md) |
-| 5 | [Frontend Refactoring](./featureIdeas/13-frontend-refactoring.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/13-frontend-refactoring.md) |
-| 6 | [Vocabulary Badges](./featureIdeas/14-vocabulary-badges.md) | ✅ Complete | Low | Medium | [Details](./featureIdeas/14-vocabulary-badges.md) |
-| **7** | [**Interleaved Practice**](./featureIdeas/06-interleaved-practice.md) | ⏳ **Next** | Medium | High | [Details](./featureIdeas/06-interleaved-practice.md) |
-| 8 | [Shadowing Enhancement](./featureIdeas/08-shadowing-mode.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/08-shadowing-mode.md) |
-| 9 | [Grammar Drills](./featureIdeas/07-grammar-drills.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/07-grammar-drills.md) |
-| 10 | [Progressive Reveal](./featureIdeas/02-progressive-reveal.md) | ⏳ Planned | Medium | Medium | [Details](./featureIdeas/02-progressive-reveal.md) |
-| 11 | [Sentence Building](./featureIdeas/05-sentence-building.md) | ⏳ Planned | High | High | [Details](./featureIdeas/05-sentence-building.md) |
-| 12 | [JLPT N3 Roadmap](./featureIdeas/10-jlpt-roadmap.md) | 📋 Documented | Medium | High | [Details](./featureIdeas/10-jlpt-roadmap.md) |
-| 13 | [Minimal Pairs](./featureIdeas/04-minimal-pairs.md) | ⏳ Planned | High | Medium | [Details](./featureIdeas/04-minimal-pairs.md) |
-| 14 | [Pomodoro Tracker](./featureIdeas/11-pomodoro-tracker.md) | ⏳ Planned | Medium | Medium | [Details](./featureIdeas/11-pomodoro-tracker.md) |
-| 15 | [Infrastructure & Security](./featureIdeas/15-infrastructure-security.md) | ✅ Complete | High | Critical | [Details](./featureIdeas/15-infrastructure-security.md) |
-| 16 | [Kanji Practice Mode](./featureIdeas/16-kanji-practice-mode.md) | ✅ Complete | Medium | High | [Details](./featureIdeas/16-kanji-practice-mode.md) |
-| 17 | [Grammar Anti-Confusion](./featureIdeas/17-grammar-anti-confusion.md) | ✅ Complete | Medium-High | Very High | [Details](./featureIdeas/17-grammar-anti-confusion.md) |
-| **18** | [**Verb Mastery System**](./featureIdeas/18-verb-mastery.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/18-verb-mastery.md) |
-| **19** | [**Reading Comprehension**](./featureIdeas/19-reading-comprehension.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/19-reading-comprehension.md) |
-| **20** | [**Progress Dashboard**](./featureIdeas/20-progress-dashboard.md) | ✅ **Complete** | Medium | High | [Details](./featureIdeas/20-progress-dashboard.md) |
-| **21** | [**Kanji Writing Practice**](./featureIdeas/21-kanji-writing.md) | 📋 **Missing** | Medium | Very High | Handwriting recognition for kanji |
-| **22** | [**Speech Recognition Feedback**](./featureIdeas/22-speech-feedback.md) | ✅ **Complete** | High | Very High | AI pronunciation assessment |
+| 1 | [Memory Mode](./featureIdeas/01-memory-mode.md) | ✅ Complete | Medium | High | Hide Japanese text, active recall with SRS |
+| 2 | [Spaced Repetition](./featureIdeas/03-spaced-repetition.md) | ✅ Complete | Medium | High | FSRS algorithm, weak points tracking |
+| 3 | [Vocabulary Table](./featureIdeas/09-vocabulary-table.md) | ✅ Complete | High | Critical | Normalized DB schema for vocabulary |
+| 4 | [Backend Modularization](./featureIdeas/12-backend-modularization.md) | ✅ Complete | High | Critical | Route restructuring, modular architecture |
+| 5 | [Frontend Refactoring](./featureIdeas/13-frontend-refactoring.md) | ✅ Complete | Medium | High | Component extraction, code organization |
+| 6 | [Vocabulary Badges](./featureIdeas/14-vocabulary-badges.md) | ✅ Complete | Low | Medium | Cross-lesson word tracking with ↻ badges |
+| **7** | [**Interleaved Practice**](./featureIdeas/06-interleaved-practice.md) | ⏳ **Next** | Medium | High | Mixed lesson review (+43% retention) |
+| 8 | [Shadowing Enhancement](./featureIdeas/08-shadowing-mode.md) | ✅ Complete | Medium | High | Overlapping/delayed audio shadowing |
+| 9 | [Grammar Drills](./featureIdeas/07-grammar-drills.md) | ✅ Complete | Medium | High | Pattern recognition & construction exercises |
+| 10 | [Progressive Reveal](./featureIdeas/02-progressive-reveal.md) | ⏳ Planned | Medium | Medium | Hint cascade (Wordle-style) |
+| 11 | [Sentence Building](./featureIdeas/05-sentence-building.md) | ⏳ Planned | High | High | Voice Lego pattern practice |
+| 12 | [JLPT N3 Roadmap](./featureIdeas/10-jlpt-roadmap.md) | 📋 Documented | Medium | High | 24-month learning path to N3 |
+| 13 | [Minimal Pairs](./featureIdeas/04-minimal-pairs.md) | ⏳ Planned | High | Medium | Error-based pronunciation drills |
+| 14 | [Pomodoro Tracker](./featureIdeas/11-pomodoro-tracker.md) | ⏳ Planned | Medium | Medium | Daily streaks & focus timer |
+| 15 | [Infrastructure & Security](./featureIdeas/15-infrastructure-security.md) | ✅ Complete | High | Critical | Git cleanup, PM2, environment security |
+| 16 | [Kanji Practice Mode](./featureIdeas/16-kanji-practice-mode.md) | ✅ Complete | Medium | High | KLC-based kanji learning with SRS |
+| 17 | [Grammar Anti-Confusion](./featureIdeas/17-grammar-anti-confusion.md) | ✅ Complete | Medium-High | Very High | Distinguish similar grammar patterns |
+| **18** | [**Verb Mastery System**](./featureIdeas/18-verb-mastery.md) | ✅ **Complete** | Medium | High | 34 verbs, 7 conjugation forms each |
+| **19** | [**Reading Comprehension**](./featureIdeas/19-reading-comprehension.md) | ✅ **Complete** | Medium | High | Graded passages N5→N3 with questions |
+| **20** | [**Progress Dashboard**](./featureIdeas/20-progress-dashboard.md) | ✅ **Complete** | Medium | High | Stats, weak points, activity tracking |
+| **21** | [**Kanji Writing Practice**](./featureIdeas/21-kanji-writing.md) | 📋 **Missing** | Medium | Very High | Handwriting recognition & stroke order |
+| **22** | [**Speech Recognition Feedback**](./featureIdeas/22-speech-feedback.md) | ✅ **Complete** | High | Very High | AI pronunciation assessment with Whisper |
 | **23** | [**Listening Comprehension**](./featureIdeas/23-listening-comprehension.md) | ✅ **Complete** | Medium | High | Audio-only comprehension quizzes |
 
 ---
 
 ## Quick Navigation
 
+### Core Learning (4 Skills)
+| Skill | Status | Features |
+|-------|--------|----------|
+| **Listening** | ✅ Complete | Audio lessons, shadowing, comprehension quizzes (#23) |
+| **Speaking** | ✅ Complete | AI pronunciation feedback (#22), response drills |
+| **Reading** | ✅ Complete | Furigana, graded passages (#19), comprehension checks |
+| **Writing** | ❌ Missing | Kanji handwriting practice (#21) - planned |
+
 ### Learning Features
-- [01 - Memory Mode](./featureIdeas/01-memory-mode.md) - Hide Japanese, active recall with SRS
-- [02 - Progressive Reveal](./featureIdeas/02-progressive-reveal.md) - Hint cascade (Wordle-style)
-- [03 - Spaced Repetition](./featureIdeas/03-spaced-repetition.md) - FSRS algorithm, weak points tracking
-- [04 - Minimal Pairs](./featureIdeas/04-minimal-pairs.md) - Error-based pronunciation drills
-- [05 - Sentence Building](./featureIdeas/05-sentence-building.md) - Voice Lego pattern practice
-- [06 - Interleaved Practice](./featureIdeas/06-interleaved-practice.md) - Mixed lesson review (43% better retention)
-- [07 - Grammar Drills](./featureIdeas/07-grammar-drills.md) - Pattern recognition & construction
-- [08 - Shadowing Mode](./featureIdeas/08-shadowing-mode.md) - Overlapping/delayed shadowing
-- [16 - Kanji Practice Mode](./featureIdeas/16-kanji-practice-mode.md) - KLC-based kanji learning with SRS
-- [17 - Grammar Anti-Confusion](./featureIdeas/17-grammar-anti-confusion.md) - Prevent confusing similar grammar forms
-- [21 - Kanji Writing Practice](./featureIdeas/21-kanji-writing.md) - Handwriting recognition & stroke order
-- [22 - Speech Recognition Feedback](./featureIdeas/22-speech-feedback.md) - AI pronunciation scoring
-- [23 - Listening Comprehension](./featureIdeas/23-listening-comprehension.md) - Audio-only comprehension checks
+- [01 - Memory Mode](./featureIdeas/01-memory-mode.md) — Hide Japanese text, active recall with SRS
+- [02 - Progressive Reveal](./featureIdeas/02-progressive-reveal.md) — Hint cascade (Wordle-style)
+- [03 - Spaced Repetition](./featureIdeas/03-spaced-repetition.md) — FSRS algorithm, weak points tracking
+- [04 - Minimal Pairs](./featureIdeas/04-minimal-pairs.md) — Error-based pronunciation drills
+- [05 - Sentence Building](./featureIdeas/05-sentence-building.md) — Voice Lego pattern practice
+- [06 - Interleaved Practice](./featureIdeas/06-interleaved-practice.md) — Mixed lesson review (+43% retention)
+- [07 - Grammar Drills](./featureIdeas/07-grammar-drills.md) — Pattern recognition & construction exercises
+- [08 - Shadowing Mode](./featureIdeas/08-shadowing-mode.md) — Overlapping/delayed audio shadowing
+- [16 - Kanji Practice Mode](./featureIdeas/16-kanji-practice-mode.md) — KLC-based kanji learning with SRS
+- [17 - Grammar Anti-Confusion](./featureIdeas/17-grammar-anti-confusion.md) — Distinguish similar grammar patterns
+- [18 - Verb Mastery](./featureIdeas/18-verb-mastery.md) — 34 verbs, 7 conjugation forms each
+- [19 - Reading Comprehension](./featureIdeas/19-reading-comprehension.md) — Graded passages N5→N3 with questions
+- [21 - Kanji Writing Practice](./featureIdeas/21-kanji-writing.md) — Handwriting recognition & stroke order
+- [22 - Speech Recognition Feedback](./featureIdeas/22-speech-feedback.md) — AI pronunciation assessment with Whisper
+- [23 - Listening Comprehension](./featureIdeas/23-listening-comprehension.md) — Audio-only comprehension quizzes
 
 ### Data & Progress
-- [09 - Vocabulary Table](./featureIdeas/09-vocabulary-table.md) - Normalized DB schema
-- [10 - JLPT N3 Roadmap](./featureIdeas/10-jlpt-roadmap.md) - 24-month learning path
-- [11 - Pomodoro Tracker](./featureIdeas/11-pomodoro-tracker.md) - Daily streaks & focus timer
-- [14 - Vocabulary Badges](./featureIdeas/14-vocabulary-badges.md) - Cross-lesson word tracking
+- [09 - Vocabulary Table](./featureIdeas/09-vocabulary-table.md) — Normalized DB schema for vocabulary
+- [10 - JLPT N3 Roadmap](./featureIdeas/10-jlpt-roadmap.md) — 24-month learning path to N3
+- [11 - Pomodoro Tracker](./featureIdeas/11-pomodoro-tracker.md) — Daily streaks & focus timer
+- [14 - Vocabulary Badges](./featureIdeas/14-vocabulary-badges.md) — Cross-lesson word tracking with ↻ badges
+- [20 - Progress Dashboard](./featureIdeas/20-progress-dashboard.md) — Stats, weak points, activity tracking
 
-### Technical
-- [12 - Backend Modularization](./featureIdeas/12-backend-modularization.md) - Route restructuring
-- [13 - Frontend Refactoring](./featureIdeas/13-frontend-refactoring.md) - Component extraction
-- [15 - Infrastructure & Security](./featureIdeas/15-infrastructure-security.md) - Git cleanup, PM2
+### Technical Infrastructure
+- [12 - Backend Modularization](./featureIdeas/12-backend-modularization.md) — Route restructuring, modular architecture
+- [13 - Frontend Refactoring](./featureIdeas/13-frontend-refactoring.md) — Component extraction, code organization
+- [15 - Infrastructure & Security](./featureIdeas/15-infrastructure-security.md) — Git cleanup, PM2, environment security
 
 ---
 
