@@ -1034,6 +1034,9 @@ export const GrammarMode: React.FC = () => {
     if (currentPattern) {
       setCurrentPattern(null);
       setReviewMode('normal');
+      setReviewQueue([]); // Clear review queue when going back
+      setReviewQueueIndex(0);
+      navigate('/grammar'); // Clear exercise ID from URL
       // Return to graph if we came from there
       if (returnToGraph) {
         setReturnToGraph(false);
