@@ -167,6 +167,27 @@ router.get('/patterns/:id/exercise', checkPassword, async (req, res) => {
   }
 });
 
+// Get exercise by ID
+router.get('/exercises/:id', checkPassword, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query(
+      'SELECT * FROM grammar_exercises WHERE id = $1',
+      [id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Exercise not found' });
+    }
+    
+    res.json({ exercise: result.rows[0] });
+  } catch (error) {
+    console.error('Error fetching exercise by ID:', error);
+    res.status(500).json({ error: 'Failed to fetch exercise' });
+  }
+});
+
 // Get discrimination exercise for a pattern
 router.get('/patterns/:id/discrimination', checkPassword, async (req, res) => {
   try {

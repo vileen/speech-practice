@@ -42,6 +42,7 @@ function App() {
         <Route path="/memory" element={<MemoryModeWrapper />} />
         <Route path="/kanji" element={<KanjiPracticePage />} />
         <Route path="/grammar" element={<GrammarMode />} />
+        <Route path="/grammar/:exerciseId" element={<GrammarMode />} />
         <Route path="/counters" element={<CountersMode />} />
         <Route path="/verbs" element={<VerbMode />} />
         <Route path="/reading" element={<ReadingMode />} />

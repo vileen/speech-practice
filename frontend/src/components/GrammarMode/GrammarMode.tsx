@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useFurigana } from '../../hooks/useFurigana.js';
 import { Header } from '../Header/index.js';
 import { API_URL } from '../../config/api.js';
@@ -315,6 +315,7 @@ const DiscriminationDrill: React.FC<{
 
 export const GrammarMode: React.FC = () => {
   const navigate = useNavigate();
+  const { exerciseId } = useParams<{ exerciseId?: string }>();
   const [patterns, setPatterns] = useState<GrammarPattern[]>([]);
   const [currentPattern, setCurrentPattern] = useState<GrammarPattern | null>(null);
   const [exercise, setExercise] = useState<GrammarExercise | null>(null);
@@ -354,6 +355,17 @@ export const GrammarMode: React.FC = () => {
     loadDuePatterns();
     loadConfusionStats();
   }, []);
+
+  // Load exercise from URL if exerciseId is present
+  useEffect(() => {
+    if (exerciseId && patterns.length > 0) {
+      const id = parseInt(exerciseId, 10);
+      if (!isNaN(id)) {
+        // Find the pattern that contains this exercise
+        loadExerciseById(id);
+      }
+    }
+  }, [exerciseId, patterns]);
 
   // Reload due patterns count when selected categories change
   useEffect(() => {
@@ -610,9 +622,43 @@ export const GrammarMode: React.FC = () => {
         setSelectedDiscriminationOption(null);
         setDiscriminationFeedback(null);
         setState('input');
+        // Update URL with exercise ID
+        if (data.exercise?.id) {
+          navigate(`/grammar/${data.exercise.id}`, { replace: true });
+        }
       }
     } catch (err) {
       console.error('Failed to load exercise:', err);
+    }
+  };
+
+  const loadExerciseById = async (exerciseId: number) => {
+    setState('loading');
+    try {
+      // First get the exercise directly
+      const response = await fetch(`${API_URL}/api/grammar/exercises/${exerciseId}`, {
+        headers: { 'X-Password': password }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setExercise(data.exercise);
+        // Find the pattern for this exercise
+        const pattern = patterns.find(p => p.id === data.exercise.pattern_id);
+        if (pattern) {
+          setCurrentPattern(pattern);
+        }
+        setUserAnswer('');
+        setDiscriminationAlert(null);
+        setSelectedDiscriminationOption(null);
+        setDiscriminationFeedback(null);
+        setState('input');
+      } else {
+        // Exercise not found, clear URL
+        navigate('/grammar', { replace: true });
+      }
+    } catch (err) {
+      console.error('Failed to load exercise by ID:', err);
+      navigate('/grammar', { replace: true });
     }
   };
 
