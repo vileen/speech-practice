@@ -336,6 +336,10 @@ export const GrammarMode: React.FC = () => {
   const [showPatternGraph, setShowPatternGraph] = useState(false);
   const [returnToGraph, setReturnToGraph] = useState(false); // Track if we should return to graph after comparison
 
+  // Review queue to cycle through different patterns
+  const [reviewQueue, setReviewQueue] = useState<GrammarPattern[]>([]);
+  const [reviewQueueIndex, setReviewQueueIndex] = useState(0);
+
   // Discrimination drill state
   const [selectedDiscriminationOption, setSelectedDiscriminationOption] = useState<DiscriminationOption | null>(null);
   const [discriminationFeedback, setDiscriminationFeedback] = useState<{isCorrect: boolean; explanation: string} | null>(null);
@@ -550,6 +554,9 @@ export const GrammarMode: React.FC = () => {
       }
 
       if (patternsToReview.length > 0) {
+        // Set up review queue so we cycle through different patterns
+        setReviewQueue(patternsToReview);
+        setReviewQueueIndex(0);
         const firstPattern = patternsToReview[0];
         setCurrentPattern(firstPattern);
         await loadExercise(firstPattern.id);
@@ -683,6 +690,20 @@ export const GrammarMode: React.FC = () => {
   };
 
   const startPattern = async (pattern: GrammarPattern) => {
+    // Set up a review queue from patterns in the same categories
+    const patternsInCategories = selectedCategories.length > 0
+      ? patterns.filter(p => selectedCategories.includes(p.category))
+      : patterns;
+    
+    // Shuffle for variety, but put the selected pattern first
+    const shuffled = patternsInCategories
+      .filter(p => p.id !== pattern.id)
+      .sort(() => Math.random() - 0.5);
+    const queue = [pattern, ...shuffled];
+    
+    setReviewQueue(queue);
+    setReviewQueueIndex(0);
+    
     // If this is a counter group, load variants first
     if (pattern.isCounterGroup && pattern.pattern) {
       const variants = await loadCounterVariants(pattern.pattern);
@@ -903,7 +924,15 @@ export const GrammarMode: React.FC = () => {
     if (reviewMode === 'discrimination') {
       // In discrimination mode, load a new discrimination exercise
       startDiscriminationDrill();
+    } else if (reviewQueue.length > 0) {
+      // Move to next pattern in the queue
+      const nextIndex = (reviewQueueIndex + 1) % reviewQueue.length;
+      setReviewQueueIndex(nextIndex);
+      const nextPattern = reviewQueue[nextIndex];
+      setCurrentPattern(nextPattern);
+      loadExercise(nextPattern.id);
     } else if (currentPattern) {
+      // Fallback: load another exercise for the same pattern (old behavior)
       loadExercise(currentPattern.id);
     }
   };
