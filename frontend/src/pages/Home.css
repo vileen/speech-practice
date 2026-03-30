@@ -80,3 +80,14 @@
   font-size: 0.875rem;
   border-top: 1px solid #2a2a4e;
 }
+
+.quote-footer .quote-text {
+  margin-bottom: 4px;
+}
+
+.quote-footer .built-with {
+  font-size: 0.75rem;
+  color: #666;
+  font-style: normal;
+  opacity: 0.8;
+}

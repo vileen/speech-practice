@@ -101,7 +101,8 @@ export function Home() {
         </main>
         
         <footer className="quote-footer">
-          {randomQuote}
+          <div className="quote-text">{randomQuote}</div>
+          <div className="built-with">Built with hate by vileen</div>
         </footer>
       </div>
     </AuthenticatedRoute>
