@@ -102,7 +102,17 @@ export function Home() {
         
         <footer className="quote-footer">
           <div className="quote-text">{randomQuote}</div>
-          <div className="built-with">Built with hate by vileen</div>
+          <div className="built-with">
+            Built with hate by{' '}
+            <a 
+              href="https://github.com/vileen" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="built-with-link"
+            >
+              vileen
+            </a>
+          </div>
         </footer>
       </div>
     </AuthenticatedRoute>

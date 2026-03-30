@@ -73,16 +73,20 @@
 
 /* Quote footer */
 .quote-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   padding: 16px 20px;
   color: #888;
   font-style: italic;
   font-size: 0.875rem;
   border-top: 1px solid #2a2a4e;
+  gap: 4px;
 }
 
 .quote-footer .quote-text {
-  margin-bottom: 4px;
+  margin: 0;
 }
 
 .quote-footer .built-with {
@@ -90,4 +94,36 @@
   color: #666;
   font-style: normal;
   opacity: 0.8;
+}
+
+.quote-footer .built-with-link {
+  color: #888;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.quote-footer .built-with-link:hover {
+  color: #4ade80;
+  text-decoration: underline;
+}
+
+/* Desktop: quote centered, built-with in bottom right */
+@media (min-width: 768px) {
+  .quote-footer {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .quote-footer .quote-text {
+    text-align: center;
+    flex: 1;
+  }
+
+  .quote-footer .built-with {
+    position: absolute;
+    right: 20px;
+    bottom: 16px;
+  }
 }
