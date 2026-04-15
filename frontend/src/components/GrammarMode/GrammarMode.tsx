@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFurigana } from '../../hooks/useFurigana.js';
 import { Header } from '../Header/index.js';
 import { API_URL } from '../../config/api.js';
 import { PatternGraph } from './PatternGraph.js';
+import { PatternCard } from './PatternCard.js';
+import { ExerciseDisplay } from './ExerciseDisplay.js';
+import { ComparisonView } from './ComparisonView.js';
+import { DiscriminationDrill } from './DiscriminationDrill.js';
 import './GrammarMode.css';
 
 export interface GrammarPattern {
@@ -26,7 +29,7 @@ export interface GrammarPattern {
   isCounterGroup?: boolean;     // Flag for counter base forms
 }
 
-interface GrammarExercise {
+export interface GrammarExercise {
   id: number;
   type: 'construction' | 'transformation' | 'error_correction' | 'fill_blank' | 'discrimination';
   prompt: string;
@@ -37,7 +40,7 @@ interface GrammarExercise {
   options?: DiscriminationOption[];
 }
 
-interface DiscriminationOption {
+export interface DiscriminationOption {
   pattern_id: number;
   pattern: string;
   category: string;
@@ -45,7 +48,7 @@ interface DiscriminationOption {
   explanation: string;
 }
 
-interface DiscriminationAlert {
+export interface DiscriminationAlert {
   confusedWith: GrammarPattern;
   message: string;
 }
@@ -80,237 +83,6 @@ const CATEGORY_GROUPS: Record<string, CategoryGroup> = {
     name: 'All',
     categories: [] // Populated dynamically based on available categories
   }
-};
-
-// Memoized PatternCard - defined outside GrammarMode to prevent rerenders
-const PatternCard: React.FC<{
-  pattern: GrammarPattern;
-  showFurigana: boolean;
-  onClick: () => void;
-  onCompare?: () => void;
-  hasConfusion?: boolean;
-}> = React.memo(({ pattern, showFurigana, onClick, onCompare, hasConfusion }) => {
-  const { furigana } = useFurigana(pattern.pattern, showFurigana);
-  
-  return (
-    <div className={`pattern-card ${hasConfusion ? 'has-confusion' : ''}`} onClick={onClick}>
-      <div className="pattern-header">
-        <span className="pattern-text">
-          {showFurigana && furigana ? (
-            <span dangerouslySetInnerHTML={{ __html: furigana }} />
-          ) : (
-            pattern.pattern
-          )}
-        </span>
-        <span className="pattern-level">{pattern.jlpt_level}</span>
-      </div>
-      <div className="pattern-category">{pattern.category}</div>
-      {(pattern.streak ?? 0) > 0 && (
-        <div className="pattern-streak">🔥 {pattern.streak}</div>
-      )}
-      {hasConfusion && (
-        <div className="confusion-badge">⚠️</div>
-      )}
-      {onCompare && pattern.related_patterns && pattern.related_patterns.length > 0 && (
-        <button 
-          className="compare-btn" 
-          onClick={(e) => { e.stopPropagation(); onCompare(); }}
-          title="Compare with similar patterns"
-        >
-          Compare
-        </button>
-      )}
-    </div>
-  );
-});
-
-// Memoized ExerciseDisplay - defined outside GrammarMode to prevent rerenders
-const ExerciseDisplay: React.FC<{
-  text: string;
-  showFurigana: boolean;
-  className?: string;
-}> = React.memo(({ text, showFurigana, className = '' }) => {
-  const { furigana } = useFurigana(text, showFurigana);
-  
-  return (
-    <span className={className}>
-      {showFurigana && furigana ? (
-        <span dangerouslySetInnerHTML={{ __html: furigana }} />
-      ) : (
-        text
-      )}
-    </span>
-  );
-});
-
-// Comparison View Component
-const ComparisonView: React.FC<{
-  patterns: GrammarPattern[];
-  showFurigana: boolean;
-  onClose: () => void;
-  onSelectPattern: (pattern: GrammarPattern) => void;
-}> = ({ patterns, showFurigana, onClose, onSelectPattern }) => {
-  return (
-    <div className="comparison-modal">
-      <div className="comparison-content">
-        <div className="comparison-header">
-          <h3>🔍 Pattern Comparison</h3>
-          <button className="close-btn" onClick={onClose}>×</button>
-        </div>
-        <div className="comparison-grid">
-          {patterns.map((pattern, index) => (
-            <div key={pattern.id} className="comparison-card">
-              <div className="comparison-index">{index + 1}</div>
-              <h4>
-                <ExerciseDisplay text={pattern.pattern} showFurigana={showFurigana} />
-              </h4>
-              <span className="comparison-category">{pattern.category}</span>
-              
-              {/* What this counter counts */}
-              {pattern.formation_rules?.some((r: any) => r.counts) && (
-                <div className="counter-info">
-                  <span className="counter-label">Liczy:</span>
-                  <span className="counter-value">
-                    {pattern.formation_rules.find((r: any) => r.counts)?.counts}
-                  </span>
-                  {pattern.formation_rules.find((r: any) => r.usage)?.usage && (
-                    <span className="counter-usage">
-                      ({pattern.formation_rules.find((r: any) => r.usage)?.usage})
-                    </span>
-                  )}
-                </div>
-              )}
-              
-              <div className="formation-rules">
-                <h5>Formation:</h5>
-                <ul>
-                  {pattern.formation_rules?.filter((r: any) => r.rule).map((rule: any, i: number) => (
-                    <li key={i}>
-                      {rule.step && <span className="step-num">{rule.step}.</span>}
-                      <ExerciseDisplay text={rule.rule} showFurigana={showFurigana} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              <div className="examples">
-                <h5>Examples:</h5>
-                {pattern.examples?.slice(0, 2).map((ex, i) => (
-                  <div key={i} className="example">
-                    <p className="jp">
-                      <ExerciseDisplay text={ex.jp} showFurigana={showFurigana} />
-                    </p>
-                    <p className="en">{ex.en}</p>
-                  </div>
-                ))}
-              </div>
-              
-              {pattern.common_mistakes?.length > 0 && (
-                <div className="common-mistakes">
-                  <h5>⚠️ Common Mistakes:</h5>
-                  {pattern.common_mistakes?.slice(0, 1).map((m, i) => (
-                    <div key={i} className="mistake">
-                      <p className="mistake-name">{m.mistake}</p>
-                      <p className="mistake-expl">{m.explanation}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              <button 
-                className="practice-this-btn"
-                onClick={() => onSelectPattern(pattern)}
-              >
-                Practice This →
-              </button>
-            </div>
-          ))}
-        </div>
-        
-        {patterns.length === 2 && (
-          <div className="comparison-diff">
-            <h4>🎯 Key Differences</h4>
-            <div className="diff-grid">
-              <div className="diff-item">
-                <span className="diff-pattern">
-                  <ExerciseDisplay text={patterns[0].pattern} showFurigana={showFurigana} />
-                </span>
-                <span className="diff-desc">{patterns[0].category}</span>
-              </div>
-              <div className="diff-vs">vs</div>
-              <div className="diff-item">
-                <span className="diff-pattern">
-                  <ExerciseDisplay text={patterns[1].pattern} showFurigana={showFurigana} />
-                </span>
-                <span className="diff-desc">{patterns[1].category}</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Discrimination Drill Component
-const DiscriminationDrill: React.FC<{
-  exercise: GrammarExercise;
-  patterns: GrammarPattern[];
-  showFurigana: boolean;
-  onSelectOption: (option: DiscriminationOption, pattern: GrammarPattern) => void;
-}> = ({ exercise, patterns, showFurigana, onSelectOption }) => {
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  
-  if (!exercise.options || exercise.options.length === 0) {
-    return <div className="discrimination-error">No options available for this drill.</div>;
-  }
-  
-  return (
-    <div className="discrimination-drill">
-      <div className="discrimination-context">
-        <p className="discrimination-prompt">
-          <ExerciseDisplay text={exercise.prompt} showFurigana={showFurigana} />
-        </p>
-        {exercise.context && (
-          <p className="discrimination-hint">
-            <ExerciseDisplay text={exercise.context} showFurigana={showFurigana} />
-          </p>
-        )}
-      </div>
-      
-      <div className="discrimination-question">
-        <p>Choose the correct pattern:</p>
-      </div>
-      
-      <div className="discrimination-options">
-        {exercise.options.map((option, index) => {
-          const pattern = patterns.find(p => p.id === option.pattern_id);
-          if (!pattern) return null;
-          
-          const isSelected = selectedOption === option.pattern_id;
-          
-          return (
-            <button
-              key={option.pattern_id}
-              className={`discrimination-option ${isSelected ? 'selected' : ''}`}
-              onClick={() => {
-                setSelectedOption(option.pattern_id);
-                onSelectOption(option, pattern);
-              }}
-            >
-              <span className="option-letter">{String.fromCharCode(65 + index)}</span>
-              <div className="option-content">
-                <span className="option-pattern">
-                  <ExerciseDisplay text={option.pattern} showFurigana={showFurigana} />
-                </span>
-                <span className="option-category">{option.category}</span>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
 };
 
 export const GrammarMode: React.FC = () => {
