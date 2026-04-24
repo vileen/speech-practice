@@ -131,7 +131,7 @@ describe('Grammar Routes', () => {
     });
 
     it('should exclude Counters from normal query', async () => {
-      const mockRows = [];
+      const mockRows: any[] = [];
       mockQuery.mockResolvedValue({ rows: mockRows });
 
       await request(app)
@@ -186,7 +186,7 @@ describe('Grammar Routes', () => {
 
     it('should return null progress when no progress exists', async () => {
       const mockPattern = { id: 1, pattern: '〜てもいい', category: 'Permission' };
-      const mockExercises = [];
+      const mockExercises: any[] = [];
 
       mockQuery
         .mockResolvedValueOnce({ rows: [mockPattern] })
@@ -270,7 +270,7 @@ describe('Grammar Routes', () => {
     });
 
     it('should exclude Counters from review', async () => {
-      const mockRows = [];
+      const mockRows: any[] = [];
       mockQuery.mockResolvedValue({ rows: mockRows });
 
       await request(app)
@@ -463,19 +463,21 @@ describe('Grammar Routes', () => {
 
   describe('POST /progress', () => {
     it('should record attempt and update progress when authorized', async () => {
+      // Setup transaction client - 5 queries: BEGIN, SELECT, INSERT, UPDATE, COMMIT
       const mockClient = {
         query: vi.fn(),
         release: vi.fn(),
       };
-
       mockClient.query
         .mockResolvedValueOnce({}) // BEGIN
         .mockResolvedValueOnce({ rows: [] }) // No existing progress
-        .mockResolvedValueOnce({ rows: [{ pattern_id: 1, ease_factor: 2.5, interval_days: 1 }] }) // INSERT new progress
+        .mockResolvedValueOnce({ rows: [{ pattern_id: 1, ease_factor: 2.5, interval_days: 1, streak: 0, correct_attempts: 0, total_attempts: 0 }] }) // INSERT new progress
+        .mockResolvedValueOnce({ rows: [{ pattern_id: 1, ease_factor: 2.6, interval_days: 3, streak: 1, correct_attempts: 1, total_attempts: 1 }] }) // UPDATE progress
         .mockResolvedValueOnce({}); // COMMIT
-
       mockConnect.mockResolvedValue(mockClient);
-      mockQuery.mockResolvedValue({ rows: [{ id: 1 }] }); // grammar_attempts INSERT returning id
+
+      // Setup pool.query for grammar_attempts INSERT
+      mockQuery.mockResolvedValue({ rows: [{ id: 1 }] });
 
       const response = await request(app)
         .post('/progress')
