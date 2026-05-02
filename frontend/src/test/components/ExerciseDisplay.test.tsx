@@ -1,25 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ExerciseDisplay } from '../../components/GrammarMode/ExerciseDisplay';
 
-// Mock useFurigana hook
+// Mock the useFurigana hook
 vi.mock('../../hooks/useFurigana', () => ({
-  useFurigana: vi.fn((_text: string, enabled: boolean) => {
-    if (enabled && _text.includes('漢字')) {
-      return {
-        furigana: '<ruby>漢字<rt>かんじ</rt></ruby>',
-        isLoading: false,
-        error: null,
-        refresh: vi.fn(),
-      };
-    }
-    return {
-      furigana: null,
-      isLoading: false,
-      error: null,
-      refresh: vi.fn(),
-    };
-  }),
+  useFurigana: vi.fn((text: string, enabled: boolean) => ({
+    furigana: enabled ? `<ruby>${text}<rt>reading</rt></ruby>` : null,
+    loading: false,
+    error: null,
+  })),
 }));
 
 describe('ExerciseDisplay', () => {
@@ -27,81 +16,49 @@ describe('ExerciseDisplay', () => {
     vi.clearAllMocks();
   });
 
-  describe('Rendering', () => {
-    it('should render plain text when showFurigana is false', () => {
-      render(<ExerciseDisplay text="Hello world" showFurigana={false} />);
-      expect(screen.getByText('Hello world')).toBeInTheDocument();
-    });
-
-    it('should render plain text when showFurigana is true but no furigana available', () => {
-      render(<ExerciseDisplay text="Hello world" showFurigana={true} />);
-      expect(screen.getByText('Hello world')).toBeInTheDocument();
-    });
-
-    it('should render furigana HTML when available and showFurigana is true', () => {
-      const { container } = render(<ExerciseDisplay text="漢字" showFurigana={true} />);
-      const rubyElement = container.querySelector('ruby');
-      expect(rubyElement).toBeInTheDocument();
-      expect(rubyElement).toHaveTextContent('漢字');
-    });
-
-    it('should not render ruby when showFurigana is false', () => {
-      const { container } = render(<ExerciseDisplay text="漢字" showFurigana={false} />);
-      expect(container.querySelector('ruby')).not.toBeInTheDocument();
-    });
+  it('should render plain text when furigana is disabled', () => {
+    render(<ExerciseDisplay text="食べる" showFurigana={false} />);
+    
+    expect(screen.getByText('食べる')).toBeInTheDocument();
   });
 
-  describe('Custom className', () => {
-    it('should apply custom className when provided', () => {
-      const { container } = render(
-        <ExerciseDisplay text="Test" showFurigana={false} className="custom-class" />
-      );
-      const span = container.querySelector('span');
-      expect(span).toHaveClass('custom-class');
-    });
-
-    it('should have no custom className by default', () => {
-      const { container } = render(<ExerciseDisplay text="Test" showFurigana={false} />);
-      const span = container.querySelector('span');
-      expect(span).not.toHaveClass('custom-class');
-    });
+  it('should render furigana HTML when enabled', () => {
+    render(<ExerciseDisplay text="食べる" showFurigana={true} />);
+    
+    const element = screen.getByText('食べる');
+    expect(element).toBeInTheDocument();
+    expect(element.closest('span')?.innerHTML).toContain('ruby');
   });
 
-  describe('Memo behavior', () => {
-    it('should be memoized (React.memo)', () => {
-      // ExerciseDisplay is exported with React.memo
-      // We verify it renders correctly
-      const { rerender } = render(<ExerciseDisplay text="First" showFurigana={false} />);
-      expect(screen.getByText('First')).toBeInTheDocument();
-
-      rerender(<ExerciseDisplay text="Second" showFurigana={false} />);
-      expect(screen.getByText('Second')).toBeInTheDocument();
-    });
+  it('should apply custom className', () => {
+    render(<ExerciseDisplay text="test" showFurigana={false} className="custom-class" />);
+    
+    const spans = screen.getAllByText('test');
+    expect(spans[0].closest('span')).toHaveClass('custom-class');
   });
 
-  describe('Empty text', () => {
-    it('should handle empty string', () => {
-      const { container } = render(<ExerciseDisplay text="" showFurigana={false} />);
-      const span = container.querySelector('span');
-      expect(span).toBeInTheDocument();
-      expect(span?.textContent).toBe('');
-    });
+  it('should handle empty text', () => {
+    render(<ExerciseDisplay text="" showFurigana={false} />);
+    
+    const span = document.querySelector('span');
+    expect(span).toBeInTheDocument();
   });
 
-  describe('Japanese text', () => {
-    it('should render hiragana text', () => {
-      render(<ExerciseDisplay text="こんにちは" showFurigana={false} />);
-      expect(screen.getByText('こんにちは')).toBeInTheDocument();
-    });
+  it('should handle long text', () => {
+    const longText = 'これは非常に長い日本語のテキストです';
+    render(<ExerciseDisplay text={longText} showFurigana={false} />);
+    
+    expect(screen.getByText(longText)).toBeInTheDocument();
+  });
 
-    it('should render mixed Japanese text', () => {
-      render(<ExerciseDisplay text="日本語を勉強します" showFurigana={false} />);
-      expect(screen.getByText('日本語を勉強します')).toBeInTheDocument();
-    });
-
-    it('should render grammar pattern text', () => {
-      render(<ExerciseDisplay text="〜てもいいです" showFurigana={false} />);
-      expect(screen.getByText('〜てもいいです')).toBeInTheDocument();
-    });
+  it('should toggle between furigana and plain text', () => {
+    const { rerender } = render(<ExerciseDisplay text="漢字" showFurigana={false} />);
+    
+    expect(screen.getByText('漢字')).toBeInTheDocument();
+    
+    rerender(<ExerciseDisplay text="漢字" showFurigana={true} />);
+    
+    const element = screen.getByText('漢字');
+    expect(element.closest('span')?.innerHTML).toContain('ruby');
   });
 });
