@@ -17,7 +17,7 @@ router.get('/groups', checkPassword, async (req, res) => {
             'pattern', pattern,
             'formation_rules', formation_rules,
             'examples', examples
-          ) ORDER BY pattern
+          ) ORDER BY id
         ) as patterns,
         (SELECT formation_rules->0->>'counts' FROM grammar_patterns gp2 
          WHERE gp2.base_form = gp.base_form AND gp2.formation_rules->0->>'counts' IS NOT NULL 
@@ -76,7 +76,7 @@ router.get('/:baseForm/variants', checkPassword, async (req, res) => {
       FROM grammar_patterns gp
       LEFT JOIN user_grammar_progress ugp ON gp.id = ugp.pattern_id
       WHERE gp.category = 'Counters' AND gp.base_form = $1
-      ORDER BY gp.pattern
+      ORDER BY gp.id
     `, [baseForm]);
     
     res.json({
