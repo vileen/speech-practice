@@ -483,29 +483,37 @@
 /* Custom checkbox */
 .group-checkbox {
   position: relative;
-  display: inline-block;
-  width: 22px;
-  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   flex-shrink: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .group-checkbox input {
+  position: absolute;
   opacity: 0;
   width: 0;
   height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  pointer-events: none;
 }
 
 .checkmark {
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: block;
   width: 22px;
   height: 22px;
   background: rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
   transition: all 0.2s;
+  position: relative;
 }
 
 .group-checkbox:hover .checkmark {
