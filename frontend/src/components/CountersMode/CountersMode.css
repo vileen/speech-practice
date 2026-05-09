@@ -490,6 +490,7 @@
   padding: 0;
   background: none;
   margin: 0;
+  flex: none;
 }
 
 .group-checkbox input {
