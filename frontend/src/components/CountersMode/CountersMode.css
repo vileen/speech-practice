@@ -473,6 +473,13 @@
   margin-bottom: 8px;
 }
 
+.group-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
 .group-card-header h3 {
   margin: 0;
   font-size: 1.5rem;
@@ -481,23 +488,23 @@
 }
 
 /* Custom checkbox */
-.group-checkbox {
+.counters-mode .group-checkbox {
   display: inline-block;
   width: 24px;
   height: 24px;
   cursor: pointer;
   flex-shrink: 0;
-  padding: 0;
-  background: none;
+  padding: 0 !important;
+  background: none !important;
   margin: 0;
-  flex: none;
+  flex: none !important;
 }
 
-.group-checkbox input {
+.counters-mode .group-checkbox input {
   display: none;
 }
 
-.checkmark {
+.counters-mode .checkmark {
   display: block;
   width: 22px;
   height: 22px;
@@ -508,16 +515,16 @@
   position: relative;
 }
 
-.group-checkbox:hover .checkmark {
+.counters-mode .group-checkbox:hover .checkmark {
   border-color: #e94560;
 }
 
-.group-checkbox input:checked + .checkmark {
+.counters-mode .group-checkbox input:checked + .checkmark {
   background: #e94560;
   border-color: #e94560;
 }
 
-.group-checkbox input:checked + .checkmark::after {
+.counters-mode .group-checkbox input:checked + .checkmark::after {
   content: '';
   position: absolute;
   left: 7px;
