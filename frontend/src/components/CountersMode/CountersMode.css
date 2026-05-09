@@ -535,3 +535,109 @@
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
+
+/* Study actions (Table + Quiz buttons) */
+.study-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.table-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.table-btn:hover, .table-btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #e94560;
+}
+
+/* Table View */
+.table-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.counter-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.counter-table thead th {
+  text-align: left;
+  padding: 12px 16px;
+  background: rgba(233, 69, 96, 0.15);
+  border-bottom: 2px solid #e94560;
+  color: #ffd700;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.counter-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s;
+}
+
+.counter-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.counter-table tbody td {
+  padding: 14px 16px;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.col-counter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.table-pattern {
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: #fff;
+}
+
+.table-romaji {
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+}
+
+.col-meaning {
+  color: #ccc;
+  min-width: 120px;
+}
+
+.col-rule {
+  color: #aaa;
+  font-size: 13px;
+  max-width: 400px;
+}
+
+@media (max-width: 640px) {
+  .counter-table {
+    font-size: 13px;
+  }
+  .counter-table tbody td {
+    padding: 10px 12px;
+  }
+  .table-pattern {
+    font-size: 1.1rem;
+  }
+  .col-rule {
+    max-width: 200px;
+  }
+}

@@ -21,7 +21,7 @@ interface CounterGroup {
   description: string;
 }
 
-type Mode = 'menu' | 'study' | 'quiz' | 'mixed' | 'category-quiz' | 'review';
+type Mode = 'menu' | 'study' | 'table' | 'quiz' | 'mixed' | 'category-quiz' | 'review';
 
 interface QuizQuestion {
   pattern: CounterPattern;
@@ -273,7 +273,6 @@ export function CountersMode() {
                       </label>
                     </div>
                     <p className="group-counts">{group.counts}</p>
-                    <p className="group-desc">{group.description}</p>
                     <div className="group-meta">
                       <span>{group.count} variants</span>
                       <button className="study-btn" onClick={(e) => { e.stopPropagation(); startStudy(group); }}>
@@ -306,7 +305,10 @@ export function CountersMode() {
         <header className="counters-header">
           <button className="back-btn" onClick={() => setMode('menu')}>← Menu</button>
           <h1>{selectedGroup.baseForm} - {selectedGroup.counts}</h1>
-          <button className="quiz-btn" onClick={startQuiz}>🎯 Quiz</button>
+          <div className="study-actions">
+            <button className="table-btn" onClick={() => setMode('table')}>📋 Table</button>
+            <button className="quiz-btn" onClick={startQuiz}>🎯 Quiz</button>
+          </div>
         </header>
 
         <div className="study-container">
@@ -314,8 +316,7 @@ export function CountersMode() {
             <div className="counter-pattern-large">{currentPattern.pattern}</div>
             
             <div className="counter-info-section">
-              <h3>Counts: {selectedGroup.counts}</h3>
-              <p>{selectedGroup.description}</p>
+              <h3>{selectedGroup.counts}</h3>
             </div>
 
             {currentPattern.examples?.length > 0 && (
@@ -345,6 +346,49 @@ export function CountersMode() {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === 'table' && selectedGroup) {
+    return (
+      <div className="counters-mode">
+        <header className="counters-header">
+          <button className="back-btn" onClick={() => setMode('menu')}>← Menu</button>
+          <h1>{selectedGroup.baseForm} - {selectedGroup.counts}</h1>
+          <div className="study-actions">
+            <button className="table-btn active" onClick={() => setMode('study')}>📋 Cards</button>
+            <button className="quiz-btn" onClick={startQuiz}>🎯 Quiz</button>
+          </div>
+        </header>
+
+        <div className="table-container">
+          <table className="counter-table">
+            <thead>
+              <tr>
+                <th>Counter</th>
+                <th>Meaning</th>
+                <th>Rule</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedGroup.patterns.map(p => {
+                const ex = p.examples?.[0];
+                const rule = p.formation_rules?.[0]?.rule || '';
+                return (
+                  <tr key={p.id}>
+                    <td className="col-counter">
+                      <span className="table-pattern">{p.pattern}</span>
+                      {ex?.romaji && <span className="table-romaji">{ex.romaji}</span>}
+                    </td>
+                    <td className="col-meaning">{ex?.en || '-'}</td>
+                    <td className="col-rule">{rule}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     );
