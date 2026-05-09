@@ -21,7 +21,7 @@ interface CounterGroup {
   description: string;
 }
 
-type Mode = 'menu' | 'study' | 'quiz' | 'mixed' | 'review';
+type Mode = 'menu' | 'study' | 'quiz' | 'mixed' | 'category-quiz' | 'review';
 
 interface QuizQuestion {
   pattern: CounterPattern;
@@ -46,6 +46,9 @@ export function CountersMode() {
   // Mixed quiz state
   const [mixedQuestions, setMixedQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+  // Category selection state
+  const [selectedGroups, setSelectedGroups] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadCounterGroups();
@@ -105,11 +108,56 @@ export function CountersMode() {
   }, [selectedGroup]);
 
   const handleAnswer = (_known: boolean) => {
-    if (mode === 'mixed') {
+    if (mode === 'mixed' || mode === 'category-quiz') {
       nextMixedQuestion();
     } else {
       pickRandomQuestion();
     }
+  };
+
+  // Toggle group selection for category quiz
+  const toggleGroupSelection = (baseForm: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(baseForm)) {
+        next.delete(baseForm);
+      } else {
+        next.add(baseForm);
+      }
+      return next;
+    });
+  };
+
+  // Start quiz from selected groups only
+  const startSelectedQuiz = () => {
+    const questions: QuizQuestion[] = [];
+    const targetCount = 20;
+    
+    const selectedPatterns: { pattern: CounterPattern; group: CounterGroup }[] = [];
+    counterGroups.forEach(group => {
+      if (selectedGroups.has(group.baseForm)) {
+        group.patterns.forEach(pattern => {
+          selectedPatterns.push({ pattern, group });
+        });
+      }
+    });
+    
+    const shuffled = selectedPatterns.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, Math.min(targetCount, shuffled.length));
+    
+    selected.forEach(({ pattern, group }) => {
+      questions.push({
+        pattern,
+        group,
+        questionText: getQuestionText(pattern, group)
+      });
+    });
+    
+    setMixedQuestions(questions);
+    setCurrentQuestionIndex(0);
+    setMode('category-quiz');
+    setShowAnswer(false);
   };
 
   // Generate mixed quiz questions from all groups
@@ -199,24 +247,51 @@ export function CountersMode() {
           <div className="loading">Loading counters...</div>
         ) : (
           <div className="counter-groups">
-            <h2>Select a group to study:</h2>
+            <h2>Select a group to study, or pick multiple for a quiz:</h2>
             <div className="groups-grid">
-              {counterGroups.map(group => (
-                <div 
-                  key={group.baseForm}
-                  className="group-card"
-                  onClick={() => startStudy(group)}
-                >
-                  <h3>{group.baseForm}</h3>
-                  <p className="group-counts">{group.counts}</p>
-                  <p className="group-desc">{group.description}</p>
-                  <div className="group-meta">
-                    <span>{group.count} variants</span>
-                    <button className="study-btn">Study →</button>
+              {counterGroups.map(group => {
+                const isSelected = selectedGroups.has(group.baseForm);
+                return (
+                  <div 
+                    key={group.baseForm}
+                    className={`group-card ${isSelected ? 'selected' : ''}`}
+                    onClick={() => startStudy(group)}
+                  >
+                    <div className="group-card-header">
+                      <h3>{group.baseForm}</h3>
+                      <label 
+                        className="group-checkbox"
+                        onClick={(e) => toggleGroupSelection(group.baseForm, e)}
+                      >
+                        <input 
+                          type="checkbox" 
+                          checked={isSelected}
+                          onChange={() => {}} 
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <span className="checkmark"></span>
+                      </label>
+                    </div>
+                    <p className="group-counts">{group.counts}</p>
+                    <p className="group-desc">{group.description}</p>
+                    <div className="group-meta">
+                      <span>{group.count} variants</span>
+                      <button className="study-btn" onClick={(e) => { e.stopPropagation(); startStudy(group); }}>
+                        Study →
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+          </div>
+        )}
+
+        {/* Floating action: practice selected groups */}
+        {selectedGroups.size > 0 && (
+          <div className="selected-quiz-fab" onClick={startSelectedQuiz}>
+            <span className="fab-label">🎯 Practice {selectedGroups.size} group{selectedGroups.size > 1 ? 's' : ''}</span>
+            <span className="fab-count">{Array.from(selectedGroups).map(bf => counterGroups.find(g => g.baseForm === bf)?.count || 0).reduce((a,b) => a+b, 0)} cards</span>
           </div>
         )}
       </div>
@@ -322,15 +397,16 @@ export function CountersMode() {
     );
   }
 
-  if (mode === 'mixed' && mixedQuestions.length > 0) {
+  if ((mode === 'mixed' || mode === 'category-quiz') && mixedQuestions.length > 0) {
     const currentQ = mixedQuestions[currentQuestionIndex];
     const progress = `${currentQuestionIndex + 1} / ${mixedQuestions.length}`;
+    const title = mode === 'category-quiz' ? '🎯 Category Quiz' : '🎯 Mixed Quiz';
     
     return (
       <div className="counters-mode">
         <header className="counters-header">
           <button className="back-btn" onClick={() => setMode('menu')}>← Menu</button>
-          <h1>🎯 Mixed Quiz</h1>
+          <h1>{title}</h1>
           <span className="quiz-progress">{progress}</span>
         </header>
 
