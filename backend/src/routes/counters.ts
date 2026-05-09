@@ -36,7 +36,10 @@ router.get('/groups', checkPassword, async (req, res) => {
           WHEN base_form = '〜個' THEN 4
           WHEN base_form = '〜枚' THEN 5
           WHEN base_form = '〜日' THEN 6
-          ELSE 7
+          WHEN base_form = '〜月' THEN 7
+          WHEN base_form = '〜分' THEN 8
+          WHEN base_form = '〜才/歳' THEN 9
+          ELSE 10
         END,
         base_form
     `);

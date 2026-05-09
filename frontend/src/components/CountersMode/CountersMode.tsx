@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../config/api.js';
 import './CountersMode.css';
@@ -23,10 +23,10 @@ interface CounterGroup {
 
 type Mode = 'menu' | 'study' | 'quiz' | 'mixed' | 'review';
 
-interface MixedQuestion {
+interface QuizQuestion {
   pattern: CounterPattern;
   group: CounterGroup;
-  number: number;
+  questionText: string;
 }
 
 export function CountersMode() {
@@ -40,8 +40,11 @@ export function CountersMode() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [loading, setLoading] = useState(true);
   
+  // Quiz state
+  const [quizQuestion, setQuizQuestion] = useState<QuizQuestion | null>(null);
+  
   // Mixed quiz state
-  const [mixedQuestions, setMixedQuestions] = useState<MixedQuestion[]>([]);
+  const [mixedQuestions, setMixedQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
@@ -65,6 +68,16 @@ export function CountersMode() {
     }
   };
 
+  const getQuestionText = (pattern: CounterPattern, group: CounterGroup): string => {
+    // Use example English if available
+    const ex = pattern.examples?.[0];
+    if (ex?.en) {
+      return `How do you say: "${ex.en}"?`;
+    }
+    // Fallback to group description + pattern
+    return `What is the reading for ${group.counts}?`;
+  };
+
   const startStudy = (group: CounterGroup) => {
     setSelectedGroup(group);
     setMode('study');
@@ -75,28 +88,33 @@ export function CountersMode() {
 
   const startQuiz = () => {
     setMode('quiz');
-    pickRandomPattern();
+    pickRandomQuestion();
   };
 
-  const pickRandomPattern = () => {
+  const pickRandomQuestion = useCallback(() => {
     if (selectedGroup) {
       const random = selectedGroup.patterns[Math.floor(Math.random() * selectedGroup.patterns.length)];
       setCurrentPattern(random);
+      setQuizQuestion({
+        pattern: random,
+        group: selectedGroup,
+        questionText: getQuestionText(random, selectedGroup)
+      });
       setShowAnswer(false);
     }
-  };
+  }, [selectedGroup]);
 
   const handleAnswer = (_known: boolean) => {
     if (mode === 'mixed') {
       nextMixedQuestion();
     } else {
-      pickRandomPattern();
+      pickRandomQuestion();
     }
   };
 
   // Generate mixed quiz questions from all groups
   const startMixedQuiz = () => {
-    const questions: MixedQuestion[] = [];
+    const questions: QuizQuestion[] = [];
     const targetCount = 20;
     
     // Get all available patterns from all groups
@@ -111,12 +129,11 @@ export function CountersMode() {
     const shuffled = allPatterns.sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, Math.min(targetCount, shuffled.length));
     
-    // Create questions with random numbers (1-10)
     selected.forEach(({ pattern, group }) => {
       questions.push({
         pattern,
         group,
-        number: Math.floor(Math.random() * 10) + 1
+        questionText: getQuestionText(pattern, group)
       });
     });
     
@@ -131,7 +148,6 @@ export function CountersMode() {
       setCurrentQuestionIndex(prev => prev + 1);
       setShowAnswer(false);
     } else {
-      // Quiz complete - back to menu
       setMode('menu');
     }
   };
@@ -169,7 +185,6 @@ export function CountersMode() {
           </div>
         </div>
 
-        {/* Mixed Quiz Banner */}
         <div className="mixed-quiz-banner" onClick={startMixedQuiz}>
           <div className="mixed-quiz-info">
             <span className="mixed-quiz-title">🎯 Mixed Quiz</span>
@@ -209,6 +224,8 @@ export function CountersMode() {
   }
 
   if (mode === 'study' && selectedGroup && currentPattern) {
+    const currentIdx = selectedGroup.patterns.indexOf(currentPattern);
+    
     return (
       <div className="counters-mode">
         <header className="counters-header">
@@ -233,6 +250,7 @@ export function CountersMode() {
                   <div key={i} className="example-item">
                     <p className="jp">{ex.jp}</p>
                     <p className="en">{ex.en}</p>
+                    {ex.romaji && <p className="romaji">{ex.romaji}</p>}
                   </div>
                 ))}
               </div>
@@ -240,16 +258,14 @@ export function CountersMode() {
 
             <div className="counter-navigation">
               <button onClick={() => {
-                const idx = selectedGroup.patterns.indexOf(currentPattern);
-                if (idx > 0) setCurrentPattern(selectedGroup.patterns[idx - 1]);
-              }} disabled={selectedGroup.patterns.indexOf(currentPattern) === 0}>
+                if (currentIdx > 0) setCurrentPattern(selectedGroup.patterns[currentIdx - 1]);
+              }} disabled={currentIdx === 0}>
                 ← Previous
               </button>
-              <span>{selectedGroup.patterns.indexOf(currentPattern) + 1} / {selectedGroup.patterns.length}</span>
+              <span>{currentIdx + 1} / {selectedGroup.patterns.length}</span>
               <button onClick={() => {
-                const idx = selectedGroup.patterns.indexOf(currentPattern);
-                if (idx < selectedGroup.patterns.length - 1) setCurrentPattern(selectedGroup.patterns[idx + 1]);
-              }} disabled={selectedGroup.patterns.indexOf(currentPattern) === selectedGroup.patterns.length - 1}>
+                if (currentIdx < selectedGroup.patterns.length - 1) setCurrentPattern(selectedGroup.patterns[currentIdx + 1]);
+              }} disabled={currentIdx === selectedGroup.patterns.length - 1}>
                 Next →
               </button>
             </div>
@@ -259,7 +275,7 @@ export function CountersMode() {
     );
   }
 
-  if (mode === 'quiz' && selectedGroup && currentPattern) {
+  if (mode === 'quiz' && selectedGroup && quizQuestion) {
     return (
       <div className="counters-mode">
         <header className="counters-header">
@@ -270,7 +286,7 @@ export function CountersMode() {
         <div className="quiz-container">
           <div className="quiz-card">
             <div className="quiz-question">
-              <p className="question-text">How do you say "{Math.floor(Math.random() * 10) + 1} {selectedGroup.counts}"?</p>
+              <p className="question-text">{quizQuestion.questionText}</p>
             </div>
 
             {!showAnswer ? (
@@ -279,9 +295,15 @@ export function CountersMode() {
               </button>
             ) : (
               <div className="quiz-answer">
-                <div className="answer-pattern">{currentPattern.pattern}</div>
-                {currentPattern.examples?.[0] && (
-                  <p className="answer-example">{currentPattern.examples[0].jp}</p>
+                <div className="answer-pattern">{quizQuestion.pattern.pattern}</div>
+                {quizQuestion.pattern.examples?.[0] && (
+                  <div className="answer-example">
+                    <p className="jp">{quizQuestion.pattern.examples[0].jp}</p>
+                    <p className="en">{quizQuestion.pattern.examples[0].en}</p>
+                    {quizQuestion.pattern.examples[0].romaji && (
+                      <p className="romaji">{quizQuestion.pattern.examples[0].romaji}</p>
+                    )}
+                  </div>
                 )}
                 
                 <div className="answer-buttons">
@@ -317,7 +339,7 @@ export function CountersMode() {
             <div className="quiz-category">{currentQ.group.baseForm} — {currentQ.group.counts}</div>
             
             <div className="quiz-question">
-              <p className="question-text">How do you say "{currentQ.number} {currentQ.group.counts}"?</p>
+              <p className="question-text">{currentQ.questionText}</p>
             </div>
 
             {!showAnswer ? (
@@ -328,7 +350,13 @@ export function CountersMode() {
               <div className="quiz-answer">
                 <div className="answer-pattern">{currentQ.pattern.pattern}</div>
                 {currentQ.pattern.examples?.[0] && (
-                  <p className="answer-example">{currentQ.pattern.examples[0].jp}</p>
+                  <div className="answer-example">
+                    <p className="jp">{currentQ.pattern.examples[0].jp}</p>
+                    <p className="en">{currentQ.pattern.examples[0].en}</p>
+                    {currentQ.pattern.examples[0].romaji && (
+                      <p className="romaji">{currentQ.pattern.examples[0].romaji}</p>
+                    )}
+                  </div>
                 )}
                 
                 <div className="answer-buttons">
