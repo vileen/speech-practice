@@ -22,8 +22,8 @@ router.get('/groups', checkPassword, async (req, res) => {
         (SELECT formation_rules->0->>'counts' FROM grammar_patterns gp2 
          WHERE gp2.base_form = gp.base_form AND gp2.formation_rules->0->>'counts' IS NOT NULL 
          LIMIT 1) as counts,
-        (SELECT formation_rules->0->>'usage' FROM grammar_patterns gp3 
-         WHERE gp3.base_form = gp.base_form AND gp3.formation_rules->0->>'usage' IS NOT NULL 
+        (SELECT formation_rules->0->>'counts' FROM grammar_patterns gp3 
+         WHERE gp3.base_form = gp.base_form AND gp3.formation_rules->0->>'counts' IS NOT NULL 
          LIMIT 1) as description
       FROM grammar_patterns gp
       WHERE category = 'Counters' AND base_form IS NOT NULL
