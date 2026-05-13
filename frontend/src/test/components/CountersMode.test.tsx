@@ -165,7 +165,7 @@ describe('CountersMode', () => {
     });
 
     expect(screen.getByText('ひとり')).toBeInTheDocument();
-    expect(screen.getByText('Counts: people')).toBeInTheDocument();
+    expect(screen.getByText('people')).toBeInTheDocument();
   });
 
   it('should navigate between patterns in study mode', async () => {

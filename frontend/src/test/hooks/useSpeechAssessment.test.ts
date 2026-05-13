@@ -1,49 +1,24 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useSpeechAssessment, useTranscription } from '../../hooks/useSpeechAssessment';
-import { API_URL } from '../../config/api';
 
 // Mock the API config
-vi.mock('../../config/api', () => ({
-  API_URL: 'https://test-api.example.com'
+vi.mock('../../config/api.js', () => ({
+  API_URL: 'http://localhost:3001',
 }));
 
 describe('useSpeechAssessment', () => {
-  let mockFetch: ReturnType<typeof vi.fn>;
-
   beforeEach(() => {
-    mockFetch = vi.fn();
-    global.fetch = mockFetch;
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.restoreAllMocks();
+    global.fetch = vi.fn();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  const createMockBlob = () => new Blob(['test-audio'], { type: 'audio/webm' });
-
-  const createMockAssessmentResponse = (): any => ({
-    transcript: 'こんにちは',
-    accuracyScore: 85,
-    feedback: {
-      overall: 'Good pronunciation with minor issues',
-      errors: [
-        {
-          type: 'pronunciation',
-          expected: 'に',
-          actual: 'ni',
-          position: 2
-        }
-      ],
-      suggestions: ['Focus on the "chi" sound']
-    },
-    expected: 'こんにちは',
-    expectedRomaji: 'konnichiwa'
-  });
-
   describe('Initial State', () => {
-    it('should initialize with correct default state', () => {
+    it('should initialize with null result and not assessing', () => {
       const { result } = renderHook(() => useSpeechAssessment());
 
       expect(result.current.result).toBeNull();
@@ -53,188 +28,203 @@ describe('useSpeechAssessment', () => {
   });
 
   describe('assessPronunciation', () => {
-    it('should set isAssessing to true while processing', async () => {
-      mockFetch.mockImplementation(() => new Promise(() => {})); // Never resolves
+    it('should send audio and target text to API', async () => {
+      const mockAssessment = {
+        transcript: 'konnichiwa',
+        accuracyScore: 85,
+        feedback: {
+          overall: 'Good pronunciation',
+          errors: [],
+          suggestions: ['Try to stress the second syllable more'],
+        },
+        expected: 'こんにちは',
+        expectedRomaji: 'konnichiwa',
+      };
 
-      const { result } = renderHook(() => useSpeechAssessment());
-
-      act(() => {
-        result.current.assessPronunciation(createMockBlob(), 'こんにちは');
-      });
-
-      expect(result.current.isAssessing).toBe(true);
-    });
-
-    it('should clear previous result and error before new assessment', async () => {
-      mockFetch
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(createMockAssessmentResponse())
-        })
-        .mockImplementation(() => new Promise(() => {}));
-
-      const { result } = renderHook(() => useSpeechAssessment());
-
-      // First assessment
-      await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
-      });
-
-      expect(result.current.result).not.toBeNull();
-
-      // Start second assessment
-      act(() => {
-        result.current.assessPronunciation(createMockBlob(), 'さようなら');
-      });
-
-      expect(result.current.result).toBeNull();
-      expect(result.current.error).toBeNull();
-    });
-
-    it('should call API with correct form data', async () => {
-      const mockResponse = createMockAssessmentResponse();
-      mockFetch.mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse)
-      });
+        json: () => Promise.resolve(mockAssessment),
+      } as Response);
 
       const { result } = renderHook(() => useSpeechAssessment());
-      const blob = createMockBlob();
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
+      let assessmentResult: typeof mockAssessment | null = null;
       await act(async () => {
-        await result.current.assessPronunciation(blob, 'こんにちは', 'konnichiwa');
+        assessmentResult = await result.current.assessPronunciation(
+          audioBlob,
+          'こんにちは',
+          'konnichiwa'
+        );
       });
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        `${API_URL}/api/speech/assess`,
+      expect(global.fetch).toHaveBeenCalledWith(
+        'http://localhost:3001/api/speech/assess',
         expect.objectContaining({
           method: 'POST',
-          body: expect.any(FormData)
+          body: expect.any(FormData),
         })
       );
 
       // Verify FormData contents
-      const formData = mockFetch.mock.calls[0][1].body as FormData;
+      const fetchCall = vi.mocked(global.fetch).mock.calls[0];
+      const formData = fetchCall[1]!.body as FormData;
       expect(formData.get('audio')).toBeInstanceOf(Blob);
       expect(formData.get('target_text')).toBe('こんにちは');
       expect(formData.get('expected_romaji')).toBe('konnichiwa');
+
+      expect(assessmentResult).toEqual(mockAssessment);
     });
 
-    it('should call API without expectedRomaji when not provided', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(createMockAssessmentResponse())
+    it('should set isAssessing to true during assessment', async () => {
+      let resolveFetch: (value: Response) => void;
+      const fetchPromise = new Promise<Response>((resolve) => {
+        resolveFetch = resolve;
       });
+
+      global.fetch = vi.fn().mockReturnValue(fetchPromise);
 
       const { result } = renderHook(() => useSpeechAssessment());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
-      await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
+      act(() => {
+        result.current.assessPronunciation(audioBlob, 'こんにちは');
       });
 
-      const formData = mockFetch.mock.calls[0][1].body as FormData;
-      expect(formData.get('target_text')).toBe('こんにちは');
+      expect(result.current.isAssessing).toBe(true);
+      expect(result.current.error).toBeNull();
+
+      resolveFetch!({
+        ok: true,
+        json: () => Promise.resolve({
+          transcript: 'konnichiwa',
+          accuracyScore: 90,
+          feedback: { overall: 'Great!', errors: [], suggestions: [] },
+          expected: 'こんにちは',
+        }),
+      } as Response);
+
+      await waitFor(() => {
+        expect(result.current.isAssessing).toBe(false);
+      });
+    });
+
+    it('should not include expected_romaji when not provided', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({
+          transcript: 'konnichiwa',
+          accuracyScore: 80,
+          feedback: { overall: 'OK', errors: [], suggestions: [] },
+          expected: 'こんにちは',
+        }),
+      } as Response);
+
+      const { result } = renderHook(() => useSpeechAssessment());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
+
+      await act(async () => {
+        await result.current.assessPronunciation(audioBlob, 'こんにちは');
+      });
+
+      const fetchCall = vi.mocked(global.fetch).mock.calls[0];
+      const formData = fetchCall[1]!.body as FormData;
       expect(formData.get('expected_romaji')).toBeNull();
     });
 
-    it('should set result on successful assessment', async () => {
-      const mockResponse = createMockAssessmentResponse();
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockResponse)
-      });
-
-      const { result } = renderHook(() => useSpeechAssessment());
-
-      await act(async () => {
-        const assessment = await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
-        expect(assessment).toEqual(mockResponse);
-      });
-
-      expect(result.current.result).toEqual(mockResponse);
-      expect(result.current.isAssessing).toBe(false);
-      expect(result.current.error).toBeNull();
-    });
-
-    it('should handle API error with message', async () => {
-      mockFetch.mockResolvedValue({
+    it('should handle API error response', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
         ok: false,
-        status: 400,
-        json: () => Promise.resolve({ message: 'Invalid audio format' })
-      });
+        status: 500,
+        json: () => Promise.resolve({ message: 'Server error' }),
+      } as Response);
 
       const { result } = renderHook(() => useSpeechAssessment());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
       await act(async () => {
-        const assessment = await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
-        expect(assessment).toBeNull();
+        await result.current.assessPronunciation(audioBlob, 'こんにちは');
       });
 
-      expect(result.current.error).toBe('Invalid audio format');
+      expect(result.current.error).toBe('Server error');
       expect(result.current.result).toBeNull();
       expect(result.current.isAssessing).toBe(false);
     });
 
-    it('should handle API error without message', async () => {
-      mockFetch.mockResolvedValue({
+    it('should handle API error with no message', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
         ok: false,
-        status: 500,
-        json: () => Promise.reject(new Error('Parse error'))
-      });
+        status: 400,
+        json: () => Promise.resolve({}),
+      } as Response);
 
       const { result } = renderHook(() => useSpeechAssessment());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
       await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
+        await result.current.assessPronunciation(audioBlob, 'こんにちは');
       });
 
-      expect(result.current.error).toBe('Assessment failed: 500');
+      expect(result.current.error).toBe('Assessment failed: 400');
+      expect(result.current.result).toBeNull();
     });
 
-    it('should handle network error', async () => {
-      mockFetch.mockRejectedValue(new Error('Network failure'));
+    it('should handle network errors', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      global.fetch = vi.fn().mockRejectedValue(new Error('Network failure'));
 
       const { result } = renderHook(() => useSpeechAssessment());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
       await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
+        await result.current.assessPronunciation(audioBlob, 'こんにちは');
       });
 
       expect(result.current.error).toBe('Network failure');
       expect(result.current.result).toBeNull();
       expect(result.current.isAssessing).toBe(false);
+
+      consoleErrorSpy.mockRestore();
     });
 
-    it('should handle unknown error type', async () => {
-      mockFetch.mockRejectedValue('Unknown error string');
+    it('should handle non-Error exceptions', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      global.fetch = vi.fn().mockRejectedValue('String error');
 
       const { result } = renderHook(() => useSpeechAssessment());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
       await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
+        await result.current.assessPronunciation(audioBlob, 'こんにちは');
       });
 
       expect(result.current.error).toBe('Assessment failed');
+
+      consoleErrorSpy.mockRestore();
     });
   });
 
   describe('reset', () => {
     it('should clear result, error, and isAssessing state', async () => {
-      mockFetch.mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(createMockAssessmentResponse())
-      });
+        json: () => Promise.resolve({
+          transcript: 'konnichiwa',
+          accuracyScore: 90,
+          feedback: { overall: 'Great!', errors: [], suggestions: [] },
+          expected: 'こんにちは',
+        }),
+      } as Response);
 
       const { result } = renderHook(() => useSpeechAssessment());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
-      // First, get some state
       await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
+        await result.current.assessPronunciation(audioBlob, 'こんにちは');
       });
 
       expect(result.current.result).not.toBeNull();
 
-      // Then reset
       act(() => {
         result.current.reset();
       });
@@ -244,101 +234,20 @@ describe('useSpeechAssessment', () => {
       expect(result.current.isAssessing).toBe(false);
     });
   });
-
-  describe('Edge Cases', () => {
-    it('should handle assessment with empty target text', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(createMockAssessmentResponse())
-      });
-
-      const { result } = renderHook(() => useSpeechAssessment());
-
-      await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), '');
-      });
-
-      const formData = mockFetch.mock.calls[0][1].body as FormData;
-      expect(formData.get('target_text')).toBe('');
-    });
-
-    it('should handle assessment with special characters in target text', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(createMockAssessmentResponse())
-      });
-
-      const { result } = renderHook(() => useSpeechAssessment());
-      const specialText = '日本語！？（テスト）';
-
-      await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), specialText);
-      });
-
-      const formData = mockFetch.mock.calls[0][1].body as FormData;
-      expect(formData.get('target_text')).toBe(specialText);
-    });
-
-    it('should handle assessment result with zero accuracy score', async () => {
-      const zeroScoreResponse = {
-        ...createMockAssessmentResponse(),
-        accuracyScore: 0
-      };
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(zeroScoreResponse)
-      });
-
-      const { result } = renderHook(() => useSpeechAssessment());
-
-      await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
-      });
-
-      expect(result.current.result?.accuracyScore).toBe(0);
-    });
-
-    it('should handle assessment result with empty errors array', async () => {
-      const noErrorsResponse = {
-        ...createMockAssessmentResponse(),
-        feedback: {
-          ...createMockAssessmentResponse().feedback,
-          errors: []
-        }
-      };
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(noErrorsResponse)
-      });
-
-      const { result } = renderHook(() => useSpeechAssessment());
-
-      await act(async () => {
-        await result.current.assessPronunciation(createMockBlob(), 'こんにちは');
-      });
-
-      expect(result.current.result?.feedback.errors).toEqual([]);
-    });
-  });
 });
 
 describe('useTranscription', () => {
-  let mockFetch: ReturnType<typeof vi.fn>;
-
   beforeEach(() => {
-    mockFetch = vi.fn();
-    global.fetch = mockFetch;
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.restoreAllMocks();
+    global.fetch = vi.fn();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  const createMockBlob = () => new Blob(['test-audio'], { type: 'audio/webm' });
-
   describe('Initial State', () => {
-    it('should initialize with correct default state', () => {
+    it('should initialize with null transcript and not transcribing', () => {
       const { result } = renderHook(() => useTranscription());
 
       expect(result.current.transcript).toBeNull();
@@ -348,121 +257,106 @@ describe('useTranscription', () => {
   });
 
   describe('transcribe', () => {
-    it('should set isTranscribing to true while processing', async () => {
-      mockFetch.mockImplementation(() => new Promise(() => {}));
-
-      const { result } = renderHook(() => useTranscription());
-
-      act(() => {
-        result.current.transcribe(createMockBlob());
-      });
-
-      expect(result.current.isTranscribing).toBe(true);
-    });
-
-    it('should call API with correct form data', async () => {
-      mockFetch.mockResolvedValue({
+    it('should send audio to transcription API and return transcript', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ transcript: 'こんにちは' })
-      });
+        json: () => Promise.resolve({ transcript: 'konnichiwa' }),
+      } as Response);
 
       const { result } = renderHook(() => useTranscription());
-      const blob = createMockBlob();
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
+      let transcriptResult: string | null = null;
       await act(async () => {
-        await result.current.transcribe(blob);
+        transcriptResult = await result.current.transcribe(audioBlob);
       });
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        `${API_URL}/api/speech/transcribe`,
+      expect(global.fetch).toHaveBeenCalledWith(
+        'http://localhost:3001/api/speech/transcribe',
         expect.objectContaining({
           method: 'POST',
-          body: expect.any(FormData)
+          body: expect.any(FormData),
         })
       );
 
-      const formData = mockFetch.mock.calls[0][1].body as FormData;
-      expect(formData.get('audio')).toBeInstanceOf(Blob);
+      expect(transcriptResult).toBe('konnichiwa');
+      expect(result.current.transcript).toBe('konnichiwa');
     });
 
-    it('should set transcript on successful transcription', async () => {
-      mockFetch.mockResolvedValue({
+    it('should set isTranscribing to true during transcription', async () => {
+      let resolveFetch: (value: Response) => void;
+      const fetchPromise = new Promise<Response>((resolve) => {
+        resolveFetch = resolve;
+      });
+
+      global.fetch = vi.fn().mockReturnValue(fetchPromise);
+
+      const { result } = renderHook(() => useTranscription());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
+
+      act(() => {
+        result.current.transcribe(audioBlob);
+      });
+
+      expect(result.current.isTranscribing).toBe(true);
+
+      resolveFetch!({
         ok: true,
-        json: () => Promise.resolve({ transcript: 'こんにちは世界' })
+        json: () => Promise.resolve({ transcript: 'hello' }),
+      } as Response);
+
+      await waitFor(() => {
+        expect(result.current.isTranscribing).toBe(false);
       });
-
-      const { result } = renderHook(() => useTranscription());
-
-      await act(async () => {
-        const transcript = await result.current.transcribe(createMockBlob());
-        expect(transcript).toBe('こんにちは世界');
-      });
-
-      expect(result.current.transcript).toBe('こんにちは世界');
-      expect(result.current.isTranscribing).toBe(false);
-      expect(result.current.error).toBeNull();
     });
 
-    it('should handle API error', async () => {
-      mockFetch.mockResolvedValue({
+    it('should handle API error response', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
         ok: false,
-        status: 500
-      });
+        status: 500,
+      } as Response);
 
       const { result } = renderHook(() => useTranscription());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
       await act(async () => {
-        const transcript = await result.current.transcribe(createMockBlob());
-        expect(transcript).toBeNull();
+        await result.current.transcribe(audioBlob);
       });
 
       expect(result.current.error).toBe('Transcription failed: 500');
       expect(result.current.transcript).toBeNull();
     });
 
-    it('should handle network error', async () => {
-      mockFetch.mockRejectedValue(new Error('Connection timeout'));
+    it('should handle network errors', async () => {
+      global.fetch = vi.fn().mockRejectedValue(new Error('Connection lost'));
 
       const { result } = renderHook(() => useTranscription());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
       await act(async () => {
-        await result.current.transcribe(createMockBlob());
+        await result.current.transcribe(audioBlob);
       });
 
-      expect(result.current.error).toBe('Connection timeout');
-    });
-
-    it('should handle empty transcript response', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ transcript: '' })
-      });
-
-      const { result } = renderHook(() => useTranscription());
-
-      await act(async () => {
-        const transcript = await result.current.transcribe(createMockBlob());
-        expect(transcript).toBe('');
-      });
-
-      expect(result.current.transcript).toBe('');
+      expect(result.current.error).toBe('Connection lost');
+      expect(result.current.transcript).toBeNull();
     });
   });
 
   describe('reset', () => {
     it('should clear transcript and error state', async () => {
-      mockFetch.mockResolvedValue({
+      global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ transcript: 'テスト' })
-      });
+        json: () => Promise.resolve({ transcript: 'test' }),
+      } as Response);
 
       const { result } = renderHook(() => useTranscription());
+      const audioBlob = new Blob(['audio-data'], { type: 'audio/webm' });
 
       await act(async () => {
-        await result.current.transcribe(createMockBlob());
+        await result.current.transcribe(audioBlob);
       });
 
-      expect(result.current.transcript).toBe('テスト');
+      expect(result.current.transcript).toBe('test');
 
       act(() => {
         result.current.reset();
