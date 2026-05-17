@@ -68,7 +68,7 @@ if (!existsSync(appConfig.audio.storagePath)) {
 app.use('/api', routes);
 
 // Serve static frontend files
-const staticPath = join(__dirname, '../dist');
+const staticPath = join(__dirname, '../../frontend/dist');
 app.use(express.static(staticPath));
 
 // SPA fallback - serve index.html for non-API routes
