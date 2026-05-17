@@ -96,3 +96,6 @@ backend/backups/*.sql
 
 # Private operational docs (contains infrastructure details)
 docs/OPERATIONS.md
+
+# Local assistant notes
+AGENTS.md
