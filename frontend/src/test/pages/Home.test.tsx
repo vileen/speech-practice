@@ -121,7 +121,7 @@ describe('Home', () => {
 
     it('should render quote footer', () => {
       renderHome();
-      expect(screen.getByText(/Overthinking|dysfunctional|energy drinks|Either|Retardmaxxing|Skill issue|outworked|odd to be number 1|Fuck it/i)).toBeInTheDocument();
+      expect(screen.getByText(/Overthinking|dysfunctional|energy drinks|Either|Retardmaxxing|Skill issue|outworked|odd to be number 1|Fuck it|Nobody cares|your process|your output/i)).toBeInTheDocument();
     });
 
     it('should render built-with link', () => {
