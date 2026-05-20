@@ -83,7 +83,7 @@ router.post('/submit', checkPassword, async (req, res) => {
     let correctCount = 0;
     const results = answers.map((answer: { questionId: number; selectedOption: number }) => {
       const question = questions.find(q => q.id === answer.questionId);
-      const isCorrect = question && question.correct_answer === answer.selectedOption;
+      const isCorrect = question ? question.correct_answer === answer.selectedOption : false;
       if (isCorrect) correctCount++;
       
       return {
