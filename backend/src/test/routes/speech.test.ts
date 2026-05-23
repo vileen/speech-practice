@@ -32,7 +32,7 @@ vi.mock('multer', () => {
         next();
       };
     }),
-  }));
+  })) as any;
   mockMulter.memoryStorage = vi.fn();
   return {
     __esModule: true,
