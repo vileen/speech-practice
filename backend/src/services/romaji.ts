@@ -77,6 +77,8 @@ async function tokenizeJapanese(text: string): Promise<Array<{ surface: string; 
  * Preserves spaces in input
  */
 function convertKanaToRomaji(text: string): string {
+  if (!text) return '';
+  
   let romaji = '';
   let i = 0;
 
@@ -162,7 +164,7 @@ function mergeGrammaticalForms(tokens: Array<{ surface: string; reading: string;
   
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
-    const romaji = convertKanaToRomaji(token.reading || token.surface);
+    const romaji = convertKanaToRomaji(token.reading || token.surface || '');
     const isParticle = token.pos === '助詞';
     const isAuxiliary = token.pos === '助動詞';
     const isSuffix = token.pos === '接尾辞';
