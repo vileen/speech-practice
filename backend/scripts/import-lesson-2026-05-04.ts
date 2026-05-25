@@ -1,5 +1,5 @@
 import { pool } from '../src/db/pool.js';
-import lesson from '../src/data/lessons/2026-05-01.json';
+import lesson from '../src/data/lessons/2026-05-04.json';
 
 async function importLesson() {
   console.log(`Importing lesson ${lesson.id}...\n`);

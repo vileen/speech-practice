@@ -37,7 +37,7 @@ async function importLesson() {
         ['past tense', 'mashita', 'ta-form', 'adjectives past', 'time expressions'],
         JSON.stringify(lesson.vocabulary),
         JSON.stringify(grammarForDb),
-        JSON.stringify(lesson.practice_phrases.map(p => p.jp))
+        JSON.stringify(lesson.practice_phrases)
       ]
     );
     

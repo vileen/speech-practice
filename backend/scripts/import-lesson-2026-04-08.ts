@@ -37,7 +37,7 @@ async function importLesson() {
         lesson.topics,
         JSON.stringify(lesson.vocabulary),
         JSON.stringify(grammarForDb),
-        JSON.stringify(lesson.practice_phrases.map(p => p.jp))
+        JSON.stringify(lesson.practice_phrases)
       ]
     );
 

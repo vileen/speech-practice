@@ -101,8 +101,8 @@ describe('ListeningMode', () => {
     vi.clearAllMocks();
     
     // Setup localStorage mock
-    Storage.prototype.getItem = vi.fn(() => null);
-    Storage.prototype.setItem = vi.fn();
+    vi.spyOn(window.localStorage, 'getItem').mockReturnValue(null);
+    vi.spyOn(window.localStorage, 'setItem').mockImplementation(() => {});
     
     // Setup window.confirm mock
     Object.defineProperty(window, 'confirm', {
@@ -297,6 +297,1079 @@ describe('ListeningMode', () => {
     });
   });
 
+  describe('Listening View', () => {
+    it('should render listening view after clicking a passage', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('Test Passage 1')).toBeInTheDocument();
+      });
+      
+      // Check audio player controls are rendered
+      expect(screen.getByTitle('Replay')).toBeInTheDocument();
+      expect(screen.getByTitle('Play')).toBeInTheDocument();
+      expect(screen.getByText('Continue to Questions →')).toBeInTheDocument();
+    });
+
+    it('should render audio player with speed controls', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('0.75x')).toBeInTheDocument();
+      });
+      
+      expect(screen.getByText('1x')).toBeInTheDocument();
+      expect(screen.getByText('1.25x')).toBeInTheDocument();
+    });
+
+    it('should change playback speed when speed button clicked', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('0.75x')).toBeInTheDocument();
+      });
+      
+      const speed075 = screen.getByText('0.75x');
+      fireEvent.click(speed075);
+      
+      // Speed button should have active class
+      expect(speed075).toHaveClass('active');
+    });
+
+    it('should disable Continue to Questions when no audio has played', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const continueBtn = screen.getByText('Continue to Questions →');
+        expect(continueBtn).toBeDisabled();
+      });
+    });
+
+    it('should enable Continue to Questions after audio time updates', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      // Simulate audio time update by interacting with the progress bar
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      const continueBtn = screen.getByText('Continue to Questions →');
+      expect(continueBtn).not.toBeDisabled();
+    });
+
+    it('should transition to questions view on Continue click', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      // Simulate audio progress
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      
+      expect(screen.getByText('Questions')).toBeInTheDocument();
+      expect(screen.getByText('What is the main topic?')).toBeInTheDocument();
+    });
+
+    it('should display passage badges in listening view', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('N5')).toBeInTheDocument();
+        expect(screen.getByText('Daily Life')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Questions View', () => {
+    it('should render questions with options', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      
+      expect(screen.getByText('Questions')).toBeInTheDocument();
+      expect(screen.getByText('What is the main topic?')).toBeInTheDocument();
+      expect(screen.getByText('What time did they meet?')).toBeInTheDocument();
+      expect(screen.getByText('Option A')).toBeInTheDocument();
+      expect(screen.getByText('Option B')).toBeInTheDocument();
+    });
+
+    it('should show question type labels', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      
+      expect(screen.getByText('Main Idea')).toBeInTheDocument();
+      expect(screen.getByText('Detail')).toBeInTheDocument();
+    });
+
+    it('should show answered count progress', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      
+      expect(screen.getByText('0 / 2 answered')).toBeInTheDocument();
+    });
+
+    it('should call selectAnswer when option is selected', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      
+      const radioButtons = screen.getAllByRole('radio');
+      fireEvent.click(radioButtons[0]);
+      
+      expect(mockSelectAnswer).toHaveBeenCalledWith(1, 0);
+    });
+
+    it('should disable submit button when no answers', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      
+      const submitBtn = screen.getByText('Submit Answers');
+      expect(submitBtn).toBeDisabled();
+    });
+
+    it('should enable submit button when answers are selected', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0 },
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      
+      const submitBtn = screen.getByText('Submit Answers');
+      expect(submitBtn).not.toBeDisabled();
+    });
+
+    it('should go back to listening view', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      
+      expect(screen.getByText('Questions')).toBeInTheDocument();
+      
+      fireEvent.click(screen.getByText('← Back to Audio'));
+      
+      expect(screen.getByText('Continue to Questions →')).toBeInTheDocument();
+    });
+
+    it('should submit answers and show results', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 1 },
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      expect(mockSubmitAnswers).toHaveBeenCalled();
+    });
+
+    it('should show confirmation dialog for unanswered questions', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0 },
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      expect(window.confirm).toHaveBeenCalledWith('You have 1 unanswered question(s). Submit anyway?');
+    });
+  });
+
+  describe('Results View', () => {
+    it('should render results with score', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('Results')).toBeInTheDocument();
+        expect(screen.getByText('75%')).toBeInTheDocument();
+      });
+    });
+
+    it('should display correct and total count', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('3 / 4')).toBeInTheDocument();
+      });
+    });
+
+    it('should display listening time when available', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('Listening Time')).toBeInTheDocument();
+        expect(screen.getByText('2:25')).toBeInTheDocument();
+      });
+    });
+
+    it('should show transcript reveal button', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('📜 Show Transcript')).toBeInTheDocument();
+      });
+    });
+
+    it('should fetch and display transcript', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: { japaneseText: 'テストの文章です', transcript: 'Test transcript text' },
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('📜 Show Transcript')).toBeInTheDocument();
+      });
+      
+      fireEvent.click(screen.getByText('📜 Show Transcript'));
+      
+      await waitFor(() => {
+        expect(mockFetchTranscript).toHaveBeenCalled();
+        expect(screen.getByText('Transcript')).toBeInTheDocument();
+      });
+    });
+
+    it('should render answer review with correct and incorrect answers', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('Review Answers')).toBeInTheDocument();
+        expect(screen.getByText('✓ Correct')).toBeInTheDocument();
+        expect(screen.getByText('✗ Incorrect')).toBeInTheDocument();
+      });
+    });
+
+    it('should show correct answer for incorrect responses', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getAllByText('Explanation:').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Correct answer:').length).toBeGreaterThan(0);
+      });
+    });
+
+    it('should navigate back to list from results', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('← Back to List')).toBeInTheDocument();
+      });
+      
+      fireEvent.click(screen.getByText('← Back to List'));
+      
+      expect(mockReset).toHaveBeenCalled();
+      expect(screen.getByText('Test Passage 1')).toBeInTheDocument();
+      expect(screen.getByText('Test Passage 2')).toBeInTheDocument();
+    });
+
+    it('should navigate to next passage', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('Next Passage →')).toBeInTheDocument();
+      });
+      
+      fireEvent.click(screen.getByText('Next Passage →'));
+      
+      expect(mockFetchPassage).toHaveBeenCalledWith(2);
+    });
+
+    it('should go back to list when next passage does not exist', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[1],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 2'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('Next Passage →')).toBeInTheDocument();
+      });
+      
+      fireEvent.click(screen.getByText('Next Passage →'));
+      
+      expect(mockReset).toHaveBeenCalled();
+      expect(screen.getByText('Test Passage 1')).toBeInTheDocument();
+    });
+  });
+
+  describe('Header Navigation', () => {
+    it('should navigate from listening back to list with reset', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        expect(screen.getByTitle('Play')).toBeInTheDocument();
+      });
+      
+      fireEvent.click(screen.getByTestId('back-btn'));
+      
+      expect(mockReset).toHaveBeenCalled();
+      expect(screen.getByText('Test Passage 1')).toBeInTheDocument();
+      expect(screen.getByText('Test Passage 2')).toBeInTheDocument();
+    });
+
+    it('should navigate from questions back to listening', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      
+      expect(screen.getByText('Questions')).toBeInTheDocument();
+      
+      fireEvent.click(screen.getByTestId('back-btn'));
+      
+      expect(screen.getByText('Continue to Questions →')).toBeInTheDocument();
+    });
+
+    it('should navigate from results back to list with reset', async () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: mockPassages[0],
+        questions: mockQuestions,
+        answers: { 1: 0, 2: 2 },
+        result: mockQuizResult,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      fireEvent.click(screen.getByText('Test Passage 1'));
+      
+      await waitFor(() => {
+        const progressBar = screen.getByRole('slider');
+        fireEvent.change(progressBar, { target: { value: '10' } });
+      });
+      
+      fireEvent.click(screen.getByText('Continue to Questions →'));
+      fireEvent.click(screen.getByText('Submit Answers'));
+      
+      await waitFor(() => {
+        expect(screen.getByText('Results')).toBeInTheDocument();
+      });
+      
+      fireEvent.click(screen.getByTestId('back-btn'));
+      
+      expect(mockReset).toHaveBeenCalled();
+      expect(screen.getByText('Test Passage 1')).toBeInTheDocument();
+    });
+  });
+
+  describe('Furigana Toggle', () => {
+    it('should toggle furigana display', () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: null,
+        questions: [],
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      
+      // Initial state: showFurigana = true (from useState(true)), so title is "Hide furigana"
+      const furiganaBtn = screen.getByTitle('Hide furigana');
+      expect(furiganaBtn).toHaveTextContent('あ');
+      
+      fireEvent.click(furiganaBtn);
+      
+      // After clicking, should now show "漢" with "Show furigana" title
+      expect(screen.getByTitle('Show furigana')).toBeInTheDocument();
+      expect(screen.getByTitle('Show furigana')).toHaveTextContent('漢');
+    });
+
+    it('should load furigana preference from localStorage', () => {
+      vi.spyOn(window.localStorage, 'getItem').mockReturnValue('false');
+
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: null,
+        questions: [],
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      
+      // When saved preference is false, should show "漢" with "Show furigana" title
+      expect(screen.getByTitle('Show furigana')).toBeInTheDocument();
+      expect(screen.getByTitle('Show furigana')).toHaveTextContent('漢');
+    });
+
+    it('should save furigana preference to localStorage', () => {
+      vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
+        passages: mockPassages,
+        currentPassage: null,
+        questions: [],
+        answers: {},
+        result: null,
+        transcript: null,
+        loading: false,
+        error: null,
+        fetchPassages: mockFetchPassages,
+        fetchPassage: mockFetchPassage,
+        selectAnswer: mockSelectAnswer,
+        submitAnswers: mockSubmitAnswers,
+        fetchTranscript: mockFetchTranscript,
+        reset: mockReset,
+      });
+
+      render(<ListeningMode />);
+      
+      // Initial state: showFurigana = true, so title is "Hide furigana"
+      const furiganaBtn = screen.getByTitle('Hide furigana');
+      fireEvent.click(furiganaBtn);
+      
+      expect(window.localStorage.setItem).toHaveBeenCalledWith('listening_show_furigana', 'false');
+    });
+  });
+
   describe('Error Handling', () => {
     it('should display error message when error occurs', () => {
       vi.mocked(useListeningModeModule.useListeningMode).mockReturnValue({
@@ -319,24 +1392,6 @@ describe('ListeningMode', () => {
       render(<ListeningMode />);
       
       expect(screen.getByText('Error: Failed to fetch passages')).toBeInTheDocument();
-    });
-  });
-
-  describe('Furigana Toggle', () => {
-    it('should render furigana toggle button', () => {
-      render(<ListeningMode />);
-      
-      // Default is no saved preference, so button shows "漢" with "Show furigana" title
-      expect(screen.getByTitle('Show furigana')).toBeInTheDocument();
-    });
-
-    it('should render furigana button with correct text', () => {
-      render(<ListeningMode />);
-      
-      // The furigana button should be in the header actions
-      const furiganaBtn = screen.getByTitle('Show furigana');
-      expect(furiganaBtn).toBeInTheDocument();
-      expect(furiganaBtn).toHaveTextContent('漢');
     });
   });
 

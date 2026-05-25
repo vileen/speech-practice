@@ -48,10 +48,34 @@ function validateLesson(lessonId: string): ValidationError[] {
     const jsonPath = join(process.cwd(), 'src/data/lessons', `${lessonId}.json`);
     const data = JSON.parse(readFileSync(jsonPath, 'utf-8'));
     
-    // Check 1: Practice phrases have EN translations
+    // Check 1: Practice phrases are objects with jp/en/romaji
     if (data.practice_phrases && Array.isArray(data.practice_phrases)) {
+      const badFormat = data.practice_phrases.filter((p: any, idx: number) => {
+        if (typeof p === 'string') {
+          errors.push({
+            type: 'ERROR',
+            message: `Practice phrase #${idx + 1} is a plain string — must be object with jp/en/romaji`,
+            path: `practice_phrases[${idx}]`
+          });
+          return true;
+        }
+        if (!p.jp || !p.en || !p.romaji) {
+          errors.push({
+            type: 'ERROR',
+            message: `Practice phrase #${idx + 1} missing required field(s): jp/en/romaji`,
+            path: `practice_phrases[${idx}]`
+          });
+          return true;
+        }
+        return false;
+      });
+      
+      if (badFormat.length > 0) {
+        console.error(`\n❌ Found ${badFormat.length} phrase(s) with wrong format!`);
+      }
+
       const emptyEn = data.practice_phrases.filter((p: any, idx: number) => {
-        if (!p.en || p.en.trim() === '') {
+        if (typeof p === 'object' && (!p.en || p.en.trim() === '')) {
           errors.push({
             type: 'ERROR',
             message: `Practice phrase #${idx + 1} is missing English translation: "${p.jp}"`,
