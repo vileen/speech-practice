@@ -709,6 +709,9 @@
   cursor: pointer;
   font-size: 1rem;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .furigana-toggle:hover {

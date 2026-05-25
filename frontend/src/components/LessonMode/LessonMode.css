@@ -308,6 +308,9 @@
   font-weight: 500;
   min-width: 36px;
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .furigana-toggle:hover {
@@ -670,7 +673,10 @@ ruby.furigana-failed rt {
   .furigana-toggle {
     margin-bottom: 12px;
     font-size: 0.9rem;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
   .lesson-content {
     padding: 12px;

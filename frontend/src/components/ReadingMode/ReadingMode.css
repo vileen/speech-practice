@@ -76,6 +76,9 @@
   font-weight: 500;
   transition: all 0.2s;
   min-width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .furigana-toggle:hover {
