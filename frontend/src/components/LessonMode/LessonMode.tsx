@@ -535,12 +535,13 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
           <button className={activeTab === 'practice' ? 'active' : ''} onClick={() => setActiveTab('practice')}>Practice ({selectedLesson.practice_phrases.length})</button>
         </div>
 
-        <div className="furigana-toggle">
-          <label>
-            <input type="checkbox" checked={showFurigana} onChange={(e) => setShowFurigana(e.target.checked)} />
-            Show Furigana
-          </label>
-        </div>
+        <button
+          className="furigana-toggle"
+          onClick={() => setShowFurigana(!showFurigana)}
+          title={showFurigana ? 'Hide furigana' : 'Show furigana'}
+        >
+          {showFurigana ? 'あ' : '漢'}
+        </button>
 
         <div className="lesson-content">
           {activeTab === 'overview' && (

@@ -295,23 +295,25 @@
   accent-color: #e94560;
 }
 
-/* Legacy class for backwards compatibility */
+/* Furigana toggle button */
 .furigana-toggle {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  color: #e94560;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  min-width: 36px;
   margin-bottom: 16px;
 }
 
-.furigana-toggle label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  color: #aaa;
-}
-
-.furigana-toggle input {
-  width: 18px;
-  height: 18px;
-  accent-color: #e94560;
+.furigana-toggle:hover {
+  background: #e94560;
+  color: #fff;
+  border-color: #e94560;
 }
 
 /* Lesson Content */
