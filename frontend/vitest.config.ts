@@ -14,5 +14,10 @@ export default defineConfig({
         'src/test/',
       ],
     },
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      'e2e/**',
+    ],
   },
 });
