@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 const router = Router();
@@ -54,7 +54,7 @@ router.get('/app', (_req, res) => {
 router.delete('/errors', (_req, res) => {
   try {
     if (existsSync(ERROR_LOG_FILE)) {
-      require('fs').writeFileSync(ERROR_LOG_FILE, '');
+      writeFileSync(ERROR_LOG_FILE, '');
     }
     res.json({ message: 'Error logs cleared' });
   } catch (error) {
