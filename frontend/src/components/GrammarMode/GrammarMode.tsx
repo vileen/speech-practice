@@ -6,7 +6,8 @@ import { PatternGraph } from './PatternGraph.js';
 import { ExerciseDisplay } from './ExerciseDisplay.js';
 import { ComparisonView } from './ComparisonView.js';
 import { DiscriminationDrill } from './DiscriminationDrill.js';
-import { PatternSelection, CATEGORY_GROUPS } from './PatternSelection.js';
+import { PatternSelection } from './PatternSelection.js';
+import { useGrammarCategorySelection } from '../../hooks/useGrammarCategorySelection.js';
 import { GrammarErrorExplanation } from './GrammarErrorExplanation.js';
 import { verifyAnswer } from '../../lib/grammarAnswerVerification.js';
 import './GrammarMode.css';
@@ -67,7 +68,6 @@ export const GrammarMode: React.FC = () => {
   const [state, setState] = useState<ExerciseState>('loading');
   const [userAnswer, setUserAnswer] = useState('');
   const [feedback, setFeedback] = useState<any>(null);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [dueCount, setDueCount] = useState(0);
   const [duePatterns, setDuePatterns] = useState<GrammarPattern[]>([]);
@@ -89,14 +89,21 @@ export const GrammarMode: React.FC = () => {
   const [selectedDiscriminationOption, setSelectedDiscriminationOption] = useState<DiscriminationOption | null>(null);
   const [discriminationFeedback, setDiscriminationFeedback] = useState<{isCorrect: boolean; explanation: string} | null>(null);
 
-  // Category Groups accordion state
-  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
-  const [activeGroup, setActiveGroup] = useState<string | null>(null);
-
-  const STORAGE_KEY = 'grammar_selected_categories';
   const FURIGANA_STORAGE_KEY = 'grammar_show_furigana';
 
   const password = localStorage.getItem('speech_practice_password') || '';
+
+  const {
+    selectedCategories,
+    activeGroup,
+    expandedGroup,
+    setExpandedGroup,
+    toggleCategory,
+    selectAllCategories,
+    deselectAllCategories,
+    clearCategorySelection,
+    selectGroupCategories,
+  } = useGrammarCategorySelection(categories);
 
   // Load patterns and stats on mount
   useEffect(() => {
@@ -121,26 +128,6 @@ export const GrammarMode: React.FC = () => {
     if (patterns.length > 0) {
       loadDuePatterns();
     }
-  }, [selectedCategories]);
-
-  // Load selected categories from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setSelectedCategories(parsed);
-        }
-      } catch (e) {
-        console.error('Failed to parse saved categories:', e);
-      }
-    }
-  }, []);
-
-  // Save selected categories to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedCategories));
   }, [selectedCategories]);
 
   // Load furigana preference from localStorage
@@ -196,11 +183,6 @@ export const GrammarMode: React.FC = () => {
         // Extract unique categories (excluding Counters)
         const cats = [...new Set(allPatterns.map((p: GrammarPattern) => p.category))] as string[];
         setCategories(cats);
-        // Select all categories by default if nothing saved
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved && cats.length > 0) {
-          setSelectedCategories(cats);
-        }
       }
     } catch (err) {
       console.error('Failed to load patterns:', err);
@@ -612,76 +594,6 @@ export const GrammarMode: React.FC = () => {
       loadExercise(currentPattern.id);
     }
   };
-
-  const toggleCategory = (category: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    );
-  };
-
-  const selectAllCategories = () => {
-    setSelectedCategories(categories);
-  };
-
-  const deselectAllCategories = () => {
-    setSelectedCategories([]);
-  };
-
-  const clearCategorySelection = () => {
-    setSelectedCategories([]);
-    setActiveGroup(null);
-  };
-
-  // Check if a group's categories exactly match current selection
-  const isGroupActive = (groupKey: string): boolean => {
-    const group = CATEGORY_GROUPS[groupKey];
-    if (!group) return false;
-
-    const groupCategories = groupKey === 'all' 
-      ? categories 
-      : group.categories.filter(cat => categories.includes(cat));
-
-    if (groupCategories.length === 0) return false;
-    if (selectedCategories.length !== groupCategories.length) return false;
-
-    return groupCategories.every(cat => selectedCategories.includes(cat));
-  };
-
-  // Select categories from a group
-  const selectGroupCategories = (groupKey: string) => {
-    const group = CATEGORY_GROUPS[groupKey];
-    if (!group) return;
-
-    let groupCategories: string[];
-    if (groupKey === 'all') {
-      groupCategories = categories;
-    } else {
-      // Only include categories that actually exist in the data
-      groupCategories = group.categories.filter(cat => categories.includes(cat));
-    }
-
-    if (groupCategories.length === 0) {
-      alert(`No categories found for "${group.name}"`);
-      return;
-    }
-
-    setSelectedCategories(groupCategories);
-    setActiveGroup(groupKey);
-    setExpandedGroup(null); // Collapse accordion after selection
-  };
-
-  // Update active group when categories change manually
-  useEffect(() => {
-    for (const [key] of Object.entries(CATEGORY_GROUPS)) {
-      if (isGroupActive(key)) {
-        setActiveGroup(key);
-        return;
-      }
-    }
-    setActiveGroup(null);
-  }, [selectedCategories, categories]);
 
   const handleHeaderBack = () => {
     if (currentPattern) {
