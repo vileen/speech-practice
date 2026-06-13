@@ -1,29 +1,26 @@
 {
-  "date": "2026-06-12",
-  "testTarget": {
-    "type": "component",
-    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
-    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
-    "priority": "listening-foundation",
-    "reason": "Audio playback is essential for listening practice — all critical hooks (useAudioPlayer, useFurigana, useChatSession) have tests, but AudioPlayer UI component has no tests. First missing component in priority order."
-  },
+  "date": "2026-06-13",
+  "testTarget": null,
   "refactorCandidate": {
-    "sourceFile": "frontend/src/components/VoiceRecorder/VoiceRecorder.tsx",
-    "lineCount": 528,
-    "reason": "Large component (528 lines), mixed UI and logic, no tests exist",
+    "sourceFile": "frontend/src/components/GrammarMode/GrammarMode.tsx",
+    "lineCount": 900,
+    "reason": "Largest component by far (900 lines), single file doing too much — pattern selection, exercise rendering, progress tracking, and UI state all mixed together",
     "shouldRefactor": true
   },
-  "testWritten": true,
-  "testFile": "frontend/src/test/components/AudioPlayer.test.tsx",
-  "testCount": 24,
-  "testPassed": true,
+  "testStatus": {
+    "testWritten": false,
+    "reason": "All 7 priority test targets already covered — no test target assigned",
+    "testPassed": null
+  },
   "refactorDone": true,
   "refactorFiles": [
-    "frontend/src/components/VoiceRecorder/VoiceRecorder.tsx",
-    "frontend/src/components/VoiceRecorder/RecordingControls.tsx",
-    "frontend/src/components/VoiceRecorder/types.ts",
-    "frontend/src/hooks/useVoiceRecorder.ts"
+    "frontend/src/components/GrammarMode/GrammarMode.tsx",
+    "frontend/src/components/GrammarMode/ExerciseContainer.tsx",
+    "frontend/src/components/GrammarMode/types.ts",
+    "frontend/src/hooks/useGrammarMode.ts",
+    "frontend/src/hooks/useGrammarCategorySelection.ts",
+    "frontend/src/test/components/GrammarMode.test.tsx"
   ],
   "testsPassAfterRefactor": true,
-  "refactorNote": "GrammarMode.test.tsx has 3 pre-existing failures unrelated to VoiceRecorder refactor. All other 1028 tests pass."
+  "notes": "Refactored GrammarMode.tsx from ~900 lines to ~150 lines by extracting useGrammarMode hook (~480 lines) and ExerciseContainer component (~200 lines). Also fixed pre-existing test failures in GrammarMode.test.tsx caused by useGrammarCategorySelection hook checking saved === null instead of !saved (jsdom returns undefined for missing localStorage keys). All tests pass."
 }

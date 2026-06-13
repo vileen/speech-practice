@@ -25,7 +25,7 @@ export function useGrammarCategorySelection(categories: string[]) {
   useEffect(() => {
     if (categories.length > 0 && selectedCategories.length === 0) {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === null) {
+      if (!saved) {
         setSelectedCategories(categories);
       }
     }

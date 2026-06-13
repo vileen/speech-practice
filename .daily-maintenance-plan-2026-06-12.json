@@ -1,0 +1,29 @@
+{
+  "date": "2026-06-12",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback is essential for listening practice — all critical hooks (useAudioPlayer, useFurigana, useChatSession) have tests, but AudioPlayer UI component has no tests. First missing component in priority order."
+  },
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/VoiceRecorder/VoiceRecorder.tsx",
+    "lineCount": 528,
+    "reason": "Large component (528 lines), mixed UI and logic, no tests exist",
+    "shouldRefactor": true
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/AudioPlayer.test.tsx",
+  "testCount": 24,
+  "testPassed": true,
+  "refactorDone": true,
+  "refactorFiles": [
+    "frontend/src/components/VoiceRecorder/VoiceRecorder.tsx",
+    "frontend/src/components/VoiceRecorder/RecordingControls.tsx",
+    "frontend/src/components/VoiceRecorder/types.ts",
+    "frontend/src/hooks/useVoiceRecorder.ts"
+  ],
+  "testsPassAfterRefactor": true,
+  "refactorNote": "GrammarMode.test.tsx has 3 pre-existing failures unrelated to VoiceRecorder refactor. All other 1028 tests pass."
+}

@@ -56,7 +56,9 @@ describe('GrammarMode Category Filter', () => {
     });
 
     // All checkboxes should be checked by default
-    expect(screen.getByLabelText('Permission')).toBeChecked();
+    await waitFor(() => {
+      expect(screen.getByLabelText('Permission')).toBeChecked();
+    });
     expect(screen.getByLabelText('Prohibition')).toBeChecked();
     expect(screen.getByLabelText('Particles')).toBeChecked();
     expect(screen.getByLabelText('I-Adjectives')).toBeChecked();
@@ -79,7 +81,9 @@ describe('GrammarMode Category Filter', () => {
     });
 
     // Should load saved selection
-    expect(screen.getByLabelText('Permission')).toBeChecked();
+    await waitFor(() => {
+      expect(screen.getByLabelText('Permission')).toBeChecked();
+    });
     expect(screen.getByLabelText('Particles')).toBeChecked();
   });
 
@@ -101,7 +105,9 @@ describe('GrammarMode Category Filter', () => {
     const particlesCheckbox = screen.getByLabelText('Particles');
     
     // Initially checked
-    expect(particlesCheckbox).toBeChecked();
+    await waitFor(() => {
+      expect(particlesCheckbox).toBeChecked();
+    });
 
     // Click to uncheck
     await act(async () => {

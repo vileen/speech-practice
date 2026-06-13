@@ -1,616 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React from 'react';
 import { Header } from '../Header/index.js';
-import { API_URL } from '../../config/api.js';
 import { PatternGraph } from './PatternGraph.js';
-import { ExerciseDisplay } from './ExerciseDisplay.js';
 import { ComparisonView } from './ComparisonView.js';
-import { DiscriminationDrill } from './DiscriminationDrill.js';
 import { PatternSelection } from './PatternSelection.js';
-import { useGrammarCategorySelection } from '../../hooks/useGrammarCategorySelection.js';
-import { GrammarErrorExplanation } from './GrammarErrorExplanation.js';
-import { verifyAnswer } from '../../lib/grammarAnswerVerification.js';
+import { ExerciseContainer } from './ExerciseContainer.js';
+import { useGrammarMode } from '../../hooks/useGrammarMode.js';
 import './GrammarMode.css';
 
-export interface GrammarPattern {
-  id: number;
-  pattern: string;
-  category: string;
-  jlpt_level: string;
-  formation_rules: any[];
-  examples: any[];
-  common_mistakes: any[];
-  related_patterns?: number[];
-  ease_factor?: number;
-  streak?: number;
-  total_attempts?: number;
-  correct_attempts?: number;
-  confusion_pairs?: number[];
-  base_form?: string;           // For counter grouping
-  variants?: GrammarPattern[];  // Variants when this is a counter group
-  variant_count?: number;       // Number of variants
-  isCounterGroup?: boolean;     // Flag for counter base forms
-}
-
-export interface GrammarExercise {
-  id: number;
-  type: 'construction' | 'transformation' | 'error_correction' | 'fill_blank' | 'discrimination';
-  prompt: string;
-  context: string;
-  correct_answer: string;
-  hints: any[];
-  difficulty: number;
-  options?: DiscriminationOption[];
-}
-
-export interface DiscriminationOption {
-  pattern_id: number;
-  pattern: string;
-  category: string;
-  is_correct: boolean;
-  explanation: string;
-}
-
-export interface DiscriminationAlert {
-  confusedWith: GrammarPattern;
-  message: string;
-}
-
-type ExerciseState = 'loading' | 'prompt' | 'input' | 'processing' | 'feedback' | 'discrimination_select';
-type ReviewMode = 'normal' | 'mixed' | 'discrimination';
+// Re-export types for backward compatibility with existing imports
+export type {
+  GrammarPattern,
+  GrammarExercise,
+  DiscriminationOption,
+  DiscriminationAlert,
+} from './types.js';
 
 export const GrammarMode: React.FC = () => {
-  const navigate = useNavigate();
-  const { exerciseId } = useParams<{ exerciseId?: string }>();
-  const [patterns, setPatterns] = useState<GrammarPattern[]>([]);
-  const [currentPattern, setCurrentPattern] = useState<GrammarPattern | null>(null);
-  const [exercise, setExercise] = useState<GrammarExercise | null>(null);
-  const [state, setState] = useState<ExerciseState>('loading');
-  const [userAnswer, setUserAnswer] = useState('');
-  const [feedback, setFeedback] = useState<any>(null);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [dueCount, setDueCount] = useState(0);
-  const [duePatterns, setDuePatterns] = useState<GrammarPattern[]>([]);
-  const [showFurigana, setShowFurigana] = useState(true);
-  
-  // Anti-confusion features
-  const [comparisonPatterns, setComparisonPatterns] = useState<GrammarPattern[] | null>(null);
-  const [discriminationAlert, setDiscriminationAlert] = useState<DiscriminationAlert | null>(null);
-  const [reviewMode, setReviewMode] = useState<ReviewMode>('normal');
-  const [confusionStats, setConfusionStats] = useState<{patternId: number, count: number}[]>([]);
-  const [showPatternGraph, setShowPatternGraph] = useState(false);
-  const [returnToGraph, setReturnToGraph] = useState(false); // Track if we should return to graph after comparison
-
-  // Review queue to cycle through different patterns
-  const [reviewQueue, setReviewQueue] = useState<GrammarPattern[]>([]);
-  const [reviewQueueIndex, setReviewQueueIndex] = useState(0);
-
-  // Discrimination drill state
-  const [selectedDiscriminationOption, setSelectedDiscriminationOption] = useState<DiscriminationOption | null>(null);
-  const [discriminationFeedback, setDiscriminationFeedback] = useState<{isCorrect: boolean; explanation: string} | null>(null);
-
-  const FURIGANA_STORAGE_KEY = 'grammar_show_furigana';
-
-  const password = localStorage.getItem('speech_practice_password') || '';
-
   const {
+    patterns,
+    currentPattern,
+    exercise,
+    state,
+    userAnswer,
+    feedback,
+    categories,
+    dueCount,
+    duePatterns,
+    showFurigana,
+    comparisonPatterns,
+    discriminationAlert,
+    reviewMode,
+    confusionStats,
+    showPatternGraph,
+    returnToGraph,
+    selectedDiscriminationOption,
+    discriminationFeedback,
     selectedCategories,
     activeGroup,
     expandedGroup,
     setExpandedGroup,
+    setShowPatternGraph,
+    setComparisonPatterns,
+    setReturnToGraph,
+    setShowFurigana,
+    setUserAnswer,
     toggleCategory,
     selectAllCategories,
     deselectAllCategories,
     clearCategorySelection,
     selectGroupCategories,
-  } = useGrammarCategorySelection(categories);
-
-  // Load patterns and stats on mount
-  useEffect(() => {
-    loadPatterns();
-    loadDuePatterns();
-    loadConfusionStats();
-  }, []);
-
-  // Load exercise from URL if exerciseId is present
-  useEffect(() => {
-    if (exerciseId && patterns.length > 0) {
-      const id = parseInt(exerciseId, 10);
-      if (!isNaN(id)) {
-        // Find the pattern that contains this exercise
-        loadExerciseById(id);
-      }
-    }
-  }, [exerciseId, patterns]);
-
-  // Reload due patterns count when selected categories change
-  useEffect(() => {
-    if (patterns.length > 0) {
-      loadDuePatterns();
-    }
-  }, [selectedCategories]);
-
-  // Load furigana preference from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem(FURIGANA_STORAGE_KEY);
-    if (saved !== null) {
-      setShowFurigana(saved === 'true');
-    }
-  }, []);
-
-  // Save furigana preference to localStorage
-  useEffect(() => {
-    localStorage.setItem(FURIGANA_STORAGE_KEY, showFurigana.toString());
-  }, [showFurigana]);
-
-  // Keyboard shortcut: Space to submit or go to next
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== ' ') return;
-      
-      // Don't trigger if user is typing in an input
-      const activeElement = document.activeElement;
-      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-        return;
-      }
-      
-      e.preventDefault();
-      
-      if (state === 'input' && userAnswer.trim()) {
-        handleSubmit();
-      } else if (state === 'feedback') {
-        handleNext();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [state, userAnswer]);
-
-  const loadPatterns = async () => {
-    try {
-      // Load regular patterns
-      const response = await fetch(`${API_URL}/api/grammar/patterns`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Filter out Counters - they have their own mode (CountersMode)
-        const allPatterns = data.patterns.filter((p: GrammarPattern) => p.category !== 'Counters');
-        
-        setPatterns(allPatterns);
-        // Extract unique categories (excluding Counters)
-        const cats = [...new Set(allPatterns.map((p: GrammarPattern) => p.category))] as string[];
-        setCategories(cats);
-      }
-    } catch (err) {
-      console.error('Failed to load patterns:', err);
-    }
-  };
-
-  const loadDuePatterns = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/grammar/review`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setDuePatterns(data.patterns || []);
-        setDueCount(data.count);
-      }
-    } catch (err) {
-      console.error('Failed to load due patterns:', err);
-    }
-  };
-
-  // Load counter variants when user clicks on a counter group
-  const loadCounterVariants = async (baseForm: string): Promise<GrammarPattern[]> => {
-    try {
-      const response = await fetch(`${API_URL}/api/counters/${encodeURIComponent(baseForm)}/variants`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        return data.variants || [];
-      }
-    } catch (err) {
-      console.error('Failed to load counter variants:', err);
-    }
-    return [];
-  };
-
-  const loadConfusionStats = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/grammar/confusion-stats`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        // Count confusions per pattern
-        const counts: Record<number, number> = {};
-        data.topConfusions?.forEach((conf: any) => {
-          // Find pattern ID by name
-          const pattern = patterns.find(p => p.pattern === conf.pattern_name);
-          if (pattern) {
-            counts[pattern.id] = (counts[pattern.id] || 0) + parseInt(conf.count);
-          }
-        });
-        setConfusionStats(Object.entries(counts).map(([id, count]) => ({ 
-          patternId: parseInt(id), 
-          count 
-        })));
-      }
-    } catch (err) {
-      console.error('Failed to load confusion stats:', err);
-    }
-  };
-
-  const startReview = async (useSelected: boolean = false, mixed: boolean = false) => {
-    try {
-      let patternsToReview: GrammarPattern[] = [];
-
-      if (mixed) {
-        // Mixed review mode - shuffle patterns from selected categories
-        const categoriesParam = selectedCategories.join(',');
-        const response = await fetch(
-          `${API_URL}/api/grammar/mixed-review?categories=${categoriesParam}&limit=10`,
-          { headers: { 'X-Password': password } }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          patternsToReview = data.patterns || [];
-        }
-        setReviewMode('mixed');
-      } else if (useSelected && selectedCategories.length > 0) {
-        // Use ALL patterns from selected categories (not just due ones)
-        patternsToReview = patterns.filter(p => selectedCategories.includes(p.category));
-        // Shuffle patterns for variety
-        patternsToReview = [...patternsToReview].sort(() => Math.random() - 0.5);
-        setReviewMode('normal');
-      } else {
-        // Use due patterns from API (original behavior)
-        const response = await fetch(`${API_URL}/api/grammar/review`, {
-          headers: { 'X-Password': password }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          patternsToReview = data.patterns || [];
-        }
-        setReviewMode('normal');
-      }
-
-      if (patternsToReview.length > 0) {
-        // Set up review queue so we cycle through different patterns
-        setReviewQueue(patternsToReview);
-        setReviewQueueIndex(0);
-        const firstPattern = patternsToReview[0];
-        setCurrentPattern(firstPattern);
-        await loadExercise(firstPattern.id);
-      } else {
-        // Build helpful message
-        let message = 'No patterns available.';
-        if (useSelected) {
-          message = 'No patterns found in the selected categories.';
-          message += '\n\nTry selecting different categories.';
-        } else {
-          // Build helpful message showing which categories have due patterns
-          const dueCategoriesList = duePatterns.map(p => p.category);
-          const uniqueDueCategories = [...new Set(dueCategoriesList)];
-          const categoryCounts = uniqueDueCategories.map(cat => {
-            const count = duePatterns.filter(p => p.category === cat).length;
-            return `${cat} (${count})`;
-          });
-          
-          message = 'No patterns due for review.';
-          if (duePatterns.length > 0 && categoryCounts.length > 0) {
-            message += `\n\nThe ${duePatterns.length} due patterns are from:\n${categoryCounts.join(', ')}`;
-          }
-          message += '\n\nTry selecting different categories or browse patterns to learn new ones.';
-        }
-        
-        alert(message);
-      }
-    } catch (err) {
-      console.error('Failed to start review:', err);
-    }
-  };
-
-  const startDiscriminationDrill = async () => {
-    try {
-      // Get patterns from selected categories that have related patterns
-      const eligiblePatterns = patterns.filter(p => 
-        selectedCategories.includes(p.category) && 
-        p.related_patterns && 
-        p.related_patterns.length > 0
-      );
-      
-      if (eligiblePatterns.length === 0) {
-        alert('No patterns with relationships found in selected categories. Try selecting more categories.');
-        return;
-      }
-      
-      // Pick a random eligible pattern
-      const basePattern = eligiblePatterns[Math.floor(Math.random() * eligiblePatterns.length)];
-      setCurrentPattern(basePattern);
-      
-      // Load discrimination exercise
-      await loadDiscriminationExercise(basePattern.id);
-      setReviewMode('discrimination');
-    } catch (err) {
-      console.error('Failed to start discrimination drill:', err);
-    }
-  };
-
-  const loadExercise = async (patternId: number) => {
-    setState('loading');
-    try {
-      const response = await fetch(`${API_URL}/api/grammar/patterns/${patternId}/exercise`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setExercise(data.exercise);
-        setUserAnswer('');
-        setDiscriminationAlert(null);
-        setSelectedDiscriminationOption(null);
-        setDiscriminationFeedback(null);
-        setState('input');
-        // Update URL with exercise ID
-        if (data.exercise?.id) {
-          navigate(`/grammar/${data.exercise.id}`, { replace: true });
-        }
-      }
-    } catch (err) {
-      console.error('Failed to load exercise:', err);
-    }
-  };
-
-  const loadExerciseById = async (exerciseId: number) => {
-    setState('loading');
-    try {
-      // First get the exercise directly
-      const response = await fetch(`${API_URL}/api/grammar/exercises/${exerciseId}`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setExercise(data.exercise);
-        // Find the pattern for this exercise
-        const pattern = patterns.find(p => p.id === data.exercise.pattern_id);
-        if (pattern) {
-          setCurrentPattern(pattern);
-        }
-        setUserAnswer('');
-        setDiscriminationAlert(null);
-        setSelectedDiscriminationOption(null);
-        setDiscriminationFeedback(null);
-        setState('input');
-      } else {
-        // Exercise not found, clear URL
-        navigate('/grammar', { replace: true });
-      }
-    } catch (err) {
-      console.error('Failed to load exercise by ID:', err);
-      navigate('/grammar', { replace: true });
-    }
-  };
-
-  const loadDiscriminationExercise = async (patternId: number) => {
-    setState('loading');
-    try {
-      const response = await fetch(`${API_URL}/api/grammar/patterns/${patternId}/discrimination`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setExercise(data.exercise);
-        setUserAnswer('');
-        setDiscriminationAlert(null);
-        setSelectedDiscriminationOption(null);
-        setDiscriminationFeedback(null);
-        setState('discrimination_select');
-      }
-    } catch (err) {
-      console.error('Failed to load discrimination exercise:', err);
-    }
-  };
-
-  const startPattern = async (pattern: GrammarPattern) => {
-    // Set up a review queue from patterns in the same categories
-    const patternsInCategories = selectedCategories.length > 0
-      ? patterns.filter(p => selectedCategories.includes(p.category))
-      : patterns;
-    
-    // Shuffle for variety, but put the selected pattern first
-    const shuffled = patternsInCategories
-      .filter(p => p.id !== pattern.id)
-      .sort(() => Math.random() - 0.5);
-    const queue = [pattern, ...shuffled];
-    
-    setReviewQueue(queue);
-    setReviewQueueIndex(0);
-    
-    // If this is a counter group, load variants first
-    if (pattern.isCounterGroup && pattern.pattern) {
-      const variants = await loadCounterVariants(pattern.pattern);
-      // For counter groups, pick a random variant to practice
-      if (variants.length > 0) {
-        const randomVariant = variants[Math.floor(Math.random() * variants.length)];
-        setCurrentPattern({
-          ...randomVariant,
-          base_form: pattern.pattern,
-          variants: variants
-        });
-        await loadExercise(randomVariant.id);
-        return;
-      }
-    }
-    setCurrentPattern(pattern);
-    await loadExercise(pattern.id);
-  };
-
-  const handleCompare = async (pattern: GrammarPattern) => {
-    try {
-      const response = await fetch(`${API_URL}/api/grammar/patterns/${pattern.id}/related`, {
-        headers: { 'X-Password': password }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setComparisonPatterns([pattern, ...data.patterns].slice(0, 3));
-      }
-    } catch (err) {
-      console.error('Failed to load related patterns:', err);
-    }
-  };
-
-  const handleDiscriminationSelect = async (option: DiscriminationOption, _pattern: GrammarPattern) => {
-    setSelectedDiscriminationOption(option);
-    
-    // Show immediate feedback
-    setDiscriminationFeedback({
-      isCorrect: option.is_correct,
-      explanation: option.explanation
-    });
-    
-    // If correct, move to construction phase
-    if (option.is_correct) {
-      setTimeout(() => {
-        setState('input');
-      }, 2000);
-    } else {
-      // Wrong choice - log confusion and show comparison option
-      if (currentPattern) {
-        try {
-          await fetch(`${API_URL}/api/grammar/confusion`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Password': password
-            },
-            body: JSON.stringify({
-              patternId: currentPattern.id,
-              confusedWithPatternId: option.pattern_id,
-              userSentence: `Discrimination error: selected ${option.pattern} instead of ${currentPattern.pattern}`
-            })
-          });
-          loadConfusionStats();
-        } catch (err) {
-          console.error('Failed to log confusion:', err);
-        }
-      }
-    }
-  };
-
-  const checkForConfusion = async (userSentence: string, patternId: number): Promise<DiscriminationAlert | null> => {
-    try {
-      const response = await fetch(`${API_URL}/api/grammar/check-confusion`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password': password
-        },
-        body: JSON.stringify({ patternId, userSentence })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.confusedWith) {
-          return {
-            confusedWith: data.confusedWith,
-            message: `⚠️ This looks like "${data.confusedWith.pattern}" (${data.confusedWith.category})!`
-          };
-        }
-      }
-    } catch (err) {
-      console.error('Failed to check confusion:', err);
-    }
-    return null;
-  };
-
-  const handleSubmit = async () => {
-    if (!userAnswer.trim()) return;
-    
-    setState('processing');
-
-    // Check for confusion before submitting
-    const confusion = await checkForConfusion(userAnswer, currentPattern?.id || 0);
-    if (confusion) {
-      setDiscriminationAlert(confusion);
-    }
-
-    const verification = verifyAnswer(userAnswer, exercise?.correct_answer || '');
-    const isCorrect = verification.isCorrect;
-    const result = isCorrect ? 'correct' : 'wrong';
-
-    try {
-      const response = await fetch(`${API_URL}/api/grammar/progress`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password': password
-        },
-        body: JSON.stringify({
-          patternId: currentPattern?.id,
-          exerciseId: exercise?.id,
-          userSentence: userAnswer,
-          result: result,
-          confusedWithPatternId: confusion?.confusedWith?.id
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setFeedback({
-          correct: isCorrect,
-          userAnswer: userAnswer,
-          correctAnswer: exercise?.correct_answer,
-          progress: data.progress,
-          confusion: confusion
-        });
-        setState('feedback');
-        loadDuePatterns();
-        loadConfusionStats();
-      }
-    } catch (err) {
-      console.error('Failed to submit:', err);
-      setState('input');
-    }
-  };
-
-  const handleNext = () => {
-    if (reviewMode === 'discrimination') {
-      // In discrimination mode, load a new discrimination exercise
-      startDiscriminationDrill();
-    } else if (reviewQueue.length > 0) {
-      // Move to next pattern in the queue
-      const nextIndex = (reviewQueueIndex + 1) % reviewQueue.length;
-      setReviewQueueIndex(nextIndex);
-      const nextPattern = reviewQueue[nextIndex];
-      setCurrentPattern(nextPattern);
-      loadExercise(nextPattern.id);
-    } else if (currentPattern) {
-      // Fallback: load another exercise for the same pattern (old behavior)
-      loadExercise(currentPattern.id);
-    }
-  };
-
-  const handleHeaderBack = () => {
-    if (currentPattern) {
-      setCurrentPattern(null);
-      setReviewMode('normal');
-      setReviewQueue([]); // Clear review queue when going back
-      setReviewQueueIndex(0);
-      navigate('/grammar'); // Clear exercise ID from URL
-      // Return to graph if we came from there
-      if (returnToGraph) {
-        setReturnToGraph(false);
-        setShowPatternGraph(true);
-      }
-    } else {
-      navigate('/');
-    }
-  };
+    startReview,
+    startDiscriminationDrill,
+    startPattern,
+    handleCompare,
+    handleDiscriminationSelect,
+    handleSubmit,
+    handleNext,
+    handleHeaderBack,
+  } = useGrammarMode();
 
   return (
     <div className="grammar-mode">
@@ -654,7 +101,7 @@ export const GrammarMode: React.FC = () => {
           }}
           onSelectPattern={(pattern) => {
             setComparisonPatterns(null);
-            setReturnToGraph(false); // Don't return to graph if pattern selected
+            setReturnToGraph(false);
             startPattern(pattern);
           }}
         />
@@ -672,7 +119,7 @@ export const GrammarMode: React.FC = () => {
           }}
           onComparePatterns={(pats) => {
             setShowPatternGraph(false);
-            setReturnToGraph(true); // Will return to graph after comparison
+            setReturnToGraph(true);
             setComparisonPatterns(pats);
           }}
           onClose={() => setShowPatternGraph(false)}
@@ -703,195 +150,25 @@ export const GrammarMode: React.FC = () => {
           onComparePattern={handleCompare}
         />
       ) : (
-        <div className="exercise-container">
-          {/* Review Mode Indicator */}
-          {reviewMode === 'mixed' && (
-            <div className="mixed-mode-badge">🎯 Mixed Review Mode</div>
-          )}
-          {reviewMode === 'discrimination' && (
-            <div className="discrimination-mode-badge">🎭 Discrimination Drill</div>
-          )}
-
-          <div className="pattern-info">
-            <h3>
-              <ExerciseDisplay text={currentPattern.pattern} showFurigana={showFurigana} />
-            </h3>
-            <p className="category">{currentPattern.category}</p>
-            
-            {/* Confusion Warning */}
-            {currentPattern.confusion_pairs && currentPattern.confusion_pairs.length > 0 && (
-              <div className="confusion-warning">
-                ⚠️ Often confused with: {currentPattern.confusion_pairs.map(id => {
-                  const p = patterns.find(pt => pt.id === id);
-                  return p ? p.pattern : id;
-                }).join(', ')}
-                <button 
-                  className="compare-link"
-                  onClick={() => handleCompare(currentPattern)}
-                >
-                  Compare →
-                </button>
-              </div>
-            )}
-          </div>
-
-          {state === 'loading' && <div className="loading">Loading exercise...</div>}
-
-          {state === 'discrimination_select' && exercise && (
-            <div className="discrimination-container">
-              <DiscriminationDrill
-                exercise={exercise}
-                patterns={patterns}
-                showFurigana={showFurigana}
-                onSelectOption={handleDiscriminationSelect}
-              />
-              
-              {discriminationFeedback && (
-                <div className={`discrimination-feedback ${discriminationFeedback.isCorrect ? 'correct' : 'incorrect'}`}>
-                  <div className="discrimination-feedback-icon">
-                    {discriminationFeedback.isCorrect ? '✅' : '❌'}
-                  </div>
-                  <div className="discrimination-feedback-content">
-                    <p className="discrimination-feedback-title">
-                      {discriminationFeedback.isCorrect ? 'Correct pattern!' : 'Wrong pattern!'}
-                    </p>
-                    <p className="discrimination-feedback-explanation">
-                      {discriminationFeedback.explanation}
-                    </p>
-                    {!discriminationFeedback.isCorrect && (
-                      <button 
-                        className="compare-btn-inline"
-                        onClick={() => {
-                          if (selectedDiscriminationOption && currentPattern) {
-                            const otherPattern = patterns.find(p => p.id === selectedDiscriminationOption.pattern_id);
-                            if (otherPattern) {
-                              setComparisonPatterns([currentPattern, otherPattern]);
-                            }
-                          }
-                        }}
-                      >
-                        Compare Patterns →
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {state === 'input' && exercise && (
-            <div className="exercise-prompt">
-              {/* Confusion Alert */}
-              {discriminationAlert && (
-                <div className="confusion-alert">
-                  <div className="confusion-alert-icon">⚠️</div>
-                  <div className="confusion-alert-content">
-                    <p className="confusion-alert-title">Possible Confusion Detected!</p>
-                    <p className="confusion-alert-message">{discriminationAlert.message}</p>
-                    <button 
-                      className="compare-alert-btn"
-                      onClick={() => handleCompare(currentPattern)}
-                    >
-                      Compare Patterns
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div className="prompt-type">{exercise.type.replace('_', ' ')}</div>
-              <p className="prompt-text">
-                <ExerciseDisplay text={exercise.prompt} showFurigana={showFurigana} />
-              </p>
-              {exercise.context && (
-                <p className="context">
-                  <ExerciseDisplay text={exercise.context} showFurigana={showFurigana} />
-                </p>
-              )}
-              
-              <div className="input-section">
-                <p>Type your answer:</p>
-                <input
-                  type="text"
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                  placeholder="Your answer in Japanese..."
-                  className="answer-input"
-                  autoFocus
-                />
-                <button 
-                  className="submit-btn"
-                  onClick={handleSubmit}
-                  disabled={!userAnswer.trim()}
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          )}
-
-          {state === 'processing' && <div className="processing">Checking...</div>}
-
-          {state === 'feedback' && feedback && (
-            <div className={`feedback ${feedback.correct ? 'correct' : 'incorrect'}`}>
-              <div className="feedback-result">
-                {feedback.correct ? '✅ Correct!' : '❌ Not quite'}
-              </div>
-              
-              {/* Confusion Feedback */}
-              {feedback.confusion && (
-                <div className="confusion-feedback">
-                  <div className="confusion-feedback-icon">💡</div>
-                  <p>
-                    You used the pattern for <strong>{feedback.confusion.confusedWith.pattern}</strong>,
-                    but the exercise is asking for <strong>{currentPattern?.pattern}</strong>.
-                  </p>
-                  <button 
-                    className="compare-feedback-btn"
-                    onClick={() => handleCompare(currentPattern!)}
-                  >
-                    See Comparison
-                  </button>
-                </div>
-              )}
-              
-              <div className="answer-comparison">
-                <div className="your-answer">
-                  <label>Your answer:</label>
-                  <p>
-                    <ExerciseDisplay text={feedback.userAnswer} showFurigana={showFurigana} />
-                  </p>
-                </div>
-                {!feedback.correct && (
-                  <div className="correct-answer">
-                    <label>Correct answer:</label>
-                    <p>
-                      <ExerciseDisplay text={feedback.correctAnswer} showFurigana={showFurigana} />
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Error Explanation */}
-              {!feedback.correct && currentPattern && (
-                <GrammarErrorExplanation
-                  currentPattern={currentPattern}
-                />
-              )}
-
-              {feedback.progress && (
-                <div className="progress-update">
-                  <span>Streak: {feedback.progress.streak}</span>
-                  <span>Next review: {feedback.progress.interval_days} days</span>
-                </div>
-              )}
-
-              <button className="next-btn" onClick={handleNext}>
-                Next Exercise →
-              </button>
-            </div>
-          )}
-        </div>
+        <ExerciseContainer
+          currentPattern={currentPattern}
+          exercise={exercise}
+          state={state}
+          userAnswer={userAnswer}
+          feedback={feedback}
+          showFurigana={showFurigana}
+          reviewMode={reviewMode}
+          discriminationAlert={discriminationAlert}
+          selectedDiscriminationOption={selectedDiscriminationOption}
+          discriminationFeedback={discriminationFeedback}
+          patterns={patterns}
+          onUserAnswerChange={setUserAnswer}
+          onSubmit={handleSubmit}
+          onNext={handleNext}
+          onCompare={handleCompare}
+          onDiscriminationSelect={handleDiscriminationSelect}
+          onSetComparisonPatterns={setComparisonPatterns}
+        />
       )}
     </div>
   );
