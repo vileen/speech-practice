@@ -1,26 +1,15 @@
 {
-  "date": "2026-06-13",
-  "testTarget": null,
-  "refactorCandidate": {
-    "sourceFile": "frontend/src/components/GrammarMode/GrammarMode.tsx",
-    "lineCount": 900,
-    "reason": "Largest component by far (900 lines), single file doing too much — pattern selection, exercise rendering, progress tracking, and UI state all mixed together",
-    "shouldRefactor": true
-  },
-  "testStatus": {
-    "testWritten": false,
-    "reason": "All 7 priority test targets already covered — no test target assigned",
-    "testPassed": null
-  },
   "refactorDone": true,
   "refactorFiles": [
-    "frontend/src/components/GrammarMode/GrammarMode.tsx",
-    "frontend/src/components/GrammarMode/ExerciseContainer.tsx",
-    "frontend/src/components/GrammarMode/types.ts",
-    "frontend/src/hooks/useGrammarMode.ts",
-    "frontend/src/hooks/useGrammarCategorySelection.ts",
-    "frontend/src/test/components/GrammarMode.test.tsx"
+    "frontend/src/components/VerbMode/VerbMode.tsx",
+    "frontend/src/components/VerbMode/types.ts",
+    "frontend/src/components/VerbMode/ExerciseDisplay.tsx",
+    "frontend/src/hooks/useVerbMode.ts",
+    "frontend/src/hooks/useVerbExercises.ts",
+    "frontend/src/hooks/useAnswerChecker.ts",
+    "frontend/src/test/hooks/useVerbMode.test.ts",
+    "frontend/src/test/hooks/useAnswerChecker.test.ts",
+    "frontend/src/test/hooks/useVerbExercises.test.ts"
   ],
-  "testsPassAfterRefactor": true,
-  "notes": "Refactored GrammarMode.tsx from ~900 lines to ~150 lines by extracting useGrammarMode hook (~480 lines) and ExerciseContainer component (~200 lines). Also fixed pre-existing test failures in GrammarMode.test.tsx caused by useGrammarCategorySelection hook checking saved === null instead of !saved (jsdom returns undefined for missing localStorage keys). All tests pass."
+  "testsPassAfterRefactor": true
 }
