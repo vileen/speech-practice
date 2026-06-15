@@ -1,0 +1,30 @@
+{
+  "date": "2026-06-15",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback UI is essential for listening practice — comprehensive test already exists at components/AudioPlayer.test.tsx (24 tests, all passing)"
+  },
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/LessonMode/LessonMode.tsx",
+    "lineCount": 766,
+    "reason": "Large component with mixed UI and logic; largest untested critical component",
+    "shouldRefactor": true
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/AudioPlayer.test.tsx",
+  "testCount": 24,
+  "testPassed": true,
+  "refactorDone": true,
+  "refactorFiles": [
+    "frontend/src/components/LessonMode/LessonMode.tsx",
+    "frontend/src/components/LessonMode/LessonList.tsx",
+    "frontend/src/components/LessonMode/LessonDetail.tsx",
+    "frontend/src/hooks/useLessonMode.ts",
+    "frontend/src/hooks/useLessonFurigana.tsx"
+  ],
+  "testsPassAfterRefactor": true,
+  "notes": "Refactored 766-line LessonMode.tsx into: LessonMode (orchestrator, ~160 lines), LessonList (list UI), LessonDetail (detail UI with tabs), useLessonMode (data hook), useLessonFurigana (furigana caching hook). All 9 LessonMode tests pass (3 component + 6 regression + 10 navigation)."
+}
