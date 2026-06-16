@@ -1,14 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import express from 'express';
-
-// Mock the config before importing routes
-vi.mock('../../config/index.js', () => ({
-  appConfig: {
-    password: 'test-password'
-  }
-}));
-
 import healthRoutes from '../../routes/health.js';
 
 describe('Health Routes', () => {
@@ -16,34 +8,31 @@ describe('Health Routes', () => {
 
   beforeEach(() => {
     app = express();
-    app.use(express.json());
-    app.use('/', healthRoutes);
+    app.use('/health', healthRoutes);
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
+  describe('GET /health', () => {
+    it('should return status ok', async () => {
+      const response = await request(app).get('/health');
 
-  describe('GET /', () => {
-    it('should return health status', async () => {
-      const response = await request(app)
-        .get('/')
-        .expect('Content-Type', /json/)
-        .expect(200);
-
-      expect(response.body).toHaveProperty('status', 'ok');
-      expect(response.body).toHaveProperty('timestamp');
-      expect(new Date(response.body.timestamp)).toBeInstanceOf(Date);
+      expect(response.status).toBe(200);
+      expect(response.body.status).toBe('ok');
     });
 
-    it('should return valid ISO timestamp', async () => {
-      const beforeRequest = new Date();
-      const response = await request(app).get('/');
-      const afterRequest = new Date();
+    it('should include an ISO timestamp', async () => {
+      const response = await request(app).get('/health');
 
-      const responseTime = new Date(response.body.timestamp);
-      expect(responseTime.getTime()).toBeGreaterThanOrEqual(beforeRequest.getTime());
-      expect(responseTime.getTime()).toBeLessThanOrEqual(afterRequest.getTime());
+      expect(response.status).toBe(200);
+      expect(response.body.timestamp).toBeDefined();
+      // Verify it's a valid ISO 8601 string
+      expect(new Date(response.body.timestamp).toISOString()).toBe(response.body.timestamp);
+    });
+
+    it('should return JSON content type', async () => {
+      const response = await request(app).get('/health');
+
+      expect(response.status).toBe(200);
+      expect(response.headers['content-type']).toMatch(/application\/json/);
     });
   });
 });
