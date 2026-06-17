@@ -1,40 +1,17 @@
 {
-  "date": "2026-06-16",
+  "date": "2026-06-17",
   "testTarget": {
-    "type": "component",
-    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
-    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
-    "priority": "listening-foundation",
-    "reason": "AudioPlayer is the UI for audio controls — essential for listening practice, and no tests exist. All priority hooks (useAudioPlayer, useFurigana, useChatSession) are already covered."
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useGrammarMode.ts",
+    "testFile": "frontend/src/test/hooks/useGrammarMode.test.ts",
+    "priority": "grammar-core-feature",
+    "reason": "Grammar mode is a core feature (564-line hook, 12 components reference it, 0 tests exist)"
   },
-  "refactorCandidate": {
-    "sourceFile": "frontend/src/components/SpeakingMode/SpeakingMode.tsx",
-    "lineCount": 569,
-    "reason": "Large component (569 lines), no tests, likely mixed UI and logic — prime candidate for future refactor",
-    "shouldRefactor": true
-  },
-  "testStatus": {
-    "testWritten": true,
-    "testFile": "backend/src/test/routes/health.test.ts",
-    "testCount": 3,
-    "testPassed": true,
-    "note": "AudioPlayer target already had 24 passing tests. Secondary target: backend health route (previously untested)."
-  },
-  "refactorStatus": {
-    "refactorDone": true,
-    "refactorFiles": [
-      "frontend/src/components/SpeakingMode/SpeakingMode.tsx",
-      "frontend/src/components/SpeakingMode/ShadowingMode.tsx",
-      "frontend/src/components/SpeakingMode/ResponseDrillsMode.tsx",
-      "frontend/src/components/SpeakingMode/ConversationMode.tsx",
-      "frontend/src/components/SpeakingMode/hooks/useShadowingMode.ts",
-      "frontend/src/components/SpeakingMode/hooks/useResponseDrills.ts",
-      "frontend/src/components/SpeakingMode/hooks/useConversationMode.ts"
-    ],
-    "testsPassAfterRefactor": true,
-    "originalLines": 569,
-    "refactoredLines": 672,
-    "note": "Extracted 3 custom hooks and 3 UI sub-components. Main container reduced from 569 to 45 lines. All 1060 tests pass."
-  },
-  "notes": "67 frontend tests, 35 backend tests. First 3 priority hooks already have tests. Next in priority is AudioPlayer component. SpeakingMode (569 lines) flagged as refactor candidate. REFACTOR COMPLETED: Extracted hooks and sub-components from SpeakingMode.tsx."
+  "refactorCandidate": null,
+  "notes": "All critical UI components are now tested. Remaining untested hooks: useGrammarMode.ts (564 lines), useVoiceRecorder.ts (481 lines, but component has 4 test files), useLessonMode.ts (168 lines), useGrammarCategorySelection.ts (118 lines). GrammarMode hook is the highest-value target.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useGrammarMode.test.ts",
+  "testCount": 29,
+  "testPassed": true,
+  "refactorSkipped": true
 }
