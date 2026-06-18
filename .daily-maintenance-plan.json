@@ -1,17 +1,34 @@
 {
-  "date": "2026-06-17",
+  "date": "2026-06-18",
   "testTarget": {
-    "type": "hook",
-    "sourceFile": "frontend/src/hooks/useGrammarMode.ts",
-    "testFile": "frontend/src/test/hooks/useGrammarMode.test.ts",
-    "priority": "grammar-core-feature",
-    "reason": "Grammar mode is a core feature (564-line hook, 12 components reference it, 0 tests exist)"
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback is essential for listening practice — no tests exist. Priority hooks (useAudioPlayer, useFurigana, useChatSession) are already covered; AudioPlayer is the first missing critical component."
   },
-  "refactorCandidate": null,
-  "notes": "All critical UI components are now tested. Remaining untested hooks: useGrammarMode.ts (564 lines), useVoiceRecorder.ts (481 lines, but component has 4 test files), useLessonMode.ts (168 lines), useGrammarCategorySelection.ts (118 lines). GrammarMode hook is the highest-value target.",
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/ReadingMode/ReadingMode.tsx",
+    "lineCount": 555,
+    "reason": "Large component (555 lines), no tests, mixes UI and logic. Largest of the task-listed refactor candidates.",
+    "shouldRefactor": true
+  },
   "testWritten": true,
-  "testFile": "frontend/src/test/hooks/useGrammarMode.test.ts",
-  "testCount": 29,
+  "testFile": "frontend/src/test/hooks/useGrammarCategorySelection.test.ts",
+  "testCount": 30,
   "testPassed": true,
-  "refactorSkipped": true
+  "refactorDone": true,
+  "refactorFiles": [
+    "frontend/src/components/ReadingMode/types.ts",
+    "frontend/src/components/ReadingMode/constants.ts",
+    "frontend/src/components/ReadingMode/useReadingMode.ts",
+    "frontend/src/components/ReadingMode/FuriganaDisplay.tsx",
+    "frontend/src/components/ReadingMode/PassageList.tsx",
+    "frontend/src/components/ReadingMode/ReadingView.tsx",
+    "frontend/src/components/ReadingMode/QuestionsView.tsx",
+    "frontend/src/components/ReadingMode/ResultsView.tsx",
+    "frontend/src/components/ReadingMode/ReadingMode.tsx"
+  ],
+  "testsPassAfterRefactor": true,
+  "notes": "Frontend: 68 tests, Backend: 35 tests. All priority hooks (useAudioPlayer, useFurigana, useChatSession) are covered. VoiceRecorder is now a thin 11-line wrapper — not a refactor candidate. ReadingMode refactored from 555 lines into 8 focused files: types, constants, hook, FuriganaDisplay, PassageList, ReadingView, QuestionsView, ResultsView, and thin container (ReadingMode.tsx)."
 }

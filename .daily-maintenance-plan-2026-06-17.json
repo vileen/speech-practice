@@ -1,0 +1,17 @@
+{
+  "date": "2026-06-17",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useGrammarMode.ts",
+    "testFile": "frontend/src/test/hooks/useGrammarMode.test.ts",
+    "priority": "grammar-core-feature",
+    "reason": "Grammar mode is a core feature (564-line hook, 12 components reference it, 0 tests exist)"
+  },
+  "refactorCandidate": null,
+  "notes": "All critical UI components are now tested. Remaining untested hooks: useGrammarMode.ts (564 lines), useVoiceRecorder.ts (481 lines, but component has 4 test files), useLessonMode.ts (168 lines), useGrammarCategorySelection.ts (118 lines). GrammarMode hook is the highest-value target.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useGrammarMode.test.ts",
+  "testCount": 29,
+  "testPassed": true,
+  "refactorSkipped": true
+}
