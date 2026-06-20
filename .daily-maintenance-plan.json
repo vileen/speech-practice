@@ -1,34 +1,19 @@
 {
-  "date": "2026-06-18",
-  "testTarget": {
-    "type": "component",
-    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
-    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
-    "priority": "listening-foundation",
-    "reason": "Audio playback is essential for listening practice — no tests exist. Priority hooks (useAudioPlayer, useFurigana, useChatSession) are already covered; AudioPlayer is the first missing critical component."
-  },
-  "refactorCandidate": {
-    "sourceFile": "frontend/src/components/ReadingMode/ReadingMode.tsx",
-    "lineCount": 555,
-    "reason": "Large component (555 lines), no tests, mixes UI and logic. Largest of the task-listed refactor candidates.",
-    "shouldRefactor": true
-  },
+  "date": "2026-06-20",
+  "testTarget": "frontend/src/hooks/useVoiceRecorder.ts",
   "testWritten": true,
-  "testFile": "frontend/src/test/hooks/useGrammarCategorySelection.test.ts",
-  "testCount": 30,
+  "testFile": "frontend/src/test/hooks/useVoiceRecorder.test.ts",
+  "testCount": 19,
   "testPassed": true,
-  "refactorDone": true,
-  "refactorFiles": [
-    "frontend/src/components/ReadingMode/types.ts",
-    "frontend/src/components/ReadingMode/constants.ts",
-    "frontend/src/components/ReadingMode/useReadingMode.ts",
-    "frontend/src/components/ReadingMode/FuriganaDisplay.tsx",
-    "frontend/src/components/ReadingMode/PassageList.tsx",
-    "frontend/src/components/ReadingMode/ReadingView.tsx",
-    "frontend/src/components/ReadingMode/QuestionsView.tsx",
-    "frontend/src/components/ReadingMode/ResultsView.tsx",
-    "frontend/src/components/ReadingMode/ReadingMode.tsx"
-  ],
-  "testsPassAfterRefactor": true,
-  "notes": "Frontend: 68 tests, Backend: 35 tests. All priority hooks (useAudioPlayer, useFurigana, useChatSession) are covered. VoiceRecorder is now a thin 11-line wrapper — not a refactor candidate. ReadingMode refactored from 555 lines into 8 focused files: types, constants, hook, FuriganaDisplay, PassageList, ReadingView, QuestionsView, ResultsView, and thin container (ReadingMode.tsx)."
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "All refactor candidates have been significantly reduced in size since last audit. KanjiPracticeMode (473 lines) and VerbMode (337 lines) still exceed 300 lines but both have comprehensive tests. No component meets both criteria (>300 lines AND no tests/poor structure).",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "refactorDone": false,
+  "refactorFiles": [],
+  "testsPassAfterRefactor": null,
+  "notes": "All critical paths covered — consider expanding coverage to secondary components. Missing tests: frontend/src/hooks/useVoiceRecorder.ts (speaking practice, 67 lines) - NOW COVERED with 19 passing tests, frontend/src/hooks/useLessonMode.ts (lesson management, 73 lines), frontend/src/components/SpeakingMode/hooks/useConversationMode.ts, useShadowingMode.ts, useResponseDrills.ts, and frontend/src/components/ReadingMode/useReadingMode.ts. Backend: db/init.ts (init script, low priority). Test counts: 69 frontend tests, 35 backend tests. All 21 backend routes have tests. All 7 priority frontend hooks/components have tests."
 }
