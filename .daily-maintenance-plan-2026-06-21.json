@@ -1,0 +1,11 @@
+{
+  "date": "2026-06-21",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useLessonMode.test.ts",
+  "testCount": 19,
+  "testPassed": true,
+  "refactorSkipped": true,
+  "notes": "All priority components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have tests. Frontend: 70 tests, Backend: 35 tests. Secondary target identified: frontend/src/hooks/useLessonMode.ts (168 lines, no tests) — manages lesson data fetching and state for lesson mode. Refactor job skipped — no refactor candidate flagged in Job 1."
+}

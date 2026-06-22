@@ -1,11 +1,11 @@
 {
-  "date": "2026-06-21",
+  "date": "2026-06-22",
   "testTarget": null,
   "refactorCandidate": null,
+  "notes": "All 7 priority critical paths (hooks and components) are covered. Frontend has 71 tests, backend has 35 tests. Priority components all tested: useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText. No refactor candidates >300 lines without tests. Secondary components lacking tests: GrammarMode/ExerciseContainer (244 lines), LessonMode/LessonDetail (174 lines), SpeakingMode/ConversationMode (147 lines), ReadingMode/ResultsView (145 lines). Backend missing tests: db/init.ts, routes/index.ts, server.ts, elevenlabs/index.ts, elevenlabs/types.ts, elevenlabs/voices.ts, furigana/index.ts, types/index.ts.",
   "testWritten": true,
-  "testFile": "frontend/src/test/hooks/useLessonMode.test.ts",
-  "testCount": 19,
+  "testFile": "frontend/src/test/components/ExerciseContainer.test.tsx",
+  "testCount": 27,
   "testPassed": true,
-  "refactorSkipped": true,
-  "notes": "All priority components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have tests. Frontend: 70 tests, Backend: 35 tests. Secondary target identified: frontend/src/hooks/useLessonMode.ts (168 lines, no tests) — manages lesson data fetching and state for lesson mode. Refactor job skipped — no refactor candidate flagged in Job 1."
+  "refactorSkipped": true
 }
