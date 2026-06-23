@@ -2,6 +2,10 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Rating, getDueCards } from '../../lib/fsrs.js';
 import { useKanjiProgress, KanjiCard } from '../../hooks/useKanjiProgress.js';
 import { Header } from '../Header/index.js';
+import { KanjiSetup } from './KanjiSetup.js';
+import { KanjiComplete } from './KanjiComplete.js';
+import { KanjiCardView } from './KanjiCardView.js';
+import { KanjiRatingButtons } from './KanjiRatingButtons.js';
 import './KanjiPracticeMode.css';
 
 export const KanjiPracticeMode: React.FC = () => {
@@ -34,15 +38,14 @@ export const KanjiPracticeMode: React.FC = () => {
     if (selectedLessons.length === 0) {
       return dueCards.length;
     }
-    return dueCards.filter((card) =>
-      card.lessonId && selectedLessons.includes(card.lessonId)
+    return dueCards.filter(
+      (card) => card.lessonId && selectedLessons.includes(card.lessonId)
     ).length;
   }, [cards, selectedLessons]);
 
   // Auto-import kanji on mount (only if no kanji in localStorage)
   useEffect(() => {
     const autoImport = async () => {
-      // Check localStorage directly to avoid race condition with hook loading
       const stored = localStorage.getItem('speech-practice-kanji-progress');
       if (!stored) {
         await importKanji();
@@ -61,7 +64,9 @@ export const KanjiPracticeMode: React.FC = () => {
   // Get next card when needed
   useEffect(() => {
     if (!showSetup && !isRevealed && !isComplete) {
-      const next = getNextCard(selectedLessons.length > 0 ? selectedLessons : undefined);
+      const next = getNextCard(
+        selectedLessons.length > 0 ? selectedLessons : undefined
+      );
       if (next) {
         setCurrentCard(next);
       } else {
@@ -74,13 +79,16 @@ export const KanjiPracticeMode: React.FC = () => {
     setIsRevealed(true);
   }, []);
 
-  const handleReview = useCallback((rating: Rating) => {
-    if (currentCard) {
-      review(currentCard.kanjiId, rating);
-      setIsRevealed(false);
-      setIsEditingMnemonic(false);
-    }
-  }, [currentCard, review]);
+  const handleReview = useCallback(
+    (rating: Rating) => {
+      if (currentCard) {
+        review(currentCard.kanjiId, rating);
+        setIsRevealed(false);
+        setIsEditingMnemonic(false);
+      }
+    },
+    [currentCard, review]
+  );
 
   const handleEditMnemonic = useCallback(() => {
     if (currentCard) {
@@ -93,8 +101,9 @@ export const KanjiPracticeMode: React.FC = () => {
     if (currentCard) {
       updateCard(currentCard.kanjiId, { mnemonic: editedMnemonic });
       setIsEditingMnemonic(false);
-      // Update current card to reflect changes
-      setCurrentCard(prev => prev ? { ...prev, mnemonic: editedMnemonic } : null);
+      setCurrentCard((prev) =>
+        prev ? { ...prev, mnemonic: editedMnemonic } : null
+      );
     }
   }, [currentCard, editedMnemonic, updateCard]);
 
@@ -105,26 +114,34 @@ export const KanjiPracticeMode: React.FC = () => {
 
   const handleStart = async () => {
     setIsStarting(true);
-    
-    // Import kanji if not already done
+
     if (!hasImported) {
-      await importKanji(selectedLessons.length > 0 
-        ? { lessonId: selectedLessons[0] } 
-        : undefined
+      await importKanji(
+        selectedLessons.length > 0
+          ? { lessonId: selectedLessons[0] }
+          : undefined
       );
       setHasImported(true);
     }
-    
+
     setShowSetup(false);
     setIsStarting(false);
   };
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setShowSetup(true);
     setIsComplete(false);
     setIsRevealed(false);
     setCurrentCard(null);
-  };
+  }, []);
+
+  const handleLessonChange = useCallback((lessonId: string) => {
+    setSelectedLessons(lessonId ? [lessonId] : []);
+  }, []);
+
+  const handleMnemonicChange = useCallback((value: string) => {
+    setEditedMnemonic(value);
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -166,20 +183,28 @@ export const KanjiPracticeMode: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showSetup, isComplete, isRevealed, handleReveal, handleReview]);
 
-  // Get preview for current card with specific rating
-  const getIntervalForRating = (rating: Rating): string => {
-    if (!currentCard) return '';
-    const intervalDays = getPreview(currentCard.kanjiId, rating);
-    if (intervalDays === null) return '';
-
-    // Convert days to minutes for small intervals (new cards)
-    const intervalMinutes = intervalDays * 24 * 60;
-
-    if (intervalMinutes < 1) return '< 1m';
-    if (intervalMinutes < 60) return `${Math.round(intervalMinutes)}m`;
-    if (intervalMinutes < 1440) return `${Math.round(intervalMinutes / 60)}h`;
-    return `${Math.round(intervalMinutes / 1440)}d`;
-  };
+  // Get preview intervals for current card
+  const intervals = useMemo(() => {
+    if (!currentCard) {
+      return { again: '< 1m', hard: '', good: '', easy: '' } as Record<Rating, string>;
+    }
+    const result = {} as Record<Rating, string>;
+    (['again', 'hard', 'good', 'easy'] as Rating[]).forEach((rating) => {
+      const intervalDays = getPreview(currentCard.kanjiId, rating);
+      if (intervalDays === null) {
+        result[rating] = '';
+        return;
+      }
+      const intervalMinutes = intervalDays * 24 * 60;
+      if (intervalMinutes < 1) result[rating] = '< 1m';
+      else if (intervalMinutes < 60)
+        result[rating] = `${Math.round(intervalMinutes)}m`;
+      else if (intervalMinutes < 1440)
+        result[rating] = `${Math.round(intervalMinutes / 60)}h`;
+      else result[rating] = `${Math.round(intervalMinutes / 1440)}d`;
+    });
+    return result;
+  }, [currentCard, getPreview]);
 
   if (isLoading) {
     return (
@@ -193,98 +218,32 @@ export const KanjiPracticeMode: React.FC = () => {
     );
   }
 
-  // Setup screen
   if (showSetup) {
     return (
       <>
         <Header title="Kanji Practice" icon="🈁" subtitle="Kodansha Kanji Learner's Course" />
-        <div className="kanji-practice-setup">
-          <p className="kanji-practice-description">
-            Learn kanji using the Kodansha Kanji Learner's Course method.
-            See the kanji, recall the meaning, then check your answer.
-          </p>
-
-        <div className="kanji-practice-stats">
-          <div className="stat-card">
-            <span className="stat-value">{stats.total}</span>
-            <span className="stat-label">Total Kanji</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-value">{stats.due}</span>
-            <span className="stat-label">Due for Review</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-value">{stats.new}</span>
-            <span className="stat-label">New</span>
-          </div>
-        </div>
-
-        {availableLessons.length > 0 && (
-          <div className="kanji-practice-filters">
-            <label>Filter by Lesson:</label>
-            <select 
-              value={selectedLessons[0] || ''} 
-              onChange={(e) => setSelectedLessons(e.target.value ? [e.target.value] : [])}
-            >
-              <option value="">All Lessons</option>
-              {availableLessons.map(lessonId => (
-                <option key={lessonId} value={lessonId}>Lesson {lessonId}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div className="kanji-practice-shortcuts">
-          <h4>Keyboard Shortcuts:</h4>
-          <ul>
-            <li><kbd>Space</kbd> - Reveal answer / Again</li>
-            <li><kbd>2</kbd> - Hard</li>
-            <li><kbd>3</kbd> - Good</li>
-            <li><kbd>4</kbd> - Easy</li>
-          </ul>
-        </div>
-
-        <button
-          className="kanji-practice-start-btn"
-          onClick={handleStart}
-          disabled={isStarting}
-        >
-          {isStarting ? 'Loading...' : `Start Practice (${filteredDueCount} due)`}
-        </button>
-        </div>
+        <KanjiSetup
+          stats={stats}
+          availableLessons={availableLessons}
+          selectedLessons={selectedLessons}
+          filteredDueCount={filteredDueCount}
+          isStarting={isStarting}
+          onLessonChange={handleLessonChange}
+          onStart={handleStart}
+        />
       </>
     );
   }
 
-  // Completion screen
   if (isComplete) {
     return (
       <>
         <Header title="Practice Complete" icon="🎉" showBackButton={false} />
-        <div className="kanji-practice-complete">
-          <h2>Practice Complete!</h2>
-          <p>You've reviewed all due kanji for now.</p>
-
-          <div className="kanji-practice-stats">
-            <div className="stat-card">
-              <span className="stat-value">{stats.total}</span>
-              <span className="stat-label">Total Kanji</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-value">{stats.due}</span>
-              <span className="stat-label">Still Due</span>
-            </div>
-          </div>
-
-          <button className="kanji-practice-start-btn" onClick={handleReset}>
-            Practice More
-          </button>
-        </div>
+        <KanjiComplete stats={stats} onPracticeMore={handleReset} />
       </>
     );
   }
 
-  // Main practice screen
   if (!currentCard) {
     return (
       <>
@@ -303,170 +262,48 @@ export const KanjiPracticeMode: React.FC = () => {
     <>
       <Header title="Kanji Practice" icon="🈁" />
       <div className="kanji-practice-container">
-      {/* Progress bar */}
-      <div className="kanji-practice-progress">
-        <div className="progress-stats">
-          <span>Due: {stats.due}</span>
-          <span>New: {stats.new}</span>
-          <span>Review: {stats.review}</span>
-        </div>
-      </div>
-
-      {/* Main card */}
-      <div className={`kanji-card ${isRevealed ? 'revealed' : ''}`}>
-        {/* Front of card - only kanji */}
-        <div className="kanji-card-front">
-          <div className="kanji-character">{currentCard.character}</div>
-          <div className="kanji-hint">
-            {!isRevealed && <p>Recall the meaning...</p>}
+        {/* Progress bar */}
+        <div className="kanji-practice-progress">
+          <div className="progress-stats">
+            <span>Due: {stats.due}</span>
+            <span>New: {stats.new}</span>
+            <span>Review: {stats.review}</span>
           </div>
         </div>
 
-        {/* Back of card - revealed info */}
-        {isRevealed && (
-          <div className="kanji-card-back">
-            <div className="kanji-meanings">
-              <h3>Meanings:</h3>
-              <ul>
-                {currentCard.meanings.map((meaning, idx) => (
-                  <li key={idx} className="kanji-meaning">{meaning}</li>
-                ))}
-              </ul>
-            </div>
+        {/* Main card */}
+        <KanjiCardView
+          card={currentCard}
+          isRevealed={isRevealed}
+          isEditingMnemonic={isEditingMnemonic}
+          editedMnemonic={editedMnemonic}
+          onEditMnemonic={handleEditMnemonic}
+          onSaveMnemonic={handleSaveMnemonic}
+          onCancelEditMnemonic={handleCancelEditMnemonic}
+          onMnemonicChange={handleMnemonicChange}
+        />
 
-            <div className="kanji-readings">
-              <h3>Readings:</h3>
-              <div className="readings-legend">
-                <span className="legend-item">
-                  <span className="legend-badge kun">日本</span>
-                  <span className="legend-label">Kunyomi (Japanese)</span>
-                </span>
-                <span className="legend-item">
-                  <span className="legend-badge on">中文</span>
-                  <span className="legend-label">Onyomi (Chinese)</span>
-                </span>
-              </div>
-              <div className="readings-list">
-                {currentCard.readings.filter(r => r.type === 'kun').map((r, idx) => (
-                  <span key={`kun-${idx}`} className="reading kun" title="Kunyomi (Japanese reading)">{r.reading}</span>
-                ))}
-                {currentCard.readings.filter(r => r.type === 'on').map((r, idx) => (
-                  <span key={`on-${idx}`} className="reading on" title="Onyomi (Chinese reading)">{r.reading}</span>
-                ))}
-              </div>
-            </div>
+        {/* Controls */}
+        <div className="kanji-practice-controls">
+          {!isRevealed ? (
+            <button
+              className="kanji-reveal-btn"
+              onClick={handleReveal}
+              autoFocus
+            >
+              Reveal Answer (Space)
+            </button>
+          ) : (
+            <KanjiRatingButtons intervals={intervals} onReview={handleReview} />
+          )}
+        </div>
 
-            {(currentCard.mnemonic || isEditingMnemonic) && (
-              <div className="kanji-mnemonic">
-                <div className="mnemonic-header">
-                  <h3>Mnemonic (KLC):</h3>
-                  {!isEditingMnemonic && (
-                    <button 
-                      className="edit-mnemonic-btn"
-                      onClick={handleEditMnemonic}
-                      title="Edit mnemonic"
-                    >
-                      ✏️ Edit
-                    </button>
-                  )}
-                </div>
-                {isEditingMnemonic ? (
-                  <div className="mnemonic-edit-form">
-                    <textarea
-                      value={editedMnemonic}
-                      onChange={(e) => setEditedMnemonic(e.target.value)}
-                      placeholder="Enter your mnemonic..."
-                      rows={3}
-                    />
-                    <div className="mnemonic-edit-actions">
-                      <button onClick={handleSaveMnemonic} className="save-btn">Save</button>
-                      <button onClick={handleCancelEditMnemonic} className="cancel-btn">Cancel</button>
-                    </div>
-                  </div>
-                ) : (
-                  <p>{currentCard.mnemonic}</p>
-                )}
-              </div>
-            )}
-
-            {currentCard.examples && currentCard.examples.length > 0 && (
-              <div className="kanji-examples">
-                <h3>Examples from Lessons:</h3>
-                <ul>
-                  {currentCard.examples.map((ex, idx) => (
-                    <li key={idx} className="example-item">
-                      <span className="example-word">{ex.word}</span>
-                      <span className="example-reading">({ex.reading})</span>
-                      <span className="example-meaning">- {ex.meaning}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {currentCard.lessonId && (
-              <div className="kanji-lesson-tag">
-                <span>Lesson: {currentCard.lessonId}</span>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Controls */}
-      <div className="kanji-practice-controls">
-        {!isRevealed ? (
-          <button 
-            className="kanji-reveal-btn"
-            onClick={handleReveal}
-            autoFocus
-          >
-            Reveal Answer (Space)
+        {/* Navigation */}
+        <div className="kanji-practice-nav">
+          <button className="nav-btn" onClick={handleReset}>
+            End Session
           </button>
-        ) : (
-          <div className="kanji-rating-buttons">
-            <button 
-              className="rating-btn again"
-              onClick={() => handleReview('again')}
-            >
-              <span className="rating-key">1</span>
-              <span className="rating-label">Again</span>
-              <span className="rating-interval">&lt; 1m</span>
-            </button>
-            <button 
-              className="rating-btn hard"
-              onClick={() => handleReview('hard')}
-            >
-              <span className="rating-key">2</span>
-              <span className="rating-label">Hard</span>
-              <span className="rating-interval">{getIntervalForRating('hard')}</span>
-            </button>
-            <button 
-              className="rating-btn good"
-              onClick={() => handleReview('good')}
-            >
-              <span className="rating-key">3</span>
-              <span className="rating-label">Good</span>
-              <span className="rating-interval">{getIntervalForRating('good')}</span>
-            </button>
-            <button 
-              className="rating-btn easy"
-              onClick={() => handleReview('easy')}
-            >
-              <span className="rating-key">4</span>
-              <span className="rating-label">Easy</span>
-              <span className="rating-interval">{getIntervalForRating('easy')}</span>
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Navigation */}
-      <div className="kanji-practice-nav">
-        <button className="nav-btn" onClick={handleReset}>
-          End Session
-        </button>
-      </div>
+        </div>
       </div>
     </>
   );
