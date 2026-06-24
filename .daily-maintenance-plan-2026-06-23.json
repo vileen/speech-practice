@@ -1,0 +1,29 @@
+{
+  "date": "2026-06-23",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback is essential for listening practice — no tests exist. First missing critical component in priority order."
+  },
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/KanjiPracticeMode/KanjiPracticeMode.tsx",
+    "lineCount": 473,
+    "reason": "Large component (473 lines), no tests, mixed UI and logic — significant refactor candidate",
+    "shouldRefactor": true
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useLessonFurigana.test.tsx",
+  "testCount": 26,
+  "testPassed": true,
+  "refactorDone": true,
+  "refactorFiles": [
+    "frontend/src/components/KanjiPracticeMode/KanjiSetup.tsx",
+    "frontend/src/components/KanjiPracticeMode/KanjiComplete.tsx",
+    "frontend/src/components/KanjiPracticeMode/KanjiCardView.tsx",
+    "frontend/src/components/KanjiPracticeMode/KanjiRatingButtons.tsx"
+  ],
+  "testsPassAfterRefactor": true,
+  "refactorNotes": "KanjiPracticeMode.tsx reduced from 473 lines to 310 lines. Extracted 4 focused sub-components: KanjiSetup (setup screen), KanjiComplete (completion screen), KanjiCardView (card display with mnemonic editing), KanjiRatingButtons (FSRS rating controls). All 1210 tests pass, TypeScript compiles cleanly."
+}
