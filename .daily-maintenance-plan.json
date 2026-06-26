@@ -1,28 +1,21 @@
 {
-  "date": "2026-06-25",
-  "testWritten": true,
-  "testFile": "frontend/src/test/components/VoiceRecorder/RecordingControls.test.tsx",
-  "testCount": 25,
-  "testPassed": true,
+  "date": "2026-06-26",
   "testTarget": {
-    "type": "component",
-    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
-    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
-    "priority": "listening-foundation",
-    "reason": "Audio playback is essential for listening practice. Original target (AudioPlayer) already has tests. Selected RecordingControls (VoiceRecorder sub-component) as next priority — no tests exist. All hooks are already tested."
+    "type": "integration",
+    "sourceFile": null,
+    "testFile": "frontend/src/test/integration/listening-flow.test.tsx",
+    "priority": "medium",
+    "reason": "All hooks and critical components have unit tests. Integration tests are completely empty (0 files). A listening flow integration test would cover the most critical user path: audio + furigana + UI interaction.",
+    "testWritten": true,
+    "testCount": 7,
+    "testPassed": true
   },
+  "refactorSkipped": true,
   "refactorCandidate": {
-    "sourceFile": "frontend/src/components/VerbMode/VerbMode.tsx",
-    "lineCount": 337,
-    "reason": "Largest untested component from the original refactor watchlist. Exceeds 300 lines with no test coverage.",
-    "shouldRefactor": true
+    "sourceFile": "frontend/src/components/ListeningMode/ListeningMode.tsx",
+    "lineCount": 607,
+    "reason": "Large component at 607 lines, though it has unit tests. Consider extracting logic into hooks or sub-components if complexity grows.",
+    "shouldRefactor": false
   },
-  "notes": "Task file line counts were outdated (e.g., VoiceRecorder is 11 lines, not 528; GrammarMode is 177 lines, not 1420). Actual large components now include PatternGraph.tsx (894 lines) and ListeningMode.tsx (607 lines), but these were not in the original watchlist. All hooks in frontend/src/hooks/ are already tested.",
-  "refactorDone": true,
-  "refactorFiles": [
-    "frontend/src/components/VerbMode/SelectionScreen.tsx",
-    "frontend/src/components/VerbMode/ExerciseScreen.tsx"
-  ],
-  "testsPassAfterRefactor": true,
-  "refactorSkipped": false
+  "notes": "All critical paths are covered — hooks: 20/20 tested, priority components: 4/4 tested (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText), backend routes: 22/22 tested. Only gaps: integration tests (0 files) and secondary sub-components (e.g., KanjiCardView, LessonList, ReadingView, ConversationMode, RecordingControls)."
 }
