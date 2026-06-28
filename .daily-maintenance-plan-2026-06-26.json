@@ -1,0 +1,21 @@
+{
+  "date": "2026-06-26",
+  "testTarget": {
+    "type": "integration",
+    "sourceFile": null,
+    "testFile": "frontend/src/test/integration/listening-flow.test.tsx",
+    "priority": "medium",
+    "reason": "All hooks and critical components have unit tests. Integration tests are completely empty (0 files). A listening flow integration test would cover the most critical user path: audio + furigana + UI interaction.",
+    "testWritten": true,
+    "testCount": 7,
+    "testPassed": true
+  },
+  "refactorSkipped": true,
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/ListeningMode/ListeningMode.tsx",
+    "lineCount": 607,
+    "reason": "Large component at 607 lines, though it has unit tests. Consider extracting logic into hooks or sub-components if complexity grows.",
+    "shouldRefactor": false
+  },
+  "notes": "All critical paths are covered — hooks: 20/20 tested, priority components: 4/4 tested (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText), backend routes: 22/22 tested. Only gaps: integration tests (0 files) and secondary sub-components (e.g., KanjiCardView, LessonList, ReadingView, ConversationMode, RecordingControls)."
+}

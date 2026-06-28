@@ -1,0 +1,11 @@
+{
+  "date": "2026-06-27",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "notes": "all critical paths covered — consider expanding coverage to secondary components. 75 frontend tests, 35 backend tests. All priority hooks (useAudioPlayer, useFurigana, useChatSession) tested. All priority components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) tested. Large components (ListeningMode, CountersMode, MemoryMode, KanjiPracticeMode, PatternGraph, ProgressDashboard, RepeatMode) all have test coverage.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/KanjiSetup.test.tsx",
+  "testCount": 23,
+  "testPassed": true,
+  "refactorSkipped": true
+}
