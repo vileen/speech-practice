@@ -1,30 +1,22 @@
 {
-  "date": "2026-06-28",
+  "date": "2026-06-29",
   "testTarget": {
-    "type": "component",
-    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
-    "testFile": "frontend/src/test/components/AudioPlayer.test.tsx",
-    "priority": "listening-foundation",
-    "reason": "Audio playback is essential for listening practice — TESTS ALREADY EXIST. Analysis job incorrectly identified as untested due to wrong path assumption."
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiPracticeSession.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiPracticeSession.test.ts",
+    "priority": "kanji-practice-foundation",
+    "reason": "Core kanji practice session logic (244 lines) managing FSRS card scheduling, lesson filtering, reveal/review flow, and mnemonic editing — no tests exist"
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "All previously large components have been refactored below 300 lines",
+    "shouldRefactor": false
   },
   "testWritten": true,
-  "testFile": "frontend/src/test/components/AudioPlayer.test.tsx",
-  "testCount": 24,
+  "testFile": "frontend/src/test/hooks/useKanjiPracticeSession.test.ts",
+  "testCount": 43,
   "testPassed": true,
-  "refactorCandidate": {
-    "sourceFile": "frontend/src/components/KanjiPracticeMode/KanjiPracticeMode.tsx",
-    "lineCount": 310,
-    "reason": "Large component (>300 lines), no tests, mixed UI and logic",
-    "shouldRefactor": true
-  },
-  "refactorDone": true,
-  "refactorFiles": [
-    "frontend/src/hooks/useKanjiPracticeSession.ts",
-    "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
-    "frontend/src/components/KanjiPracticeMode/KanjiPracticeMode.tsx"
-  ],
-  "testsPassAfterRefactor": true,
-  "notes": "CRITICAL CORRECTION: All 4 'missing' components actually HAVE tests. Analysis job used nested path pattern (Component/Component.test.tsx) but tests live at flat level (Component.test.tsx). Verified passing: AudioPlayer (24 tests), JapanesePhrase (26 tests), HighlightedText (32 tests), VoiceRecorder (multiple test files). No new tests needed — coverage already comprehensive.",
-  "verificationTimestamp": "2026-06-28T03:30:51Z",
-  "refactorTimestamp": "2026-06-28T04:03:00Z"
+  "notes": "All 7 priority components/hooks now have tests. Only 2 hooks remain untested: useKanjiPracticeSession.ts (244 lines, complex session state) and useKanjiKeyboardShortcuts.ts (57 lines, simple keyboard handler). useKanjiPracticeSession.ts is the clear next target.",
+  "refactorSkipped": true
 }
