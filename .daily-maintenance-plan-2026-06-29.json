@@ -1,0 +1,22 @@
+{
+  "date": "2026-06-29",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiPracticeSession.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiPracticeSession.test.ts",
+    "priority": "kanji-practice-foundation",
+    "reason": "Core kanji practice session logic (244 lines) managing FSRS card scheduling, lesson filtering, reveal/review flow, and mnemonic editing — no tests exist"
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "All previously large components have been refactored below 300 lines",
+    "shouldRefactor": false
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiPracticeSession.test.ts",
+  "testCount": 43,
+  "testPassed": true,
+  "notes": "All 7 priority components/hooks now have tests. Only 2 hooks remain untested: useKanjiPracticeSession.ts (244 lines, complex session state) and useKanjiKeyboardShortcuts.ts (57 lines, simple keyboard handler). useKanjiPracticeSession.ts is the clear next target.",
+  "refactorSkipped": true
+}
