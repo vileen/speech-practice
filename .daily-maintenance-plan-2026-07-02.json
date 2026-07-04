@@ -1,0 +1,17 @@
+{
+  "date": "2026-07-02",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback is essential for listening practice — no tests exist. First missing critical component in priority order (hooks useAudioPlayer/useFurigana/useChatSession already covered)."
+  },
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All 7 specified refactor candidates are well under 300 lines (largest is VoiceRecorder at 11 lines, LessonMode at 170). Other large components exist (PatternGraph 894, ListeningMode 607, ProgressDashboard 499, CountersMode 499, MemoryMode 484, RepeatMode 321) but are outside the specified refactor list. Frontend: 78 tests, Backend: 35 tests. Missing hooks: only useKanjiKeyboardShortcuts.ts. Missing critical components: AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+  "testCount": 11,
+  "testPassed": true
+}

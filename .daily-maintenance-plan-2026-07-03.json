@@ -1,0 +1,17 @@
+{
+  "date": "2026-07-03",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback UI is essential for listening practice — no tests exist. First missing item in priority list after all critical hooks already covered."
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+  "testCount": 11,
+  "testPassed": true,
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All critical hooks (useAudioPlayer, useFurigana, useChatSession) already have tests. Only remaining untested hook is useKanjiKeyboardShortcuts.ts (non-critical). Previously large components have been refactored — none exceed 300 lines now."
+}
