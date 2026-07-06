@@ -1,32 +1,11 @@
 {
-  "date": "2026-07-05",
-  "testTarget": {
-    "type": "component",
-    "sourceFile": "frontend/src/components/JapanesePhrase/JapanesePhrase.tsx",
-    "testFile": "frontend/src/test/components/JapanesePhrase/JapanesePhrase.test.tsx",
-    "priority": "reading-foundation",
-    "reason": "Core Japanese text display component (furigana, romaji, translation) — no tests exist. All 3 critical hooks (useAudioPlayer, useFurigana, useChatSession) and AudioPlayer component already have tests."
-  },
-  "refactorCandidate": {
-    "sourceFile": "frontend/src/components/GrammarMode/PatternGraph.tsx",
-    "lineCount": 894,
-    "reason": "Largest component in codebase. Original refactor candidates (VoiceRecorder, LessonMode, GrammarMode, etc.) have all been refactored to <200 lines.",
-    "shouldRefactor": true
-  },
-  "notes": "Hooks are well-covered (useAudioPlayer, useFurigana, useChatSession all have tests). Only untested hook is useKanjiKeyboardShortcuts. Next component priorities after JapanesePhrase: VoiceRecorder, HighlightedText.",
+  "date": "2026-07-06",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All critical paths covered — consider expanding coverage to secondary components. Top untested secondary components: GrammarMode/PatternGraphSVG.tsx (331 lines, no tests), VerbMode/ExerciseScreen.tsx (211 lines, no tests), LessonMode/LessonDetail.tsx (174 lines, no tests). All priority hooks (useAudioPlayer, useFurigana, useChatSession) and critical components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have test coverage.",
   "testWritten": true,
-  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
-  "testCount": 20,
-  "testPassed": true,
-  "testNotes": "JapanesePhrase already had comprehensive tests (26 tests passing). Wrote tests for useKanjiKeyboardShortcuts instead — the only untested hook noted in the plan. All 20 tests pass.",
-  "refactorDone": true,
-  "refactorFiles": [
-    "frontend/src/lib/forceLayout.ts",
-    "frontend/src/components/GrammarMode/PatternGraphTypes.ts",
-    "frontend/src/components/GrammarMode/PatternGraphLegend.tsx",
-    "frontend/src/components/GrammarMode/PatternGraphSVG.tsx",
-    "frontend/src/components/GrammarMode/PatternGraph.tsx"
-  ],
-  "testsPassAfterRefactor": true,
-  "refactorNotes": "PatternGraph.tsx reduced from 894 lines to 429 lines (-52%). Extracted: (1) runForceLayout algorithm to lib/forceLayout.ts, (2) shared types/constants to PatternGraphTypes.ts, (3) sidebar legend to PatternGraphLegend.tsx, (4) SVG rendering to PatternGraphSVG.tsx. All 1353 tests pass."
+  "testFile": "frontend/src/test/components/GrammarMode/PatternGraphSVG.test.tsx",
+  "testCount": 39,
+  "testPassed": true
 }
