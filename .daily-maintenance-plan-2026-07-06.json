@@ -1,0 +1,11 @@
+{
+  "date": "2026-07-06",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All critical paths covered — consider expanding coverage to secondary components. Top untested secondary components: GrammarMode/PatternGraphSVG.tsx (331 lines, no tests), VerbMode/ExerciseScreen.tsx (211 lines, no tests), LessonMode/LessonDetail.tsx (174 lines, no tests). All priority hooks (useAudioPlayer, useFurigana, useChatSession) and critical components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have test coverage.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/GrammarMode/PatternGraphSVG.test.tsx",
+  "testCount": 39,
+  "testPassed": true
+}

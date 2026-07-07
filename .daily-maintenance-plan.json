@@ -1,11 +1,14 @@
 {
-  "date": "2026-07-06",
-  "testTarget": null,
-  "refactorCandidate": null,
+  "date": "2026-07-07",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "testWritten": true,
+    "testCount": 11,
+    "testPassed": true
+  },
   "refactorSkipped": true,
-  "notes": "All critical paths covered — consider expanding coverage to secondary components. Top untested secondary components: GrammarMode/PatternGraphSVG.tsx (331 lines, no tests), VerbMode/ExerciseScreen.tsx (211 lines, no tests), LessonMode/LessonDetail.tsx (174 lines, no tests). All priority hooks (useAudioPlayer, useFurigana, useChatSession) and critical components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have test coverage.",
-  "testWritten": true,
-  "testFile": "frontend/src/test/components/GrammarMode/PatternGraphSVG.test.tsx",
-  "testCount": 39,
-  "testPassed": true
+  "notes": "All critical hooks (useAudioPlayer, useFurigana, useChatSession) already have tests. Largest components are now under 300 lines; no refactor candidates flagged."
 }
