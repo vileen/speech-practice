@@ -1,0 +1,12 @@
+{
+  "date": "2026-07-08",
+  "testTarget": null,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "No listed refactor candidates exceed 300 lines; all have been refactored or split",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "notes": "all critical paths covered — consider expanding coverage to secondary components. All 7 priority hooks/components have tests (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText). Only untested hook is useLessonFurigana.tsx (not on priority list). Large components exist (ListeningMode 607, ProgressDashboard 499, CountersMode 499, MemoryMode 484) but all have comprehensive tests."
+}
