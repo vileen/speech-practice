@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { AudioPlayer, formatTime } from '../../../components/AudioPlayer/AudioPlayer';
 
 // Track created mock audio instances
@@ -294,5 +294,167 @@ describe('AudioPlayer', () => {
     );
 
     expect(getLatestMockAudio().volume).toBe(0.8);
+  });
+
+  it('handles play() error and calls onStop', async () => {
+    // Create a proper constructor that returns a rejecting mock
+    class RejectingMockAudio {
+      currentTime = 0;
+      duration = 100;
+      paused = true;
+      volume = 1;
+      src = '';
+      preload = '';
+      _listeners: Record<string, Array<(e?: Event) => void>> = {};
+      addEventListener(event: string, callback: (e?: Event) => void) {
+        if (!this._listeners[event]) this._listeners[event] = [];
+        this._listeners[event].push(callback);
+      }
+      removeEventListener() {}
+      play = vi.fn().mockRejectedValue(new Error('Playback failed'));
+      pause = vi.fn();
+    }
+    vi.stubGlobal('Audio', RejectingMockAudio as unknown as typeof Audio);
+
+    const { rerender } = render(
+      <AudioPlayer
+        audioUrl="test.mp3"
+        volume={0.5}
+        isActive={false}
+        onPlay={mockOnPlay}
+        onPause={mockOnPause}
+        onStop={mockOnStop}
+        onStopOthers={mockOnStopOthers}
+      />
+    );
+
+    rerender(
+      <AudioPlayer
+        audioUrl="test.mp3"
+        volume={0.5}
+        isActive={true}
+        onPlay={mockOnPlay}
+        onPause={mockOnPause}
+        onStop={mockOnStop}
+        onStopOthers={mockOnStopOthers}
+      />
+    );
+
+    // Wait for the async play rejection
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(mockOnStop).toHaveBeenCalled();
+
+    // Restore Audio stub
+    vi.stubGlobal('Audio', MockAudio as unknown as typeof Audio);
+  });
+
+  it('seeks to correct position when progress bar is clicked', async () => {
+    render(
+      <AudioPlayer
+        audioUrl="test.mp3"
+        volume={0.5}
+        isActive={false}
+        onPlay={mockOnPlay}
+        onPause={mockOnPause}
+        onStop={mockOnStop}
+        onStopOthers={mockOnStopOthers}
+      />
+    );
+
+    const audio = getLatestMockAudio();
+    audio.duration = 200; // 3:20
+
+    // Trigger loadedmetadata to set duration (wrap in act for state update)
+    await act(async () => {
+      audio.dispatchEvent('loadedmetadata');
+    });
+
+    const progressBar = screen.getByRole('button', { name: /play/i }).parentElement!.querySelector('.progress-bar-container') as HTMLElement;
+    expect(progressBar).toBeTruthy();
+
+    // Mock getBoundingClientRect for the progress bar
+    progressBar.getBoundingClientRect = vi.fn(() => ({
+      left: 0,
+      top: 0,
+      width: 200,
+      height: 20,
+      right: 200,
+      bottom: 20,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    }));
+
+    await act(async () => {
+      fireEvent.click(progressBar, { clientX: 100 });
+    });
+
+    // Clicked at 50% of 200px width, so 50% of 200s = 100s
+    expect(audio.currentTime).toBe(100);
+  });
+
+  it('updates duration when loadedmetadata fires', async () => {
+    render(
+      <AudioPlayer
+        audioUrl="test.mp3"
+        volume={0.5}
+        isActive={false}
+        onPlay={mockOnPlay}
+        onPause={mockOnPause}
+        onStop={mockOnStop}
+        onStopOthers={mockOnStopOthers}
+      />
+    );
+
+    const audio = getLatestMockAudio();
+    audio.duration = 185; // 3:05
+
+    // Dispatch event inside act to handle state update
+    await act(async () => {
+      audio.dispatchEvent('loadedmetadata');
+    });
+
+    // After loadedmetadata, the component should show the duration
+    expect(screen.getAllByText('3:05').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('starts RAF loop when playback begins', async () => {
+    // Use a fresh RAF mock for this test
+    const rafMock = vi.fn(() => 999);
+    vi.stubGlobal('requestAnimationFrame', rafMock);
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+
+    const { rerender } = render(
+      <AudioPlayer
+        audioUrl="test.mp3"
+        volume={0.5}
+        isActive={false}
+        onPlay={mockOnPlay}
+        onPause={mockOnPause}
+        onStop={mockOnStop}
+        onStopOthers={mockOnStopOthers}
+      />
+    );
+
+    // Clear any calls from initial render
+    rafMock.mockClear();
+
+    rerender(
+      <AudioPlayer
+        audioUrl="test.mp3"
+        volume={0.5}
+        isActive={true}
+        onPlay={mockOnPlay}
+        onPause={mockOnPause}
+        onStop={mockOnStop}
+        onStopOthers={mockOnStopOthers}
+      />
+    );
+
+    // Wait for async play() to resolve and RAF to be scheduled
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    // RAF should have been called for progress updates
+    expect(rafMock).toHaveBeenCalled();
   });
 });

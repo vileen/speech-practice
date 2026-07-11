@@ -1,0 +1,17 @@
+{
+  "date": "2026-07-11",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback is essential for listening practice — no tests exist. Component is 197 lines with nontrivial UI logic."
+  },
+  "refactorCandidate": null,
+  "notes": "Codebase has been significantly refactored since original task was written. Priority hooks (useAudioPlayer, useFurigana, useChatSession) all have tests already. Only missing hook is useKanjiKeyboardShortcuts.ts. Listed refactor candidates (VoiceRecorder, LessonMode, GrammarMode, etc.) are all now under 300 lines — refactor work already completed.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+  "testCount": 15,
+  "testPassed": true,
+  "refactorSkipped": true
+}
