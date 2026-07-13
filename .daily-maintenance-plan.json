@@ -1,16 +1,19 @@
 {
-  "date": "2026-07-12",
-  "testTarget": null,
-  "refactorCandidate": {
-    "sourceFile": "frontend/src/components/ListeningMode/ListeningMode.tsx",
-    "lineCount": 607,
-    "reason": "Largest component in codebase, likely mixes UI and logic. Has tests but could benefit from extraction.",
-    "shouldRefactor": false
+  "date": "2026-07-13",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback is essential for listening practice — no tests exist. This was the first untested item in the critical components priority list (hooks are all covered)."
   },
+  "refactorCandidate": null,
+  "notes": "All critical hooks (useAudioPlayer, useFurigana, useChatSession) already have tests. The first missing test target is AudioPlayer.tsx (197 lines). Previously-flagged refactor candidates (VoiceRecorder, LessonMode, GrammarMode, etc.) are all now under 300 lines — the codebase has been refactored since initial analysis. Consider expanding coverage to remaining untested critical components: JapanesePhrase, VoiceRecorder, HighlightedText.",
   "testWritten": true,
-  "testFile": "frontend/src/test/pages/RepeatSetup.test.tsx",
-  "testCount": 18,
+  "testFile": "frontend/src/test/components/FuriganaDisplay.test.tsx",
+  "testCount": 11,
   "testPassed": true,
-  "refactorSkipped": true,
-  "notes": "All critical paths from priority list are covered. Frontend: 83 tests, Backend: 35 tests. Secondary coverage gaps: useConversationMode hook (only hook without tests), 5 pages without tests (ChatSession, KanjiPracticePage, LessonDetail, MemoryModeWrapper, RepeatSetup). Listed refactor candidates have all been significantly reduced in size since task file was written."
+  "actualTestTarget": "frontend/src/components/ReadingMode/FuriganaDisplay.tsx",
+  "reasonForSwitch": "AudioPlayer already had comprehensive tests (15 tests). Switched to untested secondary component FuriganaDisplay.",
+  "refactorSkipped": true
 }
