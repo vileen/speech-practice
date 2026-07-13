@@ -983,3 +983,19 @@ ruby.furigana-failed rt {
 .review-tooltip-item:hover .review-tooltip-title {
   color: #e94560;
 }
+
+/* Vocabulary appearances badge */
+.vocab-appearances {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #333;
+}
+
+.appearances-badge {
+  display: inline-block;
+  background: #2a2a4a;
+  color: #aaa;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+}

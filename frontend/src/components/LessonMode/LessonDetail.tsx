@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '../Header/index.js';
 import { type LessonDetail } from '../../hooks/useLessonMode.js';
 import { translateLessonTitle } from '../../translations.js';
+import { API_URL } from '../../config/api.js';
 import './LessonMode.css';
 
 export interface LessonDetailProps {
@@ -26,12 +27,36 @@ export function LessonDetailView({
   prefetchFurigana,
 }: LessonDetailProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
+  const [vocabWithSources, setVocabWithSources] = useState<Record<string, any[]>>({});
 
   useEffect(() => {
     if (showFurigana) {
       prefetchFurigana(lesson);
     }
   }, [lesson, showFurigana]);
+
+  // Fetch vocabulary with sources (appearances in other lessons)
+  useEffect(() => {
+    const fetchVocabSources = async () => {
+      if (!lesson?.id) return;
+      try {
+        const response = await fetch(`${API_URL}/api/lessons/${lesson.id}/vocabulary-with-sources`);
+        if (!response.ok) throw new Error('Failed to fetch vocab sources');
+        const data = await response.json();
+        const sourcesMap: Record<string, any[]> = {};
+        (data.vocabulary || []).forEach((word: any) => {
+          const wordText = word.jp || word.word;
+          if (wordText) {
+            sourcesMap[wordText] = word.otherLessons || [];
+          }
+        });
+        setVocabWithSources(sourcesMap);
+      } catch (error) {
+        console.error('Error fetching vocab sources:', error);
+      }
+    };
+    fetchVocabSources();
+  }, [lesson.id]);
 
   return (
     <div className="lesson-mode">
@@ -106,16 +131,25 @@ export function LessonDetailView({
           {activeTab === 'vocab' && (
             <div className="vocab-tab">
               <div className="vocab-grid">
-                {(lesson.vocabulary || []).map((item, idx) => (
-                  <div key={idx} className="vocab-card">
-                    <div className="vocab-card-header">
-                      <div className="jp-word">{renderFurigana(item.jp || (item as any).word || '', item.reading)}</div>
+                {(lesson.vocabulary || []).map((item, idx) => {
+                  const wordText = item.jp || (item as any).word || '';
+                  const otherLessons = vocabWithSources[wordText] || [];
+                  return (
+                    <div key={idx} className="vocab-card">
+                      <div className="vocab-card-header">
+                        <div className="jp-word">{renderFurigana(wordText, item.reading)}</div>
+                      </div>
+                      <div className="romaji">{item.romaji || item.reading}</div>
+                      <div className="meaning">{item.en || (item as any).meaning || 'No meaning'}</div>
+                      {item.type && <span className="type-tag">{item.type}</span>}
+                      {otherLessons.length > 0 && (
+                        <div className="vocab-appearances">
+                          <span className="appearances-badge">Appears in {otherLessons.length} lesson{otherLessons.length !== 1 ? 's' : ''}</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="romaji">{item.romaji || item.reading}</div>
-                    <div className="meaning">{item.en || (item as any).meaning || 'No meaning'}</div>
-                    {item.type && <span className="type-tag">{item.type}</span>}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
