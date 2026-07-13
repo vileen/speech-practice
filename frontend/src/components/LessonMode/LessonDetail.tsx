@@ -138,15 +138,24 @@ export function LessonDetailView({
                     <div key={idx} className="vocab-card">
                       <div className="vocab-card-header">
                         <div className="jp-word">{renderFurigana(wordText, item.reading)}</div>
+                        {otherLessons.length > 0 && (
+                          <div className="appearances-badge-container">
+                            <span className="appearances-badge">{otherLessons.length}</span>
+                            <div className="appearances-tooltip">
+                              <div className="appearances-tooltip-header">Appears in {otherLessons.length} lesson{otherLessons.length !== 1 ? 's' : ''}</div>
+                              {otherLessons.map((l: any) => (
+                                <div key={l.id} className="appearances-tooltip-item">
+                                  <span className="appearances-tooltip-title">{l.title}</span>
+                                  <span className="appearances-tooltip-date">{l.date}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="romaji">{item.romaji || item.reading}</div>
                       <div className="meaning">{item.en || (item as any).meaning || 'No meaning'}</div>
                       {item.type && <span className="type-tag">{item.type}</span>}
-                      {otherLessons.length > 0 && (
-                        <div className="vocab-appearances">
-                          <span className="appearances-badge">Appears in {otherLessons.length} lesson{otherLessons.length !== 1 ? 's' : ''}</span>
-                        </div>
-                      )}
                     </div>
                   );
                 })}

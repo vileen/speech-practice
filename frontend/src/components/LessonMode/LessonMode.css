@@ -984,18 +984,80 @@ ruby.furigana-failed rt {
   color: #e94560;
 }
 
-/* Vocabulary appearances badge */
-.vocab-appearances {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #333;
+/* Vocabulary appearances badge with tooltip */
+.appearances-badge-container {
+  position: relative;
 }
 
 .appearances-badge {
-  display: inline-block;
-  background: #2a2a4a;
-  color: #aaa;
-  font-size: 0.75rem;
+  background: #f0ad4e;
+  color: #1a1a2e;
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  white-space: nowrap;
+  cursor: help;
+}
+
+.appearances-badge:hover {
+  background: #ec971f;
+}
+
+.appearances-tooltip {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #1a1a2e;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 280px;
+  max-width: 320px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  margin-top: 4px;
+}
+
+.appearances-badge-container:hover .appearances-tooltip {
+  display: block;
+}
+
+.appearances-tooltip-header {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #333;
+}
+
+.appearances-tooltip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  margin-bottom: 4px;
+  background: #16213e;
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.appearances-tooltip-item:hover {
+  background: #0f3460;
+  transform: translateX(-2px);
+}
+
+.appearances-tooltip-title {
+  font-size: 0.85rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.appearances-tooltip-date {
+  font-size: 0.75rem;
+  color: #888;
 }
