@@ -30,6 +30,7 @@ export function LessonDetailView({
 }: LessonDetailProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'vocab' | 'grammar' | 'practice'>('overview');
   const [vocabWithSources, setVocabWithSources] = useState<Record<string, any[]>>({});
+  const [hoveredWord, setHoveredWord] = useState<string | null>(null);
 
   useEffect(() => {
     if (showFurigana) {
@@ -141,17 +142,23 @@ export function LessonDetailView({
                       <div className="vocab-card-header">
                         <div className="jp-word">{renderFurigana(wordText, item.reading)}</div>
                         {otherLessons.length > 0 && (
-                          <div className="appearances-badge-container">
+                          <div
+                            className="appearances-badge-container"
+                            onMouseEnter={() => setHoveredWord(wordText)}
+                            onMouseLeave={() => setHoveredWord(null)}
+                          >
                             <span className="appearances-badge">{otherLessons.length}</span>
-                            <div className="appearances-tooltip">
-                              <div className="appearances-tooltip-header">Appears in {otherLessons.length} lesson{otherLessons.length !== 1 ? 's' : ''}</div>
-                              {otherLessons.map((l: any) => (
-                                <div key={l.id} className="appearances-tooltip-item" onClick={() => onSelectLesson?.(l.id)}>
-                                  <span className="appearances-tooltip-title">{l.title}</span>
-                                  <span className="appearances-tooltip-date">{l.date}</span>
-                                </div>
-                              ))}
-                            </div>
+                            {hoveredWord === wordText && (
+                              <div className="appearances-tooltip">
+                                <div className="appearances-tooltip-header">Appears in {otherLessons.length} lesson{otherLessons.length !== 1 ? 's' : ''}</div>
+                                {otherLessons.map((l: any) => (
+                                  <div key={l.id} className="appearances-tooltip-item" onClick={() => onSelectLesson?.(l.id)}>
+                                    <span className="appearances-tooltip-title">{l.title}</span>
+                                    <span className="appearances-tooltip-date">{l.date}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
