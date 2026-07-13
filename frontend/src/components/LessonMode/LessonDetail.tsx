@@ -9,6 +9,7 @@ export interface LessonDetailProps {
   lesson: LessonDetail;
   onBack: () => void;
   onStartLessonChat: (lessonId: string, lessonTitle: string) => void;
+  onSelectLesson?: (lessonId: string | null) => void;
   showFurigana: boolean;
   setShowFurigana: (show: boolean) => void;
   renderFurigana: (text: string, reading?: string | null) => string | React.ReactElement;
@@ -20,6 +21,7 @@ export function LessonDetailView({
   lesson,
   onBack,
   onStartLessonChat,
+  onSelectLesson,
   showFurigana,
   setShowFurigana,
   renderFurigana,
@@ -144,7 +146,7 @@ export function LessonDetailView({
                             <div className="appearances-tooltip">
                               <div className="appearances-tooltip-header">Appears in {otherLessons.length} lesson{otherLessons.length !== 1 ? 's' : ''}</div>
                               {otherLessons.map((l: any) => (
-                                <div key={l.id} className="appearances-tooltip-item">
+                                <div key={l.id} className="appearances-tooltip-item" onClick={() => onSelectLesson?.(l.id)}>
                                   <span className="appearances-tooltip-title">{l.title}</span>
                                   <span className="appearances-tooltip-date">{l.date}</span>
                                 </div>

@@ -80,6 +80,7 @@ export function LessonMode({ password, onBack, onStartLessonChat, selectedLesson
         lesson={selectedLesson}
         onBack={handleBackToList}
         onStartLessonChat={onStartLessonChat}
+        onSelectLesson={onSelectLesson}
         showFurigana={showFurigana}
         setShowFurigana={setShowFurigana}
         renderFurigana={(text: string, reading?: string | null) => renderFurigana(text, showFurigana, reading)}
