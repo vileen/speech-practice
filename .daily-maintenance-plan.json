@@ -1,19 +1,9 @@
 {
-  "date": "2026-07-13",
-  "testTarget": {
-    "type": "component",
-    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
-    "testFile": "frontend/src/components/AudioPlayer/AudioPlayer.test.tsx",
-    "priority": "listening-foundation",
-    "reason": "Audio playback is essential for listening practice — no tests exist. This was the first untested item in the critical components priority list (hooks are all covered)."
-  },
+  "date": "2026-07-14",
+  "testTarget": null,
   "refactorCandidate": null,
-  "notes": "All critical hooks (useAudioPlayer, useFurigana, useChatSession) already have tests. The first missing test target is AudioPlayer.tsx (197 lines). Previously-flagged refactor candidates (VoiceRecorder, LessonMode, GrammarMode, etc.) are all now under 300 lines — the codebase has been refactored since initial analysis. Consider expanding coverage to remaining untested critical components: JapanesePhrase, VoiceRecorder, HighlightedText.",
-  "testWritten": true,
-  "testFile": "frontend/src/test/components/FuriganaDisplay.test.tsx",
-  "testCount": 11,
-  "testPassed": true,
-  "actualTestTarget": "frontend/src/components/ReadingMode/FuriganaDisplay.tsx",
-  "reasonForSwitch": "AudioPlayer already had comprehensive tests (15 tests). Switched to untested secondary component FuriganaDisplay.",
-  "refactorSkipped": true
+  "refactorSkipped": true,
+  "refactorDone": false,
+  "testsPassAfterRefactor": null,
+  "notes": "All critical paths covered — 86 test files, 1456 tests passing (6 skipped). Priority hooks (useAudioPlayer, useFurigana, useChatSession) all have tests. Priority components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) all have tests. All backend routes (22/23) and services (8/8) have tests. All lib files have tests. Refactor candidates from task (VoiceRecorder, LessonMode, ReadingMode, GrammarMode, VerbMode, SpeakingMode, KanjiPracticeMode) have all been refactored to under 200 lines. Consider: (1) expanding to secondary sub-components (PatternGraphSVG 331 lines, LessonDetail 226 lines, ExerciseScreen 211 lines), or (2) adding E2E/integration tests for critical user flows, or (3) maintaining current excellent coverage level."
 }
