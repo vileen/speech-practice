@@ -149,7 +149,11 @@ export function LessonDetailView({
                           >
                             <span className="appearances-badge">{otherLessons.length}</span>
                             {hoveredWord === wordText && (
-                              <div className="appearances-tooltip">
+                              <div 
+                                className="appearances-tooltip"
+                                onMouseEnter={() => setHoveredWord(wordText)}
+                                onMouseLeave={() => setHoveredWord(null)}
+                              >
                                 <div className="appearances-tooltip-header">Appears in {otherLessons.length} lesson{otherLessons.length !== 1 ? 's' : ''}</div>
                                 {otherLessons.map((l: any) => (
                                   <div key={l.id} className="appearances-tooltip-item" onClick={() => onSelectLesson?.(l.id)}>
