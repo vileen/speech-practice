@@ -1,24 +1,29 @@
 {
-  "date": "2026-07-15",
+  "date": "2026-07-16",
   "testTarget": {
     "type": "component",
-    "sourceFile": "frontend/src/components/JapanesePhrase/JapanesePhrase.tsx",
-    "testFile": "frontend/src/test/components/JapanesePhrase/JapanesePhrase.test.tsx",
-    "priority": "core-display",
-    "reason": "JapanesePhrase is the central component for ALL Japanese text display (kanji, furigana, romaji, translation). It appears across every practice mode but has zero test coverage. Critical for consistent reading experience."
+    "sourceFile": "frontend/src/components/ListeningMode/ListeningMode.tsx",
+    "testFile": "frontend/src/test/components/ListeningMode.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "ListeningMode is the largest untested core component (607 lines). All priority-list hooks (useAudioPlayer, useFurigana, useChatSession) and critical components (AudioPlayer, JapanesePhrase) are already covered. ListeningMode manages audio playback, question flow, speed controls, and results — all essential for the app's primary listening-practice mode."
   },
   "refactorCandidate": {
-    "sourceFile": null,
-    "lineCount": null,
-    "reason": "All previously flagged refactor candidates (VoiceRecorder, LessonMode, GrammarMode, etc.) have been significantly reduced in size. Largest component is ListeningMode.tsx at 607 lines — within acceptable range.",
-    "shouldRefactor": false
+    "sourceFile": "frontend/src/components/ListeningMode/ListeningMode.tsx",
+    "lineCount": 607,
+    "reason": "Large component with mixed UI, state management, and audio logic. No tests exist. Should be refactored after test coverage is added to safely extract logic into hooks or sub-components.",
+    "shouldRefactor": true
   },
-  "notes": "Frontend: 85 tests. Backend: 35 tests. All 3 critical hooks (useAudioPlayer, useFurigana, useChatSession) are covered. AudioPlayer component is also covered. JapanesePhrase is the first uncovered critical component in priority order.",
+  "notes": "All hooks (100% coverage) and most critical components are tested. The highest-value gap is ListeningMode (607 lines, untested). Secondary untested components: CountersMode (499), MemoryMode (484), PatternGraph (424), RepeatMode (321), PatternSelection (292), ExerciseContainer (244), HighlightedText (192). VoiceRecorder is now only 11 lines (refactored).",
   "testWritten": true,
-  "testFile": "frontend/src/test/components/GrammarMode/PatternGraphLegend.test.tsx",
-  "testCount": 13,
+  "testFile": "frontend/src/test/components/ListeningMode.test.tsx",
+  "testCount": 45,
   "testPassed": true,
-  "testNote": "Original target (JapanesePhrase) already had 26 passing tests. Wrote test for secondary component LegendPanel instead.",
-  "refactorSkipped": true,
-  "refactorNote": "No refactor candidate flagged. Largest component (ListeningMode.tsx at 607 lines) is within acceptable range."
+  "refactorDone": true,
+  "refactorFiles": [
+    "frontend/src/components/ListeningMode/PassageList.tsx",
+    "frontend/src/components/ListeningMode/ListeningPlayer.tsx",
+    "frontend/src/components/ListeningMode/QuestionsView.tsx",
+    "frontend/src/components/ListeningMode/ResultsView.tsx"
+  ],
+  "testsPassAfterRefactor": true
 }

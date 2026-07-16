@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-15",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/JapanesePhrase/JapanesePhrase.tsx",
+    "testFile": "frontend/src/test/components/JapanesePhrase/JapanesePhrase.test.tsx",
+    "priority": "core-display",
+    "reason": "JapanesePhrase is the central component for ALL Japanese text display (kanji, furigana, romaji, translation). It appears across every practice mode but has zero test coverage. Critical for consistent reading experience."
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": null,
+    "reason": "All previously flagged refactor candidates (VoiceRecorder, LessonMode, GrammarMode, etc.) have been significantly reduced in size. Largest component is ListeningMode.tsx at 607 lines — within acceptable range.",
+    "shouldRefactor": false
+  },
+  "notes": "Frontend: 85 tests. Backend: 35 tests. All 3 critical hooks (useAudioPlayer, useFurigana, useChatSession) are covered. AudioPlayer component is also covered. JapanesePhrase is the first uncovered critical component in priority order.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/GrammarMode/PatternGraphLegend.test.tsx",
+  "testCount": 13,
+  "testPassed": true,
+  "testNote": "Original target (JapanesePhrase) already had 26 passing tests. Wrote test for secondary component LegendPanel instead.",
+  "refactorSkipped": true,
+  "refactorNote": "No refactor candidate flagged. Largest component (ListeningMode.tsx at 607 lines) is within acceptable range."
+}
