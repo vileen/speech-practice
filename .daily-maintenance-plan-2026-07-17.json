@@ -1,0 +1,25 @@
+{
+  "date": "2026-07-17",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback is essential for listening practice — component has no tests, and all priority hooks above it are already covered"
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "No critical component exceeds 300 lines; all flagged candidates are well under the threshold",
+    "shouldRefactor": false
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+  "testCount": 15,
+  "testPassed": true,
+  "refactorSkipped": true,
+  "refactorDone": false,
+  "refactorFiles": [],
+  "testsPassAfterRefactor": null,
+  "notes": "Priority hooks (useAudioPlayer, useFurigana, useChatSession) already have tests. First missing critical component is AudioPlayer/AudioPlayer.tsx. Backend has 35 tests, frontend has 86 tests. Refactor skipped: no candidate exceeded 300 lines."
+}

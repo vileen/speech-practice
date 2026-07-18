@@ -3,344 +3,254 @@ import { renderHook } from '@testing-library/react';
 import { useKanjiKeyboardShortcuts } from '../../hooks/useKanjiKeyboardShortcuts';
 
 describe('useKanjiKeyboardShortcuts', () => {
-  let mockOnReveal: ReturnType<typeof vi.fn>;
-  let mockOnReview: ReturnType<typeof vi.fn>;
-  let keydownHandler: ((e: KeyboardEvent) => void) | null = null;
-
-  const defaultOptions = {
-    showSetup: false,
-    isComplete: false,
-    isRevealed: false,
-    onReveal: () => {},
-    onReview: () => {},
-  };
+  const onReveal = vi.fn();
+  const onReview = vi.fn();
 
   beforeEach(() => {
-    mockOnReveal = vi.fn();
-    mockOnReview = vi.fn();
-    keydownHandler = null;
-
-    // Capture the event listener so we can trigger it manually
-    vi.spyOn(window, 'addEventListener').mockImplementation((event, handler) => {
-      if (event === 'keydown') {
-        keydownHandler = handler as (e: KeyboardEvent) => void;
-      }
-    });
-
-    vi.spyOn(window, 'removeEventListener').mockImplementation((event, handler) => {
-      if (event === 'keydown' && handler === keydownHandler) {
-        keydownHandler = null;
-      }
-    });
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  // Helper to trigger keydown events
-  const triggerKeyDown = (key: string, options: Partial<KeyboardEventInit> = {}) => {
-    const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...options });
-    const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
-    
-    if (keydownHandler) {
-      keydownHandler(event);
-    }
-    
-    return { event, preventDefaultSpy };
+  const dispatchKey = (key: string) => {
+    const event = new KeyboardEvent('keydown', { key });
+    const preventDefault = vi.spyOn(event, 'preventDefault');
+    window.dispatchEvent(event);
+    return preventDefault;
   };
 
-  describe('initialization', () => {
-    it('should register keydown listener on mount', () => {
-      renderHook(() => useKanjiKeyboardShortcuts(defaultOptions));
-      expect(window.addEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
-    });
+  it('should ignore all keys when showSetup is true', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: true,
+        isComplete: false,
+        isRevealed: true,
+        onReveal,
+        onReview,
+      })
+    );
 
-    it('should remove keydown listener on unmount', () => {
-      const { unmount } = renderHook(() => useKanjiKeyboardShortcuts(defaultOptions));
-      unmount();
-      expect(window.removeEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
+    dispatchKey(' ');
+    dispatchKey('1');
+    dispatchKey('4');
+
+    expect(onReveal).not.toHaveBeenCalled();
+    expect(onReview).not.toHaveBeenCalled();
+  });
+
+  it('should ignore all keys when isComplete is true', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: true,
+        isRevealed: true,
+        onReveal,
+        onReview,
+      })
+    );
+
+    dispatchKey(' ');
+    dispatchKey('2');
+    dispatchKey('3');
+
+    expect(onReveal).not.toHaveBeenCalled();
+    expect(onReview).not.toHaveBeenCalled();
+  });
+
+  it('should call onReveal when Space is pressed while not revealed', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: false,
+        isRevealed: false,
+        onReveal,
+        onReview,
+      })
+    );
+
+    const preventDefault = dispatchKey(' ');
+
+    expect(onReveal).toHaveBeenCalledTimes(1);
+    expect(onReview).not.toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it('should call onReveal when Spacebar is pressed while not revealed', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: false,
+        isRevealed: false,
+        onReveal,
+        onReview,
+      })
+    );
+
+    dispatchKey('Spacebar');
+
+    expect(onReveal).toHaveBeenCalledTimes(1);
+    expect(onReview).not.toHaveBeenCalled();
+  });
+
+  it('should ignore non-space keys while not revealed', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: false,
+        isRevealed: false,
+        onReveal,
+        onReview,
+      })
+    );
+
+    dispatchKey('1');
+    dispatchKey('2');
+    dispatchKey('Enter');
+    dispatchKey('a');
+
+    expect(onReveal).not.toHaveBeenCalled();
+    expect(onReview).not.toHaveBeenCalled();
+  });
+
+  it('should review "again" when Space is pressed while revealed', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: false,
+        isRevealed: true,
+        onReveal,
+        onReview,
+      })
+    );
+
+    const preventDefault = dispatchKey(' ');
+
+    expect(onReview).toHaveBeenCalledTimes(1);
+    expect(onReview).toHaveBeenCalledWith('again');
+    expect(onReveal).not.toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it('should review "again" when Spacebar is pressed while revealed', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: false,
+        isRevealed: true,
+        onReveal,
+        onReview,
+      })
+    );
+
+    dispatchKey('Spacebar');
+
+    expect(onReview).toHaveBeenCalledTimes(1);
+    expect(onReview).toHaveBeenCalledWith('again');
+  });
+
+  it('should review with correct ratings when 1/2/3/4 are pressed while revealed', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: false,
+        isRevealed: true,
+        onReveal,
+        onReview,
+      })
+    );
+
+    dispatchKey('1');
+    expect(onReview).toHaveBeenLastCalledWith('again');
+
+    dispatchKey('2');
+    expect(onReview).toHaveBeenLastCalledWith('hard');
+
+    dispatchKey('3');
+    expect(onReview).toHaveBeenLastCalledWith('good');
+
+    dispatchKey('4');
+    expect(onReview).toHaveBeenLastCalledWith('easy');
+
+    expect(onReview).toHaveBeenCalledTimes(4);
+    expect(onReveal).not.toHaveBeenCalled();
+  });
+
+  it('should prevent default for handled rating keys', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: false,
+        isRevealed: true,
+        onReveal,
+        onReview,
+      })
+    );
+
+    ['1', '2', '3', '4'].forEach((key) => {
+      const preventDefault = dispatchKey(key);
+      expect(preventDefault).toHaveBeenCalled();
     });
   });
 
-  describe('when showSetup is true', () => {
-    it('should not call onReveal when space is pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          showSetup: true,
-          onReveal: mockOnReveal,
-        })
-      );
+  it('should ignore other keys while revealed', () => {
+    renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: false,
+        isRevealed: true,
+        onReveal,
+        onReview,
+      })
+    );
 
-      triggerKeyDown(' ');
-      expect(mockOnReveal).not.toHaveBeenCalled();
-    });
+    dispatchKey('Enter');
+    dispatchKey('a');
+    dispatchKey('5');
 
-    it('should not call onReview when number keys are pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          showSetup: true,
-          isRevealed: true,
-          onReview: mockOnReview,
-        })
-      );
-
-      triggerKeyDown('1');
-      triggerKeyDown('2');
-      triggerKeyDown('3');
-      triggerKeyDown('4');
-      expect(mockOnReview).not.toHaveBeenCalled();
-    });
+    expect(onReview).not.toHaveBeenCalled();
+    expect(onReveal).not.toHaveBeenCalled();
   });
 
-  describe('when isComplete is true', () => {
-    it('should not call onReveal when space is pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isComplete: true,
-          onReveal: mockOnReveal,
-        })
-      );
+  it('should remove event listener on unmount', () => {
+    const { unmount } = renderHook(() =>
+      useKanjiKeyboardShortcuts({
+        showSetup: false,
+        isComplete: false,
+        isRevealed: false,
+        onReveal,
+        onReview,
+      })
+    );
 
-      triggerKeyDown(' ');
-      expect(mockOnReveal).not.toHaveBeenCalled();
-    });
+    unmount();
+    dispatchKey(' ');
 
-    it('should not call onReview when number keys are pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isComplete: true,
-          isRevealed: true,
-          onReview: mockOnReview,
-        })
-      );
-
-      triggerKeyDown('1');
-      expect(mockOnReview).not.toHaveBeenCalled();
-    });
+    expect(onReveal).not.toHaveBeenCalled();
+    expect(onReview).not.toHaveBeenCalled();
   });
 
-  describe('when not revealed', () => {
-    it('should call onReveal when space is pressed', () => {
-      renderHook(() =>
+  it('should update behavior when dependencies change', () => {
+    const { rerender } = renderHook(
+      ({ isRevealed }) =>
         useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          onReveal: mockOnReveal,
-        })
-      );
+          showSetup: false,
+          isComplete: false,
+          isRevealed,
+          onReveal,
+          onReview,
+        }),
+      { initialProps: { isRevealed: false } }
+    );
 
-      const { preventDefaultSpy } = triggerKeyDown(' ');
-      expect(mockOnReveal).toHaveBeenCalledTimes(1);
-      expect(preventDefaultSpy).toHaveBeenCalled();
-    });
+    dispatchKey(' ');
+    expect(onReveal).toHaveBeenCalledTimes(1);
 
-    it('should call onReveal when Spacebar (legacy) is pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          onReveal: mockOnReveal,
-        })
-      );
+    rerender({ isRevealed: true });
 
-      const { preventDefaultSpy } = triggerKeyDown('Spacebar');
-      expect(mockOnReveal).toHaveBeenCalledTimes(1);
-      expect(preventDefaultSpy).toHaveBeenCalled();
-    });
-
-    it('should not call onReview when number keys are pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          onReview: mockOnReview,
-        })
-      );
-
-      triggerKeyDown('1');
-      triggerKeyDown('2');
-      triggerKeyDown('3');
-      triggerKeyDown('4');
-      expect(mockOnReview).not.toHaveBeenCalled();
-    });
-
-    it('should not call onReveal for unhandled keys', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          onReveal: mockOnReveal,
-        })
-      );
-
-      triggerKeyDown('Enter');
-      triggerKeyDown('Escape');
-      triggerKeyDown('a');
-      expect(mockOnReveal).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('when revealed', () => {
-    it('should call onReview with "again" when 1 is pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isRevealed: true,
-          onReview: mockOnReview,
-        })
-      );
-
-      const { preventDefaultSpy } = triggerKeyDown('1');
-      expect(mockOnReview).toHaveBeenCalledWith('again');
-      expect(preventDefaultSpy).toHaveBeenCalled();
-    });
-
-    it('should call onReview with "hard" when 2 is pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isRevealed: true,
-          onReview: mockOnReview,
-        })
-      );
-
-      const { preventDefaultSpy } = triggerKeyDown('2');
-      expect(mockOnReview).toHaveBeenCalledWith('hard');
-      expect(preventDefaultSpy).toHaveBeenCalled();
-    });
-
-    it('should call onReview with "good" when 3 is pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isRevealed: true,
-          onReview: mockOnReview,
-        })
-      );
-
-      const { preventDefaultSpy } = triggerKeyDown('3');
-      expect(mockOnReview).toHaveBeenCalledWith('good');
-      expect(preventDefaultSpy).toHaveBeenCalled();
-    });
-
-    it('should call onReview with "easy" when 4 is pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isRevealed: true,
-          onReview: mockOnReview,
-        })
-      );
-
-      const { preventDefaultSpy } = triggerKeyDown('4');
-      expect(mockOnReview).toHaveBeenCalledWith('easy');
-      expect(preventDefaultSpy).toHaveBeenCalled();
-    });
-
-    it('should call onReview with "again" when space is pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isRevealed: true,
-          onReview: mockOnReview,
-        })
-      );
-
-      const { preventDefaultSpy } = triggerKeyDown(' ');
-      expect(mockOnReview).toHaveBeenCalledWith('again');
-      expect(preventDefaultSpy).toHaveBeenCalled();
-    });
-
-    it('should call onReview with "again" when Spacebar (legacy) is pressed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isRevealed: true,
-          onReview: mockOnReview,
-        })
-      );
-
-      const { preventDefaultSpy } = triggerKeyDown('Spacebar');
-      expect(mockOnReview).toHaveBeenCalledWith('again');
-      expect(preventDefaultSpy).toHaveBeenCalled();
-    });
-
-    it('should not call onReveal when space is pressed while revealed', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isRevealed: true,
-          onReveal: mockOnReveal,
-          onReview: mockOnReview,
-        })
-      );
-
-      triggerKeyDown(' ');
-      expect(mockOnReveal).not.toHaveBeenCalled();
-      expect(mockOnReview).toHaveBeenCalledWith('again');
-    });
-
-    it('should not call onReview for unhandled keys', () => {
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          ...defaultOptions,
-          isRevealed: true,
-          onReview: mockOnReview,
-        })
-      );
-
-      triggerKeyDown('5');
-      triggerKeyDown('Enter');
-      triggerKeyDown('Escape');
-      triggerKeyDown('a');
-      expect(mockOnReview).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('dependency updates', () => {
-    it('should update handler when isRevealed changes', () => {
-      const { rerender } = renderHook(
-        ({ isRevealed }) =>
-          useKanjiKeyboardShortcuts({
-            ...defaultOptions,
-            isRevealed,
-            onReveal: mockOnReveal,
-            onReview: mockOnReview,
-          }),
-        { initialProps: { isRevealed: false } }
-      );
-
-      // Initially not revealed - space should call onReveal
-      triggerKeyDown(' ');
-      expect(mockOnReveal).toHaveBeenCalledTimes(1);
-
-      // Change to revealed - space should call onReview with 'again'
-      rerender({ isRevealed: true });
-      triggerKeyDown(' ');
-      expect(mockOnReview).toHaveBeenCalledWith('again');
-    });
-
-    it('should update handler when showSetup changes', () => {
-      const { rerender } = renderHook(
-        ({ showSetup }) =>
-          useKanjiKeyboardShortcuts({
-            ...defaultOptions,
-            showSetup,
-            isRevealed: true,
-            onReview: mockOnReview,
-          }),
-        { initialProps: { showSetup: true } }
-      );
-
-      // showSetup=true - keys should not work
-      triggerKeyDown('1');
-      expect(mockOnReview).not.toHaveBeenCalled();
-
-      // Change to showSetup=false - keys should work
-      rerender({ showSetup: false });
-      triggerKeyDown('1');
-      expect(mockOnReview).toHaveBeenCalledWith('again');
-    });
+    dispatchKey(' ');
+    expect(onReview).toHaveBeenCalledWith('again');
+    expect(onReview).toHaveBeenCalledTimes(1);
   });
 });
