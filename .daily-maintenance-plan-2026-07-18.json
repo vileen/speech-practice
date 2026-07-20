@@ -1,0 +1,11 @@
+{
+  "date": "2026-07-18",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "notes": "All priority hooks/components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have test coverage. Frontend: 86 tests, Backend: 35 tests. One secondary untested hook remains: frontend/src/hooks/useKanjiKeyboardShortcuts.ts. No component in the refactor-candidate list exceeds 300 lines, and the largest existing components (ProgressDashboard 499, CountersMode 499, MemoryMode 484) all have tests, so no refactor candidate is flagged today. Consider expanding coverage to the untested hook or adding integration tests for the largest modes.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 12,
+  "testPassed": true,
+  "refactorSkipped": true
+}

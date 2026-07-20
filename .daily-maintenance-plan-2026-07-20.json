@@ -1,0 +1,12 @@
+{
+  "date": "2026-07-20",
+  "testTarget": null,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "No priority component or hook is missing tests; all listed critical components/hooks already have test coverage",
+    "shouldRefactor": false
+  },
+  "notes": "All critical paths covered — priority hooks (useAudioPlayer, useFurigana, useChatSession) and critical UI components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) all have tests. Frontend: 87 tests, Backend: 35 tests. Consider expanding coverage to secondary components such as KanjiCardView, LessonDetail, ListeningPlayer, ConversationMode, ReadingView, and ResultsView.",
+  "refactorSkipped": true
+}
