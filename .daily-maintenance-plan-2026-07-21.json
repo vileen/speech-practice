@@ -1,0 +1,22 @@
+{
+  "date": "2026-07-21",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "Audio playback is essential for listening practice — the UI component has no tests. All priority hooks (useAudioPlayer, useFurigana, useChatSession) are already covered."
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/AudioPlayer/AudioPlayer.test.tsx",
+  "testCount": 15,
+  "testPassed": true,
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/VoiceRecorder/VoiceRecorder.tsx",
+    "lineCount": 11,
+    "reason": "All listed refactor candidates are now under 300 lines (VoiceRecorder is only 11 lines). No large component currently qualifies for Job 3 based on the defined criteria.",
+    "shouldRefactor": false
+  },
+  "notes": "Hook coverage is strong; component coverage is the current gap. The largest remaining components are ProgressDashboard (499), CountersMode (499), and MemoryMode (484), but they are not in the priority refactor list.",
+  "refactorSkipped": true
+}
