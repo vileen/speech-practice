@@ -1,0 +1,22 @@
+{
+  "date": "2026-07-22",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/HighlightedText/HighlightedText.tsx",
+    "testFile": "frontend/src/test/components/HighlightedText/HighlightedText.test.tsx",
+    "priority": "reading-furigana-sync",
+    "reason": "HighlightedText has untested core logic for furigana generation, Japanese text segmentation, and audio-time word highlighting. It is the most valuable missing test after hooks and AudioPlayer/JapanesePhrase/RecordingControls already have coverage. VoiceRecorder.tsx is a trivial wrapper around already-tested RecordingControls."
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": null,
+    "reason": "None of the listed refactor candidates exceed 300 lines in the current codebase; all have been refactored or split since the checklist was written.",
+    "shouldRefactor": false
+  },
+  "notes": "Analysis: 87 frontend tests, 35 backend tests. useAudioPlayer, useFurigana, useChatSession all have tests. AudioPlayer.test.tsx and JapanesePhrase.test.tsx exist. VoiceRecorder directory contains RecordingControls.test.tsx but VoiceRecorder.tsx is only a 11-line wrapper; no separate VoiceRecorder.test.tsx needed. HighlightedText has no test directory and contains the highest-value untested logic (furigana, segmenting, sync).",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/HighlightedText/HighlightedText.test.tsx",
+  "testCount": 12,
+  "testPassed": true,
+  "refactorSkipped": true
+}
