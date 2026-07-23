@@ -1,0 +1,16 @@
+{
+  "date": "2026-07-23",
+  "testTarget": null,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": null,
+    "reason": "No priority refactor candidate exceeds 300 lines",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "notes": "all critical paths covered — consider expanding coverage to secondary components (e.g., useKanjiKeyboardShortcuts.ts)",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/KanjiPracticeMode/KanjiComplete.test.tsx",
+  "testCount": 11,
+  "testPassed": true
+}
