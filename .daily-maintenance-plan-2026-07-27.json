@@ -1,0 +1,17 @@
+{
+  "date": "2026-07-27",
+  "testTarget": null,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": null,
+    "reason": "None of the tracked refactor candidates exceeded 300 lines; all specified components are now under 200 lines",
+    "shouldRefactor": false
+  },
+  "notes": "All critical paths covered — consider expanding coverage to secondary components. Priority hooks (useAudioPlayer, useFurigana, useChatSession) and priority components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) all have passing tests. Frontend: 93 test files, 1534 tests passing. Backend: 72 test files, 1073 tests passing. Top secondary candidates: ListeningMode/ListeningPlayer.tsx (137 lines, core audio UI), SpeakingMode/ConversationMode.tsx (147 lines), KanjiPracticeMode/KanjiCardView.tsx (148 lines), VerbMode/SelectionScreen.tsx (157 lines). The task's sed-based missing-test check is unreliable because `.ts` matches inside 'components'; manual verification confirmed all priority targets are tested.",
+  "refactorSkipped": true,
+  "refactorDone": false,
+  "testFile": null,
+  "testCount": 0,
+  "testPassed": true,
+  "testSkippedReason": "testTarget is null — all critical paths already covered"
+}
