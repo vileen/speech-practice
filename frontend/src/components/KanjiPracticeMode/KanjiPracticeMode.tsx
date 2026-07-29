@@ -8,7 +8,11 @@ import { useKanjiPracticeSession } from '../../hooks/useKanjiPracticeSession.js'
 import { useKanjiKeyboardShortcuts } from '../../hooks/useKanjiKeyboardShortcuts.js';
 import './KanjiPracticeMode.css';
 
-export const KanjiPracticeMode: React.FC = () => {
+interface KanjiPracticeModeProps {
+  onEndSession?: () => void;
+}
+
+export const KanjiPracticeMode: React.FC<KanjiPracticeModeProps> = ({ onEndSession }) => {
   const { state, actions, deps } = useKanjiPracticeSession();
 
   useKanjiKeyboardShortcuts({
@@ -22,7 +26,7 @@ export const KanjiPracticeMode: React.FC = () => {
   if (deps.isLoading) {
     return (
       <>
-        <Header title="Kanji Practice" icon="🈁" />
+        <Header title="Kanji Practice" icon="🈁" onBack={onEndSession} />
         <div className="kanji-practice-loading">
           <div className="spinner" />
           <p>Loading kanji...</p>
@@ -34,7 +38,7 @@ export const KanjiPracticeMode: React.FC = () => {
   if (state.showSetup) {
     return (
       <>
-        <Header title="Kanji Practice" icon="🈁" subtitle="Kodansha Kanji Learner's Course" />
+        <Header title="Kanji Practice" icon="🈁" subtitle="Kodansha Kanji Learner's Course" onBack={onEndSession} />
         <KanjiSetup
           stats={deps.stats}
           availableLessons={state.availableLessons}
@@ -51,7 +55,7 @@ export const KanjiPracticeMode: React.FC = () => {
   if (state.isComplete) {
     return (
       <>
-        <Header title="Practice Complete" icon="🎉" showBackButton={false} />
+        <Header title="Practice Complete" icon="🎉" showBackButton={false} onBack={onEndSession} />
         <KanjiComplete stats={deps.stats} onPracticeMore={actions.handleReset} />
       </>
     );
@@ -60,7 +64,7 @@ export const KanjiPracticeMode: React.FC = () => {
   if (!state.currentCard) {
     return (
       <>
-        <Header title="Kanji Practice" icon="🈁" />
+        <Header title="Kanji Practice" icon="🈁" onBack={onEndSession} />
         <div className="kanji-practice-empty">
           <p>No kanji available. Import some kanji first!</p>
           <button className="kanji-practice-start-btn" onClick={actions.handleReset}>
@@ -73,7 +77,7 @@ export const KanjiPracticeMode: React.FC = () => {
 
   return (
     <>
-      <Header title="Kanji Practice" icon="🈁" />
+      <Header title="Kanji Practice" icon="🈁" onBack={onEndSession} />
       <div className="kanji-practice-container">
         {/* Progress bar */}
         <div className="kanji-practice-progress">
@@ -113,7 +117,7 @@ export const KanjiPracticeMode: React.FC = () => {
 
         {/* Navigation */}
         <div className="kanji-practice-nav">
-          <button className="nav-btn" onClick={actions.handleReset}>
+          <button className="nav-btn" onClick={onEndSession ?? actions.handleReset}>
             End Session
           </button>
         </div>

@@ -1,0 +1,305 @@
+.kanji-list {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.kanji-list-actions {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.kanji-list-start-btn {
+  width: 100%;
+  max-width: 400px;
+  background: #e94560;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.kanji-list-start-btn:hover {
+  background: #c73e54;
+}
+
+.kanji-list-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 1rem;
+}
+
+.kanji-list-loading .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #333;
+  border-top-color: #e94560;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.kanji-list-error {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #16213e;
+  border: 1px solid #e94560;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.kanji-list-error-title {
+  color: #ff6b7a;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.kanji-list-error-message {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.kanji-list-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.kanji-list-search {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #16213e;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.kanji-list-search::placeholder {
+  color: #888;
+}
+
+.kanji-list-search:focus {
+  outline: none;
+  border-color: #e94560;
+}
+
+.kanji-list-count {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.kanji-list-empty {
+  text-align: center;
+  color: #888;
+  padding: 3rem 1rem;
+}
+
+.kanji-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.kanji-list-card {
+  background: #16213e;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.kanji-list-card:hover {
+  border-color: #555;
+  transform: translateY(-2px);
+}
+
+.kanji-list-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.kanji-list-character {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic Pro", "MS Gothic", sans-serif;
+}
+
+.kanji-list-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.kanji-list-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.kanji-list-badge.jlpt {
+  background: #4f46e5;
+  color: white;
+}
+
+.kanji-list-badge.strokes {
+  background: #0f3460;
+  color: #5dade2;
+}
+
+.kanji-list-badge.lesson {
+  background: #27ae60;
+  color: white;
+}
+
+.kanji-list-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kanji-list-section h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.kanji-list-meanings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kanji-list-meaning {
+  background: #e94560;
+  color: white;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.kanji-list-readings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kanji-list-reading-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.kanji-list-reading-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+.kanji-list-reading-label.kunyomi {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.kanji-list-reading-label.onyomi {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+.kanji-list-reading-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.kanji-list-reading-tag {
+  font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.kanji-list-reading-tag.kunyomi {
+  background: rgba(219, 234, 254, 0.15);
+  color: #93c5fd;
+}
+
+.kanji-list-reading-tag.onyomi {
+  background: rgba(252, 231, 243, 0.15);
+  color: #f9a8d4;
+}
+
+.kanji-list-examples {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.kanji-list-example {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.kanji-list-example-word {
+  font-weight: 600;
+  color: #fff;
+}
+
+.kanji-list-example-reading {
+  color: #aaa;
+}
+
+.kanji-list-example-meaning {
+  color: #888;
+}
+
+@media (max-width: 640px) {
+  .kanji-list-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kanji-list-card-header {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .kanji-list-meta {
+    justify-content: flex-end;
+  }
+}

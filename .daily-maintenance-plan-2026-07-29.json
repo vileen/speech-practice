@@ -1,0 +1,11 @@
+{
+  "date": "2026-07-29",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "notes": "All priority test targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have tests. Frontend has 92 tests, backend 35. Consider expanding coverage to secondary components next; largest untested components are CountersMode (499 lines), MemoryMode (484 lines), and ProgressDashboard (499 lines). Listed refactor candidates (VoiceRecorder, LessonMode, ReadingMode, GrammarMode, VerbMode, SpeakingMode, KanjiPracticeMode) are all under 300 lines and have tests, so no refactor candidate today.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/KanjiRatingButtons.test.tsx",
+  "testCount": 5,
+  "testPassed": true,
+  "refactorSkipped": true
+}
