@@ -1,0 +1,17 @@
+{
+  "date": "2026-08-01",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/AudioPlayer/AudioPlayer.tsx",
+    "testFile": "frontend/src/components/AudioPlayer/AudioPlayer.test.tsx",
+    "priority": "listening-foundation",
+    "reason": "AudioPlayer UI is the first untested critical component in priority order; audio playback is essential for listening practice and the underlying useAudioPlayer hook already has tests, so the UI layer is the remaining gap"
+  },
+  "refactorCandidate": null,
+  "notes": "All monitored refactor-candidate files are under 300 lines (VoiceRecorder=11, LessonMode=171, GrammarMode=177, etc.), so no refactor flagged today. Frontend has 94 tests, backend 35. Only one untested hook remains: useKanjiKeyboardShortcuts.ts.",
+  "testWritten": true,
+  "testFile": "frontend/src/components/AudioPlayer/AudioPlayer.test.tsx",
+  "testCount": 22,
+  "testPassed": true,
+  "refactorSkipped": true
+}
