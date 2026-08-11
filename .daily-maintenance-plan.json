@@ -1,0 +1,19 @@
+{
+  "date": "2026-08-11",
+  "testTarget": {
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "reason": "Only untested hook identified in frontend; no corresponding test file existed"
+  },
+  "testWritten": true,
+  "testCount": 15,
+  "testPassed": true,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": null,
+    "reason": "All listed refactor candidates (VoiceRecorder, LessonMode, ReadingMode, GrammarMode, VerbMode, SpeakingMode, KanjiPracticeMode) are now under 300 lines after recent code changes; no component qualifies for refactor flag",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "notes": "Wrote 15 tests for useKanjiKeyboardShortcuts covering mount/unmount listener management, reveal via Space/Spacebar, rating shortcuts (1/2/3/4) and Space while revealed, ignored keys, disabled states during setup/complete, and dependency change re-attachment. All tests pass in isolation; TypeScript compiles cleanly."
+}
