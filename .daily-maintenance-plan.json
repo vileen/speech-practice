@@ -1,0 +1,11 @@
+{
+  "date": "2026-08-12",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "notes": "All 7 critical paths (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have tests. Consider expanding coverage to secondary components: ProgressDashboard.tsx (499 lines, no test), CountersMode.tsx (499 lines, no test), MemoryMode.tsx (484 lines, no test), GrammarMode/PatternGraph.tsx (424 lines, no test), RepeatMode.tsx (321 lines, no test). The original refactor-candidate list has been refactored to much smaller files and no longer qualifies (>300 lines).",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/RepeatMode/RepeatMode.test.tsx",
+  "testCount": 17,
+  "testPassed": true,
+  "refactorSkipped": true
+}
