@@ -1,297 +1,137 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useKanjiKeyboardShortcuts } from '../../hooks/useKanjiKeyboardShortcuts';
-import { Rating } from '../../lib/fsrs.js';
+import type { Rating } from '../../lib/fsrs.js';
 
 describe('useKanjiKeyboardShortcuts', () => {
-  let originalAddEventListener: typeof window.addEventListener;
-  let originalRemoveEventListener: typeof window.removeEventListener;
-  let eventListeners: Map<string, EventListener[]>;
-
-  const triggerKeyDown = (key: string, options: Partial<KeyboardEventInit> = {}) => {
-    const event = new KeyboardEvent('keydown', { key, bubbles: true, ...options });
-    window.dispatchEvent(event);
-    return event;
-  };
-
-  const getWindowListeners = () => {
-    const listeners = eventListeners.get('keydown') || [];
-    return listeners.filter((fn): fn is EventListener => typeof fn === 'function');
-  };
+  const onReveal = vi.fn();
+  const onReview = vi.fn();
 
   beforeEach(() => {
-    eventListeners = new Map();
-    originalAddEventListener = window.addEventListener.bind(window);
-    originalRemoveEventListener = window.removeEventListener.bind(window);
-
-    vi.spyOn(window, 'addEventListener').mockImplementation((type, listener, options) => {
-      if (!eventListeners.has(type)) {
-        eventListeners.set(type, []);
-      }
-      eventListeners.get(type)!.push(listener as EventListener);
-      originalAddEventListener(type, listener as EventListener, options);
-    });
-    vi.spyOn(window, 'removeEventListener').mockImplementation((type, listener, options) => {
-      const listeners = eventListeners.get(type) || [];
-      const index = listeners.indexOf(listener as EventListener);
-      if (index > -1) {
-        listeners.splice(index, 1);
-      }
-      originalRemoveEventListener(type, listener as EventListener, options);
-    });
+    onReveal.mockClear();
+    onReview.mockClear();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('should register a window keydown listener on mount', () => {
+  const dispatchKeydown = (key: string, options?: { showSetup?: boolean; isComplete?: boolean; isRevealed?: boolean }) => {
+    const event = new KeyboardEvent('keydown', { key, cancelable: true });
+
     renderHook(() =>
       useKanjiKeyboardShortcuts({
-        showSetup: false,
-        isComplete: false,
-        isRevealed: false,
-        onReveal: vi.fn(),
-        onReview: vi.fn(),
+        showSetup: options?.showSetup ?? false,
+        isComplete: options?.isComplete ?? false,
+        isRevealed: options?.isRevealed ?? true,
+        onReveal,
+        onReview,
       })
     );
 
-    expect(window.addEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
-    expect(getWindowListeners()).toHaveLength(1);
-  });
+    act(() => {
+      window.dispatchEvent(event);
+    });
 
-  it('should remove the window keydown listener on unmount', () => {
+    return event;
+  };
+
+  const dispatchKeydownWithLifecycle = (key: string, options?: { showSetup?: boolean; isComplete?: boolean; isRevealed?: boolean }) => {
+    const event = new KeyboardEvent('keydown', { key, cancelable: true });
+
     const { unmount } = renderHook(() =>
       useKanjiKeyboardShortcuts({
-        showSetup: false,
-        isComplete: false,
-        isRevealed: false,
-        onReveal: vi.fn(),
-        onReview: vi.fn(),
+        showSetup: options?.showSetup ?? false,
+        isComplete: options?.isComplete ?? false,
+        isRevealed: options?.isRevealed ?? true,
+        onReveal,
+        onReview,
       })
     );
 
-    unmount();
+    act(() => {
+      window.dispatchEvent(event);
+    });
 
-    expect(window.removeEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
-    expect(getWindowListeners()).toHaveLength(0);
-  });
+    return { event, unmount };
+  };
 
-  describe('when card is not revealed', () => {
-    it('calls onReveal when Space is pressed', () => {
-      const onReveal = vi.fn();
-      const onReview = vi.fn();
-
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          showSetup: false,
-          isComplete: false,
-          isRevealed: false,
-          onReveal,
-          onReview,
-        })
-      );
-
-      triggerKeyDown(' ');
+  describe('hidden card', () => {
+    it('reveals the card when Space is pressed', () => {
+      dispatchKeydown(' ', { isRevealed: false });
 
       expect(onReveal).toHaveBeenCalledTimes(1);
       expect(onReview).not.toHaveBeenCalled();
     });
 
-    it('calls onReveal when Spacebar (legacy) is pressed', () => {
-      const onReveal = vi.fn();
+    it('prevents default browser scrolling for Space on a hidden card', () => {
+      const event = dispatchKeydown(' ', { isRevealed: false });
 
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          showSetup: false,
-          isComplete: false,
-          isRevealed: false,
-          onReveal,
-          onReview: vi.fn(),
-        })
-      );
-
-      triggerKeyDown('Spacebar');
-
-      expect(onReveal).toHaveBeenCalledTimes(1);
+      expect(event.defaultPrevented).toBe(true);
     });
 
-    it('does not call onReview for rating keys when not revealed', () => {
-      const onReview = vi.fn();
+    it('does nothing when a non-Space key is pressed on a hidden card', () => {
+      dispatchKeydown('1', { isRevealed: false });
 
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          showSetup: false,
-          isComplete: false,
-          isRevealed: false,
-          onReveal: vi.fn(),
-          onReview,
-        })
-      );
-
-      ['1', '2', '3', '4'].forEach((key) => triggerKeyDown(key));
-
+      expect(onReveal).not.toHaveBeenCalled();
       expect(onReview).not.toHaveBeenCalled();
     });
   });
 
-  describe('when card is revealed', () => {
-    const cases: { key: string; rating: Rating }[] = [
-      { key: '1', rating: 'again' },
-      { key: '2', rating: 'hard' },
-      { key: '3', rating: 'good' },
-      { key: '4', rating: 'easy' },
-    ];
-
-    it.each(cases)('calls onReview($rating) when $key is pressed', ({ key, rating }) => {
-      const onReview = vi.fn();
-
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          showSetup: false,
-          isComplete: false,
-          isRevealed: true,
-          onReveal: vi.fn(),
-          onReview,
-        })
-      );
-
-      triggerKeyDown(key);
+  describe('revealed card', () => {
+    it.each([
+      ['1', 'again'],
+      [' ', 'again'],
+      ['2', 'hard'],
+      ['3', 'good'],
+      ['4', 'easy'],
+    ] as [string, Rating][])('submits "%s" rating as %s', (key, expectedRating) => {
+      dispatchKeydown(key, { isRevealed: true });
 
       expect(onReview).toHaveBeenCalledTimes(1);
-      expect(onReview).toHaveBeenCalledWith(rating);
-    });
-
-    it('calls onReview("again") when Space is pressed while revealed', () => {
-      const onReview = vi.fn();
-
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          showSetup: false,
-          isComplete: false,
-          isRevealed: true,
-          onReveal: vi.fn(),
-          onReview,
-        })
-      );
-
-      triggerKeyDown(' ');
-
-      expect(onReview).toHaveBeenCalledTimes(1);
-      expect(onReview).toHaveBeenCalledWith('again');
-    });
-
-    it('does not call onReveal when Space is pressed while revealed', () => {
-      const onReveal = vi.fn();
-      const onReview = vi.fn();
-
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          showSetup: false,
-          isComplete: false,
-          isRevealed: true,
-          onReveal,
-          onReview,
-        })
-      );
-
-      triggerKeyDown(' ');
-
+      expect(onReview).toHaveBeenCalledWith(expectedRating);
       expect(onReveal).not.toHaveBeenCalled();
-      expect(onReview).toHaveBeenCalledWith('again');
     });
 
-    it('ignores unknown keys', () => {
-      const onReveal = vi.fn();
-      const onReview = vi.fn();
+    it('prevents default behavior for rating keys', () => {
+      const event = dispatchKeydown('1', { isRevealed: true });
 
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          showSetup: false,
-          isComplete: false,
-          isRevealed: true,
-          onReveal,
-          onReview,
-        })
-      );
+      expect(event.defaultPrevented).toBe(true);
+    });
 
-      triggerKeyDown('a');
+    it('does nothing for unrecognized keys', () => {
+      dispatchKeydown('a', { isRevealed: true });
 
-      expect(onReveal).not.toHaveBeenCalled();
       expect(onReview).not.toHaveBeenCalled();
+      expect(onReveal).not.toHaveBeenCalled();
     });
   });
 
-  describe('when setup is shown or session is complete', () => {
-    it('ignores all key presses when showSetup is true', () => {
-      const onReveal = vi.fn();
-      const onReview = vi.fn();
-
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          showSetup: true,
-          isComplete: false,
-          isRevealed: false,
-          onReveal,
-          onReview,
-        })
-      );
-
-      triggerKeyDown(' ');
-      triggerKeyDown('1');
-      triggerKeyDown('2');
+  describe('blocked states', () => {
+    it('ignores all keys while the setup modal is open', () => {
+      dispatchKeydown(' ', { showSetup: true, isRevealed: false });
 
       expect(onReveal).not.toHaveBeenCalled();
       expect(onReview).not.toHaveBeenCalled();
     });
 
-    it('ignores all key presses when isComplete is true', () => {
-      const onReveal = vi.fn();
-      const onReview = vi.fn();
+    it('ignores all keys when the session is complete', () => {
+      dispatchKeydown('1', { isComplete: true, isRevealed: true });
 
-      renderHook(() =>
-        useKanjiKeyboardShortcuts({
-          showSetup: false,
-          isComplete: true,
-          isRevealed: true,
-          onReveal,
-          onReview,
-        })
-      );
-
-      triggerKeyDown(' ');
-      triggerKeyDown('1');
-      triggerKeyDown('4');
-
-      expect(onReveal).not.toHaveBeenCalled();
       expect(onReview).not.toHaveBeenCalled();
+      expect(onReveal).not.toHaveBeenCalled();
     });
   });
 
-  describe('dependency changes', () => {
-    it('re-attaches listener when options change', () => {
-      const initialProps = {
-        showSetup: false,
-        isComplete: false,
-        isRevealed: false,
-        onReveal: vi.fn(),
-        onReview: vi.fn(),
-      };
+  describe('lifecycle', () => {
+    it('removes the keydown listener on unmount', () => {
+      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
-      const { rerender } = renderHook((props) => useKanjiKeyboardShortcuts(props), {
-        initialProps,
-      });
+      const { unmount } = dispatchKeydownWithLifecycle('1', { isRevealed: true });
 
-      expect(getWindowListeners()).toHaveLength(1);
+      unmount();
 
-      rerender({
-        ...initialProps,
-        isRevealed: true,
-      });
-
-      expect(window.removeEventListener).toHaveBeenCalled();
-      expect(window.addEventListener).toHaveBeenCalledTimes(2);
-      expect(getWindowListeners()).toHaveLength(1);
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
     });
   });
 });

@@ -89,6 +89,7 @@ data/furigana-cache.json
 
 # Backup files
 *.bak
+*.bak*
 *.backup
 backend/.env
 frontend/.env.production
