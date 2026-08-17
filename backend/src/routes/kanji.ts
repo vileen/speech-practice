@@ -6,22 +6,23 @@ const router = Router();
   // GET /api/kanji - Get all kanji with optional filters
   router.get('/', async (req, res) => {
     try {
-      const { lessonId, limit } = req.query;
-      
+      const { lessonId, limit, sort } = req.query;
+
       let query = 'SELECT * FROM kanji';
       const params: any[] = [];
       const conditions: string[] = [];
-      
+
       if (lessonId) {
         conditions.push(`lesson_id = $${params.length + 1}`);
         params.push(lessonId);
       }
-      
+
       if (conditions.length > 0) {
         query += ' WHERE ' + conditions.join(' AND ');
       }
-      
-      query += ' ORDER BY lesson_id, character';
+
+      const sortDirection = sort === 'asc' ? 'ASC' : 'DESC';
+      query += ` ORDER BY lesson_id ${sortDirection}, character ASC`;
       
       if (limit) {
         query += ` LIMIT $${params.length + 1}`;

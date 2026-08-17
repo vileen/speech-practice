@@ -69,7 +69,7 @@ describe('Kanji Routes', () => {
         },
       ]);
       expect(mockQuery).toHaveBeenCalledWith(
-        'SELECT * FROM kanji ORDER BY lesson_id, character',
+        'SELECT * FROM kanji ORDER BY lesson_id DESC, character ASC',
         []
       );
     });
@@ -83,7 +83,7 @@ describe('Kanji Routes', () => {
 
       expect(response.body).toHaveLength(1);
       expect(mockQuery).toHaveBeenCalledWith(
-        'SELECT * FROM kanji WHERE lesson_id = $1 ORDER BY lesson_id, character',
+        'SELECT * FROM kanji WHERE lesson_id = $1 ORDER BY lesson_id DESC, character ASC',
         ['2026-03-16']
       );
     });
@@ -97,7 +97,7 @@ describe('Kanji Routes', () => {
 
       expect(response.body).toHaveLength(1);
       expect(mockQuery).toHaveBeenCalledWith(
-        'SELECT * FROM kanji ORDER BY lesson_id, character LIMIT $1',
+        'SELECT * FROM kanji ORDER BY lesson_id DESC, character ASC LIMIT $1',
         [5]
       );
     });
@@ -111,8 +111,22 @@ describe('Kanji Routes', () => {
 
       expect(response.body).toHaveLength(1);
       expect(mockQuery).toHaveBeenCalledWith(
-        'SELECT * FROM kanji WHERE lesson_id = $1 ORDER BY lesson_id, character LIMIT $2',
+        'SELECT * FROM kanji WHERE lesson_id = $1 ORDER BY lesson_id DESC, character ASC LIMIT $2',
         ['2026-03-16', 10]
+      );
+    });
+
+    it('should sort ascending when sort=asc is provided', async () => {
+      mockQuery.mockResolvedValue({ rows: [mockKanjiRow] });
+
+      const response = await request(app)
+        .get('/?sort=asc')
+        .expect(200);
+
+      expect(response.body).toHaveLength(1);
+      expect(mockQuery).toHaveBeenCalledWith(
+        'SELECT * FROM kanji ORDER BY lesson_id ASC, character ASC',
+        []
       );
     });
 
