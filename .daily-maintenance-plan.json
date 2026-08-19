@@ -1,0 +1,16 @@
+{
+  "date": "2026-08-19",
+  "testTarget": null,
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/ListeningMode/ResultsView.test.tsx",
+  "testCount": 22,
+  "testPassed": true,
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/VoiceRecorder/VoiceRecorder.tsx",
+    "lineCount": 11,
+    "reason": "Listed refactor candidate is now only 11 lines; all listed candidates are under 300 lines",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "notes": "All 7 priority critical components/hooks have tests. All 24 hooks have tests. 13 secondary components lack tests, none larger than 170 lines: ResultsView.tsx (170), KanjiCardView.tsx (148), ConversationMode.tsx (147), ResponseDrillsMode.tsx (96). All originally-listed refactor candidates are now well under 300 lines, so no refactor queued. Consider expanding coverage to the untested secondary components next."
+}
