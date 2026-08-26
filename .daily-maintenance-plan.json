@@ -1,0 +1,16 @@
+{
+  "date": "2026-08-26",
+  "testTarget": null,
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/ModeButton.test.tsx",
+  "testCount": 6,
+  "testPassed": true,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": null,
+    "reason": "All originally flagged large components have been refactored/split (all under 200 lines).",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "notes": "All critical paths covered — priority hooks/components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) all have test files. Wrote secondary component test for ModeButton since it was untested and had a simple, focused interface."
+}
