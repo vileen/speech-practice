@@ -1,0 +1,19 @@
+{
+  "date": "2026-08-28",
+  "testTarget": "components/ReadingMode/ReadingView.tsx",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/ReadingMode/ReadingView.test.tsx",
+  "testCount": 16,
+  "testPassed": true,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": null,
+    "reason": "All listed refactor candidates are now under 300 lines (largest is GrammarMode.tsx at 177 lines); no component meets the >300-line threshold",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "refactorDone": false,
+  "refactorFiles": [],
+  "testsPassAfterRefactor": null,
+  "notes": "All critical paths covered — priority hooks (useAudioPlayer, useFurigana, useChatSession) and critical components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) all have tests. Only secondary mode components lack tests (GrammarMode.tsx, LessonMode.tsx, ReadingMode.tsx, etc.), but none exceed the 300-line refactor threshold. Consider expanding coverage to secondary mode components or reviewing skipped tests in useKanjiProgress.test.ts."
+}

@@ -1,0 +1,11 @@
+{
+  "date": "2026-08-29",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "notes": "All priority critical paths covered — useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, and HighlightedText all have tests. Frontend has 100 tests, backend has 35 tests. Large untested secondary components worth expanding coverage: ProgressDashboard.tsx (499 lines), CountersMode.tsx (499 lines), MemoryMode.tsx (484 lines), GrammarMode/PatternGraph.tsx (424 lines), GrammarMode/PatternSelection.tsx (292 lines). Original refactor candidates are now small after recent codebase changes; none exceed 300 lines.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/ProgressDashboard/ProgressDashboard.test.tsx",
+  "testCount": 11,
+  "testPassed": true,
+  "refactorSkipped": true
+}
