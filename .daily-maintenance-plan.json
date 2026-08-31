@@ -1,11 +1,21 @@
 {
-  "date": "2026-08-30",
-  "testTarget": null,
-  "refactorCandidate": null,
+  "date": "2026-08-31",
   "testWritten": true,
-  "testFile": "frontend/src/test/components/ModeButton/ModeButton.test.tsx",
-  "testCount": 6,
+  "testFile": "frontend/src/test/components/CountersMode/CountersMode.test.tsx",
+  "testCount": 7,
   "testPassed": true,
-  "notes": "All critical paths covered — priority hooks and components already have tests. Plan note about useKanjiKeyboardShortcuts being untested was outdated; it already has comprehensive tests at frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts. Expanded coverage to secondary component ModeButton (6 tests, all passing). No refactor candidates exceed 300 lines (GrammarMode.tsx is largest at 177 lines).",
-  "refactorSkipped": true
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/CountersMode/CountersMode.tsx",
+    "testFile": "frontend/src/test/components/CountersMode/CountersMode.test.tsx",
+    "priority": "core-practice-mode",
+    "reason": "CountersMode is a 499-line core practice mode with zero tests. Counters exercises are loaded from the database, and a regression here would silently break an entire study mode."
+  },
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/CountersMode/CountersMode.tsx",
+    "lineCount": 499,
+    "reason": "Large, untested component; UI rendering, answer checking, and session state are likely intertwined and should be split before heavy testing.",
+    "shouldRefactor": true
+  },
+  "notes": "All priority hooks/components from the checklist are already covered. The biggest remaining uncovered critical surface is CountersMode."
 }

@@ -1,0 +1,11 @@
+{
+  "date": "2026-08-30",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/ModeButton/ModeButton.test.tsx",
+  "testCount": 6,
+  "testPassed": true,
+  "notes": "All critical paths covered — priority hooks and components already have tests. Plan note about useKanjiKeyboardShortcuts being untested was outdated; it already has comprehensive tests at frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts. Expanded coverage to secondary component ModeButton (6 tests, all passing). No refactor candidates exceed 300 lines (GrammarMode.tsx is largest at 177 lines).",
+  "refactorSkipped": true
+}
