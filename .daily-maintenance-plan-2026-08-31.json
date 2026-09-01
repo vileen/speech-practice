@@ -1,0 +1,21 @@
+{
+  "date": "2026-08-31",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/CountersMode/CountersMode.test.tsx",
+  "testCount": 7,
+  "testPassed": true,
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/CountersMode/CountersMode.tsx",
+    "testFile": "frontend/src/test/components/CountersMode/CountersMode.test.tsx",
+    "priority": "core-practice-mode",
+    "reason": "CountersMode is a 499-line core practice mode with zero tests. Counters exercises are loaded from the database, and a regression here would silently break an entire study mode."
+  },
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/CountersMode/CountersMode.tsx",
+    "lineCount": 499,
+    "reason": "Large, untested component; UI rendering, answer checking, and session state are likely intertwined and should be split before heavy testing.",
+    "shouldRefactor": true
+  },
+  "notes": "All priority hooks/components from the checklist are already covered. The biggest remaining uncovered critical surface is CountersMode."
+}

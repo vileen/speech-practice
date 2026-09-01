@@ -1,21 +1,11 @@
 {
-  "date": "2026-08-31",
+  "date": "2026-09-01",
+  "testTarget": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
   "testWritten": true,
-  "testFile": "frontend/src/test/components/CountersMode/CountersMode.test.tsx",
-  "testCount": 7,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 13,
   "testPassed": true,
-  "testTarget": {
-    "type": "component",
-    "sourceFile": "frontend/src/components/CountersMode/CountersMode.tsx",
-    "testFile": "frontend/src/test/components/CountersMode/CountersMode.test.tsx",
-    "priority": "core-practice-mode",
-    "reason": "CountersMode is a 499-line core practice mode with zero tests. Counters exercises are loaded from the database, and a regression here would silently break an entire study mode."
-  },
-  "refactorCandidate": {
-    "sourceFile": "frontend/src/components/CountersMode/CountersMode.tsx",
-    "lineCount": 499,
-    "reason": "Large, untested component; UI rendering, answer checking, and session state are likely intertwined and should be split before heavy testing.",
-    "shouldRefactor": true
-  },
-  "notes": "All priority hooks/components from the checklist are already covered. The biggest remaining uncovered critical surface is CountersMode."
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All priority critical paths are already covered by tests (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText). One secondary hook is missing coverage: frontend/src/hooks/useKanjiKeyboardShortcuts.ts. No tracked refactor candidate exceeds 300 lines (VoiceRecorder=11, LessonMode=171, ReadingMode=90, GrammarMode=177, VerbMode=85, SpeakingMode=45, KanjiPracticeMode=127); current largest components are ProgressDashboard (499), MemoryMode (484), GrammarMode/PatternGraph (424), GrammarMode/PatternGraphSVG (331), RepeatMode (321), and AudioPlayer.test.tsx (308). Consider expanding coverage to useKanjiKeyboardShortcuts next."
 }
