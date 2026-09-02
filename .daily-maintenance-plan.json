@@ -1,11 +1,33 @@
 {
-  "date": "2026-09-01",
-  "testTarget": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+  "date": "2026-09-02",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/MemoryMode/MemoryMode.tsx",
+    "testFile": "frontend/src/test/components/MemoryMode/MemoryMode.test.tsx",
+    "priority": "srs-core",
+    "reason": "MemoryMode is the spaced-repetition review UI (484 lines) and has zero tests. It manages card state, localStorage lesson selection, FSRS ratings, and completion flow — a regression here would break the core retention loop."
+  },
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/MemoryMode/MemoryMode.tsx",
+    "lineCount": 484,
+    "reason": "Large component mixing UI, state, localStorage side effects, and debug logging. Extract setup screen, card review flow, and completion screen into smaller sub-components/hooks to make testing feasible.",
+    "shouldRefactor": true
+  },
+  "notes": "All explicitly-listed critical hooks/components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have tests. Next biggest untested critical path is MemoryMode.",
   "testWritten": true,
-  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
-  "testCount": 13,
+  "testFile": "frontend/src/test/components/MemoryMode.session.test.tsx",
+  "testCount": 18,
   "testPassed": true,
-  "refactorCandidate": null,
-  "refactorSkipped": true,
-  "notes": "All priority critical paths are already covered by tests (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText). One secondary hook is missing coverage: frontend/src/hooks/useKanjiKeyboardShortcuts.ts. No tracked refactor candidate exceeds 300 lines (VoiceRecorder=11, LessonMode=171, ReadingMode=90, GrammarMode=177, VerbMode=85, SpeakingMode=45, KanjiPracticeMode=127); current largest components are ProgressDashboard (499), MemoryMode (484), GrammarMode/PatternGraph (424), GrammarMode/PatternGraphSVG (331), RepeatMode (321), and AudioPlayer.test.tsx (308). Consider expanding coverage to useKanjiKeyboardShortcuts next."
+  "testNotes": "MemoryMode.test.tsx existed but only covered the setup screen (and its hook mock lacked importUniqueVocabulary, so no session flow was reachable). New session-flow test covers: start session + vocabulary import, multi-lesson import, question/hidden answer, click + Space reveal, assessment buttons, all 4 keyboard rating shortcuts, next-card transition, completion screen, reset to setup, empty-deck completion, import failure resilience, keyboard shortcuts disabled in setup, and localStorage persistence/restore of selected lessons.",
+  "refactorDone": true,
+  "refactorFiles": [
+    "frontend/src/components/MemoryMode/useMemorySession.ts",
+    "frontend/src/components/MemoryMode/MemoryModeSetup.tsx",
+    "frontend/src/components/MemoryMode/MemoryModeStudy.tsx",
+    "frontend/src/components/MemoryMode/MemoryModeComplete.tsx",
+    "frontend/src/components/MemoryMode/memoryModeUtils.ts",
+    "frontend/src/components/MemoryMode/MemoryMode.tsx"
+  ],
+  "testsPassAfterRefactor": true,
+  "refactorNotes": "Split 484-line MemoryMode.tsx into useMemorySession hook (state/effects/keyboard shortcuts), MemoryModeSetup/MemoryModeStudy/MemoryModeComplete presentational components, and memoryModeUtils (formatInterval, labels). Removed DEBUG console.log spam. Container is now ~115 lines. Public API and DOM unchanged; tsc clean; 36 MemoryMode tests pass; production build succeeds."
 }

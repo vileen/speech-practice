@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-01",
+  "testTarget": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 13,
+  "testPassed": true,
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All priority critical paths are already covered by tests (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText). One secondary hook is missing coverage: frontend/src/hooks/useKanjiKeyboardShortcuts.ts. No tracked refactor candidate exceeds 300 lines (VoiceRecorder=11, LessonMode=171, ReadingMode=90, GrammarMode=177, VerbMode=85, SpeakingMode=45, KanjiPracticeMode=127); current largest components are ProgressDashboard (499), MemoryMode (484), GrammarMode/PatternGraph (424), GrammarMode/PatternGraphSVG (331), RepeatMode (321), and AudioPlayer.test.tsx (308). Consider expanding coverage to useKanjiKeyboardShortcuts next."
+}
