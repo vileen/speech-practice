@@ -1,6 +1,7 @@
 {
   "date": "2026-09-02",
   "job1Completed": true,
+  "job2Completed": true,
   "analysis": {
     "frontendTests": 1705,
     "backendTests": 535,
@@ -8,7 +9,7 @@
     "sourceFiles": 137,
     "coverageRatio": "77%",
     "largestUntestedComponents": [
-      { "file": "src/components/ReadingMode/ResultsView.tsx", "lines": 145, "priority": "medium" },
+      { "file": "src/components/ReadingMode/ResultsView.tsx", "lines": 145, "priority": "medium", "status": "covered" },
       { "file": "src/components/SpeakingMode/ConversationMode.tsx", "lines": 147, "priority": "medium" },
       { "file": "src/components/KanjiPracticeMode/KanjiCardView.tsx", "lines": 148, "priority": "medium" },
       { "file": "src/components/VerbMode/SelectionScreen.tsx", "lines": 157, "priority": "medium" },
@@ -26,10 +27,19 @@
       "MemoryMode container slimmed from 484 to ~115 lines — refactor complete",
       "All 4 study mode containers (MemoryMode, CountersMode, ReadingMode, ListeningMode) have integration/component tests",
       "GrammarMode has PatternGraphSVG + PatternGraphLegend + GrammarMode tests, but PatternGraph.tsx (424 lines) and PatternSelection.tsx (292 lines) still untested",
-      "Next target recommendation: ReadingMode/ResultsView.tsx (145 lines, pure presentational, good ROI)"
+      "ReadingMode ResultsView.tsx now covered with 24 tests"
     ]
   },
   "job2Target": "src/components/ReadingMode/ResultsView.tsx",
   "job2Rationale": "Pure presentational component (145 lines), no complex mocking needed. Tests score display, stats, answer review list, furigana toggle, back/next navigation. Good ROI for test writing time.",
-  "job2Status": "pending"
+  "job2Status": "completed",
+  "job2Results": {
+    "testFile": "src/test/components/ReadingMode/ResultsView.test.tsx",
+    "testsWritten": 24,
+    "testsPassed": 24,
+    "frontendTotal": 1729,
+    "testFilesTotal": 107,
+    "buildStatus": "OK",
+    "commit": "0eeeb08"
+  }
 }
