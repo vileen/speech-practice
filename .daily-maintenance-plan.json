@@ -1,12 +1,23 @@
 {
-  "date": "2026-09-03",
-  "testTarget": null,
-  "refactorCandidate": null,
-  "notes": "All critical paths covered — consider expanding coverage to secondary components. Frontend has 105 tests and backend has 35 tests. All priority hooks (useAudioPlayer, useFurigana, useChatSession) and components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) have existing test files. Refactor candidates from the checklist are all under 300 lines and well-structured (VoiceRecorder 11, LessonMode 171, ReadingMode 90, GrammarMode 177, VerbMode 85, SpeakingMode 45, KanjiPracticeMode 127).",
-  "testWritten": false,
-  "testFile": null,
-  "testCount": null,
-  "testPassed": null,
-  "skipReason": "testTarget is null — no uncovered critical path to test today.",
-  "refactorSkipped": true
+  "date": "2026-09-04",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/KanjiPracticeMode/KanjiCardView.tsx",
+    "testFile": "frontend/src/test/components/KanjiCardView.test.tsx",
+    "priority": "secondary-expansion",
+    "reason": "All 7 priority targets already have tests. KanjiCardView (148 lines) is the largest untested secondary component in KanjiPracticeMode \u2014 kanji practice is a core learning path; its hook (useKanjiPracticeSession) is tested but rendering/interaction is not."
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "All previously flagged large components (VoiceRecorder, LessonMode, GrammarMode, VerbMode, SpeakingMode, ReadingMode, KanjiPracticeMode) have been refactored to 11-177 lines. Largest remaining: ProgressDashboard.tsx (499 lines) \u2014 UI dashboard, acceptable.",
+    "shouldRefactor": false
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/KanjiCardView.test.tsx",
+  "testCount": 21,
+  "testPassed": true,
+  "notes": "Coverage status: 105 frontend + 35 backend tests. All priority hooks/components covered (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText). Remaining untested secondary components: KanjiCardView (148), VerbMode/SelectionScreen (157), SpeakingMode/ConversationMode (147), MemoryMode screens (98-112), Counter* quiz/study components (54-118). Suggested future order: KanjiCardView -> SelectionScreen -> ConversationMode. No refactor needed \u2014 large-component cleanup already done.",
+  "refactorSkipped": true,
+  "refactorSkippedReason": "No refactor candidate \u2014 all large components already refactored (ProgressDashboard 499 lines is acceptable for UI dashboard)."
 }
