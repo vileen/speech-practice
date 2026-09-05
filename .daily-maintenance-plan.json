@@ -1,23 +1,30 @@
 {
-  "date": "2026-09-04",
+  "date": "2026-09-05",
   "testTarget": {
-    "type": "component",
-    "sourceFile": "frontend/src/components/KanjiPracticeMode/KanjiCardView.tsx",
-    "testFile": "frontend/src/test/components/KanjiCardView.test.tsx",
-    "priority": "secondary-expansion",
-    "reason": "All 7 priority targets already have tests. KanjiCardView (148 lines) is the largest untested secondary component in KanjiPracticeMode \u2014 kanji practice is a core learning path; its hook (useKanjiPracticeSession) is tested but rendering/interaction is not."
+    "type": "backend-service",
+    "sourceFile": "backend/src/services/elevenlabs/index.ts",
+    "testFile": "backend/src/test/services/elevenlabs/index.test.ts",
+    "priority": "tts-foundation",
+    "reason": "ElevenLabs TTS service has no tests; it is a core audio dependency for listening/speaking practice"
   },
   "refactorCandidate": {
-    "sourceFile": null,
-    "lineCount": 0,
-    "reason": "All previously flagged large components (VoiceRecorder, LessonMode, GrammarMode, VerbMode, SpeakingMode, ReadingMode, KanjiPracticeMode) have been refactored to 11-177 lines. Largest remaining: ProgressDashboard.tsx (499 lines) \u2014 UI dashboard, acceptable.",
-    "shouldRefactor": false
+    "sourceFile": "frontend/src/hooks/useGrammarMode.ts",
+    "lineCount": 564,
+    "reason": "Largest hook by far; likely mixes state, logic, and side effects",
+    "shouldRefactor": true
   },
+  "notes": "Frontend hooks are well-covered (24/24). All 7 critical components have tests. Backend has 35 tests but 8 source files uncovered, mostly small wiring files. ElevenLabs service (43 lines) is the most valuable backend gap.",
   "testWritten": true,
-  "testFile": "frontend/src/test/components/KanjiCardView.test.tsx",
-  "testCount": 21,
+  "testFile": "backend/src/test/services/elevenlabs.test.ts",
+  "testCount": 12,
   "testPassed": true,
-  "notes": "Coverage status: 105 frontend + 35 backend tests. All priority hooks/components covered (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText). Remaining untested secondary components: KanjiCardView (148), VerbMode/SelectionScreen (157), SpeakingMode/ConversationMode (147), MemoryMode screens (98-112), Counter* quiz/study components (54-118). Suggested future order: KanjiCardView -> SelectionScreen -> ConversationMode. No refactor needed \u2014 large-component cleanup already done.",
-  "refactorSkipped": true,
-  "refactorSkippedReason": "No refactor candidate \u2014 all large components already refactored (ProgressDashboard 499 lines is acceptable for UI dashboard)."
+  "testNote": "Test already existed at services/elevenlabs.test.ts (pre-written by earlier run); verified passing in isolation. Plan path was stale.",
+  "refactorDone": true,
+  "refactorFiles": [
+    "frontend/src/lib/grammarApi.ts",
+    "frontend/src/hooks/useGrammarFurigana.ts",
+    "frontend/src/hooks/useGrammarMode.ts"
+  ],
+  "testsPassAfterRefactor": true,
+  "refactorNote": "Extracted all fetch logic to lib/grammarApi.ts and furigana localStorage to useGrammarFurigana. useGrammarMode.ts: 564 -> 442 lines. tsc clean; full suite 1750 passed."
 }
