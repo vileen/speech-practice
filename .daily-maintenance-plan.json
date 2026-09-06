@@ -1,30 +1,23 @@
 {
-  "date": "2026-09-05",
+  "date": "2026-09-06",
   "testTarget": {
-    "type": "backend-service",
-    "sourceFile": "backend/src/services/elevenlabs/index.ts",
-    "testFile": "backend/src/test/services/elevenlabs/index.test.ts",
-    "priority": "tts-foundation",
-    "reason": "ElevenLabs TTS service has no tests; it is a core audio dependency for listening/speaking practice"
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "kanji-interaction",
+    "reason": "All 7 priority components/hooks are now tested; this is the only remaining untested hook with real branching logic (space to reveal, 1-4 FSRS ratings, blocked during setup/complete). useGrammarFurigana (22 lines) is trivial wrapper by comparison."
   },
   "refactorCandidate": {
-    "sourceFile": "frontend/src/hooks/useGrammarMode.ts",
-    "lineCount": 564,
-    "reason": "Largest hook by far; likely mixes state, logic, and side effects",
-    "shouldRefactor": true
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "Refactor candidates previously >300 lines were modularized (latest commit: 'refactor: Modularize useGrammarMode hook'); largest remaining component is LessonMode.tsx at 171 lines",
+    "shouldRefactor": false
   },
-  "notes": "Frontend hooks are well-covered (24/24). All 7 critical components have tests. Backend has 35 tests but 8 source files uncovered, mostly small wiring files. ElevenLabs service (43 lines) is the most valuable backend gap.",
+  "notes": "Codebase health is strong: 106 frontend + 35 backend tests, all priority targets covered. Job 2 should write a test file for useKanjiKeyboardShortcuts.ts mocking keydown events and verifying: space triggers onReveal only when not revealed, keys 1-4 trigger onReview with correct Rating, shortcuts ignored when showSetup or isComplete.",
   "testWritten": true,
-  "testFile": "backend/src/test/services/elevenlabs.test.ts",
-  "testCount": 12,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 13,
   "testPassed": true,
-  "testNote": "Test already existed at services/elevenlabs.test.ts (pre-written by earlier run); verified passing in isolation. Plan path was stale.",
-  "refactorDone": true,
-  "refactorFiles": [
-    "frontend/src/lib/grammarApi.ts",
-    "frontend/src/hooks/useGrammarFurigana.ts",
-    "frontend/src/hooks/useGrammarMode.ts"
-  ],
-  "testsPassAfterRefactor": true,
-  "refactorNote": "Extracted all fetch logic to lib/grammarApi.ts and furigana localStorage to useGrammarFurigana. useGrammarMode.ts: 564 -> 442 lines. tsc clean; full suite 1750 passed."
+  "refactorSkipped": true,
+  "refactorDone": false
 }
