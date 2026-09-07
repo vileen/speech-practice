@@ -1,23 +1,21 @@
 {
-  "date": "2026-09-06",
+  "date": "2026-09-07",
   "testTarget": {
     "type": "hook",
-    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
-    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
-    "priority": "kanji-interaction",
-    "reason": "All 7 priority components/hooks are now tested; this is the only remaining untested hook with real branching logic (space to reveal, 1-4 FSRS ratings, blocked during setup/complete). useGrammarFurigana (22 lines) is trivial wrapper by comparison."
+    "sourceFile": "frontend/src/hooks/useGrammarFurigana.ts",
+    "testFile": "frontend/src/test/hooks/useGrammarFurigana.test.ts",
+    "priority": "furigana-persistence",
+    "reason": "Last untested hook \u2014 manages grammar furigana preference persistence in localStorage; all 7 priority targets now have tests"
   },
   "refactorCandidate": {
-    "sourceFile": null,
-    "lineCount": 0,
-    "reason": "Refactor candidates previously >300 lines were modularized (latest commit: 'refactor: Modularize useGrammarMode hook'); largest remaining component is LessonMode.tsx at 171 lines",
-    "shouldRefactor": false
+    "sourceFile": "frontend/src/components/ProgressDashboard/ProgressDashboard.tsx",
+    "lineCount": 499,
+    "reason": "Largest component in codebase (499 lines); previous big refactor targets (GrammarMode 1420, VerbMode 805, etc.) appear already split. Verify structure quality in Job 3.",
+    "shouldRefactor": true
   },
-  "notes": "Codebase health is strong: 106 frontend + 35 backend tests, all priority targets covered. Job 2 should write a test file for useKanjiKeyboardShortcuts.ts mocking keydown events and verifying: space triggers onReveal only when not revealed, keys 1-4 trigger onReview with correct Rating, shortcuts ignored when showSetup or isComplete.",
+  "notes": "Coverage is strong: 106 frontend + 35 backend tests. All checklist priority hooks/components covered. GrammarMode.tsx no longer appears at 1420 lines \u2014 likely already refactored. Remaining work is secondary: useGrammarFurigana hook test + optional ProgressDashboard structure check.",
   "testWritten": true,
-  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
-  "testCount": 13,
-  "testPassed": true,
-  "refactorSkipped": true,
-  "refactorDone": false
+  "testFile": "frontend/src/test/hooks/useGrammarFurigana.test.ts",
+  "testCount": 9,
+  "testPassed": true
 }
