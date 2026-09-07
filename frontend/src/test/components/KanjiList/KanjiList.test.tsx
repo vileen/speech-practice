@@ -253,8 +253,8 @@ describe('KanjiList', () => {
       });
 
       expect(screen.getByText('All lessons')).toBeInTheDocument();
-      expect(screen.getByText('2026-03-17 — Lesson 2')).toBeInTheDocument();
-      expect(screen.getByText('2026-03-16 — Lesson 1')).toBeInTheDocument();
+      expect(screen.getByText('17.03.2026 — Lesson 2')).toBeInTheDocument();
+      expect(screen.getByText('16.03.2026 — Lesson 1')).toBeInTheDocument();
     });
 
     it('should fetch kanji with selected lesson filter', async () => {

@@ -59,7 +59,10 @@ export const KanjiList: React.FC<KanjiListProps> = ({ onStartPractice }) => {
         }
         const data = await response.json();
         if (!cancelled) {
-          setLessons(data.lessons || []);
+          const sortedLessons = (data.lessons || []).sort((a: Lesson, b: Lesson) => {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+          });
+          setLessons(sortedLessons);
         }
       } catch (err) {
         console.error('Error fetching lessons:', err);
@@ -182,7 +185,7 @@ export const KanjiList: React.FC<KanjiListProps> = ({ onStartPractice }) => {
             <option value={ALL_LESSONS_VALUE}>All lessons</option>
             {lessons.map((lesson) => (
               <option key={lesson.id} value={lesson.id}>
-                {lesson.date} — {lesson.title}
+                {new Date(lesson.date).toLocaleDateString('pl-PL')} — {lesson.title}
               </option>
             ))}
           </select>
