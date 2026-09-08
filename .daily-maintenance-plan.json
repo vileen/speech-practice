@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-08",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useProgressData.ts",
+    "testFile": "frontend/src/test/hooks/useProgressData.test.ts",
+    "priority": "progress-tracking",
+    "reason": "Last untested hook (185 lines) — fetches overview stats, JLPT levels, and progress data from API; all priority components and other hooks now have test coverage (107 frontend / 35 backend tests)"
+  },
+  "refactorCandidate": null,
+  "notes": "All priority-list components and hooks are tested. Large components were already refactored/split (GrammarMode 177 lines, VoiceRecorder 11 lines — far below the >300 line threshold). Only remaining gap: useProgressData.ts has no test file.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useProgressData.test.ts",
+  "testCount": 19,
+  "testPassed": true,
+  "refactorSkipped": true
+}
