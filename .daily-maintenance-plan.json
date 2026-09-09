@@ -1,0 +1,12 @@
+{
+  "date": "2026-09-09",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/PatternGraph.test.tsx",
+  "testCount": 26,
+  "testPassed": true,
+  "notes": "All critical paths covered — consider expanding coverage to secondary components. 108 frontend + 35 backend tests exist. All 7 priority components/hooks (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) now have tests; all hooks in frontend/src/hooks are tested (the 'untested hooks' scan false-flagged useKanjiKeyboardShortcuts due to a sed regex bug — useKanjiKeyboardShortcuts.test.ts exists). All previously-flagged large mode components have been refactored well below 300 lines (GrammarMode 177, LessonMode 171, ReadingMode 90, VerbMode 85, SpeakingMode 45, KanjiPracticeMode 127). Largest remaining component is GrammarMode/PatternGraph.tsx (424 lines, untested) — candidate for either a test or a split if coverage expansion is desired.",
+  "refactorSkipped": true,
+  "refactorSkipReason": "refactorCandidate is null — no candidate flagged by Job 1"
+}
