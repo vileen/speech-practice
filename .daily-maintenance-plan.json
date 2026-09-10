@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-10",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/KanjiList/KanjiList.tsx",
+    "testFile": "frontend/src/test/components/KanjiList.test.tsx",
+    "priority": "kanji-browse-reliability",
+    "reason": "302-line component with search, lesson filter, sort order, API fetch, loading and error states — all untested. Core to kanji review UX."
+  },
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All 7 priority hooks/components from the checklist now have tests (108 frontend tests, 35 backend tests). All previously flagged >300-line mode components were already refactored to <200 lines. Remaining untested components are mostly presentational sub-views (CountersMode, ReadingMode/ListeningMode views, ProgressDashboard sections, MemoryMode screens). Secondary candidates if KanjiList completes: PatternGraphSVG.tsx (331 lines, render-only), CounterMixedQuiz.tsx (quiz flow), MemoryModeStudy.tsx (FSRS rating UI). | Job 2 (2026-09-10): plan was stale — KanjiList already had 16 passing tests at src/test/components/KanjiList/KanjiList.test.tsx. Wrote 14 tests for CounterMixedQuiz instead (next secondary candidate). All pass.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/CountersMode/CounterMixedQuiz.test.tsx",
+  "testCount": 14,
+  "testPassed": true
+}
