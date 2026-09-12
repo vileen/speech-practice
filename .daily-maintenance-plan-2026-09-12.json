@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-12",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "keyboard-interaction-safety",
+    "reason": "Only untested hook left. Handles Space reveal + FSRS review ratings (1-4) in Kanji practice \u2014 keyboard-driven grading is easy to break silently."
+  },
+  "refactorCandidate": null,
+  "notes": "All 7 priority critical components/hooks (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have tests. 110 frontend + 35 backend tests. Large components from old list were already refactored/split (GrammarMode 1420\u2192177, PatternGraph extracted at 424 lines). PatternGraph.tsx (424 lines) is the largest remaining component but is tested-adjacent (PatternGraphSVG at 331) \u2014 no refactor flag today.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 13,
+  "testPassed": true,
+  "refactorSkipped": true,
+  "refactorSkipReason": "No refactor candidate flagged today. PatternGraph.tsx (424 lines) is largest remaining component but was deliberately not flagged."
+}
