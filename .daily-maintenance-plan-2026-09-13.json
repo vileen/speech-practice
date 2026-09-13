@@ -1,0 +1,19 @@
+{
+  "date": "2026-09-13",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "kanji-practice-ux",
+    "reason": "Only untested hook — keyboard shortcuts drive kanji review flow (space=reveal, 1-4=FSRS rating). Guards against breaking review UX."
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 13,
+  "testPassed": true,
+  "testNote": "Test file already existed (written 2026-09-01); verified passing in isolation (13/13). Plan incorrectly flagged hook as untested.",
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "refactorNote": "refactorCandidate is null — no refactor candidate flagged by Job 1 today. Skipped per task instructions.",
+  "notes": "All 7 priority components/hooks now have tests (110 frontend, 35 backend). All previously-flagged large components refactored below 300 lines. Largest remaining component is GrammarMode/PatternGraph.tsx (424 lines) — not flagged today, candidate for future split. Test plan for useKanjiKeyboardShortcuts: (1) space/Spacebar reveals card when not revealed, (2) 1-4 keys call onReview with correct Rating when revealed, (3) no action when showSetup or isComplete, (4) other keys ignored, (5) event listener cleanup on unmount. Mock handlers; use renderHook from @testing-library/react; dispatch KeyboardEvent on window."
+}
