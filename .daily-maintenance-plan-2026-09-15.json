@@ -1,0 +1,7 @@
+{
+  "date": "2026-09-15",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All critical paths covered — 111 frontend + 35 backend tests. All 7 priority hooks/components have tests (the one 'MISSING' hook report was a false positive from an unescaped-dot sed in the checklist; useKanjiKeyboardShortcuts.test.ts exists). All refactor candidates shrunk well below 300 lines (largest listed: LessonMode 177, GrammarMode 177). Largest component overall is PatternGraph.tsx (424 lines) but it has full test coverage. Consider expanding coverage to secondary components or adding backend integration tests for the next Job 2 cycle."
+}
