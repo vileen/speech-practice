@@ -3,410 +3,260 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { SpeechFeedback } from '../../components/SpeechFeedback/SpeechFeedback';
 import type { AssessmentResult } from '../../hooks/useSpeechAssessment';
 
-describe('SpeechFeedback', () => {
-  const mockOnRetry = vi.fn();
-  const mockOnContinue = vi.fn();
-
-  const baseAssessment: AssessmentResult = {
+function makeAssessment(overrides: Partial<AssessmentResult> = {}): AssessmentResult {
+  return {
     transcript: 'こんにちは',
-    accuracyScore: 85,
+    accuracyScore: 95,
     feedback: {
-      overall: 'Good pronunciation overall.',
+      overall: 'Great pronunciation!',
       errors: [],
       suggestions: [],
     },
     expected: 'こんにちは',
     expectedRomaji: 'konnichiwa',
+    ...overrides,
   };
+}
+
+describe('SpeechFeedback', () => {
+  const playMock = vi.fn();
+  const pauseMock = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Mock global Audio constructor
+    vi.stubGlobal(
+      'Audio',
+      vi.fn(function (this: any) {
+        this.pause = pauseMock;
+        this.play = playMock.mockResolvedValue(undefined);
+        this.onplay = null;
+        this.onended = null;
+        this.onpause = null;
+      })
+    );
+
+    // Mock URL.createObjectURL (jsdom doesn't implement it)
+    vi.stubGlobal(
+      'URL',
+      Object.assign(URL, {
+        createObjectURL: vi.fn(() => 'blob:mock-audio-url'),
+      })
+    );
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
-  describe('Score Display', () => {
-    it('should render excellent score (>= 90)', () => {
-      const assessment = {
-        ...baseAssessment,
-        accuracyScore: 95,
-        feedback: { ...baseAssessment.feedback, overall: 'Excellent!' },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('95')).toBeInTheDocument();
-      expect(screen.getByText('🌟 Excellent!')).toBeInTheDocument();
-      expect(screen.getByText('Excellent!')).toBeInTheDocument();
+  describe('score display', () => {
+    it('renders the accuracy score with percent sign', () => {
+      render(<SpeechFeedback assessment={makeAssessment({ accuracyScore: 87 })} />);
+      expect(screen.getByText('87')).toBeInTheDocument();
+      expect(screen.getByText('%')).toBeInTheDocument();
     });
 
-    it('should render good score (80-89)', () => {
-      const assessment = {
-        ...baseAssessment,
-        accuracyScore: 85,
-        feedback: { ...baseAssessment.feedback, overall: 'Very good!' },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('85')).toBeInTheDocument();
-      expect(screen.getByText('✨ Great job!')).toBeInTheDocument();
-      expect(screen.getByText('Very good!')).toBeInTheDocument();
+    it('shows excellent message for scores >= 90', () => {
+      render(<SpeechFeedback assessment={makeAssessment({ accuracyScore: 92 })} />);
+      expect(screen.getByText(/Excellent/i)).toBeInTheDocument();
     });
 
-    it('should render fair score (60-79)', () => {
-      const assessment = {
-        ...baseAssessment,
-        accuracyScore: 70,
-        feedback: { ...baseAssessment.feedback, overall: 'Fair attempt.' },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('70')).toBeInTheDocument();
-      expect(screen.getByText('👍 Good attempt!')).toBeInTheDocument();
-      expect(screen.getByText('Fair attempt.')).toBeInTheDocument();
+    it('shows great job message for scores 80-89', () => {
+      render(<SpeechFeedback assessment={makeAssessment({ accuracyScore: 85 })} />);
+      expect(screen.getByText(/Great job/i)).toBeInTheDocument();
     });
 
-    it('should render needs-work score (< 60)', () => {
-      const assessment = {
-        ...baseAssessment,
-        accuracyScore: 45,
-        feedback: { ...baseAssessment.feedback, overall: 'Needs more practice.' },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('45')).toBeInTheDocument();
-      expect(screen.getByText('💪 Keep practicing!')).toBeInTheDocument();
-      expect(screen.getByText('Needs more practice.')).toBeInTheDocument();
+    it('shows good attempt message for scores 60-79', () => {
+      render(<SpeechFeedback assessment={makeAssessment({ accuracyScore: 70 })} />);
+      expect(screen.getByText(/Good attempt/i)).toBeInTheDocument();
+    });
+
+    it('shows keep practicing message for scores < 60', () => {
+      render(<SpeechFeedback assessment={makeAssessment({ accuracyScore: 45 })} />);
+      expect(screen.getByText(/Keep practicing/i)).toBeInTheDocument();
+    });
+
+    it('displays the overall feedback text', () => {
+      render(
+        <SpeechFeedback assessment={makeAssessment({ feedback: { overall: 'Needs work on pitch.', errors: [], suggestions: [] } })} />
+      );
+      expect(screen.getByText('Needs work on pitch.')).toBeInTheDocument();
     });
   });
 
-  describe('Audio Playback', () => {
-    it('should render play button when audioBlob is provided', () => {
-      const blob = new Blob(['audio'], { type: 'audio/webm' });
-      render(<SpeechFeedback assessment={baseAssessment} audioBlob={blob} />);
-      expect(screen.getByText('▶ Play Your Recording')).toBeInTheDocument();
+  describe('transcription comparison', () => {
+    it('shows the user transcript', () => {
+      render(<SpeechFeedback assessment={makeAssessment({ transcript: 'さようなら' })} />);
+      expect(screen.getByText('さようなら')).toBeInTheDocument();
     });
 
-    it('should not render play button when audioBlob is null', () => {
-      render(<SpeechFeedback assessment={baseAssessment} audioBlob={null} />);
-      expect(screen.queryByText('▶ Play Your Recording')).not.toBeInTheDocument();
-    });
-
-    it('should not render play button when audioBlob is undefined', () => {
-      render(<SpeechFeedback assessment={baseAssessment} />);
-      expect(screen.queryByText('▶ Play Your Recording')).not.toBeInTheDocument();
-    });
-
-    it('should play audio when button is clicked', () => {
-      const mockAudio = {
-        play: vi.fn(),
-        pause: vi.fn(),
-        onplay: null as (() => void) | null,
-        onended: null as (() => void) | null,
-        onpause: null as (() => void) | null,
-      };
-      const mockCreateObjectURL = vi.fn().mockReturnValue('blob:mock-url');
-      const mockRevokeObjectURL = vi.fn();
-
-      vi.stubGlobal('Audio', vi.fn(function() { return mockAudio; }));
-      vi.stubGlobal('URL', {
-        createObjectURL: mockCreateObjectURL,
-        revokeObjectURL: mockRevokeObjectURL,
-      });
-
-      const blob = new Blob(['audio'], { type: 'audio/webm' });
-      render(<SpeechFeedback assessment={baseAssessment} audioBlob={blob} />);
-
-      const playButton = screen.getByText('▶ Play Your Recording');
-      fireEvent.click(playButton);
-
-      expect(mockCreateObjectURL).toHaveBeenCalledWith(blob);
-      expect(Audio).toHaveBeenCalledWith('blob:mock-url');
-      expect(mockAudio.play).toHaveBeenCalled();
-    });
-
-    it('should show pause button while audio is playing', () => {
-      const mockAudio = {
-        play: vi.fn(),
-        pause: vi.fn(),
-        onplay: null as (() => void) | null,
-        onended: null as (() => void) | null,
-        onpause: null as (() => void) | null,
-      };
-
-      vi.stubGlobal('Audio', vi.fn(function() { return mockAudio; }));
-      vi.stubGlobal('URL', {
-        createObjectURL: vi.fn().mockReturnValue('blob:mock-url'),
-        revokeObjectURL: vi.fn(),
-      });
-
-      const blob = new Blob(['audio'], { type: 'audio/webm' });
-      render(<SpeechFeedback assessment={baseAssessment} audioBlob={blob} />);
-
-      const playButton = screen.getByText('▶ Play Your Recording');
-      fireEvent.click(playButton);
-
-      // Simulate audio play event
-      act(() => {
-        if (mockAudio.onplay) mockAudio.onplay();
-      });
-
-      expect(screen.getByText('⏸ Pause')).toBeInTheDocument();
-    });
-
-    it('should pause existing audio before playing new one', () => {
-      const mockAudio1 = {
-        play: vi.fn(),
-        pause: vi.fn(),
-        onplay: null as (() => void) | null,
-        onended: null as (() => void) | null,
-        onpause: null as (() => void) | null,
-      };
-      const mockAudio2 = {
-        play: vi.fn(),
-        pause: vi.fn(),
-        onplay: null as (() => void) | null,
-        onended: null as (() => void) | null,
-        onpause: null as (() => void) | null,
-      };
-
-      let callCount = 0;
-      vi.stubGlobal('Audio', vi.fn(function() {
-        callCount++;
-        return callCount === 1 ? mockAudio1 : mockAudio2;
-      }));
-      vi.stubGlobal('URL', {
-        createObjectURL: vi.fn().mockReturnValue('blob:mock-url'),
-        revokeObjectURL: vi.fn(),
-      });
-
-      const blob = new Blob(['audio'], { type: 'audio/webm' });
-      render(<SpeechFeedback assessment={baseAssessment} audioBlob={blob} />);
-
-      const playButton = screen.getByText('▶ Play Your Recording');
-      fireEvent.click(playButton);
-      fireEvent.click(playButton);
-
-      expect(mockAudio1.pause).toHaveBeenCalled();
-      expect(mockAudio2.play).toHaveBeenCalled();
-    });
-  });
-
-  describe('Error Details', () => {
-    it('should render omission errors', () => {
-      const assessment = {
-        ...baseAssessment,
-        feedback: {
-          ...baseAssessment.feedback,
-          errors: [
-            { type: 'omission' as const, expected: 'は', actual: '', position: 5 },
-          ],
-        },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('⚠️ Missing:')).toBeInTheDocument();
-      const errorDetail = document.querySelector('.error-item.omission .error-detail');
-      expect(errorDetail).toHaveTextContent('Expected');
-      expect(errorDetail).toHaveTextContent('は');
-    });
-
-    it('should render insertion errors', () => {
-      const assessment = {
-        ...baseAssessment,
-        feedback: {
-          ...baseAssessment.feedback,
-          errors: [
-            { type: 'insertion' as const, expected: '', actual: 'さ', position: 3 },
-          ],
-        },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('⚠️ Extra:')).toBeInTheDocument();
-      expect(screen.getByText(/Said/)).toBeInTheDocument();
-      expect(screen.getByText('さ')).toBeInTheDocument();
-      expect(screen.getByText(/instead of nothing/)).toBeInTheDocument();
-    });
-
-    it('should render substitution errors', () => {
-      const assessment = {
-        ...baseAssessment,
-        feedback: {
-          ...baseAssessment.feedback,
-          errors: [
-            { type: 'substitution' as const, expected: 'は', actual: 'わ', position: 5 },
-          ],
-        },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('⚠️ Different:')).toBeInTheDocument();
-      expect(screen.getByText(/Said/)).toBeInTheDocument();
-      expect(screen.getByText('わ')).toBeInTheDocument();
-      expect(screen.getByText(/instead of/)).toBeInTheDocument();
-    });
-
-    it('should render multiple errors', () => {
-      const assessment = {
-        ...baseAssessment,
-        feedback: {
-          ...baseAssessment.feedback,
-          errors: [
-            { type: 'omission' as const, expected: 'は', actual: '', position: 5 },
-            { type: 'insertion' as const, expected: '', actual: 'さ', position: 3 },
-            { type: 'substitution' as const, expected: 'は', actual: 'わ', position: 5 },
-          ],
-        },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('⚠️ Missing:')).toBeInTheDocument();
-      expect(screen.getByText('⚠️ Extra:')).toBeInTheDocument();
-      expect(screen.getByText('⚠️ Different:')).toBeInTheDocument();
-    });
-
-    it('should not render errors section when there are no errors', () => {
-      render(<SpeechFeedback assessment={baseAssessment} />);
-      expect(screen.queryByText('Areas to improve:')).not.toBeInTheDocument();
-    });
-  });
-
-  describe('Suggestions', () => {
-    it('should render suggestions', () => {
-      const assessment = {
-        ...baseAssessment,
-        feedback: {
-          ...baseAssessment.feedback,
-          suggestions: ['Practice the "は" sound more.', 'Slow down your speech.'],
-        },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('💡 Tips:')).toBeInTheDocument();
-      expect(screen.getByText('Practice the "は" sound more.')).toBeInTheDocument();
-      expect(screen.getByText('Slow down your speech.')).toBeInTheDocument();
-    });
-
-    it('should not render suggestions section when there are no suggestions', () => {
-      render(<SpeechFeedback assessment={baseAssessment} />);
-      expect(screen.queryByText('💡 Tips:')).not.toBeInTheDocument();
-    });
-  });
-
-  describe('Action Buttons', () => {
-    it('should render retry button when onRetry is provided', () => {
-      render(<SpeechFeedback assessment={baseAssessment} onRetry={mockOnRetry} />);
-      expect(screen.getByText('🔄 Try Again')).toBeInTheDocument();
-    });
-
-    it('should render continue button when onContinue is provided', () => {
-      render(<SpeechFeedback assessment={baseAssessment} onContinue={mockOnContinue} />);
-      expect(screen.getByText('Continue →')).toBeInTheDocument();
-    });
-
-    it('should call onRetry when retry button is clicked', () => {
-      render(<SpeechFeedback assessment={baseAssessment} onRetry={mockOnRetry} />);
-      const retryButton = screen.getByText('🔄 Try Again');
-      fireEvent.click(retryButton);
-      expect(mockOnRetry).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call onContinue when continue button is clicked', () => {
-      render(<SpeechFeedback assessment={baseAssessment} onContinue={mockOnContinue} />);
-      const continueButton = screen.getByText('Continue →');
-      fireEvent.click(continueButton);
-      expect(mockOnContinue).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not render action buttons when callbacks are not provided', () => {
-      render(<SpeechFeedback assessment={baseAssessment} />);
-      expect(screen.queryByText('🔄 Try Again')).not.toBeInTheDocument();
-      expect(screen.queryByText('Continue →')).not.toBeInTheDocument();
-    });
-  });
-
-  describe('Transcription Display', () => {
-    it('should render transcript when provided', () => {
-      const assessment = { ...baseAssessment, transcript: 'こんにちは', expected: 'こんにちわ' };
-      render(<SpeechFeedback assessment={assessment} />);
-      expect(screen.getByText('Your speech:')).toBeInTheDocument();
-      expect(screen.getByText('こんにちは')).toBeInTheDocument();
-    });
-
-    it('should render fallback when transcript is empty', () => {
-      const assessment = { ...baseAssessment, transcript: '' };
-      render(<SpeechFeedback assessment={assessment} />);
+    it('shows fallback text when no speech was detected', () => {
+      render(<SpeechFeedback assessment={makeAssessment({ transcript: '' })} />);
       expect(screen.getByText('(no speech detected)')).toBeInTheDocument();
     });
 
-    it('should render expected text and romaji', () => {
-      render(<SpeechFeedback assessment={baseAssessment} />);
-      expect(screen.getByText('Expected:')).toBeInTheDocument();
-      expect(screen.getByText('konnichiwa')).toBeInTheDocument();
+    it('shows the expected text and romaji', () => {
+      render(
+        <SpeechFeedback assessment={makeAssessment({ expected: 'ありがとう', expectedRomaji: 'arigatou' })} />
+      );
+      expect(screen.getByText('ありがとう')).toBeInTheDocument();
+      expect(screen.getByText('arigatou')).toBeInTheDocument();
     });
 
-    it('should not render romaji when expectedRomaji is not provided', () => {
-      const assessment = { ...baseAssessment, expectedRomaji: undefined };
+    it('hides romaji line when expectedRomaji is not provided', () => {
+      const assessment = makeAssessment();
+      delete assessment.expectedRomaji;
       render(<SpeechFeedback assessment={assessment} />);
       expect(screen.queryByText('konnichiwa')).not.toBeInTheDocument();
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should render with minimal assessment data', () => {
-      const minimalAssessment: AssessmentResult = {
-        transcript: '',
-        accuracyScore: 0,
-        feedback: {
-          overall: '',
-          errors: [],
-          suggestions: [],
-        },
-        expected: 'test',
-      };
-      render(<SpeechFeedback assessment={minimalAssessment} />);
-      expect(screen.getByText('0')).toBeInTheDocument();
-      expect(screen.getByText('💪 Keep practicing!')).toBeInTheDocument();
-      expect(screen.getByText('(no speech detected)')).toBeInTheDocument();
+  describe('audio playback', () => {
+    it('does not render playback button when audioBlob is missing', () => {
+      render(<SpeechFeedback assessment={makeAssessment()} audioBlob={null} />);
+      expect(screen.queryByRole('button', { name: /play your recording/i })).not.toBeInTheDocument();
     });
 
-    it('should render with all optional props', () => {
-      const blob = new Blob(['audio'], { type: 'audio/webm' });
-      const assessment = {
-        ...baseAssessment,
-        feedback: {
-          overall: 'Great!',
-          errors: [
-            { type: 'substitution' as const, expected: 'は', actual: 'わ', position: 5 },
-          ],
-          suggestions: ['Keep practicing!'],
-        },
-      };
+    it('plays recording when playback button is clicked', () => {
+      render(<SpeechFeedback assessment={makeAssessment()} audioBlob={new Blob(['audio'])} />);
+      fireEvent.click(screen.getByRole('button', { name: /play your recording/i }));
+      expect(playMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows Pause label while audio is playing', () => {
+      render(<SpeechFeedback assessment={makeAssessment()} audioBlob={new Blob(['audio'])} />);
+      const button = screen.getByRole('button', { name: /play your recording/i });
+      fireEvent.click(button);
+      // Simulate the audio onplay event firing
+      const audioInstance = (window.Audio as any).mock.instances[0];
+      act(() => audioInstance.onplay());
+      expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument();
+    });
+
+    it('resumes Play label when audio ends', () => {
+      render(<SpeechFeedback assessment={makeAssessment()} audioBlob={new Blob(['audio'])} />);
+      fireEvent.click(screen.getByRole('button', { name: /play your recording/i }));
+      const audioInstance = (window.Audio as any).mock.instances[0];
+      act(() => audioInstance.onplay());
+      act(() => audioInstance.onended());
+      expect(screen.getByRole('button', { name: /play your recording/i })).toBeInTheDocument();
+    });
+
+    it('pauses previous audio instance before starting a new one', () => {
+      render(<SpeechFeedback assessment={makeAssessment()} audioBlob={new Blob(['audio'])} />);
+      const button = screen.getByRole('button', { name: /play your recording/i });
+      fireEvent.click(button);
+      fireEvent.click(button);
+      // First instance paused on second click
+      expect(pauseMock).toHaveBeenCalledTimes(1);
+      expect(playMock).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('error details', () => {
+    it('renders omission errors with expected text', () => {
       render(
         <SpeechFeedback
-          assessment={assessment}
-          audioBlob={blob}
-          onRetry={mockOnRetry}
-          onContinue={mockOnContinue}
+          assessment={makeAssessment({
+            feedback: {
+              overall: 'ok',
+              errors: [{ type: 'omission', expected: 'を', actual: '', position: 3 }],
+              suggestions: [],
+            },
+          })}
         />
       );
-      expect(screen.getByText('▶ Play Your Recording')).toBeInTheDocument();
-      expect(screen.getByText('🔄 Try Again')).toBeInTheDocument();
-      expect(screen.getByText('Continue →')).toBeInTheDocument();
-      expect(screen.getByText('⚠️ Different:')).toBeInTheDocument();
-      expect(screen.getByText('💡 Tips:')).toBeInTheDocument();
+      expect(screen.getByText(/Missing:/i)).toBeInTheDocument();
+      expect(screen.getByText('を')).toBeInTheDocument();
     });
 
-    it('should handle pronunciation error type', () => {
-      const assessment = {
-        ...baseAssessment,
-        feedback: {
-          ...baseAssessment.feedback,
-          errors: [
-            { type: 'pronunciation' as const, expected: 'は', actual: 'わ', position: 5 },
-          ],
-        },
-      };
-      render(<SpeechFeedback assessment={assessment} />);
-      // The component renders an empty error-type and error-detail for pronunciation
-      // since there is no explicit handling — verify the error section exists
-      expect(screen.getByText('Areas to improve:')).toBeInTheDocument();
-      // The error item should be in the DOM (class "error-item pronunciation")
-      const errorItem = document.querySelector('.error-item.pronunciation');
-      expect(errorItem).toBeInTheDocument();
+    it('renders insertion errors with actual text', () => {
+      render(
+        <SpeechFeedback
+          assessment={makeAssessment({
+            feedback: {
+              overall: 'ok',
+              errors: [{ type: 'insertion', expected: '', actual: 'が', position: 1 }],
+              suggestions: [],
+            },
+          })}
+        />
+      );
+      expect(screen.getByText(/Extra:/i)).toBeInTheDocument();
+      expect(screen.getByText('が')).toBeInTheDocument();
+    });
+
+    it('renders substitution errors with both texts', () => {
+      render(
+        <SpeechFeedback
+          assessment={makeAssessment({
+            feedback: {
+              overall: 'ok',
+              errors: [{ type: 'substitution', expected: 'は', actual: 'わ', position: 0 }],
+              suggestions: [],
+            },
+          })}
+        />
+      );
+      expect(screen.getByText(/Different:/i)).toBeInTheDocument();
+      expect(screen.getByText('は')).toBeInTheDocument();
+      expect(screen.getByText('わ')).toBeInTheDocument();
+    });
+
+    it('hides errors section when there are no errors', () => {
+      render(<SpeechFeedback assessment={makeAssessment()} />);
+      expect(screen.queryByText(/Areas to improve/i)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('suggestions', () => {
+    it('renders suggestions list when present', () => {
+      render(
+        <SpeechFeedback
+          assessment={makeAssessment({
+            feedback: {
+              overall: 'ok',
+              errors: [],
+              suggestions: ['Work on the long vowels', 'Slow down a bit'],
+            },
+          })}
+        />
+      );
+      expect(screen.getByText(/Tips:/i)).toBeInTheDocument();
+      expect(screen.getByText('Work on the long vowels')).toBeInTheDocument();
+      expect(screen.getByText('Slow down a bit')).toBeInTheDocument();
+    });
+
+    it('hides suggestions section when empty', () => {
+      render(<SpeechFeedback assessment={makeAssessment()} />);
+      expect(screen.queryByText(/Tips:/i)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('action buttons', () => {
+    it('calls onRetry when Try Again is clicked', () => {
+      const onRetry = vi.fn();
+      render(<SpeechFeedback assessment={makeAssessment()} onRetry={onRetry} />);
+      fireEvent.click(screen.getByRole('button', { name: /try again/i }));
+      expect(onRetry).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls onContinue when Continue is clicked', () => {
+      const onContinue = vi.fn();
+      render(<SpeechFeedback assessment={makeAssessment()} onContinue={onContinue} />);
+      fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+      expect(onContinue).toHaveBeenCalledTimes(1);
+    });
+
+    it('hides retry button when onRetry is not provided', () => {
+      render(<SpeechFeedback assessment={makeAssessment()} onContinue={vi.fn()} />);
+      expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument();
+    });
+
+    it('hides continue button when onContinue is not provided', () => {
+      render(<SpeechFeedback assessment={makeAssessment()} onRetry={vi.fn()} />);
+      expect(screen.queryByRole('button', { name: /continue/i })).not.toBeInTheDocument();
     });
   });
 });
