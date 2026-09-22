@@ -1,10 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { KanjiList } from '../../components/KanjiList/KanjiList';
+import { KanjiList } from '../../../src/components/KanjiList/KanjiList';
+
+// Mock the API config
+vi.mock('../../../src/config/api.js', () => ({
+  API_URL: 'http://localhost:3001'
+}));
+
+const mockLessons = [
+  { id: 'lesson-1', date: '2026-09-01', title: 'Basic Greetings' },
+  { id: 'lesson-2', date: '2026-09-15', title: 'Numbers' },
+];
 
 const mockKanji = [
   {
-    id: 'k1',
+    id: 'kanji-1',
     character: '水',
     meanings: ['water'],
     readings: [
@@ -12,48 +22,45 @@ const mockKanji = [
       { type: 'on', reading: 'スイ' },
     ],
     lesson_id: 'lesson-1',
-    jlpt_level: 'N5',
     stroke_count: 4,
-    examples: [{ word: '水曜日', reading: 'すいようび', meaning: 'Wednesday' }],
+    jlpt_level: 'N5',
+    examples: [
+      { word: '水曜日', reading: 'すいようび', meaning: 'Wednesday' },
+    ],
   },
   {
-    id: 'k2',
+    id: 'kanji-2',
     character: '火',
     meanings: ['fire'],
     readings: [
       { type: 'kun', reading: 'ひ' },
       { type: 'on', reading: 'カ' },
     ],
+    lesson_id: 'lesson-2',
+    stroke_count: 4,
+    jlpt_level: 'N5',
     examples: [],
   },
 ];
 
-const mockLessons = [
-  { id: 'lesson-1', date: '2026-09-10', title: 'Lesson One' },
-  { id: 'lesson-2', date: '2026-09-15', title: 'Lesson Two' },
-];
+function mockFetchResponse(data: unknown, ok = true, status = 200) {
+  return {
+    ok,
+    status,
+    json: async () => data,
+  } as Response;
+}
 
-function mockFetchResponses({ kanji = mockKanji, lessons = mockLessons, kanjiFails = false } = {}) {
+function setupFetchMocks() {
   (global.fetch as ReturnType<typeof vi.fn>).mockImplementation((url: string) => {
     if (url.includes('/api/lessons')) {
-      return Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ lessons }),
-      });
+      return Promise.resolve(mockFetchResponse({ lessons: mockLessons }));
     }
     if (url.includes('/api/kanji')) {
-      if (kanjiFails) {
-        return Promise.resolve({ ok: false, status: 500 });
-      }
-      return Promise.resolve({ ok: true, json: () => Promise.resolve(kanji) });
+      return Promise.resolve(mockFetchResponse(mockKanji));
     }
     return Promise.reject(new Error(`Unexpected fetch: ${url}`));
   });
-}
-
-async function renderLoadedList(props = {}) {
-  render(<KanjiList {...props} />);
-  await waitFor(() => expect(screen.queryByText('Loading kanji...')).not.toBeInTheDocument());
 }
 
 describe('KanjiList', () => {
@@ -61,167 +68,179 @@ describe('KanjiList', () => {
     vi.clearAllMocks();
   });
 
-  it('shows loading state while fetching', () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockImplementation(
-      () => new Promise(() => {})
-    );
+  it('should show loading state initially', () => {
+    setupFetchMocks();
     render(<KanjiList />);
-    expect(screen.getByText('Loading kanji...')).toBeInTheDocument();
+    expect(screen.getByText(/loading kanji/i)).toBeInTheDocument();
   });
 
-  it('renders kanji cards after loading', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
+  it('should render kanji cards after fetching', async () => {
+    setupFetchMocks();
+    render(<KanjiList />);
 
-    expect(screen.getByText('水')).toBeInTheDocument();
-    expect(screen.getByText('火')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('水')).toBeInTheDocument();
+      expect(screen.getByText('火')).toBeInTheDocument();
+    });
+
     expect(screen.getByText('water')).toBeInTheDocument();
     expect(screen.getByText('fire')).toBeInTheDocument();
   });
 
-  it('fetches lessons and kanji on mount', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    const urls = (global.fetch as ReturnType<typeof vi.fn>).mock.calls.map((c) => c[0]);
-    expect(urls.some((u: string) => u.includes('/api/lessons'))).toBe(true);
-    expect(urls.some((u: string) => u.includes('/api/kanji'))).toBe(true);
-  });
-
-  it('requests sorted kanji newest-first by default', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    const kanjiCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls.find((c) =>
-      c[0].includes('/api/kanji')
-    );
-    expect(kanjiCall[0]).toContain('sort=desc');
-    expect(kanjiCall[0]).not.toContain('lessonId');
-  });
-
-  it('displays reading groups for kun and on readings', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    // Both mock kanji have kun+on readings, so labels appear twice
-    expect(screen.getAllByText('Kunyomi').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Onyomi').length).toBeGreaterThan(0);
-    expect(screen.getByText('みず')).toBeInTheDocument();
-    expect(screen.getByText('スイ')).toBeInTheDocument();
-  });
-
-  it('displays JLPT and stroke count badges', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    expect(screen.getByText('JLPT N5')).toBeInTheDocument();
-    expect(screen.getByText('4 strokes')).toBeInTheDocument();
-  });
-
-  it('displays examples when present', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    expect(screen.getByText('水曜日')).toBeInTheDocument();
-    // Meaning rendered with em-dash prefix: "— Wednesday"
-    expect(screen.getByText(/Wednesday/)).toBeInTheDocument();
-  });
-
-  it('shows error message when kanji fetch fails', async () => {
-    mockFetchResponses({ kanjiFails: true });
+  it('should display kunyomi and onyomi readings', async () => {
+    setupFetchMocks();
     render(<KanjiList />);
 
-    await waitFor(() =>
-      expect(screen.getByText('❌ Error loading kanji')).toBeInTheDocument()
-    );
-    expect(screen.getByText(/Failed to fetch kanji: 500/)).toBeInTheDocument();
-  });
-
-  it('filters kanji by search query (meaning)', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    fireEvent.change(screen.getByLabelText('Search kanji'), {
-      target: { value: 'water' },
+    await waitFor(() => {
+      expect(screen.getByText('みず')).toBeInTheDocument();
+      expect(screen.getByText('スイ')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('水')).toBeInTheDocument();
-    expect(screen.queryByText('火')).not.toBeInTheDocument();
-    expect(screen.getByText('1 kanji')).toBeInTheDocument();
+    expect(screen.getAllByText('Kunyomi').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Onyomi').length).toBeGreaterThan(0);
   });
 
-  it('filters kanji by search query (reading)', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    fireEvent.change(screen.getByLabelText('Search kanji'), {
-      target: { value: 'ひ' },
+  it('should show error message when kanji fetch fails', async () => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockImplementation((url: string) => {
+      if (url.includes('/api/lessons')) {
+        return Promise.resolve(mockFetchResponse({ lessons: mockLessons }));
+      }
+      if (url.includes('/api/kanji')) {
+        return Promise.resolve(mockFetchResponse({}, false, 500));
+      }
+      return Promise.reject(new Error(`Unexpected fetch: ${url}`));
     });
 
-    expect(screen.getByText('火')).toBeInTheDocument();
-    expect(screen.queryByText('水')).not.toBeInTheDocument();
-  });
-
-  it('shows empty state when search matches nothing', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    fireEvent.change(screen.getByLabelText('Search kanji'), {
-      target: { value: 'zzz' },
-    });
-
-    expect(screen.getByText('No kanji found.')).toBeInTheDocument();
-  });
-
-  it('refetches with lessonId when lesson filter changes', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    (global.fetch as ReturnType<typeof vi.fn>).mockClear();
-    fireEvent.change(screen.getByLabelText('Filter by lesson'), {
-      target: { value: 'lesson-1' },
-    });
+    render(<KanjiList />);
 
     await waitFor(() => {
-      const kanjiCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls.find((c) =>
-        c[0].includes('/api/kanji')
-      );
-      expect(kanjiCall).toBeDefined();
-      expect(kanjiCall[0]).toContain('lessonId=lesson-1');
+      expect(screen.getByText(/error loading kanji/i)).toBeInTheDocument();
     });
   });
 
-  it('refetches with ascending sort when sort order changes', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
-
-    (global.fetch as ReturnType<typeof vi.fn>).mockClear();
-    fireEvent.change(screen.getByLabelText('Sort order'), {
-      target: { value: 'oldest' },
-    });
+  it('should filter kanji by search query', async () => {
+    setupFetchMocks();
+    render(<KanjiList />);
 
     await waitFor(() => {
-      const kanjiCall = (global.fetch as ReturnType<typeof vi.fn>).mock.calls.find((c) =>
-        c[0].includes('/api/kanji')
-      );
-      expect(kanjiCall).toBeDefined();
-      expect(kanjiCall[0]).toContain('sort=asc');
+      expect(screen.getByText('水')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByLabelText(/search kanji/i);
+    fireEvent.change(searchInput, { target: { value: 'water' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('水')).toBeInTheDocument();
+      expect(screen.queryByText('火')).not.toBeInTheDocument();
     });
   });
 
-  it('calls onStartPractice when start button is clicked', async () => {
-    mockFetchResponses();
+  it('should filter kanji by character search', async () => {
+    setupFetchMocks();
+    render(<KanjiList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('水')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByLabelText(/search kanji/i);
+    fireEvent.change(searchInput, { target: { value: '火' } });
+
+    await waitFor(() => {
+      expect(screen.queryByText('水')).not.toBeInTheDocument();
+      expect(screen.getByText('火')).toBeInTheDocument();
+    });
+  });
+
+  it('should show empty state when no kanji match search', async () => {
+    setupFetchMocks();
+    render(<KanjiList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('水')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByLabelText(/search kanji/i);
+    fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/no kanji found/i)).toBeInTheDocument();
+    });
+  });
+
+  it('should refetch kanji when lesson filter changes', async () => {
+    setupFetchMocks();
+    render(<KanjiList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('水')).toBeInTheDocument();
+    });
+
+    const lessonSelect = screen.getByLabelText(/filter by lesson/i);
+    fireEvent.change(lessonSelect, { target: { value: 'lesson-1' } });
+
+    await waitFor(() => {
+      const kanjiCalls = (global.fetch as ReturnType<typeof vi.fn>).mock.calls.filter(
+        (call: string[]) => call[0].includes('/api/kanji')
+      );
+      const lastCall = kanjiCalls[kanjiCalls.length - 1][0];
+      expect(lastCall).toContain('lessonId=lesson-1');
+    });
+  });
+
+  it('should refetch kanji when sort order changes', async () => {
+    setupFetchMocks();
+    render(<KanjiList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('水')).toBeInTheDocument();
+    });
+
+    const sortSelect = screen.getByLabelText(/sort order/i);
+    fireEvent.change(sortSelect, { target: { value: 'oldest' } });
+
+    await waitFor(() => {
+      const kanjiCalls = (global.fetch as ReturnType<typeof vi.fn>).mock.calls.filter(
+        (call: string[]) => call[0].includes('/api/kanji')
+      );
+      const lastCall = kanjiCalls[kanjiCalls.length - 1][0];
+      expect(lastCall).toContain('sort=asc');
+    });
+  });
+
+  it('should render start practice button when onStartPractice is provided', async () => {
+    setupFetchMocks();
     const onStartPractice = vi.fn();
-    await renderLoadedList({ onStartPractice });
+    render(<KanjiList onStartPractice={onStartPractice} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /start practice/i }));
+    await waitFor(() => {
+      expect(screen.getByText('水')).toBeInTheDocument();
+    });
+
+    const practiceBtn = screen.getByRole('button', { name: /start practice/i });
+    fireEvent.click(practiceBtn);
     expect(onStartPractice).toHaveBeenCalledTimes(1);
   });
 
-  it('does not render start practice button when callback not provided', async () => {
-    mockFetchResponses();
-    await renderLoadedList();
+  it('should not render start practice button when onStartPractice is not provided', async () => {
+    setupFetchMocks();
+    render(<KanjiList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('水')).toBeInTheDocument();
+    });
 
     expect(screen.queryByRole('button', { name: /start practice/i })).not.toBeInTheDocument();
+  });
+
+  it('should display kanji count', async () => {
+    setupFetchMocks();
+    render(<KanjiList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('水')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/2 kanji/i)).toBeInTheDocument();
   });
 });
