@@ -1,7 +1,0 @@
-{
-  "date": "2026-09-23",
-  "testTarget": null,
-  "refactorCandidate": null,
-  "notes": "All critical paths covered — consider expanding coverage to secondary components. Verified 2026-09-23: 113 frontend tests (all 24 hooks tested incl. useAudioPlayer/useFurigana/useChatSession/useKanjiKeyboardShortcuts; all 7 priority components tested). 35 backend tests covering all 20 routes. Prior refactor candidates already split: VoiceRecorder.tsx down to 11 lines, GrammarMode broken into PatternGraph/PatternGraphSVG/PatternSelection/etc. Largest remaining components (PatternGraph 424, PatternGraphSVG 331, RepeatMode 321, KanjiList 302 lines) all have tests. Note: checklist's untested-hooks sed gives false positive for useKanjiKeyboardShortcuts.ts (regex matches 'uts' in 'Shortcuts') — test file exists.",
-  "refactorSkipped": true
-}
