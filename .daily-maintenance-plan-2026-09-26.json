@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-26",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "only-remaining-untested-hook",
+    "reason": "All priority hooks (useAudioPlayer, useFurigana, useChatSession) and critical components now have tests. This is the only untested hook left in frontend/src/hooks."
+  },
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "Coverage is strong: 114 frontend tests, 35 backend tests. All 7 previously-flagged critical components have tests, and all refactor candidates (VoiceRecorder, LessonMode, ReadingMode, GrammarMode, VerbMode, SpeakingMode, KanjiPracticeMode) are now under 200 lines \u2014 no refactor needed. Largest remaining components: PatternGraph.tsx (424) and PatternGraphSVG.tsx (331), both in GrammarMode with existing test infrastructure.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 13,
+  "testPassed": true
+}
