@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-27",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "keyboard-safety",
+    "reason": "Only untested hook — handles global keydown events (space reveal, 1-4 FSRS ratings) for kanji practice; untested keyboard handlers risk stuck-state bugs (e.g. preventDefault on space scrolling the page) and all other hooks are covered"
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 13,
+  "testPassed": true,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": null,
+    "reason": "All former large components already refactored (GrammarMode 177, LessonMode 171, RepeatMode 321, VoiceRecorder 11 lines). Largest component is PatternGraph.tsx at 424 lines — not on refactor list",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "refactorSkippedReason": "refactorCandidate.shouldRefactor is false — no refactor candidate flagged by Job 1 (2026-09-27 06:00 Job 3 run)",
+  "notes": "Coverage is strong: 114 frontend + 35 backend tests. All 7 priority-ordered components/hooks from checklist have tests. Only missing test is useKanjiKeyboardShortcuts.ts. Suggest Job 2 write a hook test using renderHook + fireEvent keydown verifying: space reveals when hidden, 1/2/3/4 map to again/hard/good/easy when revealed, handler ignores keys when showSetup or isComplete, and space preventDefault prevents page scroll."
+}
