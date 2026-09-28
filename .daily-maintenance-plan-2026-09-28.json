@@ -1,0 +1,25 @@
+{
+  "date": "2026-09-28",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "keyboard-interaction-correctness",
+    "testWritten": true,
+    "testCount": 13,
+    "testPassed": true,
+    "testVerifiedAt": "2026-09-28T05:30:00+02:00",
+    "reason": "Only remaining untested hook in the codebase (57 lines). All 7 priority components/hooks from the checklist now have tests (114 frontend tests). This hook drives the kanji review flow (space to reveal, 1-4 to rate FSRS cards) — regression here breaks daily review UX silently.",
+    "testPlan": [
+      "renderHook with mocked callbacks; assert window keydown listener attached/detached on unmount",
+      "space/Spacebar before reveal calls onReveal once and preventDefault",
+      "no-op when showSetup=true or isComplete=true (any key)",
+      "after reveal: '1'/' '/Spacebar -> onReview('again'), '2' -> 'hard', '3' -> 'good', '4' -> 'easy'",
+      "before reveal, keys 1-4 must NOT call onReview",
+      "listener re-binds when isRevealed flips (callback identity change)"
+    ]
+  },
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All former refactor candidates (GrammarMode 1420->177, LessonMode 736->171, VerbMode 805->85, SpeakingMode 544->45, ReadingMode 555->90, VoiceRecorder 528->11, KanjiPracticeMode 473->127 lines) are already split into thin container components + hooks + subcomponents. Coverage: 114 frontend + 35 backend tests. Next candidates after this hook: PatternGraph.tsx (424 lines, has tests) and RepeatMode.tsx (321 lines) if coverage expansion is wanted."
+}
