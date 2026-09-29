@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-29",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/RepeatMode/RepeatMode.tsx",
+    "testFile": "frontend/src/test/components/RepeatMode/RepeatMode.test.tsx",
+    "priority": "speaking-practice-core",
+    "reason": "Largest untested component (321 lines). Core speaking practice flow that integrates VoiceRecorder, usePronunciationCheck, useAudioPlayer, and useFurigana — all individually tested but their integration in RepeatMode is not. All 7 priority targets from the checklist already have tests."
+  },
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/RepeatMode/RepeatMode.tsx",
+    "lineCount": 321,
+    "reason": "Only component remaining over 300 lines without tests; mixes phrase data, state management, and UI. Previous refactor candidates (GrammarMode ~1420, VerbMode ~805, etc.) are all refactored down to under 200 lines.",
+    "shouldRefactor": true
+  },
+  "notes": "Coverage status: all priority hooks/components covered (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText). All 27 hooks have tests. 114 frontend + 35 backend tests. GrammarMode refactor complete (177 lines). Untested components remaining are mostly thin mode containers; RepeatMode is the standout. Secondary candidates if RepeatMode is done: KanjiList/KanjiList.tsx (302 lines, API-driven), GrammarMode/ExerciseContainer.tsx (244 lines, pure prop-driven — easy test win).",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/RepeatMode/RepeatMode.test.tsx",
+  "testCount": 24,
+  "testPassed": true,
+  "testNote": "Job 2 (2026-09-29): testTarget was already covered — RepeatMode.test.tsx existed since Aug 12 with 17 passing tests (plan coverage check was stale). Extended the file with 7 new tests: fetch HTTP failure, fetch network rejection, settings hydration from localStorage, corrupt settings JSON fallback, empty transcription shows '(nothing)', spacebar ignored while isChecking, and phrase list wrap-around. All 24 pass in isolation (648ms).",
+  "refactorDone": true,
+  "refactorFiles": [
+    "frontend/src/components/RepeatMode/RepeatMode.tsx",
+    "frontend/src/components/RepeatMode/PronunciationResultCard.tsx",
+    "frontend/src/components/RepeatMode/practicePhrases.ts",
+    "frontend/src/hooks/useRepeatMode.ts"
+  ],
+  "testsPassAfterRefactor": true,
+  "refactorNote": "Job 3 (2026-09-29): RepeatMode.tsx refactored from 321 lines into RepeatMode.tsx (146, UI container), useRepeatMode.ts (187, all state/logic/effects), PronunciationResultCard.tsx (38, result UI), practicePhrases.ts (25, data). Also exported PronunciationResult interface from usePronunciationCheck for typing. Behavior preserved: settings hydration, volume persistence (via existing useVolume hook), spacebar shortcut guards, auto-play on phrase change, audio fetch/replay, wrap-around navigation. tsc --noEmit clean. Both RepeatMode suites pass (59 tests); full frontend suite 116 files / 1849 passed / 6 skipped."
+}

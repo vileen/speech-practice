@@ -1,179 +1,33 @@
-interface PracticePhrase {
-  text: string;
-  translation: string;
-}
-
-const PRACTICE_PHRASES: Record<string, PracticePhrase[]> = {
-  japanese: [
-    { text: 'おはようございます', translation: 'Good morning' },
-    { text: 'こんにちは', translation: 'Hello / Good afternoon' },
-    { text: 'こんばんは', translation: 'Good evening' },
-    { text: 'ありがとうございます', translation: 'Thank you (polite)' },
-    { text: 'すみません', translation: 'Excuse me / Sorry' },
-    { text: 'お名前は何ですか', translation: 'What is your name?' },
-    { text: '私は学生です', translation: 'I am a student' },
-    { text: '日本語を勉強しています', translation: 'I am studying Japanese' },
-    { text: '今日は寒いです', translation: 'Today is cold' },
-    { text: '明日は火曜日です', translation: 'Tomorrow is Tuesday' },
-    { text: '犬と猫とどちらの方が好きですか', translation: 'Which do you prefer, dogs or cats?' },
-    { text: '寿司とラーメンとどちらがいいですか', translation: 'Which is better, sushi or ramen?' },
-    { text: '京都と東京とどちらが好きですか', translation: 'Which do you like more, Kyoto or Tokyo?' },
-    { text: 'ポーランドの方がイタリアより好きです', translation: 'I prefer Poland over Italy' },
-    { text: 'ラーメンの方がおいしいです', translation: 'Ramen is tastier' },
-    { text: '伝統的な町が好きですから', translation: 'Because I like traditional towns' },
-  ],
-};
-
-import { useState, useEffect, useCallback } from 'react';
 import { VoiceRecorder } from '../VoiceRecorder/index.js';
 import { JapanesePhrase } from '../JapanesePhrase/index.js';
 import { Header } from '../Header/index.js';
-import { useFurigana } from '../../hooks/useFurigana';
-import { useAudioPlayer } from '../../hooks/useAudioPlayer';
-import { usePronunciationCheck } from '../../hooks/usePronunciationCheck';
-import { API_URL } from '../../config/api.js';
+import { useRepeatMode } from '../../hooks/useRepeatMode';
+import { PronunciationResultCard } from './PronunciationResultCard';
 
 export function RepeatMode() {
-  const language = 'japanese';
-  const phrases = PRACTICE_PHRASES[language];
-  const [_gender, setGender] = useState<'male' | 'female'>('female');
-  const [_voiceStyle, setVoiceStyle] = useState<'normal' | 'anime'>('normal');
-  const [currentPhrase, setCurrentPhrase] = useState<{ text: string; translation: string } | null>(null);
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [isListening, setIsListening] = useState(false);
-  const [vadResetCounter, setVadResetCounter] = useState(0);
-  const [recordingMode, setRecordingMode] = useState<'push-to-talk' | 'voice-activated'>('push-to-talk');
-  const [showTranslation, setShowTranslation] = useState(false);
-  const [showFurigana, setShowFurigana] = useState(true);
-  
-  const [volume, setVolume] = useState(() => {
-    const saved = localStorage.getItem('speechPracticeVolume');
-    return saved ? parseFloat(saved) : 0.8;
-  });
-
-  const { furigana, isLoading: isFuriganaLoading } = useFurigana(
-    currentPhrase?.text || '',
-    language === 'japanese'
-  );
-
-  const { play, isPlaying } = useAudioPlayer(volume);
-  const { result: pronunciationResult, isChecking, check, clear } = usePronunciationCheck();
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [isFetchingAudio, setIsFetchingAudio] = useState(false);
-
-  const isLoading = isFuriganaLoading || isFetchingAudio;
-
-  // Load settings and first phrase on mount, then auto-play audio
-  useEffect(() => {
-    const settings = localStorage.getItem('repeatModeSettings');
-    if (settings) {
-      try {
-        const parsed = JSON.parse(settings);
-        setGender(parsed.gender || 'female');
-        setVoiceStyle(parsed.voiceStyle || 'normal');
-      } catch {
-        // Use defaults
-      }
-    }
-    
-    // Load first phrase and auto-play
-    if (phrases.length > 0) {
-      setCurrentPhrase(phrases[0]);
-    }
-  }, []);
-
-  // Auto-play audio when phrase changes
-  useEffect(() => {
-    if (currentPhrase && !audioUrl && !isFetchingAudio) {
-      fetchAndPlayAudio();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPhrase, audioUrl]);
-
-  // Save volume
-  useEffect(() => {
-    localStorage.setItem('speechPracticeVolume', volume.toString());
-  }, [volume]);
-
-  // Spacebar shortcut
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !e.repeat && !e.ctrlKey && !e.metaKey) {
-        if (document.activeElement?.tagName === 'INPUT') return;
-        if (isChecking || isLoading) return;
-
-        e.preventDefault();
-        nextPhrase();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isChecking, isLoading, phraseIndex]);
-
-  const nextPhrase = useCallback(() => {
-    if (phrases.length === 0) return;
-
-    const nextIndex = (phraseIndex + 1) % phrases.length;
-    setPhraseIndex(nextIndex);
-    setCurrentPhrase(phrases[nextIndex]);
-    setAudioUrl(null); // Reset audio URL so new audio is fetched
-    setIsListening(false);
-    setVadResetCounter(c => c + 1);
-    clear();
-    setShowTranslation(false);
-  }, [phrases, phraseIndex, clear]);
-
-  const handleRecordingComplete = useCallback(async (audioBlob: Blob) => {
-    if (!currentPhrase) return;
-    
-    await check(audioBlob, currentPhrase.text, language);
-  }, [currentPhrase, language, check]);
-
-  // Fetch audio from API
-  const fetchAndPlayAudio = useCallback(async () => {
-    if (!currentPhrase) return;
-
-    // If we already have audio URL, just play it
-    if (audioUrl) {
-      play(audioUrl);
-      return;
-    }
-
-    setIsFetchingAudio(true);
-    try {
-      const response = await fetch(`${API_URL}/api/repeat-after-me`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          target_text: currentPhrase.text,
-          language,
-          gender: _gender,
-          voiceStyle: _voiceStyle,
-        }),
-      });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setAudioUrl(url);
-        play(url);
-      }
-    } catch (error) {
-      console.error('Error fetching audio:', error);
-    } finally {
-      setIsFetchingAudio(false);
-    }
-  }, [currentPhrase, audioUrl, play, _gender, _voiceStyle, language]);
-
-  // Initialize first phrase
-  useEffect(() => {
-    if (phrases.length > 0 && !currentPhrase) {
-      setCurrentPhrase(phrases[0]);
-    }
-  }, [phrases, currentPhrase]);
+  const {
+    currentPhrase,
+    furigana,
+    isPlaying,
+    isLoading,
+    volume,
+    setVolume,
+    showTranslation,
+    toggleTranslation,
+    showFurigana,
+    toggleFurigana,
+    recordingMode,
+    setRecordingMode,
+    isListening,
+    vadResetCounter,
+    pronunciationResult,
+    isChecking,
+    nextPhrase,
+    fetchAndPlayAudio,
+    handleRecordingComplete,
+    handleStartListening,
+    handleStopListening,
+  } = useRepeatMode();
 
   if (!currentPhrase) {
     return <div>Loading...</div>;
@@ -194,14 +48,12 @@ export function RepeatMode() {
             size="large"
           />
 
-          {language === 'japanese' && (
-            <button
-              className="toggle-furigana"
-              onClick={() => setShowFurigana(!showFurigana)}
-            >
-              {showFurigana ? '🙈 Hide Furigana' : '👀 Show Furigana'}
-            </button>
-          )}
+          <button
+            className="toggle-furigana"
+            onClick={toggleFurigana}
+          >
+            {showFurigana ? '🙈 Hide Furigana' : '👀 Show Furigana'}
+          </button>
 
           <div className="phrase-controls">
             <button
@@ -213,7 +65,7 @@ export function RepeatMode() {
             </button>
             <button
               className="translate-btn"
-              onClick={() => setShowTranslation(!showTranslation)}
+              onClick={toggleTranslation}
             >
               {showTranslation ? '🙈 Hide Translation' : '🇬🇧 Show Translation'}
             </button>
@@ -231,34 +83,7 @@ export function RepeatMode() {
           )}
 
           {pronunciationResult && (
-            <div className={`result-card score-${pronunciationResult.score}`}>
-              <div className="score-display">
-                <span className="score-number">{pronunciationResult.score}%</span>
-                <span className="feedback">{pronunciationResult.feedback}</span>
-              </div>
-              
-              <div className="transcription-comparison">
-                <div className="expected">
-                  <label>Expected:</label>
-                  <span>{pronunciationResult.target_text}</span>
-                </div>
-                <div className="heard">
-                  <label>Heard:</label>
-                  <span>{pronunciationResult.transcription || '(nothing)'}</span>
-                </div>
-              </div>
-              
-              {pronunciationResult.errors && pronunciationResult.errors.length > 0 && (
-                <div className="errors-section">
-                  <label>💡 What to improve:</label>
-                  <ul>
-                    {pronunciationResult.errors.map((error: string, idx: number) => (
-                      <li key={idx}>{error}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+            <PronunciationResultCard result={pronunciationResult} />
           )}
         </div>
 
@@ -300,8 +125,8 @@ export function RepeatMode() {
               mode={recordingMode}
               disabled={isChecking || isLoading}
               isListening={isListening}
-              onStartListening={() => setIsListening(true)}
-              onStopListening={() => setIsListening(false)}
+              onStartListening={handleStartListening}
+              onStopListening={handleStopListening}
               onRecordingComplete={handleRecordingComplete}
             />
           </div>

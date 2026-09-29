@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'https://trunk-sticks-connect-currency.trycloudflare.com').replace(/\/$/, '');
 
-interface PronunciationResult {
+export interface PronunciationResult {
   target_text: string;
   transcription: string;
   score: number;

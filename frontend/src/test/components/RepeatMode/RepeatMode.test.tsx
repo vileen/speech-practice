@@ -363,4 +363,164 @@ describe('RepeatMode', () => {
       expect(mockPlay).toHaveBeenCalledTimes(2);
     });
   });
+
+  it('should not crash or play audio when the audio fetch fails', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: false, status: 500 })
+    );
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<RepeatMode />);
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+
+    // Play is never called and the button recovers from the loading state
+    expect(mockPlay).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /listen/i })).toBeEnabled();
+    });
+    consoleError.mockRestore();
+  });
+
+  it('should not crash when the audio fetch rejects (network error)', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(<RepeatMode />);
+
+    await waitFor(() => {
+      expect(consoleError).toHaveBeenCalledWith(
+        'Error fetching audio:',
+        expect.any(Error)
+      );
+    });
+
+    expect(mockPlay).not.toHaveBeenCalled();
+    consoleError.mockRestore();
+  });
+
+  it('should load saved gender and voice style settings from localStorage', async () => {
+    vi.spyOn(window.localStorage, 'getItem').mockImplementation((key: string) =>
+      key === 'repeatModeSettings'
+        ? JSON.stringify({ gender: 'male', voiceStyle: 'anime' })
+        : null
+    );
+
+    render(<RepeatMode />);
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/repeat-after-me'),
+        expect.objectContaining({
+          body: expect.stringContaining('"gender":"male"'),
+        })
+      );
+    });
+
+    expect(JSON.parse(vi.mocked(global.fetch).mock.calls[0][1]!.body as string)).toMatchObject({
+      gender: 'male',
+      voiceStyle: 'anime',
+    });
+  });
+
+  it('should ignore corrupt repeatModeSettings JSON and use defaults', async () => {
+    vi.spyOn(window.localStorage, 'getItem').mockImplementation((key: string) =>
+      key === 'repeatModeSettings' ? '{not-valid-json' : null
+    );
+
+    render(<RepeatMode />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('phrase-text')).toHaveTextContent('おはようございます');
+    });
+
+    // Still fetches with default female/normal voice settings
+    expect(JSON.parse(vi.mocked(global.fetch).mock.calls[0][1]!.body as string)).toMatchObject({
+      gender: 'female',
+      voiceStyle: 'normal',
+    });
+  });
+
+  it('should show "(nothing)" when transcription is empty', async () => {
+    vi.mocked(usePronunciationCheckModule.usePronunciationCheck).mockReturnValue({
+      result: {
+        target_text: 'おはようございます',
+        transcription: '',
+        score: 10,
+        feedback: 'No speech detected',
+        text_with_furigana: 'おはようございます',
+        errors: [],
+      },
+      isChecking: false,
+      error: null,
+      check: mockCheck,
+      clear: mockClear,
+    });
+
+    render(<RepeatMode />);
+
+    await waitFor(() => {
+      expect(screen.getByText('(nothing)')).toBeInTheDocument();
+    });
+    expect(screen.getByText('10%')).toBeInTheDocument();
+  });
+
+  it('should not advance on spacebar while pronunciation check is in progress', async () => {
+    vi.mocked(usePronunciationCheckModule.usePronunciationCheck).mockReturnValue({
+      result: null,
+      isChecking: true,
+      error: null,
+      check: mockCheck,
+      clear: mockClear,
+    });
+
+    render(<RepeatMode />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('phrase-text')).toHaveTextContent('おはようございます');
+    });
+
+    fireEvent.keyDown(window, { code: 'Space' });
+
+    expect(screen.getByTestId('phrase-text')).toHaveTextContent('おはようございます');
+  });
+
+  it('should wrap around to the first phrase after the last phrase', async () => {
+    render(<RepeatMode />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('phrase-text')).toHaveTextContent('おはようございます');
+    });
+
+    // 16 phrases total: advance 15 times to reach the last, then once more to wrap.
+    // Wait for the Next button to re-enable after each click (it disables while
+    // audio for the new phrase is being fetched).
+    for (let i = 0; i < 15; i++) {
+      const nextBtn = screen.getByRole('button', { name: /Next Phrase/ });
+      fireEvent.click(nextBtn);
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Next Phrase/ })).toBeEnabled();
+      });
+    }
+
+    await waitFor(() => {
+      expect(screen.getByTestId('phrase-text')).toHaveTextContent('伝統的な町が好きですから');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Next Phrase/ }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('phrase-text')).toHaveTextContent('おはようございます');
+    });
+
+    // Wrapped around: next fetch targets the first phrase again
+    expect(
+      vi.mocked(global.fetch).mock.calls.some(([_, init]) =>
+        String((init as RequestInit).body).includes('おはようございます')
+      )
+    ).toBe(true);
+  });
 });
