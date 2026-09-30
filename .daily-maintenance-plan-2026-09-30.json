@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-30",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useRepeatMode.ts",
+    "testFile": "frontend/src/test/hooks/useRepeatMode.test.ts",
+    "priority": "repeat-mode-core",
+    "reason": "All 7 priority targets now have tests (114 frontend / 35 backend total). useRepeatMode (187 lines) is the largest untested hook \u2014 it orchestrates the core repeat-after-me practice loop (audio playback, furigana, TTS, pronunciation check, VAD recording) and composes 5 other hooks. Highest remaining risk."
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useRepeatMode.test.ts",
+  "testCount": 19,
+  "testPassed": true,
+  "refactorCandidate": null,
+  "notes": "Coverage is strong. Former refactor candidates all refactored and under 200 lines (GrammarMode 177, LessonMode 171, ReadingMode 90, VerbMode 85, KanjiPracticeMode 127, SpeakingMode 45, VoiceRecorder 11). Only 2 untested hooks remain: useRepeatMode.ts (187 lines, targeted today) and useKanjiKeyboardShortcuts.ts (57 lines, simple keydown wrapper \u2014 good follow-up target). All critical paths covered \u2014 consider expanding coverage to these remaining secondary hooks.",
+  "refactorSkipped": true,
+  "refactorSkipReason": "refactorCandidate is null \u2014 all former candidates already refactored and under 200 lines; no new candidate flagged by Job 1."
+}
