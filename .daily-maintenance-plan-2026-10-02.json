@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-02",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/SpeakingMode/ConversationMode.tsx",
+    "testFile": "frontend/src/test/components/SpeakingMode/ConversationMode.test.tsx",
+    "priority": "speaking-conversation-ui",
+    "reason": "All 7 priority critical components/hooks now have tests (115 frontend, 35 backend). ConversationMode is the largest untested component tied to a core practice mode (147 lines, speaking conversation UI) — natural continuation of recent mode-coverage work (RepeatMode covered 2026-10-01)."
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/SpeakingMode/ConversationMode.test.tsx",
+  "testCount": 13,
+  "testPassed": true,
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All refactor candidates from the checklist were already split: largest mode components are now LessonMode 171, GrammarMode 177 lines. Only components >300 lines are PatternGraph.tsx (424) and PatternGraphSVG.tsx (331), both already tested. 20 secondary components lack tests; after ConversationMode, candidates by value: VerbMode/SelectionScreen.tsx (157), SpeakingMode/ResponseDrillsMode.tsx (96), SpeakingMode/ShadowingMode.tsx (95), MemoryMode/MemoryModeStudy.tsx (112)."
+}
