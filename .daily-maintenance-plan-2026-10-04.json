@@ -1,0 +1,7 @@
+{
+  "date": "2026-10-04",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "notes": "All critical paths covered — consider expanding coverage to secondary components. Frontend: 116 tests, Backend: 35 tests. All 7 priority targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) have tests. All hooks in frontend/src/hooks have tests — the 'MISSING: useKanjiKeyboardShortcuts' from the checklist script was a false positive caused by unescaped sed ('s|.ts|.test.ts|' corrupts filenames containing '.ts' mid-word; actual test exists at frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts). GrammarMode.tsx already refactored (177 lines, was ~1420). Largest remaining component is GrammarMode/PatternGraph.tsx at 424 lines, but it has full test coverage (PatternGraph.test.tsx, PatternGraphSVG.test.tsx, PatternGraphLegend.test.tsx). No refactor candidates over 300 lines without tests."
+}
