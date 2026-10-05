@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-05",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "interaction-correctness",
+    "reason": "Last untested hook in frontend \u2014 keyboard shortcuts drive kanji review flow (space=reveal, 1-4=FSRS ratings). All 7 priority components/hooks from the task list now have tests."
+  },
+  "refactorCandidate": null,
+  "notes": "Coverage check: 116 frontend tests, 35 backend tests. All priority-1..7 targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) are covered. Refactor candidates from step 3 are all resolved: VoiceRecorder 528->11 lines, LessonMode 736->171, ReadingMode 555->90, GrammarMode 1420->177, VerbMode 805->85, SpeakingMode 544->45, KanjiPracticeMode 473->127. No component over 300 lines (largest: PatternGraph.tsx at 424). Next test: useKanjiKeyboardShortcuts \u2014 test reveal on space, ratings 1-4 mapped to again/hard/good/easy, no-op when showSetup or isComplete, listener cleanup.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 13,
+  "testPassed": true,
+  "refactorSkipped": true,
+  "refactorSkipReason": "refactorCandidate is null \u2014 all components under 300 lines, prior refactor work complete"
+}
