@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-06",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "notes": "all critical paths covered — consider expanding coverage to secondary components. Verified: all 7 priority targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) have tests; all hooks have tests (the 'MISSING useKanjiKeyboardShortcuts' flag was a false positive from the sed pattern in the analysis script — test file exists at frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts). No refactor candidates: all previously-large mode components are now well under 300 lines (GrammarMode 177, LessonMode 171, KanjiPracticeMode 127, ReadingMode 90, VerbMode 85, SpeakingMode 45, VoiceRecorder 11). Largest remaining components (PatternGraph 424, PatternGraphSVG 331, KanjiList 302) already have dedicated tests. Coverage: 116 frontend tests, 35 backend tests.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/lib/grammarApi.test.ts",
+  "testCount": 27,
+  "testPassed": true,
+  "testTargetSecondary": "lib/grammarApi.ts (was untested; all critical components/hooks already covered)",
+  "refactorSkipped": true,
+  "refactorDone": false
+}
