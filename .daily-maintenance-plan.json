@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-09",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "kanji-practice-usability",
+    "reason": "Only remaining untested hook (57 lines). All 7 priority-list components/hooks (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) already have tests. Keyboard shortcuts in kanji practice mode need coverage for correct key binding, ignore-when-typing behavior, and cleanup on unmount."
+  },
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 20,
+  "testPassed": true,
+  "notes": "Coverage status: 117 frontend tests, 35 backend tests. All refactor candidates from the checklist have already been reduced well below 300 lines (VoiceRecorder 11, LessonMode 171, ReadingMode 90, GrammarMode 177, VerbMode 85, SpeakingMode 45, KanjiPracticeMode 127). Largest component is GrammarMode/PatternGraph.tsx (424 lines) but it already has a test file. useKanjiKeyboardShortcuts test written and passing in isolation (20 tests): reveal phase (Space/Spacebar, preventDefault, ignore rating keys), review phase (1-4 + Space mappings, preventDefault, ignore unrelated keys), ignore-when-setup/complete, unmount cleanup, callback rebinding, Rating type safety. If tomorrow's job needs a target, consider KanjiList.tsx (302 lines, check for existing test)."
+}

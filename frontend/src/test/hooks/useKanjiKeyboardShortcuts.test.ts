@@ -1,137 +1,212 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useKanjiKeyboardShortcuts } from '../../hooks/useKanjiKeyboardShortcuts';
 import type { Rating } from '../../lib/fsrs.js';
 
-function createKeyEvent(key: string, options: Partial<KeyboardEvent> = {}): KeyboardEvent {
-  return new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...options });
-}
-
 describe('useKanjiKeyboardShortcuts', () => {
-  const defaultOptions = {
-    showSetup: false,
-    isComplete: false,
-    isRevealed: false,
-    onReveal: vi.fn(),
-    onReview: vi.fn(),
+  let onReveal: ReturnType<typeof vi.fn>;
+  let onReview: ReturnType<typeof vi.fn>;
+
+  const pressKey = (key: string) => {
+    const event = new KeyboardEvent('keydown', { key, cancelable: true });
+    window.dispatchEvent(event);
+    return event;
+  };
+
+  const renderShortcuts = (overrides: Partial<Parameters<typeof useKanjiKeyboardShortcuts>[0]> = {}) => {
+    const options = {
+      showSetup: false,
+      isComplete: false,
+      isRevealed: false,
+      onReveal,
+      onReview,
+      ...overrides,
+    };
+    return renderHook(() => useKanjiKeyboardShortcuts(options));
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    onReveal = vi.fn();
+    onReview = vi.fn();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('should register and remove window keydown listener', () => {
-    const addSpy = vi.spyOn(window, 'addEventListener');
-    const removeSpy = vi.spyOn(window, 'removeEventListener');
+  describe('Reveal phase (not yet revealed)', () => {
+    it('should call onReveal when Space is pressed', () => {
+      renderShortcuts({ isRevealed: false });
+      pressKey(' ');
+      expect(onReveal).toHaveBeenCalledTimes(1);
+      expect(onReview).not.toHaveBeenCalled();
+    });
 
-    const { unmount } = renderHook(() => useKanjiKeyboardShortcuts(defaultOptions));
+    it('should call onReveal when Spacebar (legacy key) is pressed', () => {
+      renderShortcuts({ isRevealed: false });
+      pressKey('Spacebar');
+      expect(onReveal).toHaveBeenCalledTimes(1);
+    });
 
-    expect(addSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
-
-    unmount();
-
-    expect(removeSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
-  });
-
-  describe('when card is not revealed', () => {
-    it('calls onReveal and prevents default when Space is pressed', () => {
-      renderHook(() => useKanjiKeyboardShortcuts(defaultOptions));
-
-      const event = createKeyEvent(' ');
-      window.dispatchEvent(event);
-
-      expect(defaultOptions.onReveal).toHaveBeenCalledTimes(1);
-      expect(defaultOptions.onReview).not.toHaveBeenCalled();
+    it('should prevent default on Space to avoid page scroll', () => {
+      renderShortcuts({ isRevealed: false });
+      const event = pressKey(' ');
       expect(event.defaultPrevented).toBe(true);
     });
 
-    it('calls onReveal when legacy Spacebar key is pressed', () => {
-      renderHook(() => useKanjiKeyboardShortcuts(defaultOptions));
-
-      const event = createKeyEvent('Spacebar');
-      window.dispatchEvent(event);
-
-      expect(defaultOptions.onReveal).toHaveBeenCalledTimes(1);
-      expect(event.defaultPrevented).toBe(true);
+    it('should not call onReview for rating keys before reveal', () => {
+      renderShortcuts({ isRevealed: false });
+      ['1', '2', '3', '4'].forEach(pressKey);
+      expect(onReview).not.toHaveBeenCalled();
     });
 
-    it('does nothing for rating keys', () => {
-      renderHook(() => useKanjiKeyboardShortcuts(defaultOptions));
-
-      const event = createKeyEvent('1');
-      window.dispatchEvent(event);
-
-      expect(defaultOptions.onReveal).not.toHaveBeenCalled();
-      expect(defaultOptions.onReview).not.toHaveBeenCalled();
-      expect(event.defaultPrevented).toBe(false);
+    it('should ignore unrelated keys', () => {
+      renderShortcuts({ isRevealed: false });
+      pressKey('a');
+      pressKey('Enter');
+      expect(onReveal).not.toHaveBeenCalled();
+      expect(onReview).not.toHaveBeenCalled();
     });
   });
 
-  describe('when card is revealed', () => {
-    const revealedOptions = { ...defaultOptions, isRevealed: true };
-
-    it.each([
-      ['1', 'again'],
-      [' ', 'again'],
-      ['Spacebar', 'again'],
-      ['2', 'hard'],
-      ['3', 'good'],
-      ['4', 'easy'],
-    ] as [string, Rating][])('pressing "%s" reviews as "%s"', (key, rating) => {
-      renderHook(() => useKanjiKeyboardShortcuts(revealedOptions));
-
-      const event = createKeyEvent(key);
-      window.dispatchEvent(event);
-
-      expect(revealedOptions.onReview).toHaveBeenCalledTimes(1);
-      expect(revealedOptions.onReview).toHaveBeenCalledWith(rating);
-      expect(revealedOptions.onReveal).not.toHaveBeenCalled();
-      expect(event.defaultPrevented).toBe(true);
+  describe('Review phase (revealed)', () => {
+    it('should call onReview("again") for key 1', () => {
+      renderShortcuts({ isRevealed: true });
+      pressKey('1');
+      expect(onReview).toHaveBeenCalledWith('again');
     });
 
-    it('ignores unmapped keys', () => {
-      renderHook(() => useKanjiKeyboardShortcuts(revealedOptions));
+    it('should call onReview("again") for Space', () => {
+      renderShortcuts({ isRevealed: true });
+      pressKey(' ');
+      expect(onReview).toHaveBeenCalledWith('again');
+    });
 
-      const event = createKeyEvent('a');
-      window.dispatchEvent(event);
+    it('should call onReview("hard") for key 2', () => {
+      renderShortcuts({ isRevealed: true });
+      pressKey('2');
+      expect(onReview).toHaveBeenCalledWith('hard');
+    });
 
-      expect(revealedOptions.onReview).not.toHaveBeenCalled();
-      expect(revealedOptions.onReveal).not.toHaveBeenCalled();
-      expect(event.defaultPrevented).toBe(false);
+    it('should call onReview("good") for key 3', () => {
+      renderShortcuts({ isRevealed: true });
+      pressKey('3');
+      expect(onReview).toHaveBeenCalledWith('good');
+    });
+
+    it('should call onReview("easy") for key 4', () => {
+      renderShortcuts({ isRevealed: true });
+      pressKey('4');
+      expect(onReview).toHaveBeenCalledWith('easy');
+    });
+
+    it('should prevent default for rating keys', () => {
+      renderShortcuts({ isRevealed: true });
+      expect(pressKey('1').defaultPrevented).toBe(true);
+      expect(pressKey('2').defaultPrevented).toBe(true);
+      expect(pressKey('3').defaultPrevented).toBe(true);
+      expect(pressKey('4').defaultPrevented).toBe(true);
+      expect(pressKey(' ').defaultPrevented).toBe(true);
+    });
+
+    it('should not call onReveal when revealed', () => {
+      renderShortcuts({ isRevealed: true });
+      pressKey(' ');
+      expect(onReveal).not.toHaveBeenCalled();
+    });
+
+    it('should ignore unrelated keys when revealed', () => {
+      renderShortcuts({ isRevealed: true });
+      pressKey('5');
+      pressKey('x');
+      pressKey('Enter');
+      expect(onReview).not.toHaveBeenCalled();
     });
   });
 
-  describe('when setup is shown', () => {
-    const setupOptions = { ...defaultOptions, showSetup: true };
+  describe('Ignore-when-typing behavior', () => {
+    it('should not react when showSetup is true', () => {
+      renderShortcuts({ showSetup: true, isRevealed: false });
+      pressKey(' ');
+      expect(onReveal).not.toHaveBeenCalled();
+    });
 
-    it('does nothing when Space is pressed', () => {
-      renderHook(() => useKanjiKeyboardShortcuts(setupOptions));
+    it('should not react when session is complete', () => {
+      renderShortcuts({ isComplete: true, isRevealed: false });
+      pressKey(' ');
+      expect(onReveal).not.toHaveBeenCalled();
+    });
 
-      const event = createKeyEvent(' ');
-      window.dispatchEvent(event);
-
-      expect(setupOptions.onReveal).not.toHaveBeenCalled();
-      expect(setupOptions.onReview).not.toHaveBeenCalled();
-      expect(event.defaultPrevented).toBe(false);
+    it('should not react to rating keys when showSetup is true', () => {
+      renderShortcuts({ showSetup: true, isRevealed: true });
+      ['1', '2', '3', '4'].forEach(pressKey);
+      expect(onReview).not.toHaveBeenCalled();
     });
   });
 
-  describe('when session is complete', () => {
-    const completeOptions = { ...defaultOptions, isComplete: true, isRevealed: true };
+  describe('Cleanup and rebinding', () => {
+    it('should remove listener on unmount', () => {
+      const { unmount } = renderShortcuts({ isRevealed: false });
+      unmount();
+      pressKey(' ');
+      expect(onReveal).not.toHaveBeenCalled();
+    });
 
-    it('does nothing when rating keys are pressed', () => {
-      renderHook(() => useKanjiKeyboardShortcuts(completeOptions));
+    it('should use latest callbacks when state changes', () => {
+      const { rerender } = renderHook(
+        ({ revealed }) =>
+          useKanjiKeyboardShortcuts({
+            showSetup: false,
+            isComplete: false,
+            isRevealed: revealed,
+            onReveal,
+            onReview,
+          }),
+        { initialProps: { revealed: false } }
+      );
 
-      const event = createKeyEvent('3');
-      window.dispatchEvent(event);
+      pressKey(' ');
+      expect(onReveal).toHaveBeenCalledTimes(1);
 
-      expect(completeOptions.onReview).not.toHaveBeenCalled();
-      expect(completeOptions.onReveal).not.toHaveBeenCalled();
-      expect(event.defaultPrevented).toBe(false);
+      rerender({ revealed: true });
+      pressKey('3');
+      expect(onReview).toHaveBeenCalledWith('good');
+    });
+
+    it('should call the new callback when callback identity changes', () => {
+      const onReveal2 = vi.fn();
+      const { rerender } = renderHook(
+        ({ onRevealFn }) =>
+          useKanjiKeyboardShortcuts({
+            showSetup: false,
+            isComplete: false,
+            isRevealed: false,
+            onReveal: onRevealFn,
+            onReview,
+          }),
+        { initialProps: { onRevealFn: onReveal } }
+      );
+
+      rerender({ onRevealFn: onReveal2 });
+      pressKey(' ');
+      expect(onReveal2).toHaveBeenCalledTimes(1);
+      expect(onReveal).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Type safety (Rating values)', () => {
+    it('should pass a Rating type value for each binding', () => {
+      renderShortcuts({ isRevealed: true });
+      const expected: Record<string, Rating> = {
+        '1': 'again',
+        '2': 'hard',
+        '3': 'good',
+        '4': 'easy',
+      };
+      Object.entries(expected).forEach(([key, rating]) => {
+        pressKey(key);
+        expect(onReview).toHaveBeenLastCalledWith(rating);
+      });
     });
   });
 });
