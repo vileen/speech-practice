@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-10",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "kanji-input-reliability",
+    "reason": "Only untested hook remaining (57 lines) — all 7 critical components already have tests; keyboard shortcuts for kanji practice are untested and easy to regress"
+  },
+  "refactorCandidate": null,
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 20,
+  "testPassed": true,
+  "notes": "Coverage state 2026-10-10: frontend 117 tests, backend 35 tests. All priority-1 hooks/components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) are tested. Refactor candidates from prior plan were already split — no component exceeds 300 lines (largest: GrammarMode/PatternGraph.tsx at 424 lines, graph rendering). Consider expanding coverage to PatternGraph.tsx next.",
+  "refactorSkipped": true,
+  "refactorSkippedReason": "refactorCandidate is null — no refactor candidate flagged in 2026-10-10 plan"
+}
