@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-11",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "keyboard-safety",
+    "reason": "Only untested frontend file — handles keyboard shortcuts during kanji practice; wrong key handling could cause accidental navigation/data loss during exercises"
+  },
+  "refactorCandidate": null,
+  "notes": "Coverage is strong: 117 frontend + 35 backend tests. All 7 priority components/hooks covered. Previous large components already refactored (VoiceRecorder 528->11 lines, LessonMode 736->171). Largest remaining component is PatternGraph.tsx (424 lines) but it has tests and is mostly SVG graph rendering. Secondary expansion options: PatternGraphSVG.tsx (331 lines, already tested).",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 20,
+  "testPassed": true,
+  "testWrittenAt": "2026-10-11T05:30:00+02:00",
+  "testWrittenNote": "Test file already existed (stale detection in Job 1 — plan claimed untested). Verified existing comprehensive suite passes in isolation: 20/20 tests. No rewrite needed."
+  ,
+  "refactorSkipped": true,
+  "refactorSkippedAt": "2026-10-11T06:00:00+02:00",
+  "refactorSkippedReason": "refactorCandidate is null in plan — no refactor candidate flagged by Job 1"
+}
