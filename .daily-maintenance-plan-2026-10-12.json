@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-12",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "refactorSkipped": true,
+  "refactorSkipReason": "No refactor candidate flagged in plan (2026-10-12 Job 3 run)",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/ShadowingMode.test.tsx",
+  "testCount": 13,
+  "testPassed": true,
+  "notes": "All critical paths covered — expanding coverage to secondary components. Verification: 117 frontend tests, 35 backend tests. All 7 priority targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) have tests. All 27 hooks have tests (useKanjiKeyboardShortcuts 'MISSING' was a sed regex false positive — test file exists). All previously large mode components (GrammarMode 1420, VerbMode 805, LessonMode 736, etc.) have been refactored below 300 lines; largest remaining component is PatternGraph.tsx (424 lines) and it has full test coverage. Secondary untested components (small UI pieces, 18-157 lines): CountersMode/CounterMenu.tsx (118), SpeakingMode/ResponseDrillsMode.tsx (96), VerbMode/SelectionScreen.tsx (157), MemoryMode/MemoryModeSetup.tsx (98), ReadingMode/QuestionsView.tsx (95), ListeningMode/QuestionsView.tsx (100). 2026-10-12 Job 2: added ShadowingMode.test.tsx (13 tests, passing) — ShadowingMode.tsx now covered."
+}

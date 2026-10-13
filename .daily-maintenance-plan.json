@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-13",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "notes": "All critical paths covered (118 frontend + 35 backend tests). All 7 priority components/hooks have tests; all hooks covered (the useKanjiKeyboardShortcuts 'MISSING' flag was a sed-regex false positive \u2014 test exists). All previous refactor candidates already split and now under 200 lines. Consider expanding coverage to secondary components: GrammarMode/PatternGraphSVG.tsx (331 lines, complex SVG rendering, untested), LessonMode/LessonDetail.tsx (230 lines), VerbMode/ExerciseScreen.tsx (211 lines).",
+  "secondarySuggestions": [
+    {
+      "sourceFile": "frontend/src/components/GrammarMode/PatternGraphSVG.tsx",
+      "testFile": "frontend/src/test/components/PatternGraphSVG.test.tsx",
+      "lineCount": 331,
+      "reason": "Largest untested component \u2014 complex SVG rendering of grammar pattern graphs, high visual-logic risk"
+    },
+    {
+      "sourceFile": "frontend/src/components/LessonMode/LessonDetail.tsx",
+      "testFile": "frontend/src/test/components/LessonDetail.test.tsx",
+      "lineCount": 230,
+      "reason": "Lesson detail UI untested"
+    },
+    {
+      "sourceFile": "frontend/src/components/VerbMode/ExerciseScreen.tsx",
+      "testFile": "frontend/src/test/components/ExerciseScreen.test.tsx",
+      "lineCount": 211,
+      "reason": "Verb exercise UI untested"
+    }
+  ],
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/PatternGraphSVG.test.tsx",
+  "testCount": 24,
+  "testPassed": true,
+  "refactorSkipped": true
+}
