@@ -1,31 +1,31 @@
 {
-  "date": "2026-10-13",
+  "date": "2026-10-14",
   "testTarget": null,
   "refactorCandidate": null,
-  "notes": "All critical paths covered (118 frontend + 35 backend tests). All 7 priority components/hooks have tests; all hooks covered (the useKanjiKeyboardShortcuts 'MISSING' flag was a sed-regex false positive \u2014 test exists). All previous refactor candidates already split and now under 200 lines. Consider expanding coverage to secondary components: GrammarMode/PatternGraphSVG.tsx (331 lines, complex SVG rendering, untested), LessonMode/LessonDetail.tsx (230 lines), VerbMode/ExerciseScreen.tsx (211 lines).",
+  "notes": "All critical paths covered (119 frontend + 35 backend tests). All 7 priority components/hooks have tests; all hooks covered (the useKanjiKeyboardShortcuts 'MISSING' flag in the analysis script is a sed-regex false positive \u2014 'Shortcuts' contains 'ts', producing a bogus test path; the real test exists at frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts). All components >200 lines have tests (largest is PatternGraph.tsx at 424 lines, tested). No refactor candidates \u2014 all previously flagged large modes (GrammarMode, VerbMode, SpeakingMode, LessonMode) were already split into sub-200-line components. Remaining untested components are all secondary/small UI pieces (<160 lines each) \u2014 consider expanding coverage to: VerbMode/SelectionScreen.tsx (157 lines, verb selection UI), MemoryMode/MemoryModeStudy.tsx (112 lines, study flow), ListeningMode/QuestionsView.tsx (100 lines, quiz answers).",
   "secondarySuggestions": [
     {
-      "sourceFile": "frontend/src/components/GrammarMode/PatternGraphSVG.tsx",
-      "testFile": "frontend/src/test/components/PatternGraphSVG.test.tsx",
-      "lineCount": 331,
-      "reason": "Largest untested component \u2014 complex SVG rendering of grammar pattern graphs, high visual-logic risk"
+      "sourceFile": "frontend/src/components/VerbMode/SelectionScreen.tsx",
+      "testFile": "frontend/src/test/components/VerbMode/SelectionScreen.test.tsx",
+      "lineCount": 157,
+      "reason": "Largest remaining untested component \u2014 verb exercise selection UI with user interaction"
     },
     {
-      "sourceFile": "frontend/src/components/LessonMode/LessonDetail.tsx",
-      "testFile": "frontend/src/test/components/LessonDetail.test.tsx",
-      "lineCount": 230,
-      "reason": "Lesson detail UI untested"
+      "sourceFile": "frontend/src/components/MemoryMode/MemoryModeStudy.tsx",
+      "testFile": "frontend/src/test/components/MemoryMode/MemoryModeStudy.test.tsx",
+      "lineCount": 112,
+      "reason": "Memory/study flow UI untested"
     },
     {
-      "sourceFile": "frontend/src/components/VerbMode/ExerciseScreen.tsx",
-      "testFile": "frontend/src/test/components/ExerciseScreen.test.tsx",
-      "lineCount": 211,
-      "reason": "Verb exercise UI untested"
+      "sourceFile": "frontend/src/components/ListeningMode/QuestionsView.tsx",
+      "testFile": "frontend/src/test/components/ListeningMode/QuestionsView.test.tsx",
+      "lineCount": 100,
+      "reason": "Listening comprehension questions UI untested"
     }
   ],
   "testWritten": true,
-  "testFile": "frontend/src/test/components/PatternGraphSVG.test.tsx",
-  "testCount": 24,
+  "testFile": "frontend/src/test/components/VerbMode/SelectionScreen.test.tsx",
+  "testCount": 14,
   "testPassed": true,
   "refactorSkipped": true
 }
