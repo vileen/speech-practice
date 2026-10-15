@@ -81,7 +81,7 @@ export function CounterMenu({
                     <h3>{group.baseForm}</h3>
                     <label
                       className="group-checkbox"
-                      onClick={(e) => onToggleGroupSelection(group.baseForm, e)}
+                      onClick={(e) => { e.stopPropagation(); onToggleGroupSelection(group.baseForm, e); }}
                     >
                       <input
                         type="checkbox"

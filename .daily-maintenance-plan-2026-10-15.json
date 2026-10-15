@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-15",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/CountersMode/CounterMenu.test.tsx",
+  "testCount": 15,
+  "testPassed": true,
+  "refactorSkipped": true,
+  "notes": "All 7 priority targets (hooks + components) have tests. All 29 frontend hooks covered including useKanjiKeyboardShortcuts. Former large components already refactored: VoiceRecorder 11 lines, GrammarMode 177, LessonMode 171, ReadingMode 90, VerbMode 85, SpeakingMode 45, KanjiPracticeMode 127 — none exceed 300 lines. Coverage: 135 frontend tests (was 120), 35 backend tests. Secondary component covered: CounterMenu.tsx (118 lines) — 15 tests written, all passing. Remaining untested component: MemoryModeStudy.tsx (112 lines). Largest remaining component: PatternGraph.tsx at 424 lines but already has test infrastructure nearby."
+}
