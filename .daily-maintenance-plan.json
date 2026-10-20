@@ -1,12 +1,11 @@
 {
-  "date": "2026-10-19",
+  "date": "2026-10-20",
   "testTarget": null,
   "refactorCandidate": null,
+  "notes": "All critical paths covered — consider expanding coverage to secondary components. Verified 2026-10-20: all 7 priority targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) have test files. All 30 hooks in frontend/src/hooks have tests (the earlier 'MISSING: useKanjiKeyboardShortcuts' flag was a sed artifact — its test exists at test/hooks/useKanjiKeyboardShortcuts.test.ts). Previous refactor candidates have already been split: GrammarMode 1420→177 lines, ReadingMode 90, VerbMode 85, SpeakingMode 45. Largest remaining component is PatternGraphSVG.tsx (331 lines) and it has a test (PatternGraphSVG.test.tsx). Coverage: 124 frontend tests, 35 backend tests.",
   "testWritten": true,
-  "testFile": "frontend/src/test/integration/speaking-flow.test.tsx",
-  "testCount": 8,
+  "testFile": "frontend/src/test/components/PronunciationResultCard.test.tsx",
+  "testCount": 11,
   "testPassed": true,
-  "notes": "All critical paths covered — consider expanding coverage to secondary components. Verification: 123 frontend tests, 35 backend tests. All 7 priority hooks (useAudioPlayer: 14 tests/32 assertions, useFurigana: 18/37, useChatSession, etc.) and all critical components (AudioPlayer: 15/28, JapanesePhrase: 12/18, VoiceRecorder, HighlightedText) have meaningful tests. Every component in frontend/src/components has a matching test file. Backend routes/services fully covered (36 test files across auth, chat, lessons, listening, grammar, kanji, speech, tts, etc.). No component exceeds the 300-line refactor threshold — GrammarMode previously ~1420 lines is now 177 (already refactored); largest is PatternGraphSVG at 331 lines with 39 tests. Suggested expansion targets if Job 2 wants work anyway: (1) JapanesePhrase tests are shallow (83 lines, 18 assertions for a core display component), (2) only one integration test exists (listening-flow) — a speaking-flow or lesson-flow integration test would add value.",
-  "refactorSkipped": true,
-  "refactorSkippedReason": "No refactor candidate flagged by Job 1 (refactorCandidate is null)"
+  "refactorSkipped": true
 }
