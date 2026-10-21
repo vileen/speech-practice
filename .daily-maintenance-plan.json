@@ -1,11 +1,17 @@
 {
-  "date": "2026-10-20",
-  "testTarget": null,
+  "date": "2026-10-21",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/LessonMode/LessonDetail.tsx",
+    "testFile": "frontend/src/test/components/LessonDetail.test.tsx",
+    "priority": "secondary-coverage",
+    "reason": "All 7 priority targets now have tests (125 frontend tests). LessonDetail (230 lines) is the largest remaining untested component and renders core lesson content — most valuable of the 5 uncovered secondary components."
+  },
   "refactorCandidate": null,
-  "notes": "All critical paths covered — consider expanding coverage to secondary components. Verified 2026-10-20: all 7 priority targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) have test files. All 30 hooks in frontend/src/hooks have tests (the earlier 'MISSING: useKanjiKeyboardShortcuts' flag was a sed artifact — its test exists at test/hooks/useKanjiKeyboardShortcuts.test.ts). Previous refactor candidates have already been split: GrammarMode 1420→177 lines, ReadingMode 90, VerbMode 85, SpeakingMode 45. Largest remaining component is PatternGraphSVG.tsx (331 lines) and it has a test (PatternGraphSVG.test.tsx). Coverage: 124 frontend tests, 35 backend tests.",
+  "refactorSkipped": true,
   "testWritten": true,
-  "testFile": "frontend/src/test/components/PronunciationResultCard.test.tsx",
-  "testCount": 11,
+  "testFile": "frontend/src/test/components/LessonDetail.test.tsx",
+  "testCount": 18,
   "testPassed": true,
-  "refactorSkipped": true
+  "notes": "All critical paths covered — all priority hooks/components tested, all mode components >300 lines have been refactored below threshold (largest is GrammarMode/PatternGraphSVG at 331 lines, already tested). Remaining untested: LessonDetail.tsx (230), ConversationMode.tsx (147), CounterMenu.tsx (118), RecordingControls.tsx (112), ActivityChartSection.tsx (58). Consider expanding coverage to these secondary components."
 }
