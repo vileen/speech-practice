@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-23",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "keyboard-interaction-foundation",
+    "reason": "Only untested hook remaining in the codebase. Handles keyboard shortcuts (space to reveal, 1/2/3/4 for FSRS ratings) in kanji practice \u2014 critical interaction path, 57 lines, clean test surface."
+  },
+  "refactorCandidate": null,
+  "notes": "All 7 previously-flagged large components (GrammarMode, VerbMode, SpeakingMode, etc.) have been refactored \u2014 all now under 300 lines. All 7 priority critical components/hooks now have tests (127 frontend tests, 35 backend tests). Test surface: mock showSetup/isComplete/isRevealed states, assert onReveal/onReview callbacks via keyboard events; verify shortcuts are ignored when showSetup or isComplete is true.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 20,
+  "testPassed": true,
+  "refactorSkipped": true
+}
