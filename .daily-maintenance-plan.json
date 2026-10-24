@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-24",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "keyboard-shortcut-correctness",
+    "reason": "Only untested hook — governs space-reveal and 1-4 FSRS rating keys in KanjiPracticeMode; wrong key handling would silently break review flow"
+  },
+  "refactorCandidate": null,
+  "notes": "Coverage is healthy: 127 frontend + 35 backend tests. All 7 priority components/hooks from the checklist now have tests (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText, useAudioPlayer, useFurigana, useChatSession). No component exceeds 300 lines — previous large modes (GrammarMode 1420, VerbMode 805, SpeakingMode 544) were already split into smaller files. Test plan for useKanjiKeyboardShortcuts: (1) space/Spacebar before reveal calls onReveal and prevents default; (2) after reveal, keys 1/2/3/4 map to again/hard/good/easy; (3) space after reveal maps to 'again'; (4) handler is inert when showSetup=true or isComplete=true; (5) listener removed on unmount. Use @testing-library/react renderHook + fireEvent.keyDown(window).",
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 5,
+  "testPassed": true,
+  "refactorSkipped": true,
+  "refactorSkippedReason": "refactorCandidate is null — no component flagged for refactoring (all components under 300 lines)"
+}
