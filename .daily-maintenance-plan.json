@@ -1,18 +1,11 @@
 {
-  "date": "2026-10-24",
-  "testTarget": {
-    "type": "hook",
-    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
-    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
-    "priority": "keyboard-shortcut-correctness",
-    "reason": "Only untested hook — governs space-reveal and 1-4 FSRS rating keys in KanjiPracticeMode; wrong key handling would silently break review flow"
-  },
-  "refactorCandidate": null,
-  "notes": "Coverage is healthy: 127 frontend + 35 backend tests. All 7 priority components/hooks from the checklist now have tests (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText, useAudioPlayer, useFurigana, useChatSession). No component exceeds 300 lines — previous large modes (GrammarMode 1420, VerbMode 805, SpeakingMode 544) were already split into smaller files. Test plan for useKanjiKeyboardShortcuts: (1) space/Spacebar before reveal calls onReveal and prevents default; (2) after reveal, keys 1/2/3/4 map to again/hard/good/easy; (3) space after reveal maps to 'again'; (4) handler is inert when showSetup=true or isComplete=true; (5) listener removed on unmount. Use @testing-library/react renderHook + fireEvent.keyDown(window).",
+  "date": "2026-10-25",
+  "testTarget": null,
   "testWritten": true,
-  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
-  "testCount": 5,
+  "testFile": "frontend/src/test/components/MemoryModeStudy.test.tsx",
+  "testCount": 11,
   "testPassed": true,
-  "refactorSkipped": true,
-  "refactorSkippedReason": "refactorCandidate is null — no component flagged for refactoring (all components under 300 lines)"
+  "refactorCandidate": null,
+  "notes": "All critical paths covered \u2014 consider expanding coverage to secondary components. Test counts: 127 frontend + 35 backend. All 7 priority items from the checklist have tests (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText). The previously missing hook useKanjiKeyboardShortcuts was tested on 2026-10-24 (5 tests, passing). No component exceeds 300 lines \u2014 largest is PatternGraphSVG.tsx (331 lines) which already has PatternGraphSVG.test.tsx. Secondary components without tests (all small, <115 lines): MemoryMode/MemoryModeStudy.tsx (112), ReadingMode/QuestionsView.tsx (95), SpeakingMode/ResponseDrillsMode.tsx (96), ListeningMode/QuestionsView.tsx (100), MemoryMode/MemoryModeSetup.tsx (98), CountersMode/CounterQuiz.tsx (64), plus minor ProgressDashboard section components (40-59 lines each). Suggested next target if Job 2 needs work: MemoryModeStudy.tsx \u2014 study/reveal flow is core learning UX and the largest untested component.",
+  "refactorSkipped": true
 }
