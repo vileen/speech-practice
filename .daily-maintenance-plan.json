@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-26",
+  "testTarget": null,
+  "refactorCandidate": null,
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/OfflineScreen/OfflineScreen.test.tsx",
+  "testCount": 7,
+  "testPassed": true,
+  "refactorSkipped": true,
+  "notes": "All critical paths covered (128 frontend tests, 35 backend tests). All 7 priority hooks/components from the checklist have tests, including useKanjiKeyboardShortcuts (the untested-hooks check script has a sed regex bug — . matches any char — producing false positives; test file exists). Large components from the checklist were already refactored (GrammarMode.tsx now 177 lines, was ~1420). Largest current component is PatternGraphSVG.tsx at 331 lines but it has tests (PatternGraphSVG.test.tsx). Consider expanding coverage to secondary components or pick a different maintenance task."
+}
