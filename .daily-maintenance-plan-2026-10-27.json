@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-27",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/VerbMode/ExerciseScreen.tsx",
+    "testFile": "frontend/src/components/VerbMode/ExerciseScreen.test.tsx",
+    "priority": "core-practice-mode-ui",
+    "reason": "All priority-1/2 hooks and components now have tests (129 frontend tests). VerbMode/ExerciseScreen (211 lines) is the largest remaining untested component — it is the main interactive screen of a core practice mode (verb conjugation drills), so regression protection there has the highest value among secondary components."
+  },
+  "refactorCandidate": null,
+  "notes": "All critical paths covered — priority hooks (useAudioPlayer, useFurigana, useChatSession) and components (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) have tests. Former large components (GrammarMode, VerbMode, LessonMode, etc.) were already split into smaller files; largest remaining component is PatternGraphSVG.tsx (331 lines) which is mostly SVG geometry, not a refactor target. Next tier of untested components: VerbMode/ExerciseScreen.tsx (211), ListeningMode/ResultsView.tsx (170), VerbMode/SelectionScreen.tsx (157).",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/VerbMode/ExerciseScreen.test.tsx",
+  "testCount": 22,
+  "testPassed": true,
+  "refactorSkipped": true
+}
