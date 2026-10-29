@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-29",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/VerbMode/ExerciseScreen.tsx",
+    "testFile": "frontend/src/test/components/VerbMode/ExerciseScreen.test.tsx",
+    "priority": "verb-practice-core-ui",
+    "reason": "All 7 priority-list targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) and all hooks are now tested. ExerciseScreen (211 lines) is the largest remaining untested component and contains core verb-conjugation exercise interaction logic (answer input, checking, feedback) — highest-value coverage gap."
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "No component over 300 lines lacks tests. The previously large mode files (GrammarMode ~1420, VerbMode ~805, LessonMode ~736) have already been refactored into smaller, tested pieces. Largest files: PatternGraphSVG.tsx (331, tested), KanjiList.tsx (302, tested).",
+    "shouldRefactor": false
+  },
+  "notes": "Coverage sweep 2026-10-29: 130 frontend + 35 backend tests. Untested components remaining (by size): VerbMode/ExerciseScreen (211), ListeningMode/ResultsView (170), VerbMode/SelectionScreen (157), SpeakingMode/ConversationMode (147), ReadingMode/ResultsView (145). Minor: two KanjiList test files exist (src/test/components/KanjiList.test.tsx and KanjiList/KanjiList.test.tsx) — possible duplicate, worth deduplicating. Task checklist's hook MISSING detection has a sed bug (unescaped . matches 'uts' in 'Shortcuts') — useKanjiKeyboardShortcuts is actually tested.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/VerbMode/ExerciseScreen.test.tsx",
+  "testCount": 22,
+  "testPassed": true,
+  "refactorSkipped": true
+}
