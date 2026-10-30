@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-30",
+  "testTarget": null,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "No component exceeds 300 lines — largest is PatternGraphSVG.tsx at 331 lines and it has full test coverage. Prior refactor work (GrammarMode/LessonMode/VerbMode splits) is complete.",
+    "shouldRefactor": false
+  },
+  "notes": "All 7 priority components/hooks have tests; all 33 hooks covered (useKanjiKeyboardShortcuts false-negative from path-sed check — test exists). Frontend: 130 tests, Backend: 35 tests. Coverage: 165 total. All critical paths covered — consider expanding coverage to secondary components (e.g. utility functions, API layer edge cases) or improving existing test depth rather than adding new files.",
+  "refactorSkipped": true,
+  "refactorSkippedReason": "No component exceeds 300 lines; largest (PatternGraphSVG.tsx, 331 lines) has full test coverage. Prior refactors complete."
+}
