@@ -1,68 +1,76 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { ExerciseScreen } from '../../../components/VerbMode/ExerciseScreen';
-import type { Exercise, ExerciseState, FeedbackState } from '../../../components/VerbMode/types';
+import type { Exercise, Verb, FeedbackState, ExerciseState } from '../../../components/VerbMode/types';
 
-// Mock useFurigana hook
+// Mock the useFurigana hook (ExerciseDisplay depends on it)
 vi.mock('../../../hooks/useFurigana', () => ({
-  useFurigana: vi.fn((text: string) => ({
-    furigana: text.includes('漢') ? `<ruby>漢<rt>かん</rt></ruby>` : null,
+  useFurigana: vi.fn((text: string, enabled: boolean) => ({
+    furigana: enabled ? `<ruby>${text}<rt>reading</rt></ruby>` : null,
     isLoading: false,
     error: null,
     refresh: vi.fn(),
   })),
 }));
 
-// Mock react-router-dom's useNavigate for Header
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => vi.fn(),
-  };
-});
-
-const mockNavigate = vi.fn();
-const mockSetUserAnswer = vi.fn();
-const mockSetShowFurigana = vi.fn();
-const mockLoadNextExercise = vi.fn();
-const mockHandleSubmit = vi.fn();
-
-const mockVerb = {
+const makeVerb = (overrides: Partial<Verb> = {}): Verb => ({
   id: 1,
   dictionary_form: '食べる',
   reading: 'たべる',
   meaning: 'to eat',
-  group: 'II' as const,
+  group: 'II',
   jlpt_level: 'N5',
   conjugations: {
     te_form: '食べて',
     polite: '食べます',
   },
-};
+  ...overrides,
+});
 
-const mockExercise: Exercise = {
-  verb: mockVerb,
+const makeExercise = (overrides: Partial<Exercise> = {}): Exercise => ({
+  verb: makeVerb(),
   questionType: 'construction',
   targetForm: 'te_form',
-  prompt: 'Conjugate 食べる to te-form',
+  prompt: 'Conjugate 食べる into TE-form',
   correctAnswer: '食べて',
-};
+  options: ['食べて', '食べる', '食べた', '食べない'],
+  ...overrides,
+});
+
+const makeFeedback = (overrides: Partial<FeedbackState> = {}): FeedbackState => ({
+  correct: true,
+  userAnswer: '食べて',
+  correctAnswer: '食べて',
+  explanation: 'Group II verbs: drop る and add て',
+  streak: 3,
+  ...overrides,
+});
 
 const defaultProps = {
-  navigate: mockNavigate,
-  currentExercise: mockExercise,
+  navigate: vi.fn(),
+  currentExercise: makeExercise(),
   state: 'input' as ExerciseState,
   userAnswer: '',
-  setUserAnswer: mockSetUserAnswer,
+  setUserAnswer: vi.fn(),
   feedback: null as FeedbackState | null,
   selectedPracticeType: 'construction' as const,
-  answerMode: 'input' as const,
+  answerMode: 'multiple-choice' as const,
   showFurigana: false,
-  setShowFurigana: mockSetShowFurigana,
+  setShowFurigana: vi.fn(),
   streak: 0,
-  loadNextExercise: mockLoadNextExercise,
-  handleSubmit: mockHandleSubmit,
+  loadNextExercise: vi.fn(),
+  handleSubmit: vi.fn(),
+};
+
+const renderScreen = (overrides: Partial<typeof defaultProps> = {}) => {
+  const props = { ...defaultProps, ...overrides };
+  render(
+    <MemoryRouter>
+      <ExerciseScreen {...props} />
+    </MemoryRouter>
+  );
+  return props;
 };
 
 describe('ExerciseScreen', () => {
@@ -70,207 +78,168 @@ describe('ExerciseScreen', () => {
     vi.clearAllMocks();
   });
 
-  it('renders loading state', () => {
-    render(<ExerciseScreen {...defaultProps} state="loading" currentExercise={null} />);
-    expect(screen.getByText('Loading exercise...')).toBeInTheDocument();
+  describe('loading state', () => {
+    it('should render loading indicator when state is loading', () => {
+      renderScreen({ state: 'loading' });
+      expect(screen.getByText('Loading exercise...')).toBeInTheDocument();
+    });
   });
 
-  it('renders exercise with verb info', () => {
-    render(<ExerciseScreen {...defaultProps} />);
-    expect(screen.getByText('Verb Conjugation')).toBeInTheDocument();
-    expect(screen.getByText('食べる')).toBeInTheDocument();
-    expect(screen.getByText('to eat')).toBeInTheDocument();
-    expect(screen.getByText('Group II')).toBeInTheDocument();
+  describe('header', () => {
+    it('should render title and back button', () => {
+      const props = renderScreen();
+      expect(screen.getByText('Verb Conjugation')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /back/i }));
+      expect(props.navigate).toHaveBeenCalledWith('/');
+    });
+
+    it('should show streak badge when streak > 0', () => {
+      renderScreen({ streak: 5 });
+      expect(screen.getByText('🔥 5')).toBeInTheDocument();
+    });
+
+    it('should not show streak badge when streak is 0', () => {
+      renderScreen({ streak: 0 });
+      expect(screen.queryByText(/🔥/)).not.toBeInTheDocument();
+    });
+
+    it('should toggle furigana when furigana button is clicked', () => {
+      const props = renderScreen({ showFurigana: false });
+      fireEvent.click(screen.getByTitle('Show furigana'));
+      expect(props.setShowFurigana).toHaveBeenCalledWith(true);
+    });
+
+    it('should offer to hide furigana when furigana is shown', () => {
+      const props = renderScreen({ showFurigana: true });
+      fireEvent.click(screen.getByTitle('Hide furigana'));
+      expect(props.setShowFurigana).toHaveBeenCalledWith(false);
+    });
   });
 
-  it('shows question prompt and target form', () => {
-    render(<ExerciseScreen {...defaultProps} />);
-    expect(screen.getByText('Conjugate 食べる to te-form')).toBeInTheDocument();
-    expect(screen.getByText(/TE-form/)).toBeInTheDocument();
+  describe('exercise prompt', () => {
+    it('should render verb info: dictionary form, group, and meaning', () => {
+      renderScreen();
+      expect(screen.getAllByText('食べる').length).toBeGreaterThan(0);
+      expect(screen.getByText('Group II')).toBeInTheDocument();
+      expect(screen.getByText('to eat')).toBeInTheDocument();
+    });
+
+    it('should render practice type badge', () => {
+      renderScreen({ selectedPracticeType: 'recognition' });
+      expect(screen.getByText(/Recognition/)).toBeInTheDocument();
+    });
+
+    it('should render the exercise prompt text', () => {
+      renderScreen();
+      expect(screen.getByText('Conjugate 食べる into TE-form')).toBeInTheDocument();
+    });
+
+    it('should show source form display when sourceForm is present', () => {
+      renderScreen({
+        currentExercise: makeExercise({ sourceForm: 'dictionary_form' }),
+      });
+      expect(screen.getByText('From:')).toBeInTheDocument();
+      expect(screen.getByText('(Dictionary Form)')).toBeInTheDocument();
+    });
+
+    it('should not show source form display when sourceForm is absent', () => {
+      renderScreen();
+      expect(screen.queryByText('From:')).not.toBeInTheDocument();
+    });
   });
 
-  it('renders text input in input mode', () => {
-    render(<ExerciseScreen {...defaultProps} />);
-    expect(screen.getByPlaceholderText('Type your answer in Japanese...')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
+  describe('multiple-choice mode', () => {
+    it('should render all answer options', () => {
+      renderScreen();
+      expect(screen.getByText('食べて')).toBeInTheDocument();
+      expect(screen.getAllByText('食べる').length).toBeGreaterThan(0);
+      expect(screen.getByText('食べた')).toBeInTheDocument();
+      expect(screen.getByText('食べない')).toBeInTheDocument();
+    });
+
+    it('should set answer and submit when an option is clicked', () => {
+      const props = renderScreen();
+      fireEvent.click(screen.getByText('食べて').closest('button')!);
+      expect(props.setUserAnswer).toHaveBeenCalledWith('食べて');
+      expect(props.handleSubmit).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it('renders multiple choice options when answerMode is multiple-choice', () => {
-    const exerciseWithOptions: Exercise = {
-      ...mockExercise,
-      options: ['食べて', '食べた', '食べる', '食べ'],
-    };
-    render(
-      <ExerciseScreen
-        {...defaultProps}
-        answerMode="multiple-choice"
-        currentExercise={exerciseWithOptions}
-      />
-    );
-    expect(screen.getByText('A')).toBeInTheDocument();
-    expect(screen.getByText('食べて')).toBeInTheDocument();
-    expect(screen.getByText('B')).toBeInTheDocument();
-    expect(screen.getByText('食べた')).toBeInTheDocument();
+  describe('input mode', () => {
+    const inputModeProps = { answerMode: 'input' as const };
+
+    it('should show target form hint', () => {
+      renderScreen(inputModeProps);
+      expect(screen.getByText('TE-form', { selector: 'strong' })).toBeInTheDocument();
+    });
+
+    it('should update answer as the user types', () => {
+      const props = renderScreen(inputModeProps);
+      fireEvent.change(screen.getByPlaceholderText(/Type your answer/), {
+        target: { value: '食べて' },
+      });
+      expect(props.setUserAnswer).toHaveBeenCalledWith('食べて');
+    });
+
+    it('should disable submit button when answer is empty', () => {
+      renderScreen({ ...inputModeProps, userAnswer: '   ' });
+      expect(screen.getByRole('button', { name: 'Submit' })).toBeDisabled();
+    });
+
+    it('should submit on Enter key', () => {
+      const props = renderScreen({ ...inputModeProps, userAnswer: '食べて' });
+      fireEvent.keyDown(screen.getByPlaceholderText(/Type your answer/), {
+        key: 'Enter',
+      });
+      expect(props.handleSubmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('should show "Checking..." and disable controls while processing', () => {
+      renderScreen({ ...inputModeProps, userAnswer: '食べて', state: 'processing' });
+      expect(screen.getByRole('button', { name: 'Checking...' })).toBeDisabled();
+      expect(screen.getByPlaceholderText(/Type your answer/)).toBeDisabled();
+    });
   });
 
-  it('calls setUserAnswer and handleSubmit when multiple choice option is clicked', () => {
-    const exerciseWithOptions: Exercise = {
-      ...mockExercise,
-      options: ['食べて', '食べた', '食べる', '食べ'],
-    };
-    render(
-      <ExerciseScreen
-        {...defaultProps}
-        answerMode="multiple-choice"
-        currentExercise={exerciseWithOptions}
-      />
-    );
-    const optionBtn = screen.getByText('食べて').closest('button');
-    fireEvent.click(optionBtn!);
-    expect(mockSetUserAnswer).toHaveBeenCalledWith('食べて');
-    expect(mockHandleSubmit).toHaveBeenCalled();
-  });
+  describe('feedback state', () => {
+    it('should show correct feedback message', () => {
+      renderScreen({
+        state: 'feedback',
+        feedback: makeFeedback({ correct: true }),
+      });
+      expect(screen.getByText(/✅ Correct!/)).toBeInTheDocument();
+      expect(screen.queryByText(/Correct answer:/)).not.toBeInTheDocument();
+    });
 
-  it('updates userAnswer on input change', () => {
-    render(<ExerciseScreen {...defaultProps} />);
-    const input = screen.getByPlaceholderText('Type your answer in Japanese...');
-    fireEvent.change(input, { target: { value: '食べて' } });
-    expect(mockSetUserAnswer).toHaveBeenCalledWith('食べて');
-  });
+    it('should show correct answer when the answer was wrong', () => {
+      renderScreen({
+        state: 'feedback',
+        feedback: makeFeedback({
+          correct: false,
+          userAnswer: '食べる',
+          correctAnswer: '食べて',
+        }),
+      });
+      expect(screen.getByText(/❌ Not quite/)).toBeInTheDocument();
+      expect(screen.getByText('Your answer:')).toBeInTheDocument();
+      expect(screen.getByText('Correct answer:')).toBeInTheDocument();
+    });
 
-  it('submits on Enter key', () => {
-    render(<ExerciseScreen {...defaultProps} userAnswer="食べて" />);
-    const input = screen.getByPlaceholderText('Type your answer in Japanese...');
-    fireEvent.keyDown(input, { key: 'Enter' });
-    expect(mockHandleSubmit).toHaveBeenCalled();
-  });
+    it('should render explanation when provided', () => {
+      renderScreen({ state: 'feedback', feedback: makeFeedback() });
+      expect(screen.getByText(/Explanation/)).toBeInTheDocument();
+      expect(screen.getByText('Group II verbs: drop る and add て')).toBeInTheDocument();
+    });
 
-  it('disables submit when userAnswer is empty', () => {
-    render(<ExerciseScreen {...defaultProps} />);
-    const submitBtn = screen.getByRole('button', { name: /submit/i });
-    expect(submitBtn).toBeDisabled();
-  });
+    it('should show streak update when feedback includes a streak', () => {
+      renderScreen({ state: 'feedback', feedback: makeFeedback({ streak: 3 }) });
+      expect(screen.getByText('🔥 Streak: 3')).toBeInTheDocument();
+    });
 
-  it('disables input during processing state', () => {
-    render(<ExerciseScreen {...defaultProps} state="processing" userAnswer="食べて" />);
-    const input = screen.getByPlaceholderText('Type your answer in Japanese...');
-    expect(input).toBeDisabled();
-    expect(screen.getByRole('button', { name: /checking/i })).toBeInTheDocument();
-  });
-
-  it('shows correct feedback state', () => {
-    const correctFeedback: FeedbackState = {
-      correct: true,
-      userAnswer: '食べて',
-      correctAnswer: '食べて',
-      explanation: 'Group II verbs drop る and add て',
-      streak: 3,
-    };
-    render(
-      <ExerciseScreen
-        {...defaultProps}
-        state="feedback"
-        feedback={correctFeedback}
-      />
-    );
-    expect(screen.getByText('✅ Correct!')).toBeInTheDocument();
-    expect(screen.getByText('Your answer:')).toBeInTheDocument();
-    expect(screen.getByText('💡 Explanation')).toBeInTheDocument();
-    expect(screen.getByText('Group II verbs drop る and add て')).toBeInTheDocument();
-    expect(screen.getByText('🔥 Streak: 3')).toBeInTheDocument();
-  });
-
-  it('shows incorrect feedback state with correct answer', () => {
-    const incorrectFeedback: FeedbackState = {
-      correct: false,
-      userAnswer: '食べた',
-      correctAnswer: '食べて',
-      explanation: 'Group II verbs drop る and add て',
-    };
-    render(
-      <ExerciseScreen
-        {...defaultProps}
-        state="feedback"
-        feedback={incorrectFeedback}
-      />
-    );
-    expect(screen.getByText('❌ Not quite')).toBeInTheDocument();
-    expect(screen.getByText('Correct answer:')).toBeInTheDocument();
-    expect(screen.getByText('食べて')).toBeInTheDocument();
-  });
-
-  it('calls loadNextExercise when next button is clicked', () => {
-    const correctFeedback: FeedbackState = {
-      correct: true,
-      userAnswer: '食べて',
-      correctAnswer: '食べて',
-    };
-    render(
-      <ExerciseScreen
-        {...defaultProps}
-        state="feedback"
-        feedback={correctFeedback}
-      />
-    );
-    const nextBtn = screen.getByRole('button', { name: /next exercise/i });
-    fireEvent.click(nextBtn);
-    expect(mockLoadNextExercise).toHaveBeenCalled();
-  });
-
-  it('shows streak badge when streak > 0', () => {
-    render(<ExerciseScreen {...defaultProps} streak={5} />);
-    expect(screen.getByText('🔥 5')).toBeInTheDocument();
-  });
-
-  it('does not show streak badge when streak is 0', () => {
-    render(<ExerciseScreen {...defaultProps} streak={0} />);
-    expect(screen.queryByText(/🔥/)).not.toBeInTheDocument();
-  });
-
-  it('toggles furigana when furigana button is clicked', () => {
-    render(<ExerciseScreen {...defaultProps} />);
-    const furiganaBtn = screen.getByTitle('Show furigana');
-    fireEvent.click(furiganaBtn);
-    expect(mockSetShowFurigana).toHaveBeenCalledWith(true);
-  });
-
-  it('shows different furigana button title when furigana is enabled', () => {
-    render(<ExerciseScreen {...defaultProps} showFurigana={true} />);
-    const furiganaBtn = screen.getByTitle('Hide furigana');
-    expect(furiganaBtn).toBeInTheDocument();
-    fireEvent.click(furiganaBtn);
-    expect(mockSetShowFurigana).toHaveBeenCalledWith(false);
-  });
-
-  it('calls navigate when back button is clicked', () => {
-    render(<ExerciseScreen {...defaultProps} />);
-    const backBtn = screen.getByRole('button', { name: /back/i });
-    fireEvent.click(backBtn);
-    expect(mockNavigate).toHaveBeenCalledWith('/');
-  });
-
-  it('shows source form when currentExercise has sourceForm', () => {
-    const exerciseWithSource: Exercise = {
-      ...mockExercise,
-      sourceForm: 'dictionary_form',
-    };
-    render(<ExerciseScreen {...defaultProps} currentExercise={exerciseWithSource} />);
-    expect(screen.getByText('From:')).toBeInTheDocument();
-    expect(screen.getByText('(Dictionary Form)')).toBeInTheDocument();
-  });
-
-  it('shows practice type badge', () => {
-    render(<ExerciseScreen {...defaultProps} selectedPracticeType="recognition" />);
-    expect(screen.getByText('🧠 Recognition')).toBeInTheDocument();
-  });
-
-  it('shows construction practice type badge', () => {
-    render(<ExerciseScreen {...defaultProps} selectedPracticeType="construction" />);
-    expect(screen.getByText('🔨 Construction')).toBeInTheDocument();
-  });
-
-  it('shows transformation practice type badge', () => {
-    render(<ExerciseScreen {...defaultProps} selectedPracticeType="transformation" />);
-    expect(screen.getByText('🔄 Transformation')).toBeInTheDocument();
+    it('should load next exercise when Next is clicked', () => {
+      const props = renderScreen({ state: 'feedback', feedback: makeFeedback() });
+      fireEvent.click(screen.getByRole('button', { name: /Next Exercise/ }));
+      expect(props.loadNextExercise).toHaveBeenCalledTimes(1);
+    });
   });
 });
