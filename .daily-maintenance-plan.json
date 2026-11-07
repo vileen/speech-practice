@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-07",
+  "testTarget": null,
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/KanjiList/KanjiList.tsx",
+    "lineCount": 302,
+    "reason": "Largest component (302 lines), no colocated test file, just over the 300-line threshold — borderline; review structure before deciding",
+    "shouldRefactor": true
+  },
+  "notes": "All critical paths covered — 135 frontend tests, 35 backend tests. Every priority hook (useAudioPlayer, useFurigana, useChatSession) and component (AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) has tests. All hooks tested including useKanjiKeyboardShortcuts (the MISSING report was a false positive from an unescaped regex in the check script). Previously large modes (GrammarMode, LessonMode, etc.) appear already refactored into smaller files (PatternSelection 292, ExerciseContainer 244, LessonDetail 230). Consider expanding coverage to secondary components or flag KanjiList (302 lines, untested) for a light refactor.",
+  "refactorDone": true,
+  "refactorFiles": [
+    "frontend/src/components/KanjiList/KanjiList.tsx",
+    "frontend/src/components/KanjiList/KanjiListItem.tsx",
+    "frontend/src/components/KanjiList/useKanjiList.ts",
+    "frontend/src/components/KanjiList/types.ts"
+  ],
+  "testsPassAfterRefactor": true
+}
