@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-09",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/pages/ChatSession.tsx",
+    "testFile": "frontend/src/test/pages/ChatSession.test.tsx",
+    "priority": "chat-flow-coverage",
+    "reason": "Chat is a core practice mode (252-line page) with zero page-level tests. Hook (useChatSession), backend route, and service are tested, but the page itself is untested — unlike Home, Login, LessonList, etc. which all have page tests. Follow existing conventions in frontend/src/test/pages/ (see LessonPractice.test.tsx / ChatSetup.test.tsx for mocking patterns)."
+  },
+  "refactorCandidate": null,
+  "testWritten": true,
+  "testFile": "frontend/src/test/pages/ChatSession.test.tsx",
+  "testCount": 15,
+  "testPassed": true,
+  "refactorNote": "No component exceeds 300 lines — prior refactor splits (GrammarMode, VerbMode, LessonMode, PatternGraphSVG) succeeded. No refactor needed today.",
+  "notes": "Coverage is excellent: 135 frontend tests (all hooks, all lib, all components, all pages except ChatSession/KanjiPracticePage/LessonDetail/MemoryModeWrapper which are thin wrappers), 35 backend tests (all routes + services). Integration flows exist only for listening and speaking — a chat-flow integration test would be a good follow-up after the page test. Secondary hygiene item: backend/src/services/elevenlabs.ts.bak backup file should be removed from source tree.",
+  "refactorSkipped": true,
+  "refactorSkippedReason": "No refactor candidate flagged by Job 1; no component exceeds 300 lines."
+}
