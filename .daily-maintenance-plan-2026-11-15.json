@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-15",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "only-remaining-gap",
+    "reason": "All priority hooks/components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) now have tests. Codebase was heavily refactored since checklist was written — former 500-1400 line components are now 45-177 lines. useKanjiKeyboardShortcuts (57 lines) is the only hook without tests."
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "All former refactor candidates (VoiceRecorder, LessonMode, ReadingMode, GrammarMode, VerbMode, SpeakingMode, KanjiPracticeMode) are now well under 300 lines. Largest component is PatternSelection.tsx at 292 lines — borderline but acceptable.",
+    "shouldRefactor": false
+  },
+  "testResult": {
+    "testWritten": true,
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "testCount": 5,
+    "testPassed": true,
+    "verifiedAt": "2026-11-15T05:30:00+01:00",
+    "note": "Test file already existed from prior run; verified all 5 tests pass in isolation."
+  },
+  "refactorSkipped": true,
+  "notes": "Coverage status 2026-11-15: 142 frontend tests, 35 backend tests. All critical paths covered. Job 2 should add tests for useKanjiKeyboardShortcuts; after that, consider expanding coverage to secondary components or backend edge cases."
+}
