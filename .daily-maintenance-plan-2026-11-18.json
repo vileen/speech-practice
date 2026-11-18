@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-18",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/hooks/useKanjiKeyboardShortcuts.ts",
+    "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+    "priority": "kanji-practice-shortcuts",
+    "reason": "Last untested hook in the codebase (57 lines). Handles keyboard-driven review flow for kanji practice: space/Spacebar to reveal, 1/space='again', 2='hard', 3='good', 4='easy'. Pure event-handling logic, ideal for React Testing Library tests with mocked callbacks. All 7 priority targets from the task list are already covered."
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts",
+  "testCount": 5,
+  "testPassed": true,
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "No refactor needed — all previously large components (GrammarMode, VerbMode, SpeakingMode, LessonMode, etc.) have already been split into subcomponents under 300 lines",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "coverageStats": {
+    "frontendTests": 143,
+    "backendTests": 35
+  },
+  "notes": "Coverage is in good shape. All priority hooks/components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) have tests. Only useKanjiKeyboardShortcuts.ts lacks tests. Suggested test cases: (1) space reveals card when not revealed, (2) ratings 1-4 map to again/hard/good/easy when revealed, (3) space maps to 'again' when revealed, (4) no action when showSetup or isComplete is true, (5) event listener cleanup on unmount."
+}
