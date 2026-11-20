@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-20",
+  "testTarget": null,
+  "refactorCandidate": {
+    "shouldRefactor": false,
+    "reason": "All former large components have been split; largest component is PatternSelection.tsx at 292 lines (under 300-line threshold)"
+  },
+  "notes": "All critical paths covered \u2014 consider expanding coverage to secondary components. Verified 2026-11-20: 144 frontend tests, 35 backend tests; all 7 priority components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) have tests; all 29 hooks have tests; every component directory has a matching test file; no component exceeds 300 lines (largest: GrammarMode/PatternSelection.tsx, 292). The one apparent gap (useKanjiKeyboardShortcuts.ts reported MISSING by the task script) is a false positive caused by an unescaped dot in the script's sed expression \u2014 its test file exists at frontend/src/test/hooks/useKanjiKeyboardShortcuts.test.ts.",
+  "refactorSkipped": true
+}
