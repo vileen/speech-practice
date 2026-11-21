@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-21",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/GrammarMode/PatternSelection.tsx",
+    "testFile": "frontend/src/test/components/GrammarMode/PatternSelection.test.tsx",
+    "priority": "grammar-selection-core",
+    "reason": "Largest untested component (292 lines). Core grammar-practice entry point with testable logic: CATEGORY_GROUPS export, category filtering, due-pattern and confusion-stats display. All previously-listed critical hooks/components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) and all hooks/utils now have tests \u2014 144 frontend + 35 backend test files.",
+    "alreadyCoveredBy": "frontend/src/test/components/PatternSelection.test.tsx (29 tests, verified passing 2026-11-21)"
+  },
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/CountersMode/CounterStudy.test.tsx",
+  "testCount": 12,
+  "testPassed": true,
+  "actualTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/CountersMode/CounterStudy.tsx",
+    "reason": "Planned target PatternSelection.tsx was already covered (29 passing tests). Next untested interactive component: CounterStudy.tsx (69 lines)."
+  },
+  "refactorCandidate": null,
+  "notes": "No refactor candidates: all components are now under 300 lines (largest untested is PatternSelection.tsx at 292; VoiceRecorder.tsx shrank to 11 lines \u2014 logic already extracted to tested hooks). Secondary untested components if expanding coverage later: ExerciseContainer.tsx (244 lines), SpeechFeedback.tsx (153 lines). ListeningMode.tsx (244 lines) has a 380-line integration test (listening-flow.test.tsx) covering its flow. Remaining truly untested files after this run (all small/presentational): CounterTable.tsx (54), GraphDefs.tsx (42), KanjiComplete.tsx (18), CategoryBreakdownSection.tsx (41), JLPTProgress.tsx (40).",
+  "refactorSkipped": true,
+  "refactorSkippedReason": "No refactor candidate: all components under 300 lines (largest untested is PatternSelection.tsx at 292; VoiceRecorder.tsx already 11 lines with logic in tested hooks)."
+}
