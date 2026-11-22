@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-22",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/ProgressDashboard/CategoryBreakdownSection.tsx",
+    "testFile": "frontend/src/test/components/CategoryBreakdownSection.test.tsx",
+    "priority": "progress-dashboard-display",
+    "reason": "All critical hooks/components (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) and all 31 hooks are tested; backend has full route/service coverage (35 test files). Remaining untested frontend files are 5 small presentational components. CategoryBreakdownSection has the most testable logic: filters categories with totalAttempts > 0, slices to top 8, applies getAccuracyColor styling, and renders an empty state."
+  },
+  "alternatesIfCovered": [
+    "frontend/src/components/CountersMode/CounterTable.tsx (54 lines) — button interactions (onSetMode/onStartQuiz) + pattern table rendering",
+    "frontend/src/components/GrammarMode/GraphDefs.tsx (42 lines) — SVG defs rendering",
+    "frontend/src/components/ProgressDashboard/JLPTProgress.tsx (40 lines) — JLPT progress bars"
+  ],
+  "refactorCandidate": null,
+  "notes": "All critical paths covered (145 frontend + 35 backend test files). Largest component is PatternSelection.tsx at 292 lines (under 300, tested). Remaining untested files are all presentational. After this run, the only untested files left would be GraphDefs.tsx (42), JLPTProgress.tsx (40), MemoryModeComplete.tsx (18) — at that point coverage is effectively complete and the job can start targeting integration/E2E gaps instead.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/CategoryBreakdownSection.test.tsx",
+  "testCount": 9,
+  "testPassed": true,
+  "refactorSkipped": true,
+  "refactorReason": "refactorCandidate is null; no refactor flagged by Job 1"
+}
