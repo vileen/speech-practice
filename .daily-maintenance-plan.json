@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-23",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/CountersMode/CounterTable.tsx",
+    "testFile": "frontend/src/test/components/CountersMode/CounterTable.test.tsx",
+    "priority": "secondary-coverage",
+    "reason": "All 7 priority targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) and all 27 hooks already have tests. CounterTable (54 lines) is one of only 4 remaining untested components and renders core Japanese counter study content (kanji, readings, usage examples) where rendering bugs directly hurt learning."
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "No component exceeds the 300-line threshold; largest is PatternSelection.tsx at 292 lines with clean structure",
+    "shouldRefactor": false
+  },
+  "notes": "Coverage is strong: 146 frontend + 35 backend tests. Only 4 untested components remain (CounterTable 54, GraphDefs 42, JLPTProgress 40, MemoryModeComplete 18 lines) \u2014 all critical paths covered. After CounterTable, consider expanding to the other 3 small components.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/CountersMode/CounterTable.test.tsx",
+  "testCount": 12,
+  "testPassed": true,
+  "refactorSkipped": true
+}
