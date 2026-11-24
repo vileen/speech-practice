@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-24",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/ListeningMode/ListeningMode.tsx",
+    "testFile": "frontend/src/components/ListeningMode/ListeningMode.test.tsx",
+    "priority": "listening-core-flow",
+    "reason": "All 7 priority-list targets (useAudioPlayer, useFurigana, useChatSession, AudioPlayer, JapanesePhrase, VoiceRecorder, HighlightedText) now have tests. ListeningMode.tsx (244 lines) orchestrates the core listening-practice flow (passage selection, playback, questions, results) and is the largest fully-untested interactive component. Listening is essential to the app."
+  },
+  "refactorCandidate": {
+    "sourceFile": "frontend/src/components/GrammarMode/PatternSelection.tsx",
+    "lineCount": 292,
+    "reason": "Largest component in codebase; under the 300-line refactor threshold, so no refactor. Watch item only.",
+    "shouldRefactor": false
+  },
+  "refactorSkipped": true,
+  "refactorSkippedReason": "refactorCandidate.shouldRefactor is false (292 lines, under 300-line threshold). No component exceeds 300 lines — refactor backlog cleared.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/pages/MemoryModeWrapper.test.tsx",
+  "testCount": 8,
+  "testPassed": true,
+  "notes": "Plan testTarget was stale: ListeningMode.tsx already had a comprehensive 1519-line test at frontend/src/test/components/ListeningMode.test.tsx (all views, navigation, furigana, errors). Per task fallback rule, tested the next untested target: MemoryModeWrapper.tsx (was fully untested). 8 tests: loading spinner, fetch with auth header, lessons prop passing, plain-array response, non-ok response, fetch rejection, non-array payload, single fetch on mount. All pass in isolation. Coverage state as of 2026-11-24: 147 frontend tests, 35 backend tests. All hooks tested. All priority components tested (some co-located, some in src/test). Untested components remain in GrammarMode (many small presentational pieces), CountersMode, ProgressDashboard, ReadingMode, SpeakingMode sub-screens. If ListeningMode gets tests, next targets: ExerciseContainer.tsx (244), LessonDetail.tsx (230), ExerciseScreen.tsx (211). No component exceeds 300 lines — refactor backlog cleared."
+}
