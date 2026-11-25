@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-25",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/pages/LessonDetail.tsx",
+    "testFile": "frontend/src/test/pages/LessonDetail.test.tsx",
+    "priority": "secondary-coverage",
+    "reason": "All 7 priority targets, all 28 hooks, and every other page are now covered. pages/LessonDetail.tsx (43 lines) is the last untested page and contains real behavior: reads password from localStorage, wires useParams id into LessonMode, and has 3 navigation handlers including the handleSelectLesson(null) -> /lessons branch. Suggested assertions: renders LessonMode with selectedLessonId from route param; onBack navigates to /lessons; onStartLessonChat navigates to /lessons/:id/setup; onSelectLesson(null) navigates to /lessons; password comes from localStorage. Mock react-router-dom (useNavigate/useParams) and mock AuthenticatedRoute from ../../App.js to render children directly."
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": 0,
+    "reason": "All previously flagged candidates were split up since the task file was written: VoiceRecorder 528->11, GrammarMode 1420->177, VerbMode 805->85, SpeakingMode 544->45, ReadingMode 555->90, LessonMode 736->171, KanjiPracticeMode 473->127 lines. Every one now has tests. Nothing meets the >300-lines + untested/poor-structure criteria.",
+    "shouldRefactor": false
+  },
+  "notes": "Coverage state: 148 frontend test files, 35 backend test files; all priority components/hooks covered. If Job 3 wants a refactor target despite tests existing, largest source files are: pages/LessonPractice.tsx (560 lines), hooks/useVoiceRecorder.ts (481), hooks/useGrammarMode.ts (442). Cleanup opportunity (not Job 2 scope): duplicate colocated test files exist alongside src/test versions - frontend/src/components/AudioPlayer/AudioPlayer.test.tsx (308 lines, src/test copy is 358) and frontend/src/components/VerbMode/VerbMode.test.tsx (131 lines, src/test copy is 357). Verify nothing unique in colocated copies, then delete them. Low-value untested file intentionally skipped: components/GrammarMode/GraphDefs.tsx (42 lines of static SVG defs).",
+  "refactorSkipped": true,
+  "refactorSkipReason": "shouldRefactor=false — no candidate meets >300-lines + untested/poor-structure criteria; all previously flagged components already split and tested.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/pages/LessonDetail.test.tsx",
+  "testCount": 8,
+  "testPassed": true
+}
