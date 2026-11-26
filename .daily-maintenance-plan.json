@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-26",
+  "testTarget": {
+    "type": "hook",
+    "sourceFile": "frontend/src/components/MemoryMode/useMemorySession.ts",
+    "testFile": "frontend/src/test/components/MemoryMode/useMemorySession.test.ts",
+    "priority": "memory-session-core",
+    "reason": "All 7 original priority targets are now tested (151 frontend + 35 backend test files). Largest untested logic-bearing file remaining: 208-line stateful session hook — localStorage persistence of selected lessons, setup/start/reveal/review/complete lifecycle, FSRS preview integration via useMemoryProgress. Zero coverage on the memory practice core loop."
+  },
+  "refactorCandidate": null,
+  "notes": "Codebase was refactored since task file was written: VoiceRecorder.tsx is now an 11-line re-export; LessonMode/ReadingMode/GrammarMode/VerbMode/SpeakingMode/KanjiPracticeMode are all under 300 lines. No refactor candidates per the >300-line rule (largest component: GrammarMode/PatternSelection.tsx at 292). Remaining untested files are mostly types/constants; next-best hook targets after this one: ReadingMode/useReadingMode.ts (177 lines), KanjiList/useKanjiList.ts (119 lines).",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/MemoryMode/useMemorySession.test.ts",
+  "testCount": 20,
+  "testPassed": true,
+  "testNotes": "20 tests, all passing in isolation (496ms). Covers: initial state, localStorage load/persist/invalid-JSON fallback, toggleLesson add/remove, stats recompute per selection, startSession (import per lesson, no-lessons start, empty-deck completion, import-failure resilience), reveal/review/advance/complete lifecycle, getPreview delegation, resetSession (keeps lessons), keyboard shortcuts (Space reveal, 1-4 ratings, Space-as-again, setup-mode guard). Mocked useMemoryProgress with a deck-queue getNextCard; mocked scrollTo and console noise.",
+  "refactorSkipped": true,
+  "refactorSkipReason": "No refactor candidate flagged by Job 1 (refactorCandidate: null). All components under 300-line rule."
+}
