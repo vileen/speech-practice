@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-27",
+  "testTarget": "backend/src/services/elevenlabs/voices.ts",
+  "refactorCandidate": null,
+  "testWritten": true,
+  "testFile": "backend/src/test/services/elevenlabs/voices.test.ts",
+  "testCount": 4,
+  "testPassed": true,
+  "notes": "All critical paths covered — consider expanding coverage to secondary components. Analysis: 150 frontend + 35 backend test files. Every hook (27/27), every lib file (5/5), and every priority-list component has tests. Largest component is PatternSelection.tsx at 292 lines — all former refactor candidates (VoiceRecorder 528→11, GrammarMode 1420→177, LessonMode 736→171) are already refactored and tested. Only untested backend files are trivial: server.ts (bootstrap), db/init.ts (one-shot setup script, not unit-testable without refactor), services/elevenlabs/voices.ts (constants map), types.ts (types only). If Job 2 wants a marginal win: a tiny integrity test for voices.ts asserting all Language×VoiceStyle×Gender combos resolve to non-empty voice IDs would guard the TTS config against accidental key deletion. Otherwise consider deepening integration/edge-case coverage rather than adding breadth.",
+  "refactorSkipped": true,
+  "refactorSkipReason": "refactorCandidate is null — no candidate flagged by Job 1"
+}
