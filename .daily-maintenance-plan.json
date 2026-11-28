@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-28",
+  "testTarget": {
+    "type": "component",
+    "sourceFile": "frontend/src/components/ReadingMode/PassageList.tsx",
+    "testFile": "frontend/src/test/components/ReadingMode/PassageList.test.tsx",
+    "priority": "reading-practice-coverage",
+    "reason": "All 7 priority targets and all 27 hooks already have tests. PassageList.tsx (67 lines) is the largest remaining untested component. It has real logic worth covering: loading state, empty state, level filter onChange callback, passage card rendering with LEVEL_COLORS badge, conditional topic display, and onPassageSelect click handler. Direct parallel to ListeningMode/PassageList which already has a test to model after."
+  },
+  "refactorCandidate": {
+    "sourceFile": null,
+    "lineCount": null,
+    "reason": "Previously flagged large components have been refactored — largest source component is GrammarMode/PatternSelection.tsx at 292 lines (under 300 threshold). GrammarMode.tsx is now 177 lines (was ~1,420), VoiceRecorder split into subcomponents.",
+    "shouldRefactor": false
+  },
+  "notes": "Coverage is strong: 150 frontend tests, 36 backend tests, all hooks and priority components covered. Remaining untested components after this target: GrammarMode/GraphDefs.tsx (42), ProgressDashboard/JLPTProgress.tsx (40), MemoryMode/MemoryModeComplete.tsx (18). Model the new test after frontend/src/test/components/ListeningMode/PassageList.test.tsx.",
+  "testWritten": true,
+  "testFile": "frontend/src/test/components/ReadingMode/PassageList.test.tsx",
+  "testCount": 13,
+  "testPassed": true,
+  "refactorSkipped": true
+}
